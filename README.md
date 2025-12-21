@@ -1,6 +1,12 @@
 ![Header](https://capsule-render.vercel.app/api?type=waving&color=D9BED1&height=120&section=header)
 
-[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Montserrat&weight=500&size=25&duration=4500&pause=500&color=D9BED1&width=435&lines=Hello%2C+it's+Rishika+Mamidibathula;Data+Scientist+%7C+ML+Engineer;Software+Engineer+at+Shell;Columbia+University+MS+Student;Deep+Learning+%7C+NLP+Specialist)](https://git.io/typing-svg)
+<h1>
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=35&duration=1500&pause=1000&color=D9BED1&center=true&vCenter=true&width=800&height=100&lines=Hi,+I'm+Rishika!" alt="Typing SVG" />
+</h1>
+
+<h3>
+  <img src="https://readme-typing-svg.herokuapp.com?font=Montserrat&weight=500&size=28&duration=3000&pause=800&color=D9BED1&center=true&vCenter=true&width=600&lines=Data+Scientist;Machine+Learning+Engineer;AI+Engineer;Deep+Learning+Enthusiast;Natural+Language+Processing+Researcher" alt="Typing SVG" />
+</h3>
 
 
 ✨ *Open to collaborations in ML/AI research, data science projects, and innovative tech solutions!* 🚀
