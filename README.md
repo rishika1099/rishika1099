@@ -111,8 +111,6 @@ achievements = {
     }
 }
 ```
-### 🏢 Shell | Software Engineer
-**Aug 2023 - Jul 2025 | Bengaluru, IN**
 - 💰 Spearheaded **LE Automation project** developing predictive models in Databricks, reducing operational costs by **$100K annually**
 - 🤖 Deployed multiple **RPA bots using Blue Prism**, saving **120 hours of manual effort quarterly**
 - 📊 Integrated insights into **Power BI and Power Apps** for strategic planning and decision-making
@@ -135,8 +133,6 @@ key_projects = {
     }
 }
 ```
-### 🏥 Novartis | Technical Analyst Intern
-**Jan 2023 - Jul 2023 | Hyderabad, IN**
 - 🌱 Developed **net-zero emissions project** using predictive modeling, decreasing carbon emissions by **19% annually**
 - 📝 Implemented **NLP solution** with custom clinical trial corpus, automating analysis and saving **72 hours quarterly**
 - 🔐 Devised **blockchain-based solution** for secure patient data management ensuring privacy and integrity
@@ -152,8 +148,6 @@ key_projects = {
     }
 }
 ```
-### 📊 Saint Louis University | Data Visualization Intern
-**Feb 2022 - Mar 2022**
 - 📈 Conducted in-depth campaign data analysis using **Tableau**, generating actionable business intelligence insights
 - 🎯 Optimized resource allocation, improving campaign performance and maximizing efficiency
 
@@ -222,27 +216,6 @@ key_projects = {
 
 ---
 
-## 🚀 Featured Projects
-
-### AI & Healthcare
-- 🏥 **Auto-Diagnosis of Kidney Disorders** – Deep learning model using **VGG19 transfer learning** achieving **99.2% accuracy** with **99% precision and recall**, reducing misdiagnosis rates by **~50%**
-
-### Cybersecurity & Mobile
-- 🔒 **Android Malware Analysis** – Engineered deep learning-based detection system with **static and dynamic analysis**, achieving **98% accuracy**
-
-### NLP & Recruitment
-- 📄 **Resume-based Recruitment** – Built NLP auto-analyzer with **weighted hybrid cosine-sine similarity model**, achieving **97% accuracy** in candidate-job matching with skill-gap detection
-
-### Computer Vision & Classification
-- 🖼️ **Medical Image Classification** – Implemented **CNNs** and transfer learning for diagnostic applications
-- 🔍 **Object Detection Pipelines** – Real-time detection systems for various applications
-
-### Automation & Analytics
-- ⚙️ **Predictive Maintenance Models** – Databricks-based solutions for operational efficiency
-- 📊 **Business Intelligence Dashboards** – Interactive **Power BI** solutions for data-driven decisions
-
----
-
 ## 🎓 Education
 
 ### Columbia University | MS in Data Science
@@ -255,62 +228,6 @@ key_projects = {
 - 🏆 Rank: **7/~200**
 - 🎖️ Recipient of **Merit Scholarship 2019-2023**
 - 👥 Program Representative 2019-2023
-
----
-
-## 🏆 Achievements & Impact
-
-<table>
-<tr>
-<td align="center">
-<img src="https://img.shields.io/badge/Cost_Savings-$100K-success?style=for-the-badge" />
-<br><sub>Annual at Shell</sub>
-</td>
-<td align="center">
-<img src="https://img.shields.io/badge/Time_Saved-120hrs-blue?style=for-the-badge" />
-<br><sub>Quarterly via RPA</sub>
-</td>
-<td align="center">
-<img src="https://img.shields.io/badge/Emissions-19%25_↓-green?style=for-the-badge" />
-<br><sub>Carbon Reduction</sub>
-</td>
-<td align="center">
-<img src="https://img.shields.io/badge/Accuracy-99.2%25-brightgreen?style=for-the-badge" />
-<br><sub>Medical AI Model</sub>
-</td>
-</tr>
-<tr>
-<td align="center">
-<img src="https://img.shields.io/badge/Rank-7/200-yellow?style=for-the-badge" />
-<br><sub>Top 3.5% at VIT</sub>
-</td>
-<td align="center">
-<img src="https://img.shields.io/badge/GPA-4.0/4.0-red?style=for-the-badge" />
-<br><sub>Perfect Score</sub>
-</td>
-<td align="center">
-<img src="https://img.shields.io/badge/Scholarship-4_Years-orange?style=for-the-badge" />
-<br><sub>Merit Based</sub>
-</td>
-<td align="center">
-<img src="https://img.shields.io/badge/Malware_Detection-98%25-purple?style=for-the-badge" />
-<br><sub>Android Security</sub>
-</td>
-</tr>
-</table>
-
----
-
-## 🏆 Achievements & Impact
-
-- 💰 **$100K** annual cost savings through predictive analytics at Shell
-- ⏱️ **120 hours** quarterly manual effort reduction via RPA automation
-- 🌍 **19%** reduction in carbon emissions through environmental predictive modeling
-- 📊 **72 hours** quarterly savings through NLP-based clinical trial analysis
-- 🎯 **99.2%** accuracy in medical diagnostics (kidney disorder detection)
-- 📈 **98%** accuracy in Android malware detection
-- 🎓 **Top 3.5%** rank in undergraduate program (7/~200)
-- 🏅 **4-year Merit Scholarship** recipient at VIT
 
 ---
 
@@ -330,8 +247,6 @@ key_projects = {
     <img src="https://img.shields.io/badge/🤗_Hugging_Face-FFD21E?style=for-the-badge" />
   </a>
 </p>
-
----
 
 ---
 
