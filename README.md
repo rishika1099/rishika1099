@@ -2,7 +2,6 @@
 
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Montserrat&weight=500&size=25&duration=4500&pause=500&color=D9BED1&width=435&lines=Hello%2C+it's+Rishika+Mamidibathula;Data+Scientist+%7C+ML+Engineer;Software+Engineer+at+Shell;Columbia+University+MS+Student;Deep+Learning+%7C+NLP+Specialist)](https://git.io/typing-svg)
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=24&duration=2000&pause=500&color=58A6FF&width=600&lines=Data+Scientist+%7C+ML+Engineer;Software+Engineer+at+Shell;Columbia+University+MS+Student;Deep+Learning+%7C+NLP+Specialist;Full+Stack+ML+%7C+AI+Researcher)](https://git.io/typing-svg)
 
 ✨ *Open to collaborations in ML/AI research, data science projects, and innovative tech solutions!* 🚀
 
