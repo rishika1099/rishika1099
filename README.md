@@ -8,9 +8,6 @@
   <img src="https://readme-typing-svg.herokuapp.com?font=Montserrat&weight=500&size=28&duration=3000&pause=800&color=D9BED1&center=true&vCenter=true&width=600&lines=Data+Scientist;Machine+Learning+Engineer;AI+Engineer;Deep+Learning+Enthusiast;Natural+Language+Processing+Researcher" alt="Typing SVG" />
 </h3>
 
-
-✨ *Open to collaborations in ML/AI research, data science projects, and innovative tech solutions!* 🚀
-
 💡 *Passionate about leveraging AI to drive business impact and solve real-world problems.*
 
 ---
@@ -33,25 +30,19 @@ const rishika = {
         cloudDevOps: ["Docker", "Kubernetes", "Git", "Blue Prism"]
     },
     
-    impact: {
-        costSavings: "$100K annually",
-        automationSavings: "120 hours quarterly",
-        emissionReduction: "19%",
-        modelAccuracy: "99.2%"
-    },
-    
-    interests: ["Deep Learning", "NLP", "Computer Vision", "Predictive Analytics"],
-    funFact: "Ranked 7/~200 in undergrad with a perfect 4.0 GPA! 🏆"
+    interests: ["Deep Learning", "Natural Language Processing", "Computer Vision", "Predictive Analytics"],
 };
 ```
-I'm **Rishika**, a Data Scientist and Software Engineer with a passion for building impactful AI solutions.  
-Currently pursuing my **Master's in Data Science at Columbia University** while bringing 2+ years of industry experience from **Shell** and **Novartis**. My work spans **Machine Learning, Deep Learning, Natural Language Processing, and Full-Stack Development**, with a focus on delivering measurable business impact.
+I’m a Data Scientist and Software Engineer currently pursuing a Master’s in Data Science at Columbia University. With over two years of industry experience at Shell and Novartis, I’ve worked on end-to-end AI and data-driven systems that deliver measurable business impact. My work focuses on applying Machine Learning, Deep Learning, and NLP to build scalable, production-ready solutions that solve real-world problems.
 
 ---
 
 ## 🛠️ Main Skills
+![Core DS](https://skillicons.dev/icons?i=py,r,sql,sklearn,pytorch,tensorflow,numpy,pandas,seaborn,matplotlib,jupyter&perline=11)
 
-![My Skills](https://skillicons.dev/icons?i=py,tensorflow,pytorch,r,java,js,nodejs,react,express,mongodb,mysql,git,github,docker,kubernetes,flask,html,css,bootstrap,aws,gcp&perline=11)
+![MLOps](https://skillicons.dev/icons?i=docker,linux,git,github,aws,gcp,databricks&perline=11)
+
+
 
 ---
 ## 👩🏻‍💻 Tech Stack
