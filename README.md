@@ -93,7 +93,7 @@ achievements = {
         "tools": ["Databricks", "Power BI", "Power Apps"],
         "result": "$100K annual cost savings 💰"
     },
-    "RPA_Deployment": {
+    "Robotic_Process_Automation": {
         "description": "Deployed multiple automation bots for end-to-end process efficiency",
         "tools": ["Blue Prism"],
         "result": "120 hours saved quarterly ⏱️"
@@ -250,7 +250,7 @@ achievements = {
 
 ### 📄 Looking to hire? 
 
-> **[Here's My Resume](https://drive.google.com/file/d/1KNJjfeDRUgomOPtv1hJOXthRADgyna1J/view?usp=sharing)** 📥
+> **[View My Resume](https://drive.google.com/file/d/1KNJjfeDRUgomOPtv1hJOXthRADgyna1J/view?usp=sharing)** 📥
 
 📌 *Currently seeking **Summer 2026 internship opportunities** and **full-time roles starting in 2027** following graduation.*
 
