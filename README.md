@@ -1,14 +1,12 @@
 ![Header](https://capsule-render.vercel.app/api?type=waving&color=D9BED1&height=120&section=header)
 
-<h1>
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=35&duration=1500&pause=1000&color=D9BED1&center=true&vCenter=true&width=800&height=100&lines=Hi,+I'm+Rishika!" alt="Typing SVG" />
-</h1>
+<h1 align="center">Hi, I'm Rishika! 👋</h1>
 
-<h3>
-  <img src="https://readme-typing-svg.herokuapp.com?font=Montserrat&weight=500&size=28&duration=3000&pause=800&color=D9BED1&center=true&vCenter=true&width=600&lines=Data+Scientist;Machine+Learning+Engineer;AI+Engineer;Deep+Learning+Enthusiast;Natural+Language+Processing+Researcher" alt="Typing SVG" />
+<h3 align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Montserrat&weight=500&size=24&duration=3000&pause=800&color=D9BED1&center=true&vCenter=true&width=600&lines=Data+Scientist;Machine+Learning+Engineer;AI+Engineer;Deep+Learning+Enthusiast;NLP+Researcher" alt="Typing SVG" />
 </h3>
 
-💡 *Passionate about leveraging AI to drive business impact and solve real-world problems.*
+<p align="center">💡 <i>Passionate about leveraging AI to drive business impact and solve real-world problems.</i></p>
 
 ---
 
@@ -18,33 +16,33 @@
 const rishika = {
     location: "New York, USA 🗽",
     education: "Columbia University 🎓 | MS Data Science (Expected Dec 2026)",
-    currentRole: "Software Engineer @ Shell 🛢️",
-    previousRole: "Technical Analyst @ Novartis 💊",
+    previousRoles: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"],
     
     skills: {
         languages: ["Python", "R", "SQL", "Java", "JavaScript", "C++"],
-        mlFrameworks: ["TensorFlow", "PyTorch", "scikit-learn", "Keras"],
-        dataTools: ["Pandas", "NumPy", "Databricks", "Alteryx"],
-        visualization: ["Tableau", "Power BI", "Qlik Sense"],
-        webTech: ["React.js", "Node.js", "Express.js", "Flask", "FastAPI"],
-        cloudDevOps: ["Docker", "Kubernetes", "Git", "Blue Prism"]
+        machineLearning: ["Regression", "Classification", "Clustering", "Ensemble Methods", "XGBoost", "Random Forest"],
+        deepLearning: ["CNNs", "RNNs", "LSTMs", "Transfer Learning", "VGG", "ResNet", "YOLO"],
+        nlp: ["Text Classification", "Sentiment Analysis", "NER", "Transformers", "BERT", "Word Embeddings"],
+        generativeAI: ["LLMs", "GPT-4", "Prompt Engineering", "RAG", "LangChain", "Fine-tuning"],
+        agenticAI: ["CrewAI", "Multi-Agent Systems", "Tool Use", "Autonomous Agents"],
+        mlFrameworks: ["TensorFlow", "PyTorch", "scikit-learn", "Keras", "Hugging Face"],
+        dataTools: ["Pandas", "NumPy", "Databricks", "Alteryx", "Spark"],
+        visualization: ["Tableau", "Power BI", "Qlik Sense", "Matplotlib", "Seaborn", "Plotly"],
+        webTech: ["React.js", "Node.js", "Flask", "FastAPI", "Streamlit"],
+        cloudDevOps: ["AWS", "GCP", "Docker", "Kubernetes", "Git", "MLflow"]
     },
     
-    interests: ["Deep Learning", "Natural Language Processing", "Computer Vision", "Predictive Analytics"],
+    interests: ["Deep Learning", "Natural Language Processing", "Computer Vision", "Generative AI", "Agentic AI"],
 };
 ```
-I’m a Data Scientist and Software Engineer currently pursuing a Master’s in Data Science at Columbia University. With over two years of industry experience at Shell and Novartis, I’ve worked on end-to-end AI and data-driven systems that deliver measurable business impact. My work focuses on applying Machine Learning, Deep Learning, and NLP to build scalable, production-ready solutions that solve real-world problems.
 
 ---
 
 ## 🛠️ Main Skills
-![Core DS](https://skillicons.dev/icons?i=py,r,sql,sklearn,pytorch,tensorflow,numpy,pandas,seaborn,matplotlib,jupyter&perline=11)
-
-![MLOps](https://skillicons.dev/icons?i=docker,linux,git,github,aws,gcp,databricks&perline=11)
-
-
+![Skills](https://skillicons.dev/icons?i=py,r,tensorflow,pytorch,sklearn,docker,linux,git,github,aws,gcp&perline=11)
 
 ---
+
 ## 👩🏻‍💻 Tech Stack
 
 ### Languages
@@ -107,9 +105,6 @@ achievements = {
     }
 }
 ```
-- 💰 Spearheaded **LE Automation project** developing predictive models in Databricks, reducing operational costs by **$100K annually**
-- 🤖 Deployed multiple **RPA bots using Blue Prism**, saving **120 hours of manual effort quarterly**
-- 📊 Integrated insights into **Power BI and Power Apps** for strategic planning and decision-making
 
 ### 🏥 Novartis | Technical Analyst Intern
 **Jan 2023 - Jul 2023** | 📍 Hyderabad, India
@@ -129,9 +124,6 @@ key_projects = {
     }
 }
 ```
-- 🌱 Developed **net-zero emissions project** using predictive modeling, decreasing carbon emissions by **19% annually**
-- 📝 Implemented **NLP solution** with custom clinical trial corpus, automating analysis and saving **72 hours quarterly**
-- 🔐 Devised **blockchain-based solution** for secure patient data management ensuring privacy and integrity
 
 ### 📊 Saint Louis University | Data Visualization Intern
 **Feb 2022 - Mar 2022**
@@ -144,71 +136,60 @@ key_projects = {
     }
 }
 ```
-- 📈 Conducted in-depth campaign data analysis using **Tableau**, generating actionable business intelligence insights
-- 🎯 Optimized resource allocation, improving campaign performance and maximizing efficiency
 
 ---
 
-## 🚀 Featured Projects
+## 🚀 Projects
 
-<table>
-<tr>
-<td width="50%">
+### 🏥 Healthcare & Medical AI
 
-### 🏥 Kidney Disorder Detection
-**Deep Learning | Medical AI**
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [Kidney-Disorder-Detection](https://github.com/rishika1099/Kidney-Disorder-Detection) | Deep learning system classifying CT scans with **99.2% accuracy** | TensorFlow, VGG19, ResNet50 |
+| [Medical-Image-Analysis-Assistant](https://github.com/rishika1099/Medical-Image-Analysis-Assistant) | AI-powered medical image analysis using Google Gemini Vision | Gemini, Streamlit |
+| [Cataract-Detection](https://github.com/rishika1099/Cataract-Detection) | CNN & Transfer Learning for automated cataract detection | TensorFlow, CNN |
+| [Keretoconus-Detection](https://github.com/rishika1099/Keretoconus-Detection) | SVM & Deep Neural Networks for keratoconus detection | SVM, DNN |
+| [Heart-Disease-Prediction](https://github.com/rishika1099/Heart-Disease-Prediction) | ML with EDA, SMOTE & hyperparameter tuning | scikit-learn, SMOTE |
+| [Diabetes-Risk-Prediction](https://github.com/rishika1099/Diabetes-Risk-Prediction) | Gradient Boosting with SHAP explainability | XGBoost, SHAP |
 
-- VGG19 Transfer Learning
-- **99.2% Accuracy**
-- 99% Precision & Recall
-- 50% reduction in misdiagnosis
+### 🤖 NLP & Generative AI
 
-**Tech:** TensorFlow, VGG19, Python
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [AI-Blog-Assistant](https://github.com/rishika1099/AI-Blog-Assistant) | GPT-4 blog generator with DALL-E images & SEO optimization | OpenAI, Streamlit |
+| [Analogy-Tutor](https://github.com/rishika1099/Analogy-Tutor) | Explains technical concepts via personalized analogies | OpenAI, Streamlit |
+| [Fake-News-Detection](https://github.com/rishika1099/Fake-News-Detection) | TF-IDF + Linear SVM for news credibility prediction | TF-IDF, SVM |
 
-</td>
-<td width="50%">
+### 🔒 Security & Specialized ML
 
-### 🔒 Android Malware Analysis
-**Cybersecurity | Deep Learning**
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [Android-Malware-Analysis](https://github.com/rishika1099/Android-Malware-Analysis) | Deep learning malware detection with **98% accuracy** | Python, Deep Learning |
+| [Blockchain-Secure-Data-Storage](https://github.com/rishika1099/Blockchain-Secure-Data-Storage) | ECDSA signatures & Proof of Work for encrypted medical data | Blockchain, ECDSA |
+| [Rock-Mine-Prediction](https://github.com/rishika1099/Rock-Mine-Prediction) | Sonar signal classification comparing multiple ML models | scikit-learn |
 
-- Static & Dynamic Analysis
-- APK Permission Inspection
-- Network Traffic Monitoring
-- **98% Accuracy**
+### 📊 Predictive Analytics & ML
 
-**Tech:** Python, Deep Learning, Android
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [Car-Price-Prediction](https://github.com/rishika1099/Car-Price-Prediction) | Ensemble methods with SHAP explainability | XGBoost, SHAP |
+| [House-Price-Prediction](https://github.com/rishika1099/House-Price-Prediction) | XGBoost regression on California housing data | XGBoost, Streamlit |
+| [Loan-Status-Prediction](https://github.com/rishika1099/Loan-Status-Prediction) | Gradient Boosting classifier with SHAP explanations | XGBoost, SHAP |
+| [Red-Wine-Quality-Prediction](https://github.com/rishika1099/Red-Wine-Quality-Prediction) | Gradient Boosting regression with feature importance | XGBoost, SHAP |
+| [Customer-Churn-Prediction](https://github.com/rishika1099/Customer-Churn-Prediction) | Predicting repeat purchase behavior for food delivery | scikit-learn |
 
-</td>
-</tr>
-<tr>
-<td width="50%">
+### 🖼️ Computer Vision
 
-### 📄 Resume-based Recruitment
-**NLP | Matching Algorithm**
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [Traffic-Sign-Classifier](https://github.com/rishika1099/Traffic-Sign-Classifier) | VGG16 transfer learning, **98% accuracy** on GTSRB | TensorFlow, VGG16 |
+| [Plant-Disease-Detection](https://github.com/rishika1099/Plant-Disease-Detection) | ResNet50 transfer learning on 38 plant disease classes | TensorFlow, ResNet50 |
 
-- Weighted Hybrid Similarity Model
-- **97% Matching Accuracy**
-- Skill-gap Detection
-- Automated Ranking
+### 📈 Data Analysis & Visualization
 
-**Tech:** NLP, Python, Cosine Similarity
-
-</td>
-<td width="50%">
-
-### 🤖 Predictive Maintenance
-**Business Analytics | ML**
-
-- Databricks Implementation
-- SCS & HALT Integration
-- Power BI Dashboards
-- **$100K Annual Savings**
-
-**Tech:** Databricks, Python, Power BI
-
-</td>
-</tr>
-</table>
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [Colorectal-Cancer-Risk-Analysis](https://github.com/rishika1099/Colorectal-Cancer-Risk-Analysis) | Visual analysis of diet/lifestyle factors in CRC risk | R, ggplot2 |
 
 ---
 
@@ -216,7 +197,7 @@ key_projects = {
 
 ### Columbia University | MS in Data Science
 **Expected Dec 2026 | New York, US**
-- 📚 Coursework: Applied Deep Learning, LLM-based Generative AI Systems, Exploratory Data Analysis and Visualization
+- 📚 Coursework: Applied Deep Learning, LLM-based Generative AI Systems, Exploratory Data Analysis and Visualization, Robot Learning, Statistical Modeling, High-Performance Machine Learning, Causal Inference
 - 🏛️ Data Science Institute Student Council Member
 
 ### Vellore Institute of Technology | B.Tech Computer Science - Data Science
@@ -224,6 +205,33 @@ key_projects = {
 - 🏆 Rank: **7/~200**
 - 🎖️ Recipient of **Merit Scholarship 2019-2023**
 - 👥 Program Representative 2019-2023
+
+<details>
+<summary>📚 <b>Coursework</b></summary>
+
+| Math | Computer Science | Data Science |
+|------|------------------|--------------|
+| Calculus for Engineers | Problem Solving and Programming | Artificial Intelligence |
+| Discrete Mathematics and Graph Theory | Basic Electrical and Electronics Engineering | Mathematical Modeling for Data Science |
+| Statistics for Engineers | Problem-Solving and Object-Oriented Programming | Programming for Data Science |
+| Applications of Differential and Difference Equation | Digital Logic and Design | Image Processing |
+| Business Mathematics | Computer Architecture and Organization | Business Intelligence and Analytics |
+| Applied Linear Algebra | Theory of Computation and Compiler Design | Predictive Analytics |
+| | Data Structures and Algorithms | Natural Language Processing |
+| | Database Management Systems | Social and Information Network |
+| | Operating Systems | Machine Learning |
+| | Network and Communication | |
+| | Blockchain and Cryptocurrency Technology | |
+| | Java Programming | |
+| | Internet Programming and Web Technologies | |
+| | Internet of Things | |
+| | Introduction to Innovative Projects | |
+| | Cryptography and Network Security | |
+| | Information Security Analysis and Audit | |
+| | Advanced C Programming | |
+| | Information Security Management | |
+
+</details>
 
 ---
 
@@ -239,7 +247,7 @@ key_projects = {
   <a href="https://github.com/rishika1099">
     <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
   </a>
-  <a href="[YOUR_HUGGINGFACE](https://huggingface.co/rm4318)">
+  <a href="https://huggingface.co/rm4318">
     <img src="https://img.shields.io/badge/🤗_Hugging_Face-FFD21E?style=for-the-badge" />
   </a>
 </p>
@@ -253,4 +261,3 @@ key_projects = {
 ---
 
 ![Footer](https://capsule-render.vercel.app/api?type=waving&color=D9BED1&height=120&section=footer)
-
