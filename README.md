@@ -228,9 +228,7 @@ achievements = {
 | | Information Security Analysis and Audit | |
 | | Information Security Management | |
 | | Blockchain and Cryptocurrency Technology | |
-| | Basic Electrical and Electronics Engineering | |
-| | Technical Answers for Real-World Problems (TARP) | |
-| | Introduction to Innovative Projects | |
+| | Electrical and Electronics Engineering | |
 
 </details>
 
@@ -257,7 +255,7 @@ achievements = {
 
 ### 📄 Looking to hire? 
 
-> **[Download My Resume](https://drive.google.com/file/d/1KNJjfeDRUgomOPtv1hJOXthRADgyna1J/view?usp=sharing)** 📥
+> **[Here's My Resume](https://drive.google.com/file/d/1KNJjfeDRUgomOPtv1hJOXthRADgyna1J/view?usp=sharing)** 📥
 
 ---
 
