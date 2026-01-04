@@ -252,6 +252,9 @@ achievements = {
 
 > **[Here's My Resume](https://drive.google.com/file/d/1KNJjfeDRUgomOPtv1hJOXthRADgyna1J/view?usp=sharing)** 📥
 
+📌 *Currently seeking **Summer 2026 internship opportunities** and **full-time roles starting in 2027** following graduation.*
+
+
 ---
 
 ![Footer](https://capsule-render.vercel.app/api?type=waving&color=D9BED1&height=120&section=footer)
