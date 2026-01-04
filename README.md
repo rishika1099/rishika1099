@@ -94,14 +94,14 @@ const rishika = {
 ```python
 achievements = {
     "LE_Automation": {
-        "description": "Predictive model in Databricks with SCS and HALT",
-        "tools": ["Databricks", "Power BI", "Power Apps"],
-        "impact": "$100K annual cost savings ↓"
+        "description": "Financial forecasting model integrating Databricks outputs into Power BI",
+        "tools": ["Databricks", "Power BI", "Power Apps", "Selenium"],
+        "result": "$100K annual cost savings 💰"
     },
-    "RPA_Deployment": {
-        "description": "Multiple automation bots",
+    "Robotic_Process_Automation": {
+        "description": "Deployed multiple automation bots for end-to-end process efficiency",
         "tools": ["Blue Prism"],
-        "impact": "120 hours saved quarterly ⏱️"
+        "result": "120 hours saved quarterly ⏱️"
     }
 }
 ```
@@ -110,17 +110,16 @@ achievements = {
 **Jan 2023 - Jul 2023** | 📍 Hyderabad, India
 
 ```python
-key_projects = {
+achievements = {
     "Net_Zero_Emissions": {
+        "description": "Predictive modeling on environmental data for emissions reduction",
         "tools": ["Python", "Alteryx", "Qlik Sense"],
         "result": "19% reduction in carbon emissions 🌱"
     },
     "NLP_Clinical_Trials": {
-        "description": "Custom corpus for clinical trial insights",
-        "impact": "72 hours saved quarterly 📊"
-    },
-    "Blockchain_Patient_Data": {
-        "focus": "Secure, private data management 🔐"
+        "description": "Custom corpus from clinical trial results for actionable insights",
+        "tools": ["Python", "NLTK", "SpaCy", "Power Automate"],
+        "result": "72 hours saved quarterly 📊"
     }
 }
 ```
@@ -129,10 +128,11 @@ key_projects = {
 **Feb 2022 - Mar 2022**
 
 ```python
-key_projects = {
-    "Facebook_Campaign_Data_Analysis": {
+achievements = {
+    "Campaign_Data_Analysis": {
+        "description": "Tableau dashboards analyzing campaign performance metrics",
         "tools": ["Python", "Tableau"],
-        "result": "Increasing CTR 📱"
+        "result": "Enhanced campaign efficiency & optimized resource allocation 📈"
     }
 }
 ```
@@ -197,7 +197,7 @@ key_projects = {
 
 ### Columbia University | MS in Data Science
 **Expected Dec 2026 | New York, US**
-- 📚 Coursework: Applied Deep Learning, LLM-based Generative AI Systems, Exploratory Data Analysis and Visualization, Robot Learning, Statistical Modeling, High-Performance Machine Learning, Causal Inference
+- 📚 Coursework: Applied Deep Learning, LLM-based Generative AI Systems, Exploratory Data Analysis and Visualization, Probability and Statistics for Data Science, Robot Learning, Statistical Modeling, High-Performance Machine Learning, Causal Inference
 - 🏛️ Data Science Institute Student Council Member
 
 ### Vellore Institute of Technology | B.Tech Computer Science - Data Science
@@ -212,24 +212,25 @@ key_projects = {
 | Math | Computer Science | Data Science |
 |------|------------------|--------------|
 | Calculus for Engineers | Problem Solving and Programming | Artificial Intelligence |
-| Discrete Mathematics and Graph Theory | Basic Electrical and Electronics Engineering | Mathematical Modeling for Data Science |
-| Statistics for Engineers | Problem-Solving and Object-Oriented Programming | Programming for Data Science |
-| Applications of Differential and Difference Equation | Digital Logic and Design | Image Processing |
-| Business Mathematics | Computer Architecture and Organization | Business Intelligence and Analytics |
-| Applied Linear Algebra | Theory of Computation and Compiler Design | Predictive Analytics |
-| | Data Structures and Algorithms | Natural Language Processing |
-| | Database Management Systems | Social and Information Network |
-| | Operating Systems | Machine Learning |
+| Applied Linear Algebra | Advanced C Programming | Machine Learning |
+| Discrete Mathematics and Graph Theory | Java Programming | Deep Learning |
+| Statistics for Engineers | Data Structures and Algorithms | Natural Language Processing |
+| Business Mathematics | Object-Oriented Programming | Image Processing |
+| Applications of Differential and Difference Equation | Database Management Systems | Predictive Analytics |
+| | Operating Systems | Mathematical Modeling for Data Science |
+| | Computer Architecture and Organization | Programming for Data Science |
+| | Digital Logic and Design | Business Intelligence and Analytics |
+| | Theory of Computation and Compiler Design | Social and Information Network |
 | | Network and Communication | |
-| | Blockchain and Cryptocurrency Technology | |
-| | Java Programming | |
 | | Internet Programming and Web Technologies | |
 | | Internet of Things | |
-| | Introduction to Innovative Projects | |
 | | Cryptography and Network Security | |
 | | Information Security Analysis and Audit | |
-| | Advanced C Programming | |
 | | Information Security Management | |
+| | Blockchain and Cryptocurrency Technology | |
+| | Basic Electrical and Electronics Engineering | |
+| | Technical Answers for Real-World Problems (TARP) | |
+| | Introduction to Innovative Projects | |
 
 </details>
 
