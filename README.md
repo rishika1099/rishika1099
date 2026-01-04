@@ -143,7 +143,7 @@ achievements = {
 | [Kidney-Disorder-Detection](https://github.com/rishika1099/Kidney-Disorder-Detection) | Deep learning system classifying CT scans with **99.2% accuracy** | TensorFlow, VGG19, ResNet50 |
 | [Medical-Image-Analysis-Assistant](https://github.com/rishika1099/Medical-Image-Analysis-Assistant) | AI-powered medical image analysis using Google Gemini Vision | Gemini, Streamlit |
 | [Cataract-Detection](https://github.com/rishika1099/Cataract-Detection) | CNN & Transfer Learning for automated cataract detection | TensorFlow, CNN |
-| [Keretoconus-Detection](https://github.com/rishika1099/Keretoconus-Detection) | SVM & Deep Neural Networks for keratoconus detection | SVM, DNN |
+| [Keratoconus-Detection](https://github.com/rishika1099/Keratoconus-Detection) | SVM & Deep Neural Networks for keratoconus detection | SVM, DNN |
 | [Heart-Disease-Prediction](https://github.com/rishika1099/Heart-Disease-Prediction) | ML with EDA, SMOTE & hyperparameter tuning | scikit-learn, SMOTE |
 | [Diabetes-Risk-Prediction](https://github.com/rishika1099/Diabetes-Risk-Prediction) | Gradient Boosting with SHAP explainability | XGBoost, SHAP |
 
