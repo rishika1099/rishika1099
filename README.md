@@ -14,61 +14,29 @@
 
 ```javascript
 const rishika = {
-    location: "New York, USA 🗽",
-    education: "Columbia University 🎓 | MS Data Science (Expected Dec 2026)",
-    previousRoles: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"],
-    
-    skills: {
-        languages: ["Python", "R", "SQL", "Java", "JavaScript", "C++", "C"],
-        machineLearning: ["Regression", "Classification", "Clustering"],
-        deepLearning: ["CNNs", "RNNs", "LSTMs", "Transfer Learning"],
-        nlp: ["Text Classification", "Sentiment Analysis", "Transformers"],
-        generativeAI: ["LLMs", "Prompt Engineering", "RAG", "LangChain", "Fine-tuning"],
-        agenticAI: ["CrewAI", "Multi-Agent Systems", "Tool Use", "Autonomous Agents"],
-        mlFrameworks: ["TensorFlow", "PyTorch", "scikit-learn", "Keras", "Hugging Face"],
-        dataTools: ["Pandas", "NumPy", "Databricks", "Alteryx", "Spark"],
-        visualization: ["Tableau", "Power BI", "Qlik Sense", "Matplotlib", "Seaborn", "Plotly"],
-        webTech: ["React.js", "Node.js", "Flask", "FastAPI", "Streamlit"],
-        cloudDevOps: ["AWS", "GCP", "Docker", "Kubernetes", "Git", "MLflow"]
-    },
-    
-    interests: ["Deep Learning", "Natural Language Processing", "Computer Vision", "Generative AI", "Agentic AI"],
+  location: "New York, USA 🗽",
+  education: ["Columbia University 🎓 | MS Data Science (Expected Dec 2026)", "Vellore Institute of Technology 🧑🏾‍🎓| B.Tech CSE & Data Science"]
+  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"]
+  skills: {
+    languages: ["Python", "R", "SQL", "Java", "JavaScript", "C++", "C"],
+    machineLearning: ["Regression", "Classification", "Clustering", "Feature Engineering", "Model Evaluation", "SHAP", "Explainability"],
+    deepLearning: ["CNNs", "RNNs", "LSTMs", "Transfer Learning", "Computer Vision", "Sequence Modeling"],
+    nlpAndGenerativeAI: ["Text Classification", "Sentiment Analysis", "Transformers", "LLMs", "Prompt Engineering", "Retrieval-Augmented Generation (RAG)", "Fine-tuning"],
+    agenticAI: ["Multi-Agent Systems", "Tool Calling", "Autonomous Agents", "CrewAI"],
+    frameworksAndLibraries: ["TensorFlow", "PyTorch", "scikit-learn", "Keras", "Hugging Face"],
+    dataAndAnalytics: ["Pandas", "NumPy", "Apache Spark", "Databricks", "Alteryx"],
+    visualization: ["Tableau", "Power BI", "Qlik Sense", "Matplotlib", "Seaborn", "Plotly"],
+    mlopsAndDeployment: ["Git", "GitHub", "Docker", "Kubernetes", "MLflow", "AWS", "GCP", "Streamlit", "FastAPI", "Flask"]
+  },
+ interests: ["Deep Learning", "Natural Language Processing", "Computer Vision", "Generative AI", "Agentic AI"],
 };
+
 ```
 
 ---
 
 ## 🛠️ Core Technical Skills
 ![Skills](https://skillicons.dev/icons?i=py,r,tensorflow,pytorch,sklearn,docker,linux,git,github,aws,gcp&perline=11)
-## 🛠️ Core Technical Skills
-
-**Languages**  
-Python • R • SQL • Java • JavaScript • C++ • C  
-
-**Machine Learning**  
-Regression • Classification • Clustering • Feature Engineering • Model Evaluation • SHAP • Explainability  
-
-**Deep Learning**  
-CNNs • RNNs • LSTMs • Transfer Learning • Computer Vision • Sequence Modeling  
-
-**NLP & Generative AI**  
-Text Classification • Sentiment Analysis • Transformers • LLMs • Prompt Engineering • RAG • Fine-tuning  
-
-**Agentic AI**  
-Multi-Agent Systems • Tool Calling • Autonomous Agents • CrewAI  
-
-**Frameworks & Libraries**  
-TensorFlow • PyTorch • scikit-learn • Keras • Hugging Face  
-
-**Data & Analytics**  
-Pandas • NumPy • Apache Spark • Databricks • Alteryx  
-
-**Visualization**  
-Tableau • Power BI • Qlik Sense • Matplotlib • Seaborn • Plotly  
-
-**MLOps & Deployment**  
-Git • GitHub • Docker • Kubernetes • MLflow • AWS • GCP • Streamlit • FastAPI • Flask  
----
 
 ## 👩🏻‍💻 Tech Stack
 
