@@ -15,8 +15,8 @@
 ```javascript
 const rishika = {
   location: "New York, USA 🗽",
-  education: ["Columbia University 🎓 | MS Data Science (Expected Dec 2026)", "Vellore Institute of Technology 🧑🏾‍🎓| B.Tech CSE & Data Science"]
-  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"]
+  education: ["Columbia University 🎓 | MS Data Science (Expected Dec 2026)", "Vellore Institute of Technology 🧑🏾‍🎓| B.Tech CSE & Data Science"],
+  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"],
   skills: {
     languages: ["Python", "R", "SQL", "Java", "JavaScript", "C++", "C"],
     machineLearning: ["Regression", "Classification", "Clustering", "Feature Engineering", "Model Evaluation", "SHAP", "Explainability"],
