@@ -23,7 +23,7 @@ const rishika = {
         machineLearning: ["Regression", "Classification", "Clustering", "Ensemble Methods", "XGBoost", "Random Forest"],
         deepLearning: ["CNNs", "RNNs", "LSTMs", "Transfer Learning", "VGG", "ResNet", "YOLO"],
         nlp: ["Text Classification", "Sentiment Analysis", "NER", "Transformers", "BERT", "Word Embeddings"],
-        generativeAI: ["LLMs", "Prompt Engineering", "RAG", "LangChain", "Fine-tuning"],
+        generativeAI: ["LLMs", "GPT-4", "Prompt Engineering", "RAG", "LangChain", "Fine-tuning"],
         agenticAI: ["CrewAI", "Multi-Agent Systems", "Tool Use", "Autonomous Agents"],
         mlFrameworks: ["TensorFlow", "PyTorch", "scikit-learn", "Keras", "Hugging Face"],
         dataTools: ["Pandas", "NumPy", "Databricks", "Alteryx", "Spark"],
@@ -95,10 +95,10 @@ const rishika = {
 achievements = {
     "LE_Automation": {
         "description": "Financial forecasting model integrating Databricks outputs into Power BI",
-        "tools": ["Databricks", "Power BI", "Power Apps", "Selenium"],
+        "tools": ["Databricks", "Power BI", "Power Apps"],
         "result": "$100K annual cost savings 💰"
     },
-    "Robotic_Process_Automation": {
+    "RPA_Deployment": {
         "description": "Deployed multiple automation bots for end-to-end process efficiency",
         "tools": ["Blue Prism"],
         "result": "120 hours saved quarterly ⏱️"
@@ -118,7 +118,7 @@ achievements = {
     },
     "NLP_Clinical_Trials": {
         "description": "Custom corpus from clinical trial results for actionable insights",
-        "tools": ["Python", "NLTK", "SpaCy", "Power Automate"],
+        "tools": ["Python", "NLP"],
         "result": "72 hours saved quarterly 📊"
     }
 }
@@ -197,10 +197,10 @@ achievements = {
 
 ### Columbia University | MS in Data Science
 **Expected Dec 2026 | New York, US**
-- 📚 Coursework: Applied Deep Learning, LLM-based Generative AI Systems, Exploratory Data Analysis and Visualization, Probability and Statistics for Data Science, Robot Learning, Statistical Modeling, High-Performance Machine Learning, Causal Inference
+- 📚 Coursework: Applied Deep Learning, LLM-based Generative AI Systems, Exploratory Data Analysis and Visualization, Robot Learning, Statistical Modeling, High-Performance Machine Learning, Causal Inference
 - 🏛️ Data Science Institute Student Council Member
 
-### Vellore Institute of Technology | B.Tech Computer Science with specialisation in Data Science
+### Vellore Institute of Technology | B.Tech Computer Science - Data Science
 **May 2023 | Vellore, IN | CGPA: 4.0/4.0**
 - 🏆 Rank: **7/~200**
 - 🎖️ Recipient of **Merit Scholarship 2019-2023**
@@ -257,7 +257,7 @@ achievements = {
 
 ### 📄 Looking to hire? 
 
-> **[Download My Resume](YOUR_RESUME_LINK)** 📥
+> **[Download My Resume](https://drive.google.com/file/d/1KNJjfeDRUgomOPtv1hJOXthRADgyna1J/view?usp=sharing)** 📥
 
 ---
 
