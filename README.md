@@ -200,7 +200,7 @@ achievements = {
 - 📚 Coursework: Applied Deep Learning, LLM-based Generative AI Systems, Exploratory Data Analysis and Visualization, Probability and Statistics for Data Science, Robot Learning, Statistical Modeling, High-Performance Machine Learning, Causal Inference
 - 🏛️ Data Science Institute Student Council Member
 
-### Vellore Institute of Technology | B.Tech Computer Science - Data Science
+### Vellore Institute of Technology | B.Tech Computer Science with specialisation in Data Science
 **May 2023 | Vellore, IN | CGPA: 4.0/4.0**
 - 🏆 Rank: **7/~200**
 - 🎖️ Recipient of **Merit Scholarship 2019-2023**
