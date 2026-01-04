@@ -21,9 +21,9 @@ const rishika = {
     skills: {
         languages: ["Python", "R", "SQL", "Java", "JavaScript", "C++"],
         machineLearning: ["Regression", "Classification", "Clustering", "Ensemble Methods", "XGBoost", "Random Forest"],
-        deepLearning: ["CNNs", "RNNs", "LSTMs", "Transfer Learning", "VGG", "ResNet", "YOLO"],
+        deepLearning: ["CNNs", "RNNs", "LSTMs", "Transfer Learning"],
         nlp: ["Text Classification", "Sentiment Analysis", "NER", "Transformers", "BERT", "Word Embeddings"],
-        generativeAI: ["LLMs", "GPT-4", "Prompt Engineering", "RAG", "LangChain", "Fine-tuning"],
+        generativeAI: ["LLMs", "Prompt Engineering", "RAG", "LangChain", "Fine-tuning"],
         agenticAI: ["CrewAI", "Multi-Agent Systems", "Tool Use", "Autonomous Agents"],
         mlFrameworks: ["TensorFlow", "PyTorch", "scikit-learn", "Keras", "Hugging Face"],
         dataTools: ["Pandas", "NumPy", "Databricks", "Alteryx", "Spark"],
