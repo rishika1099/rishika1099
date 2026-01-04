@@ -19,10 +19,10 @@ const rishika = {
     previousRoles: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"],
     
     skills: {
-        languages: ["Python", "R", "SQL", "Java", "JavaScript", "C++"],
-        machineLearning: ["Regression", "Classification", "Clustering", "Ensemble Methods", "XGBoost", "Random Forest"],
+        languages: ["Python", "R", "SQL", "Java", "JavaScript", "C++", "C"],
+        machineLearning: ["Regression", "Classification", "Clustering"],
         deepLearning: ["CNNs", "RNNs", "LSTMs", "Transfer Learning"],
-        nlp: ["Text Classification", "Sentiment Analysis", "NER", "Transformers", "BERT", "Word Embeddings"],
+        nlp: ["Text Classification", "Sentiment Analysis", "Transformers"],
         generativeAI: ["LLMs", "Prompt Engineering", "RAG", "LangChain", "Fine-tuning"],
         agenticAI: ["CrewAI", "Multi-Agent Systems", "Tool Use", "Autonomous Agents"],
         mlFrameworks: ["TensorFlow", "PyTorch", "scikit-learn", "Keras", "Hugging Face"],
