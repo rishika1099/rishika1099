@@ -38,6 +38,74 @@ const rishika = {
 
 ---
 
+## 🛠️ Core Technical Skills
+
+### Languages
+- Python
+- R
+- SQL
+- Java
+- JavaScript
+- C++
+- C
+
+### Machine Learning
+- Supervised & Unsupervised Learning
+- Regression, Classification, Clustering
+- Feature Engineering & Model Evaluation
+- Model Interpretability (SHAP, Feature Importance)
+
+### Deep Learning
+- Convolutional Neural Networks (CNNs)
+- Recurrent Neural Networks (RNNs, LSTMs)
+- Transfer Learning
+- Computer Vision & Sequence Modeling
+
+### Natural Language Processing & Generative AI
+- Text Classification & Sentiment Analysis
+- Transformers & Large Language Models (LLMs)
+- Prompt Engineering
+- Retrieval-Augmented Generation (RAG)
+- Fine-tuning & Model Evaluation
+
+### Agentic AI
+- Multi-Agent Systems
+- Tool Calling & Orchestration
+- Autonomous Agents (CrewAI)
+
+### Frameworks & Libraries
+- TensorFlow
+- PyTorch
+- scikit-learn
+- Keras
+- Hugging Face
+
+### Data Engineering & Analytics
+- Pandas
+- NumPy
+- Apache Spark
+- Databricks
+- Alteryx
+
+### Data Visualization
+- Tableau
+- Power BI
+- Qlik Sense
+- Matplotlib
+- Seaborn
+- Plotly
+
+### MLOps, Cloud & Deployment
+- Git & GitHub
+- Docker
+- Kubernetes
+- MLflow
+- AWS
+- Google Cloud Platform (GCP)
+- Streamlit
+- FastAPI
+- Flask
+
 ## 🛠️ Main Skills
 ![Skills](https://skillicons.dev/icons?i=py,r,tensorflow,pytorch,sklearn,docker,linux,git,github,aws,gcp&perline=11)
 
