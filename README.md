@@ -146,6 +146,7 @@ achievements = {
 | [Keratoconus-Detection](https://github.com/rishika1099/Keratoconus-Detection) | SVM & Deep Neural Networks for keratoconus detection | SVM, DNN |
 | [Heart-Disease-Prediction](https://github.com/rishika1099/Heart-Disease-Prediction) | ML with EDA, SMOTE & hyperparameter tuning | scikit-learn, SMOTE |
 | [Diabetes-Risk-Prediction](https://github.com/rishika1099/Diabetes-Risk-Prediction) | Gradient Boosting with SHAP explainability | XGBoost, SHAP |
+| [Colorectal-Cancer-Risk-Analysis](https://github.com/rishika1099/Colorectal-Cancer-Risk-Analysis) | Visual analysis of diet/lifestyle factors in CRC risk | R, ggplot2 |
 
 ### 🤖 NLP & Generative AI
 
@@ -179,12 +180,6 @@ achievements = {
 |---------|-------------|------------|
 | [Traffic-Sign-Classifier](https://github.com/rishika1099/Traffic-Sign-Classifier) | VGG16 transfer learning, **98% accuracy** on GTSRB | TensorFlow, VGG16 |
 | [Plant-Disease-Detection](https://github.com/rishika1099/Plant-Disease-Detection) | ResNet50 transfer learning on 38 plant disease classes | TensorFlow, ResNet50 |
-
-### 📈 Data Analysis & Visualization
-
-| Project | Description | Tech Stack |
-|---------|-------------|------------|
-| [Colorectal-Cancer-Risk-Analysis](https://github.com/rishika1099/Colorectal-Cancer-Risk-Analysis) | Visual analysis of diet/lifestyle factors in CRC risk | R, ggplot2 |
 
 ---
 
