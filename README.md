@@ -120,7 +120,7 @@ achievements = {
 }
 ```
 
-### 📊 Saint Louis University | Data Visualization Intern
+### 📲 Saint Louis University | Data Visualization Intern
 **Feb 2022 - Mar 2022**
 
 ```python
