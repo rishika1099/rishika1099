@@ -158,15 +158,21 @@ achievements = {
 | [Analogy-Tutor](https://github.com/rishika1099/Analogy-Tutor) | Explains technical concepts via personalized analogies | OpenAI, Streamlit |
 | [Fake-News-Detection](https://github.com/rishika1099/Fake-News-Detection) | TF-IDF + Linear SVM for news credibility prediction | TF-IDF, SVM |
 
-### 🔒 Security & Specialized ML
+### 🖼️ Computer Vision
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [Traffic-Sign-Classifier](https://github.com/rishika1099/Traffic-Sign-Classifier) | VGG16 transfer learning, **98% accuracy** on GTSRB | TensorFlow, VGG16 |
+| [Plant-Disease-Detection](https://github.com/rishika1099/Plant-Disease-Detection) | ResNet50 transfer learning on 38 plant disease classes | TensorFlow, ResNet50 |
+
+### 🔒 CyberSecurity 
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
 | [Android-Malware-Analysis](https://github.com/rishika1099/Android-Malware-Analysis) | Deep learning malware detection with **98% accuracy** | Python, Deep Learning |
 | [Blockchain-Secure-Data-Storage](https://github.com/rishika1099/Blockchain-Secure-Data-Storage) | ECDSA signatures & Proof of Work for encrypted medical data | Blockchain, ECDSA |
-| [Rock-Mine-Prediction](https://github.com/rishika1099/Rock-Mine-Prediction) | Sonar signal classification comparing multiple ML models | scikit-learn |
 
-### 📊 Predictive Analytics & ML
+### 📊 Predictive Analytics
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
@@ -175,13 +181,9 @@ achievements = {
 | [Loan-Status-Prediction](https://github.com/rishika1099/Loan-Status-Prediction) | Gradient Boosting classifier with SHAP explanations | XGBoost, SHAP |
 | [Red-Wine-Quality-Prediction](https://github.com/rishika1099/Red-Wine-Quality-Prediction) | Gradient Boosting regression with feature importance | XGBoost, SHAP |
 | [Customer-Churn-Prediction](https://github.com/rishika1099/Customer-Churn-Prediction) | Predicting repeat purchase behavior for food delivery | scikit-learn |
+| [Rock-Mine-Prediction](https://github.com/rishika1099/Rock-Mine-Prediction) | Sonar signal classification comparing multiple ML models | scikit-learn |
 
-### 🖼️ Computer Vision
 
-| Project | Description | Tech Stack |
-|---------|-------------|------------|
-| [Traffic-Sign-Classifier](https://github.com/rishika1099/Traffic-Sign-Classifier) | VGG16 transfer learning, **98% accuracy** on GTSRB | TensorFlow, VGG16 |
-| [Plant-Disease-Detection](https://github.com/rishika1099/Plant-Disease-Detection) | ResNet50 transfer learning on 38 plant disease classes | TensorFlow, ResNet50 |
 
 ---
 
@@ -194,7 +196,7 @@ achievements = {
 
 ### Vellore Institute of Technology | B.Tech Computer Science - Data Science
 **May 2023 | Vellore, IN | CGPA: 4.0/4.0**
-- 🏆 Rank: **7/~200**
+- 🏆 Rank: **7/~200** (Top 4%)
 - 🎖️ Recipient of **Merit Scholarship 2019-2023**
 - 👥 Program Representative 2019-2023
 
