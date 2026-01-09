@@ -6,6 +6,10 @@
   <img src="https://readme-typing-svg.herokuapp.com?font=Montserrat&weight=500&size=24&duration=3000&pause=800&color=D9BED1&center=true&vCenter=true&width=600&lines=Data+Scientist;Machine+Learning+Engineer;AI+Engineer;Deep+Learning+Enthusiast;NLP+Researcher" alt="Typing SVG" />
 </h3>
 
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=py,r,tensorflow,pytorch,sklearn,docker,linux,git,github,aws,gcp&perline=11" />
+</p>
+
 <p align="center">💡 <i>Passionate about leveraging AI to drive business impact and solve real-world problems.</i></p>
 
 ---
@@ -34,9 +38,6 @@ const rishika = {
 ```
 
 ---
-
-## 🛠️ Core Technical Skills
-![Skills](https://skillicons.dev/icons?i=py,r,tensorflow,pytorch,sklearn,docker,linux,git,github,aws,gcp&perline=11)
 
 ## 👩🏻‍💻 Tech Stack
 
@@ -152,6 +153,7 @@ achievements = {
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
+| [AI-Legal-Assistant](https://github.com/rishika1099/AI-Legal-Assistant) | Multi-agent U.S. federal legal analysis system with **RAG over all 54 U.S. Code titles**, semantic search, and automated document drafting | CrewAI, LangChain, ChromaDB, Streamlit |
 | [AI-Blog-Assistant](https://github.com/rishika1099/AI-Blog-Assistant) | GPT-4 blog generator with DALL-E images & SEO optimization | OpenAI, Streamlit |
 | [Analogy-Tutor](https://github.com/rishika1099/Analogy-Tutor) | Explains technical concepts via personalized analogies | OpenAI, Streamlit |
 | [Fake-News-Detection](https://github.com/rishika1099/Fake-News-Detection) | TF-IDF + Linear SVM for news credibility prediction | TF-IDF, SVM |
@@ -245,7 +247,7 @@ achievements = {
 
 ### 📄 Looking to hire? 
 
-> **[View My Resume](https://drive.google.com/file/d/1KNJjfeDRUgomOPtv1hJOXthRADgyna1J/view?usp=sharing)** 📥
+> **[View My Resume](https://drive.google.com/file/d/1OV4F-y6g2cZ0j73z1eazNDwSea01r5L4/view?usp=sharing)** 📥
 
 📌 *Currently seeking **Summer 2026 internship opportunities** and **full-time roles starting in 2027** following graduation.*
 
