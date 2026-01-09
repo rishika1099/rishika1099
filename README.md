@@ -1,6 +1,6 @@
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=D9BED1&height=120&section=header"/>
 
-<h1 align="center">Hi, I'm Rishika! 👋</h1>
+<h1 align="center">Hi, I'm Rishika! <img src="./images/waving-cat.gif" width="50"></h1>
 
 <h3 align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=Montserrat&weight=500&size=24&duration=3000&pause=800&color=D9BED1&center=true&vCenter=true&width=600&lines=Data+Scientist;Machine+Learning+Engineer;AI+Engineer;Deep+Learning+Enthusiast;NLP+Researcher" alt="Typing SVG" />
@@ -84,7 +84,7 @@ const rishika = {
 
 ## 💼 Professional Journey
 
-### 🏢 Shell | Software Engineer
+### <img src="./images/shell.png" width="50"> Shell | Software Engineer
 **Aug 2023 - Jul 2025** | 📍 Bengaluru, India
 
 ```python
@@ -102,7 +102,7 @@ achievements = {
 }
 ```
 
-### 🏥 Novartis | Technical Analyst Intern
+### <img src="./images/novartis.png" width="50"> Novartis | Technical Analyst Intern
 **Jan 2023 - Jul 2023** | 📍 Hyderabad, India
 
 ```python
