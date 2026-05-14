@@ -20,7 +20,9 @@
 const rishika = {
   location: "New York, USA 🗽",
   education: ["Columbia University 🎓 | MS Data Science (Expected Dec 2026)", "Vellore Institute of Technology 🧑🏾‍🎓| B.Tech CSE & Data Science"],
-  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"],
+  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊", "Predictive Analytics Intern @ NYC ACS 🗽 (Summer 2026)"],
+  research: ["RA — Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥", "RA — LLM Risk Modeling @ Columbia GSAS 🌍"],
+  teaching: "TA — Artificial Intelligence for Public Policy @ Columbia DSI 🎓",
   skills: {
     languages: ["Python", "R", "SQL", "Java", "JavaScript", "C++", "C"],
     machineLearning: ["Regression", "Classification", "Clustering", "Feature Engineering", "Model Evaluation", "SHAP", "Explainability"],
@@ -82,22 +84,93 @@ const rishika = {
 
 ---
 
+## 🔬 Research Experience
+
+### 🏥 Columbia University, Irving Medical Center | Research Assistant — Clinical LLM & Phenotyping
+**Jan 2026 - Present** | 📍 New York, NY
+
+```python
+research = {
+    "Cardiac_Sarcoidosis_EHR_Pipeline": {
+        "description": "GPT-4.1 extraction pipeline with two-step de-identification (regex + LLM) over cardiac sarcoidosis patient notes",
+        "tools": ["GPT-4.1", "Python", "OpenAI API"],
+        "result": "Extracted 50+ structured clinical fields (serial imaging, labs, medication timelines) for downstream phenotyping 🏥"
+    },
+    "Cohort_Harmonization": {
+        "description": "Feature engineering across rheumatologic diseases (RA, ILD, sarcoidosis, gout) to generate phenotype labels",
+        "tools": ["Python", "Pandas"],
+        "result": "Analysis-ready labels for supervised learning & outcome modeling 📊"
+    }
+}
+```
+
+### 🌍 Columbia University, Graduate School of Arts and Sciences | Research Assistant — LLM Risk Modeling
+**Jan 2026 - Present** | 📍 New York, NY
+
+```python
+research = {
+    "Multi_LLM_HRDD_Benchmark": {
+        "description": "Evaluation pipeline benchmarking 6 open-source models scoring corporate policies across an 11-dimension Human Rights Due Diligence framework",
+        "tools": ["Gemini 2.0", "DeepSeek-R1", "Llama 4", "Qwen 2.5-72B", "Mistral", "Structured JSON Outputs"],
+        "result": "Cross-model reliability metric (σ across models) identifying optimal LLM for policy classification 🎯"
+    },
+    "Corporate_Disclosure_Processing": {
+        "description": "Converted unstructured corporate disclosures into analysis-ready scoring matrices",
+        "tools": ["Python", "LLMs"],
+        "result": "Automated comparison reporting across defense manufacturers 📑"
+    }
+}
+```
+
+---
+
+## 🎓 Teaching Experience
+
+### 📚 Columbia University, Data Science Institute | Teaching Assistant
+**Sep 2025 - Present** | 📍 New York, NY
+
+```python
+teaching = {
+    "course": "Artificial Intelligence for Public Policy",
+    "responsibilities": [
+        "Grading assignments & exams",
+        "Office hours & student mentorship",
+        "Curriculum support on AI ethics, governance, and policy applications"
+    ]
+}
+```
+
+---
+
 ## 💼 Professional Journey
+
+### 🗽 NYC Administration for Children's Services | Predictive Analytics Intern
+**Jun 2026 - Aug 2026** | 📍 New York, NY
+
+```python
+achievements = {
+    "Predictive_Analytics": {
+        "description": "Building predictive models on child welfare data to support case prioritization and resource allocation",
+        "tools": ["Python", "scikit-learn", "SQL"],
+        "result": "Data-driven insights for social service decision-making 📈"
+    }
+}
+```
 
 ### 🐚 Shell | Software Engineer
 **Aug 2023 - Jul 2025** | 📍 Bengaluru, India
 
 ```python
 achievements = {
-    "LE_Automation": {
-        "description": "Financial forecasting model integrating Databricks outputs into Power BI",
-        "tools": ["Databricks", "Power BI", "Power Apps"],
-        "result": "$100K annual cost savings 💰"
+    "Financial_Forecasting": {
+        "description": "Gradient-boosted regression models in Databricks (PySpark, SQL) for financial forecasting across 12 business units",
+        "tools": ["Databricks", "PySpark", "Power BI", "Power Apps"],
+        "result": "Reduced forecast error by 23%; supported $100K+ annual cost optimization 💰"
     },
-    "Robotic_Process_Automation": {
-        "description": "Deployed multiple automation bots for end-to-end process efficiency",
-        "tools": ["Blue Prism"],
-        "result": "120 hours saved quarterly ⏱️"
+    "RPA_Automation": {
+        "description": "Production ETL pipelines & 5 Blue Prism RPA bots with logging, retry logic, and exception handling",
+        "tools": ["Blue Prism", "Python", "Selenium"],
+        "result": "Reduced manual reporting effort by 85% (120+ hrs/quarter); SLA compliance from 92% to 99% ⏱️"
     }
 }
 ```
@@ -109,13 +182,13 @@ achievements = {
 achievements = {
     "Net_Zero_Emissions": {
         "description": "Predictive modeling on environmental data for emissions reduction",
-        "tools": ["Python", "Alteryx", "Qlik Sense"],
+        "tools": ["Python", "scikit-learn", "Alteryx", "Qlik Sense"],
         "result": "19% reduction in carbon emissions 🌱"
     },
     "NLP_Clinical_Trials": {
-        "description": "Custom corpus from clinical trial results for actionable insights",
+        "description": "TF-IDF, NER, and text classification over clinical trial documentation",
         "tools": ["Python", "NLP"],
-        "result": "72 hours saved quarterly 📊"
+        "result": "40% reduction in manual review time per quarter 📊"
     }
 }
 ```
@@ -141,6 +214,7 @@ achievements = {
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
+| [Folio](https://github.com/rishika1099/Folio) | **Single-user multimodal medical dashboard** ingesting PDFs, photos, voice, and text. Five-stage LLM pipeline (ingest → extract → validate → score → persist) with longitudinal context injection, 6 evaluation metrics (completeness, diagnosis confidence, hallucination risk, ICD-10 validity, longitudinal consistency, severity trend), and trend/red-flag/interaction suggestions. | FastAPI, MongoDB, React/Vite, Claude API |
 | [Kidney-Disorder-Detection](https://github.com/rishika1099/Kidney-Disorder-Detection) | Deep learning system classifying CT scans with **99.2% accuracy** | TensorFlow, VGG19, ResNet50 |
 | [Medical-Image-Analysis-Assistant](https://github.com/rishika1099/Medical-Image-Analysis-Assistant) | AI-powered medical image analysis using Google Gemini Vision | Gemini, Streamlit |
 | [Cataract-Detection](https://github.com/rishika1099/Cataract-Detection) | CNN & Transfer Learning for automated cataract detection | TensorFlow, CNN |
@@ -154,6 +228,8 @@ achievements = {
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
 | [AI-Legal-Assistant](https://github.com/rishika1099/AI-Legal-Assistant) | Multi-agent U.S. federal legal analysis system with **RAG over all 54 U.S. Code titles**, semantic search, and automated document drafting | CrewAI, LangChain, ChromaDB, Streamlit |
+| [Taylor-Swift-Reply-Generator](https://github.com/rishika1099/Taylor-Swift-Reply-Generator) | **Diary-to-song recommendation system** combining unsupervised clustering of Taylor Swift's discography (audio features + lyric sentiment) with an LLM-based reply generator that matches diary entries to thematic song clusters | Python, scikit-learn, Spotify API, LLMs, Streamlit |
+| [NOURI](https://github.com/rishika1099/NOURI) | **AI-first food companion** with video-to-recipe extraction (TikTok/Instagram/YouTube), computer-vision pantry-to-plate scanner with nutrition & allergen data, and a personalised health coach with calorie/macro tracking, smart swaps, and adaptive meal plans | React Native, Computer Vision, LLMs, USDA FoodData, HealthKit |
 | [AI-Blog-Assistant](https://github.com/rishika1099/AI-Blog-Assistant) | GPT-4 blog generator with DALL-E images & SEO optimization | OpenAI, Streamlit |
 | [Analogy-Tutor](https://github.com/rishika1099/Analogy-Tutor) | Explains technical concepts via personalized analogies | OpenAI, Streamlit |
 | [Fake-News-Detection](https://github.com/rishika1099/Fake-News-Detection) | TF-IDF + Linear SVM for news credibility prediction | TF-IDF, SVM |
@@ -191,7 +267,17 @@ achievements = {
 
 ### Columbia University | MS in Data Science
 **Expected Dec 2026 | New York, US**
-- 📚 Coursework: Applied Deep Learning, LLM-based Generative AI Systems, Exploratory Data Analysis and Visualization, Robot Learning, Statistical Modeling, High-Performance Machine Learning, Causal Inference
+
+**📚 Coursework**
+
+| Term | Courses |
+|------|---------|
+| **Spring 2026** | Causal Inference · High Performance Machine Learning · Machine Learning · Statistical Inference and Modelling |
+| **Fall 2026** | Agentic AI |
+| **Prior** | Applied Deep Learning · LLM-based Generative AI Systems · Exploratory Data Analysis and Visualization · Robot Learning · Statistical Modeling |
+
+- 🧑‍🏫 **Teaching Assistant** for Artificial Intelligence for Public Policy
+- 🔬 **Research Assistant** at Columbia Irving Medical Center & Columbia GSAS
 - 🏛️ Data Science Institute Student Council Member
 
 ### Vellore Institute of Technology | B.Tech Computer Science - Data Science
@@ -251,7 +337,7 @@ achievements = {
 
 > **[View My Resume](https://drive.google.com/file/d/1OV4F-y6g2cZ0j73z1eazNDwSea01r5L4/view?usp=sharing)** 📥
 
-📌 *Currently seeking **Summer 2026 internship opportunities** and **full-time roles starting in 2027** following graduation.*
+📌 *Currently seeking **full-time roles starting in 2027** following graduation.*
 
 
 ---
