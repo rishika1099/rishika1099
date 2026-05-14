@@ -20,7 +20,7 @@
 const rishika = {
   location: "New York, USA 🗽",
   education: ["Columbia University 🎓 | MS Data Science (Expected Dec 2026)", "Vellore Institute of Technology 🧑🏾‍🎓| B.Tech CSE & Data Science"],
-  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊", "Predictive Analytics Intern @ NYC ACS 🗽 (Summer 2026)"],
+  experience: ["Predictive Analytics Intern @ NYC ACS 🗽 (Summer 2026)","Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"],
   research: ["RA — Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥", "RA — LLM Risk Modeling @ Columbia GSAS 🌍"],
   teaching: "TA — Artificial Intelligence for Public Policy @ Columbia DSI 🎓",
   skills: {
