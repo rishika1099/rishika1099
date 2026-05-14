@@ -20,7 +20,7 @@
 const rishika = {
   location: "New York, USA 🗽",
   education: ["Columbia University 🎓 | MS Data Science (Expected Dec 2026)", "Vellore Institute of Technology 🧑🏾‍🎓| B.Tech CSE & Data Science"],
-  experience: ["Predictive Analytics Intern @ NYC ACS 🗽 (Summer 2026)","Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"],
+  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊", "Predictive Analytics Intern @ NYC ACS 🗽 (Summer 2026)"],
   research: ["RA — Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥", "RA — LLM Risk Modeling @ Columbia GSAS 🌍"],
   teaching: "TA — Artificial Intelligence for Public Policy @ Columbia DSI 🎓",
   skills: {
@@ -214,7 +214,7 @@ achievements = {
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [Folio](https://github.com/rishika1099/Folio) | **Single-user multimodal medical dashboard** ingesting PDFs, photos, voice, and text. Five-stage LLM pipeline (ingest → extract → validate → score → persist) with longitudinal context injection, 6 evaluation metrics (completeness, diagnosis confidence, hallucination risk, ICD-10 validity, longitudinal consistency, severity trend), and trend/red-flag/interaction suggestions. | FastAPI, MongoDB, React/Vite, Claude API |
+| [Folio](https://github.com/rishika1099/Folio) | Single-user medical dashboard with multimodal ingestion (PDF, photo, voice, text), five-stage extraction pipeline (ingest → extract → validate → score → persist), longitudinal context injection from the last 3 reports, and 6 evaluation metrics (extraction completeness, diagnosis confidence, hallucination risk, ICD-10 validity, longitudinal consistency, severity trend). Generates trend charts, red-flag alerts, and drug-interaction warnings | FastAPI, MongoDB, React, Vite, Claude API |
 | [Kidney-Disorder-Detection](https://github.com/rishika1099/Kidney-Disorder-Detection) | Deep learning system classifying CT scans with **99.2% accuracy** | TensorFlow, VGG19, ResNet50 |
 | [Medical-Image-Analysis-Assistant](https://github.com/rishika1099/Medical-Image-Analysis-Assistant) | AI-powered medical image analysis using Google Gemini Vision | Gemini, Streamlit |
 | [Cataract-Detection](https://github.com/rishika1099/Cataract-Detection) | CNN & Transfer Learning for automated cataract detection | TensorFlow, CNN |
@@ -228,11 +228,19 @@ achievements = {
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
 | [AI-Legal-Assistant](https://github.com/rishika1099/AI-Legal-Assistant) | Multi-agent U.S. federal legal analysis system with **RAG over all 54 U.S. Code titles**, semantic search, and automated document drafting | CrewAI, LangChain, ChromaDB, Streamlit |
-| [Taylor-Swift-Reply-Generator](https://github.com/rishika1099/Taylor-Swift-Reply-Generator) | **Diary-to-song recommendation system** combining unsupervised clustering of Taylor Swift's discography (audio features + lyric sentiment) with an LLM-based reply generator that matches diary entries to thematic song clusters | Python, scikit-learn, Spotify API, LLMs, Streamlit |
-| [NOURI](https://github.com/rishika1099/NOURI) | **AI-first food companion** with video-to-recipe extraction (TikTok/Instagram/YouTube), computer-vision pantry-to-plate scanner with nutrition & allergen data, and a personalised health coach with calorie/macro tracking, smart swaps, and adaptive meal plans | React Native, Computer Vision, LLMs, USDA FoodData, HealthKit |
+| [SQL-RAG-Query-Engine](https://github.com/rishika1099/SQL-RAG-Query-Engine) | Natural language → SQL pipeline for sports performance analytics. ChromaDB semantic retrieval over 10 KPI definitions feeds a five-prompt Claude pipeline (intent classification, SQL generation, AST-based safety validation, self-verification, chart + follow-up suggestion). 80% pass rate on 15-question benchmark with parallelized async orchestration. Live demo deployed on Fly.io + Netlify | FastAPI, SQLite, ChromaDB, Claude (Sonnet + Haiku), React, Vite |
+| [Exercise-Recommendation-LLM](https://github.com/rishika1099/Exercise-Recommendation-LLM) | Two-stage exercise retrieval and re-ranking system over 100k+ exercises. PostgreSQL FTS + trigram retrieval narrows candidates; Claude tool-use re-ranks against intent (rehab / performance / strength / mobility / conditioning) with body-part, intensity, and equipment constraints. MD5 query cache, graceful retrieval fallback on LLM failure | FastAPI, PostgreSQL, Supabase, Claude, Fly.io, Netlify |
+| [Taylor-Swift-Reply-Generator](https://github.com/rishika1099/Taylor-Swift-Reply-Generator) | Diary-to-song recommender that clusters Taylor Swift's discography on Spotify audio features and lyric sentiment, matches a user diary entry to the closest thematic cluster, and returns ranked song recommendations with an LLM-generated reply | Python, scikit-learn, Spotify API, LLMs, Streamlit |
+| [FEAST](https://github.com/rishika1099/FEAST) | Three-pillar food app: video-to-recipe extraction from TikTok/Instagram/YouTube into structured recipes with auto-tagged cookbook; camera-based pantry-to-plate scanner returning ready-to-cook recipes with nutrition, allergen, and macro breakdowns; personalised health coach with calorie tracking, smart ingredient swaps, and adaptive weekly meal plans. Integrates Instacart, Apple Health, Fitbit, and social video share sheets | React Native, Computer Vision, LLMs, USDA FoodData, HealthKit |
 | [AI-Blog-Assistant](https://github.com/rishika1099/AI-Blog-Assistant) | GPT-4 blog generator with DALL-E images & SEO optimization | OpenAI, Streamlit |
 | [Analogy-Tutor](https://github.com/rishika1099/Analogy-Tutor) | Explains technical concepts via personalized analogies | OpenAI, Streamlit |
 | [Fake-News-Detection](https://github.com/rishika1099/Fake-News-Detection) | TF-IDF + Linear SVM for news credibility prediction | TF-IDF, SVM |
+
+### ⚡ Systems & High-Performance ML
+
+| Project | Description | Tech Stack |
+|---------|-------------|------------|
+| [KV-Cache-Implementation](https://github.com/rishika1099/KV-Cache-Implementation) | Controlled single-codebase benchmark of five KV-cache optimization techniques on Llama-2-7B: KIVI 2/4-bit quantization, TopK sparse selection, SnapKV one-shot eviction, TransMLA latent projection, and a KIVI×TopK hybrid. Unified runner shares model, tokenizer, decode loop, seeds, and hardware so differences are attributable to KV policy only. Evaluated on LongBench + synthetic throughput sweeps; KIVI 4-bit delivered 1.93× decode throughput at BS=32 with lossless LongBench quality. W&B dashboard, Modal H100 reproducibility scripts | PyTorch, HuggingFace Transformers, Triton, Modal, W&B |
 
 ### 🖼️ Computer Vision
 
