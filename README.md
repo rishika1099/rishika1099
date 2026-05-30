@@ -20,7 +20,7 @@
 const rishika = {
   location: "New York, USA 🗽",
   education: ["Columbia University 🎓 | MS Data Science (Expected Dec 2026)", "Vellore Institute of Technology 🧑🏾‍🎓| B.Tech CSE & Data Science"],
-  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊", "Data Science Intern @ NYC ACS 🗽 (Summer 2026)"],
+  experience: ["Data Science Intern @ NYC ACS 🗽 (Summer 2026)", "Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊"],
   research: ["RA — Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥", "RA — LLM Risk Modeling @ Columbia GSAS 🌍"],
   teaching: "TA — Artificial Intelligence for Public Policy @ Columbia DSI 🎓",
   skills: {
@@ -89,36 +89,41 @@ const rishika = {
 ### 🏥 Columbia University, Irving Medical Center | Research Assistant — Clinical LLM & Phenotyping
 **Jan 2026 - Present** | 📍 New York, NY
 
+> **Project:** Automated phenotype extraction for a **118-patient cardiac sarcoidosis cohort** under IRB AAAV0341 (NYP/CUMC, data cutoff 1 Jul 2024), transforming **50,486 unstructured Epic cardiology progress notes + 153 rheumatology consults** into a structured 56-field clinical dataset for downstream phenotyping and outcome modeling.
+
 ```python
-research = {
-    "Cardiac_Sarcoidosis_EHR_Pipeline": {
-        "description": "GPT-4.1 extraction pipeline with two-step de-identification (regex + LLM) over cardiac sarcoidosis patient notes",
-        "tools": ["GPT-4.1", "Python", "OpenAI API"],
-        "result": "Extracted 50+ structured clinical fields (serial imaging, labs, medication timelines) for downstream phenotyping 🏥"
-    },
-    "Cohort_Harmonization": {
-        "description": "Feature engineering across rheumatologic diseases (RA, ILD, sarcoidosis, gout) to generate phenotype labels",
-        "tools": ["Python", "Pandas"],
-        "result": "Analysis-ready labels for supervised learning & outcome modeling 📊"
-    }
+pipeline = {
+    "Note_Reconstruction":   "Grouped multi-row Epic fragments by (EMPI, NOTE_CSN_ID) and concatenated in row order — fixed systematic truncation present in prior v3 pipeline",
+    "Temporal_Structure":    "Per-patient visit-level delimiters (=== CARDIOLOGY NOTE YYYY-MM-DD ===) preserve serial reasoning over LVEF trends and multi-year medication histories; explicit [NO RHEUMATOLOGY NOTE] marker for 110/118 patients to signal absence rather than omission",
+    "De_identification":     "Two-pass redaction — regex on Epic headers (Patient Name:, DOB:, MRN:) with Title-Case requirement + 30-token stoplist → GPT-4.1-mini fallback (temp 0, JSON-constrained) for 51/118 names (43%) + 64/118 DOBs (54%) + hospital MRNs distinct from EMPI; opaque per-patient [NAME_<EMPI>] placeholders with PHI map held in volatile memory only",
+    "Extraction_Model":      "GPT-4.1 via OpenAI API under Columbia IT HIPAA-compliant protocols, temperature 0, response_format=json_object for guaranteed parsable output",
+    "Schema":                "56 structured fields — demographics, cardiac symptoms, device history, extra-cardiac sarcoidosis manifestations, cardiovascular comorbidities, serial ECG / echocardiography / cardiac MRI / FDG PET-CT findings, histopathology, lab markers (ACE, lysozyme, IL-2R, vit-D, troponin, BNP), immunosuppressive & DMARD therapy with start/stop timestamps",
+    "Anti_Hallucination":    "4 system-prompt directives: extract only explicitly stated info; never infer plausible values from context; return Unknown (categorical) / null (numeric) for absent fields; mark rheumatology-specific fields Unknown when the absence marker is present rather than back-inferring from cardiology",
+    "Long_Context_Handling": "Two-pass extraction for 23 patients exceeding 120k tokens (tiktoken o200k_base) with field-aware merge — first-non-Unknown for demographics, semicolon-delimited dedup for time-series labs, pipe-joined informative-preferred for categoricals",
+    "Reliability":           "Adaptive max_tokens (8k → 16k on finish_reason='length'), exponential backoff on transient API errors, cross-patient contamination scan (0 events across all 118 patients)",
+    "Output":                "3-sheet Excel — re-identified structured extraction (118 × 56 fields + PHI + note counts + date ranges), per-patient de-identification audit (regex vs LLM substitution source), cross-patient contamination log",
+    "Validation":            "Random sample of 10 patients independently chart-reviewed by 2 clinicians (M.S.G., M.O.A.) against source Epic notes; discrepancies classified as omissions / commissions / value errors / temporal errors with per-field and per-domain agreement rates",
+    "Stack":                 "Python 3.11, pandas, openai, tiktoken (o200k_base), tqdm, openpyxl"
 }
 ```
 
-### 🌍 Columbia University, Graduate School of Arts and Sciences | Research Assistant — LLM Risk Modeling
+### 🌍 Columbia University, Graduate School of Arts and Sciences | Research Assistant — Human Rights LLM Evaluation
 **Jan 2026 - Present** | 📍 New York, NY
 
+> **Project:** Automated **Human Rights Due Diligence (HRDD) scoring framework** for **27 defense manufacturers**, grounded in UN Guiding Principles, UNICEF CRBP, ABA Defense Industry HRDD Guidance, UN Six Grave Violations framework, and Arms Trade Treaty Article 7.4 — **reducing manual review effort by 80%** while preserving full evidence auditability and statistical validation against human raters.
+
 ```python
-research = {
-    "Multi_LLM_HRDD_Benchmark": {
-        "description": "Evaluation pipeline benchmarking 6 open-source models scoring corporate policies across an 11-dimension Human Rights Due Diligence framework",
-        "tools": ["Gemini 2.0", "DeepSeek-R1", "Llama 4", "Qwen 2.5-72B", "Mistral", "Structured JSON Outputs"],
-        "result": "Cross-model reliability metric (σ across models) identifying optimal LLM for policy classification 🎯"
-    },
-    "Corporate_Disclosure_Processing": {
-        "description": "Converted unstructured corporate disclosures into analysis-ready scoring matrices",
-        "tools": ["Python", "LLMs"],
-        "result": "Automated comparison reporting across defense manufacturers 📑"
-    }
+pipeline = {
+    "Framework":             "UN Guiding Principles on Business & Human Rights (Principles 15-24) + UNICEF Children's Rights and Business Principles (2012) + ABA Defense Industry HRDD Guidance + UN Six Grave Violations Against Children in Armed Conflict + Arms Trade Treaty Article 7.4",
+    "Main_HRDD_Dimensions":  "5 lifecycle dimensions — Policy Commitment (UNGP 2.15-16), Risk Assessment (BAR contextual/client risk + UNGP 2.17-18), Prevention & Mitigation (BAR termination clauses + training + red-flag systems + UNGP 2.19), End-Use Monitoring (BAR periodic audits/site inspections + UNGP 2.20), Investigation & Remediation (BAR misuse investigation + UNGP 2.22-24)",
+    "Child_Rights_Subdims":  "4 CRBP / Six-Violations sub-dimensions — Child Rights Policy Commitment (senior-level CRC/CRBP/ILO 182 references), Child Rights Risk Assessment (dedicated VAC records + child soldier recruitment history + attacks on schools/hospitals), Violation Prevention (child-conscious product design + termination clauses), Monitoring & Reporting (end-use monitoring with child impact indicators + accessible grievance mechanisms)",
+    "Rubric":                "0 = absent · 1 = vague · 2 = clear policy with limited mechanisms · 3 = comprehensive with mechanisms and accountability",
+    "Stage_1_Research":      "Claude Haiku with web_search tool extracts direct verbatim quotes from each company's Code of Conduct, Human Rights Policy, Sustainability Reports, Export Control Policies, Supplier Codes, and Modern Slavery Statements (with source URLs) when spreadsheet Table 2.0 evidence < 3,000 chars; research model required to output 'NOT FOUND' rather than fabricate",
+    "Stage_2_Scoring":       "Claude Sonnet scores each dimension via chain-of-thought reasoning — quotes specific evidence, maps to rubric anchor, assigns score; research and scoring kept in separate API calls so the scorer cannot fabricate evidence; Research Audit sheet preserves all source URLs for manual verification",
+    "Human_Baseline":        "12 previously human-rated companies re-scored — Lockheed Martin, Raytheon/RTX, Northrop Grumman, Boeing, General Dynamics, BAE Systems, NORINCO, AVIC, CASC, Rostec, CETC, Leonardo; original 10-dim human scores mapped to new 5-dim framework via averaged constituent dimensions",
+    "Inter_Rater_Reliability": "Cohen's Weighted Kappa (linear + quadratic) for ordinal chance-corrected agreement, Krippendorff's Alpha for ordinal data, Spearman rank correlation for company ordering, per-dimension MAE, exact-match & within-±1 agreement percentages, full confusion matrix of score-level disagreements",
+    "Output":                "5-sheet styled Excel — Claude_Scores (color-coded 0-3 heatmap across 27 companies), Human_vs_Claude (side-by-side with green/red diff highlighting), Evaluation (full IRR metrics), Reasoning (chain-of-thought justification for every score), Research_Audit (web sources for sparse-evidence companies)",
+    "Rate_Limit_Handling":   "Anthropic API 10,000 tokens/min constraint handled via 65-second inter-call sleeps + exponential backoff retries"
 }
 ```
 
@@ -142,9 +147,33 @@ teaching = {
 
 ---
 
+## 🤝 Volunteer Experience
+
+### 🏛️ Columbia University, Data Science Institute | Student Council — Communications & Professional Resources
+**Sep 2025 - Present** | 📍 New York, NY
+
+```python
+council = {
+    "role": "Communications & Professional Resources",
+    "responsibilities": [
+        "Curate and disseminate career resources, internship opportunities, and industry events for the Columbia MSDS community",
+        "Coordinate communications between students, faculty, and external partners",
+        "Design and ship technical tools that improve the student experience end-to-end"
+    ],
+    "flagship_build": {
+        "project":     "DSI Course Evaluation Website",
+        "link":        "https://github.com/rishika1099/DSI-Course-Evaluation-Website",
+        "description": "Student dashboard for Columbia MSDS course reviews — pulls live form responses from Google Sheets, surfaces personalized course rankings, AI-summarized review deep-dives, and what-to-take-next recommendations for incoming and continuing students",
+        "stack":       ["Python", "Google Sheets API", "LLMs"]
+    }
+}
+```
+
+---
+
 ## 💼 Professional Journey
 
-### 🗽 NYC Administration for Children's Services | Data Science Intern
+### <img src="./images/nyc-acs.jpg" width="30" alt="NYC ACS"> NYC Administration for Children's Services | Data Science Intern
 **Jun 2026 - Aug 2026** | 📍 New York, NY
 
 ```python
@@ -157,7 +186,7 @@ achievements = {
 }
 ```
 
-### 🐚 Shell | Software Engineer
+### <img src="./images/shell.png" width="30" alt="Shell"> Shell | Software Engineer
 **Aug 2023 - Jul 2025** | 📍 Bengaluru, India
 
 ```python
@@ -175,7 +204,7 @@ achievements = {
 }
 ```
 
-### 🔬 Novartis | Technical Analyst Intern
+### <img src="./images/novartis.png" width="30" alt="Novartis"> Novartis | Technical Analyst Intern
 **Jan 2023 - Jul 2023** | 📍 Hyderabad, India
 
 ```python
@@ -290,7 +319,7 @@ achievements = {
 
 - 🧑‍🏫 **Teaching Assistant** for Artificial Intelligence for Public Policy
 - 🔬 **Research Assistant** at Columbia Irving Medical Center & Columbia GSAS
-- 🏛️ Data Science Institute Student Council Member
+- 🏛️ Data Science Institute Student Council — **Communications & Professional Resources**
 
 ### Vellore Institute of Technology | B.Tech Computer Science - Data Science
 **May 2023 | Vellore, IN | CGPA: 4.0/4.0**
