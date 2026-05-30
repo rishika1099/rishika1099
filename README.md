@@ -338,7 +338,7 @@ achievements = {
 
 ---
 
-## ⚡ High Performance ML
+## ⚡ High Performance Machine Learning
 
 | Project | Description | Tech Stack | Tags |
 |---------|-------------|------------|------|
