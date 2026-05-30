@@ -173,7 +173,7 @@ council = {
 
 ## 💼 Professional Journey
 
-### <img src="./images/nyc-acs.jpg" width="30" alt="NYC ACS"> NYC Administration for Children's Services | Data Science Intern
+### <img src="./images/nyc-acs.png" width="30" alt="NYC ACS"> NYC Administration for Children's Services | Data Science Intern
 **Jun 2026 - Aug 2026** | 📍 New York, NY
 
 ```python
