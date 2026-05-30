@@ -20,7 +20,7 @@
 const rishika = {
   location: "New York, USA 🗽",
   education: ["Columbia University 🎓 | MS Data Science (Expected Dec 2026)", "Vellore Institute of Technology 🧑🏾‍🎓| B.Tech CSE & Data Science"],
-  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊", "Predictive Analytics Intern @ NYC ACS 🗽 (Summer 2026)"],
+  experience: ["Software Engineer @ Shell 🔋", "Technical Analyst @ Novartis 💊", "Data Science Intern @ NYC ACS 🗽 (Summer 2026)"],
   research: ["RA — Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥", "RA — LLM Risk Modeling @ Columbia GSAS 🌍"],
   teaching: "TA — Artificial Intelligence for Public Policy @ Columbia DSI 🎓",
   skills: {
@@ -144,15 +144,15 @@ teaching = {
 
 ## 💼 Professional Journey
 
-### 🗽 NYC Administration for Children's Services | Predictive Analytics Intern
+### 🗽 NYC Administration for Children's Services | Data Science Intern
 **Jun 2026 - Aug 2026** | 📍 New York, NY
 
 ```python
 achievements = {
-    "Predictive_Analytics": {
-        "description": "Building predictive models on child welfare data to support case prioritization and resource allocation",
-        "tools": ["Python", "scikit-learn", "SQL"],
-        "result": "Data-driven insights for social service decision-making 📈"
+    "Child_Welfare_Risk_Modeling": {
+        "description": "Developing predictive risk models on child welfare administrative data with explainable ML, fairness auditing, and causal adjustment",
+        "tools": ["Python", "scikit-learn", "SQL", "NCANDS data"],
+        "result": "Transparent decision-making support in a high-stakes public-sector setting 📈"
     }
 }
 ```
@@ -214,7 +214,8 @@ achievements = {
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [Folio](https://github.com/rishika1099/Folio) | Single-user medical dashboard with multimodal ingestion (PDF, photo, voice, text), five-stage extraction pipeline (ingest → extract → validate → score → persist), longitudinal context injection from the last 3 reports, and 6 evaluation metrics (extraction completeness, diagnosis confidence, hallucination risk, ICD-10 validity, longitudinal consistency, severity trend). Generates trend charts, red-flag alerts, and drug-interaction warnings | FastAPI, MongoDB, React, Vite, Claude API |
+| [Folio-Clinical-Multimodal-RAG](https://github.com/rishika1099/Folio-Clinical-Multimodal-RAG) | Multimodal medical record companion with PDF, photo, voice, and text ingestion; five-stage extraction pipeline (ingest → extract → validate → score → persist); consensus extraction using embedding-cluster voting across multiple LLMs; longitudinal context injection from the last 3 reports; 6 evaluation metrics (extraction completeness, diagnosis confidence, hallucination risk, ICD-10 validity, longitudinal consistency, severity trend). **85.1% extraction micro-F1, 100% RAG recall@1, sub-2s median latency** | FastAPI, MongoDB, Redis, React, Vite, Claude API |
+| [Colon-Cancer-Trial-Causal-Analysis](https://github.com/rishika1099/Colon-Cancer-Trial-Causal-Analysis) | Causal-inference re-analysis of the Moertel 1990 adjuvant colon cancer trial (n=929). Five nested estimands: ATE estimation, backdoor adjustment with a bad-control demonstration, heterogeneous treatment effects (CATE), mediation analysis, and transportability. Demonstrates collider bias reversing treatment direction (HR 0.69 → 1.10) | Python, lifelines, statsmodels, EconML |
 | [Kidney-Disorder-Detection](https://github.com/rishika1099/Kidney-Disorder-Detection) | Deep learning system classifying CT scans with **99.2% accuracy** | TensorFlow, VGG19, ResNet50 |
 | [Medical-Image-Analysis-Assistant](https://github.com/rishika1099/Medical-Image-Analysis-Assistant) | AI-powered medical image analysis using Google Gemini Vision | Gemini, Streamlit |
 | [Cataract-Detection](https://github.com/rishika1099/Cataract-Detection) | CNN & Transfer Learning for automated cataract detection | TensorFlow, CNN |
@@ -227,11 +228,13 @@ achievements = {
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [AI-Legal-Assistant](https://github.com/rishika1099/AI-Legal-Assistant) | Multi-agent U.S. federal legal analysis system with **RAG over all 54 U.S. Code titles**, semantic search, and automated document drafting | CrewAI, LangChain, ChromaDB, Streamlit |
-| [SQL-RAG-Query-Engine](https://github.com/rishika1099/SQL-RAG-Query-Engine) | Natural language → SQL pipeline for sports performance analytics. ChromaDB semantic retrieval over 10 KPI definitions feeds a five-prompt Claude pipeline (intent classification, SQL generation, AST-based safety validation, self-verification, chart + follow-up suggestion). 80% pass rate on 15-question benchmark with parallelized async orchestration. Live demo deployed on Fly.io + Netlify | FastAPI, SQLite, ChromaDB, Claude (Sonnet + Haiku), React, Vite |
-| [Exercise-Recommendation-LLM](https://github.com/rishika1099/Exercise-Recommendation-LLM) | Two-stage exercise retrieval and re-ranking system over 100k+ exercises. PostgreSQL FTS + trigram retrieval narrows candidates; Claude tool-use re-ranks against intent (rehab / performance / strength / mobility / conditioning) with body-part, intensity, and equipment constraints. MD5 query cache, graceful retrieval fallback on LLM failure | FastAPI, PostgreSQL, Supabase, Claude, Fly.io, Netlify |
-| [Taylor-Swift-Reply-Generator](https://github.com/rishika1099/Taylor-Swift-Reply-Generator) | Diary-to-song recommender that clusters Taylor Swift's discography on Spotify audio features and lyric sentiment, matches a user diary entry to the closest thematic cluster, and returns ranked song recommendations with an LLM-generated reply | Python, scikit-learn, Spotify API, LLMs, Streamlit |
-| [FEAST](https://github.com/rishika1099/FEAST) | Three-pillar food app: video-to-recipe extraction from TikTok/Instagram/YouTube into structured recipes with auto-tagged cookbook; camera-based pantry-to-plate scanner returning ready-to-cook recipes with nutrition, allergen, and macro breakdowns; personalised health coach with calorie tracking, smart ingredient swaps, and adaptive weekly meal plans. Integrates Instacart, Apple Health, Fitbit, and social video share sheets | React Native, Computer Vision, LLMs, USDA FoodData, HealthKit |
+| [Federal-Eagle-AI-Legal-Assistant](https://github.com/rishika1099/Federal-Eagle-AI-Legal-Assistant) | Multi-agent CrewAI system for U.S. federal legal analysis with semantic retrieval over all 54 U.S. Code titles, precedent search, elements analysis, and draft generation. **87% precision@5** on benchmark queries | CrewAI, LangChain, ChromaDB, Streamlit |
+| [Just-Ask-Coach-Query-SQL-Translation](https://github.com/rishika1099/Just-Ask-Coach-Query-SQL-Translation) | Natural language → SQL → visualization pipeline for sports performance analytics. ChromaDB semantic retrieval over 10 KPI definitions feeds a five-prompt Claude pipeline (intent classification, SQL generation, AST-based safety validation, self-verification, chart + follow-up suggestion). **80% pass rate** on 15-question benchmark with parallelized async orchestration | FastAPI, SQLite, ChromaDB, Claude (Sonnet + Haiku), React, Vite |
+| [Prescibed-Motion-Exercise-Recommendation-LLM](https://github.com/rishika1099/Prescibed-Motion-Exercise-Recommendation-LLM) | AI coaching system mapping natural language fitness queries to personalized exercise recommendations. Two-stage retrieval (PostgreSQL FTS + trigram) over 100k+ exercises; Claude tool-use re-ranking against intent (rehab / performance / strength / mobility / conditioning) with body-part, intensity, and equipment constraints; MD5 query cache; graceful retrieval fallback | FastAPI, PostgreSQL, Supabase, Claude, Fly.io, Netlify |
+| [Ruchi-Pantry-to-Plate-Intelligence-Platform](https://github.com/rishika1099/Ruchi-Pantry-to-Plate-Intelligence-Platform) | AI-powered food web app with three pillars: video-to-recipe extraction, pantry-to-plate matching with nutrition & allergen data, and personalised health coaching with calorie tracking, smart ingredient swaps, and adaptive meal plans. Integrates Instacart, Apple Health, and social video share sheets | React, Vite, Framer Motion, OpenAI, Serverless |
+| [Reel-Chef-Video-To-Recipie-Extractor](https://github.com/rishika1099/Reel-Chef-Video-To-Recipie-Extractor) | Multi-stage vision-language pipeline converting cooking videos into structured recipes. Combines frame extraction, visual scene understanding, and LLM-based reasoning to transform raw video into ingredient lists, step-by-step instructions, and estimated cook times | Python, Computer Vision, LLMs |
+| [Hey-Swiftie-Cluster-Emotion-Verse](https://github.com/rishika1099/Hey-Swiftie-Cluster-Emotion-Verse) | AI diary that converts journal entries into personalized verses and music recommendations. DistilRoBERTa emotion classification over diary text + K-Means clustering across 867 Taylor Swift songs on lyric embeddings and audio features; RAG layer matches diary mood to closest thematic cluster and returns ranked song recommendations | Python, DistilRoBERTa, K-Means, OpenAI, React, RAG |
+| [DSI-Course-Evaluation-Website](https://github.com/rishika1099/DSI-Course-Evaluation-Website) | Student dashboard for Columbia MSDS course reviews. Pulls live form responses from Google Sheets and surfaces personalized course rankings, deep dives with AI-summarized reviews, and recommendations for what to take next | Python, Google Sheets API, LLMs |
 | [AI-Blog-Assistant](https://github.com/rishika1099/AI-Blog-Assistant) | GPT-4 blog generator with DALL-E images & SEO optimization | OpenAI, Streamlit |
 | [Analogy-Tutor](https://github.com/rishika1099/Analogy-Tutor) | Explains technical concepts via personalized analogies | OpenAI, Streamlit |
 | [Fake-News-Detection](https://github.com/rishika1099/Fake-News-Detection) | TF-IDF + Linear SVM for news credibility prediction | TF-IDF, SVM |
@@ -240,7 +243,7 @@ achievements = {
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
-| [KV-Cache-Implementation](https://github.com/rishika1099/KV-Cache-Implementation) | Controlled single-codebase benchmark of five KV-cache optimization techniques on Llama-2-7B: KIVI 2/4-bit quantization, TopK sparse selection, SnapKV one-shot eviction, TransMLA latent projection, and a KIVI×TopK hybrid. Unified runner shares model, tokenizer, decode loop, seeds, and hardware so differences are attributable to KV policy only. Evaluated on LongBench + synthetic throughput sweeps; KIVI 4-bit delivered 1.93× decode throughput at BS=32 with lossless LongBench quality. W&B dashboard, Modal H100 reproducibility scripts | PyTorch, HuggingFace Transformers, Triton, Modal, W&B |
+| [KV-Cache-Implementation](https://github.com/rishika1099/KV-Cache-Implementation) | Controlled single-codebase benchmark of five KV-cache optimization techniques on Llama-2-7B: KIVI 2/4-bit quantization, TopK sparse selection, SnapKV one-shot eviction, TransMLA latent projection, and a KIVI×TopK hybrid. Unified runner shares model, tokenizer, decode loop, seeds, and hardware. Evaluated on LongBench + synthetic throughput sweeps. **KIVI 4-bit: 1.93× decode throughput at BS=32, lossless LongBench quality (0.292 vs 0.291), 3.1× peak throughput at max batch capacity** | PyTorch, HuggingFace Transformers, Triton, Modal, W&B |
 
 ### 🖼️ Computer Vision
 
@@ -260,6 +263,7 @@ achievements = {
 
 | Project | Description | Tech Stack |
 |---------|-------------|------------|
+| [Safe-Start-NCANDS-Child-Welfare-Prediction](https://github.com/rishika1099/Safe-Start-NCANDS-Child-Welfare-Prediction) | ML and predictive analytics framework for identifying high-risk child welfare cases using NCANDS administrative data. Risk-factor discovery with explainable models and fairness auditing to support transparent decision-making | Python, scikit-learn, SHAP, Jupyter |
 | [Car-Price-Prediction](https://github.com/rishika1099/Car-Price-Prediction) | Ensemble methods with SHAP explainability | XGBoost, SHAP |
 | [House-Price-Prediction](https://github.com/rishika1099/House-Price-Prediction) | XGBoost regression on California housing data | XGBoost, Streamlit |
 | [Loan-Status-Prediction](https://github.com/rishika1099/Loan-Status-Prediction) | Gradient Boosting classifier with SHAP explanations | XGBoost, SHAP |
