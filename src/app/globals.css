@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@theme {
+  /* Pastel, Ghibli-ish palette */
+  --color-cream: #fff8f0;
+  --color-ink: #4a4a5e;
+  --color-ink-soft: #6f6f86;
+
+  --color-sky: #cfe8f3;
+  --color-dawn: #ffd9c0;
+  --color-lavender: #e6d7f5;
+  --color-meadow: #cdeac0;
+  --color-sunset: #ffc6a8;
+  --color-twilight: #2b2a4a;
+  --color-twilight-soft: #3d3a63;
+
+  --color-blush: #f7b7c9;
+  --color-gold: #f6d99b;
+  --color-mint: #bfe9d6;
+  --color-petal: #f5c9e0;
+
+  --font-display: var(--font-fredoka);
+  --font-body: var(--font-nunito);
+  --font-hand: var(--font-caveat);
+  --font-serif: var(--font-cormorant);
+}
+
+:root {
+  --background: var(--color-cream);
+  --foreground: var(--color-ink);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ---------- Whimsical keyframes ---------- */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-18px) translateX(8px); }
+}
+@keyframes float-med {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes drift {
+  from { transform: translateX(-15vw); }
+  to { transform: translateX(115vw); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+@keyframes wobble {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(2deg) translateY(-4px); }
+}
+
+.animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
+.animate-float-med { animation: float-med 6s ease-in-out infinite; }
+.animate-twinkle { animation: twinkle 3s ease-in-out infinite; }
+.animate-sway { animation: sway 5s ease-in-out infinite; }
+
+.hover-wiggle { transition: transform 0.2s ease; }
+.hover-wiggle:hover { animation: wobble 0.45s ease-in-out; }
+
+/* Soft glass card */
+.soft-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 10px 30px -12px rgba(74, 74, 94, 0.28);
+}
+
+.text-shadow-soft { text-shadow: 0 2px 14px rgba(255, 255, 255, 0.65); }
+
+/* Prose for markdown (blogs/poems) */
+.prose-soft {
+  line-height: 1.85;
+}
+.prose-soft h1, .prose-soft h2, .prose-soft h3 {
+  font-family: var(--font-display), sans-serif;
+  color: var(--color-ink);
+  margin: 1.4em 0 0.5em;
+}
+.prose-soft h2 { font-size: 1.6rem; }
+.prose-soft h3 { font-size: 1.25rem; }
+.prose-soft p { margin: 0.9em 0; }
+.prose-soft a { color: #c77dba; text-decoration: underline; }
+.prose-soft blockquote {
+  border-left: 4px solid var(--color-blush);
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--color-ink-soft);
+}
+.prose-soft code {
+  background: rgba(74,74,94,0.08);
+  padding: 0.1em 0.35em;
+  border-radius: 0.35rem;
+  font-size: 0.9em;
+}
+.prose-soft pre {
+  background: #2b2a4a;
+  color: #f3eefe;
+  padding: 1rem;
+  border-radius: 0.9rem;
+  overflow-x: auto;
+}
+.prose-soft pre code { background: transparent; padding: 0; }
+.prose-soft ul { list-style: disc; padding-left: 1.4rem; }
+.prose-soft ol { list-style: decimal; padding-left: 1.4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-slow,
+  .animate-float-med,
+  .animate-twinkle,
+  .animate-sway { animation: none !important; }
+  html { scroll-behavior: auto; }
+}
