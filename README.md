@@ -365,8 +365,8 @@ achievements = {
 | Term | Courses |
 |------|---------|
 | **Fall 2026** | Agentic AI |
-| **Spring 2026** | Causal Inference · High Performance Machine Learning · Machine Learning · Statistical Inference and Modelling |
-| **Fall 2025** | Applied Deep Learning · LLM-based Generative AI Systems · Exploratory Data Analysis and Visualization · Probability and Statistics |
+| **Spring 2026** | Causal Inference<br>High Performance Machine Learning<br>Machine Learning<br>Statistical Inference and Modelling |
+| **Fall 2025** | Applied Deep Learning<br>LLM-based Generative AI Systems<br>Exploratory Data Analysis and Visualization<br>Probability and Statistics |
 
 - 🧑‍🏫 Teaching Assistant for Artificial Intelligence for Public Policy
 - 🔬 Research Assistant at Columbia Irving Medical Center and Columbia GSAS
