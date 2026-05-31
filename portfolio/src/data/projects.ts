@@ -11,11 +11,25 @@ export type Category =
   | "High Performance Machine Learning"
   | "Cybersecurity";
 
+export type Domain =
+  | "Healthcare"
+  | "Education"
+  | "Public Sector"
+  | "Legal"
+  | "Human Rights"
+  | "Finance"
+  | "Cybersecurity"
+  | "Agriculture"
+  | "Food & Nutrition"
+  | "Creative AI";
+
 export interface Project {
   name: string;
   emoji: string;
   blurb: string;
-  category: Category;
+  // a project can live in more than one category (they overlap)
+  categories: Category[];
+  domains?: Domain[];
   featured?: boolean;
   repo: string;
   demo?: string;
@@ -31,7 +45,8 @@ export const projects: Project[] = [
     emoji: "🩺",
     blurb:
       "A multimodal medical-record companion unifying RAG, document understanding, speech, and vision. Consensus extraction across LLMs hit 85.1% micro-F1 with sub-2s latency.",
-    category: "Generative AI",
+    categories: ["Generative AI", "Computer Vision"],
+    domains: ["Healthcare"],
     featured: true,
     repo: gh("Folio-Clinical-Multimodal-RAG"),
     demo: "https://folio-health.vercel.app",
@@ -42,10 +57,10 @@ export const projects: Project[] = [
     emoji: "⚡",
     blurb:
       "Benchmarked KIVI quantization, TopK sparsity, SnapKV eviction & MLA on Llama-2-7B with Triton kernels, 4× cache compression, 1.93× faster decode, 3.1× peak throughput.",
-    category: "High Performance Machine Learning",
+    categories: ["High Performance Machine Learning", "Generative AI"],
     featured: true,
     repo: gh("KV-Cache-Optimization"),
-    demo: "https://rishikamamidibathula.substack.com/p/kv-cache-optimization",
+    demo: "https://rishika1099.substack.com/p/kv-cache-optimization",
     tags: ["LLM Systems", "Triton", "Quantization", "HPC"],
   },
   {
@@ -53,7 +68,8 @@ export const projects: Project[] = [
     emoji: "🧬",
     blurb:
       "Causal re-analysis of the Moertel 1990 trial (n=929): ATE, CATE, mediation, transport. Showed collider bias reversing the effect (HR 0.69 → 1.10).",
-    category: "Causal Inference",
+    categories: ["Causal Inference", "Statistical Modeling"],
+    domains: ["Healthcare"],
     featured: true,
     repo: gh("Colon-Cancer-Trial-Causal-Analysis"),
     tags: ["Causal Inference", "Biostatistics", "R"],
@@ -63,7 +79,8 @@ export const projects: Project[] = [
     emoji: "🦅",
     blurb:
       "A multi-agent CrewAI system for U.S. federal legal analysis: semantic USC retrieval, precedent search, elements analysis, and draft generation.",
-    category: "Agentic AI",
+    categories: ["Agentic AI", "Generative AI"],
+    domains: ["Legal"],
     featured: true,
     repo: gh("Federal-Eagle-AI-Legal-Assistant"),
     demo: "https://federal-eagle.streamlit.app/",
@@ -74,7 +91,7 @@ export const projects: Project[] = [
     emoji: "🏅",
     blurb:
       "Full-stack RAG pipeline turning natural language into SQL and visualizations for sports performance analytics.",
-    category: "Generative AI",
+    categories: ["Generative AI", "NLP"],
     featured: true,
     repo: gh("Just-Ask-Coach-Query-SQL-Translation"),
     demo: "https://just-ask-coach.netlify.app/",
@@ -85,20 +102,22 @@ export const projects: Project[] = [
     emoji: "🍲",
     blurb:
       "AI food app for video-to-recipe extraction, pantry matching, and personalized health coaching. React + Vite + Framer Motion on Netlify.",
-    category: "Generative AI",
+    categories: ["Generative AI"],
+    domains: ["Food & Nutrition"],
     featured: true,
     repo: gh("Ruchi-Pantry-to-Plate-Intelligence-Platform"),
     demo: "https://ruchi-app.netlify.app",
     tags: ["LLM", "React", "Serverless"],
   },
 
-  // ---------------- AI / LLM ----------------
+  // ---------------- The rest ----------------
   {
     name: "ReelChef: Video to Recipe",
     emoji: "🎬",
     blurb:
       "Converts cooking videos into structured recipes via a multi-stage vision-language pipeline: frame extraction, visual understanding, LLM reasoning.",
-    category: "Generative AI",
+    categories: ["Generative AI", "Computer Vision"],
+    domains: ["Food & Nutrition"],
     repo: gh("Reel-Chef-Video-To-Recipie-Extractor"),
     demo: "https://reel-chef.streamlit.app/",
     tags: ["Vision-Language", "LLM"],
@@ -108,7 +127,8 @@ export const projects: Project[] = [
     emoji: "📚",
     blurb:
       "Student-built dashboard for Columbia MSDS course reviews, live Google-Sheets data, AI-summarized reviews, rankings, and side-by-side comparisons.",
-    category: "Generative AI",
+    categories: ["Generative AI", "NLP"],
+    domains: ["Education"],
     repo: gh("DSI-Course-Evaluation-Website"),
     demo: "https://dsi-course-evaluation.streamlit.app/",
     tags: ["Streamlit", "LLM Summaries"],
@@ -118,7 +138,8 @@ export const projects: Project[] = [
     emoji: "🏃‍♀️",
     blurb:
       "AI coaching that maps fitness queries to personalized exercises via two-stage retrieval + LLM re-ranking. FastAPI, PostgreSQL, Claude.",
-    category: "Generative AI",
+    categories: ["Generative AI"],
+    domains: ["Healthcare"],
     repo: gh("Prescribed-Motion-Exercise-Recommendation-LLM"),
     demo: "https://prescribed-motion.netlify.app",
     tags: ["Retrieval", "FastAPI", "Claude"],
@@ -128,7 +149,8 @@ export const projects: Project[] = [
     emoji: "🎶",
     blurb:
       "AI diary turning journal entries into personalized verses + music recs. DistilRoBERTa emotion, K-Means over 867 songs, FAISS RAG, GPT-4o-mini.",
-    category: "NLP",
+    categories: ["NLP", "Generative AI"],
+    domains: ["Creative AI"],
     repo: gh("Hey-Swiftie-Cluster-Emotion-Verse"),
     demo: "https://dear-diary-love-taylor.vercel.app/",
     tags: ["Emotion AI", "FAISS", "Clustering"],
@@ -138,7 +160,8 @@ export const projects: Project[] = [
     emoji: "👻",
     blurb:
       "AI blog-post generator with DALL·E images, SEO-optimized content with customizable tone, length, and generated visuals.",
-    category: "Generative AI",
+    categories: ["Generative AI"],
+    domains: ["Creative AI"],
     repo: gh("Ghost-Writer-AI-Blog-Assistant"),
     demo: "https://ghost-writer-ai.streamlit.app/",
     tags: ["Generative AI", "DALL·E"],
@@ -148,7 +171,8 @@ export const projects: Project[] = [
     emoji: "🔬",
     blurb:
       "Educational medical-image analysis with Gemini Vision, upload or camera capture, safe non-diagnostic insights with built-in disclaimers.",
-    category: "Computer Vision",
+    categories: ["Computer Vision", "Generative AI"],
+    domains: ["Healthcare"],
     repo: gh("Dr-Pixel-Medical-Image-Analysis-Assistant"),
     demo: "https://doctor-pixel.streamlit.app/",
     tags: ["Vision", "Gemini"],
@@ -158,19 +182,19 @@ export const projects: Project[] = [
     emoji: "💡",
     blurb:
       "Explains technical concepts through personalized analogies based on your interests. Interactive and friendly.",
-    category: "Generative AI",
+    categories: ["Generative AI"],
+    domains: ["Education"],
     repo: gh("Analogy-Tutor"),
     demo: "https://ai-concept-tutor.streamlit.app/",
     tags: ["LLM", "Education"],
   },
-
-  // ---------------- Research & Causal ----------------
   {
     name: "Safe Start: Child Welfare Prediction",
     emoji: "🧒",
     blurb:
       "ML & predictive analytics framework for identifying high-risk child-welfare cases using NCANDS data.",
-    category: "Predictive Analysis",
+    categories: ["Predictive Analysis", "Machine Learning"],
+    domains: ["Public Sector", "Human Rights"],
     repo: gh("Safe-Start-NCANDS-Child-Welfare-Prediction"),
     tags: ["Predictive", "Public Policy"],
   },
@@ -179,18 +203,18 @@ export const projects: Project[] = [
     emoji: "🥗",
     blurb:
       "Visual analysis of how diet and lifestyle contribute to colorectal cancer risk, built in R/Shiny.",
-    category: "Statistical Modeling",
+    categories: ["Statistical Modeling"],
+    domains: ["Healthcare"],
     repo: gh("Colorectal-Cancer-Risk-Analysis"),
     demo: "https://rishika1099.shinyapps.io/colorectal_cancer_risk_analysis/",
     tags: ["R", "Shiny", "EDA"],
   },
-
-  // ---------------- Computer Vision ----------------
   {
     name: "Keratoconus Detection",
     emoji: "👁️",
     blurb: "Automated keratoconus detection using SVM and deep neural networks.",
-    category: "Computer Vision",
+    categories: ["Computer Vision", "Deep Learning"],
+    domains: ["Healthcare"],
     repo: gh("Keratoconus-Detection"),
     tags: ["CNN", "Medical Imaging"],
   },
@@ -199,7 +223,8 @@ export const projects: Project[] = [
     emoji: "🫘",
     blurb:
       "Classifies CT scans into Normal/Cyst/Stone/Tumor via VGG19 & ResNet50 transfer learning, 99.2% accuracy.",
-    category: "Computer Vision",
+    categories: ["Computer Vision", "Deep Learning"],
+    domains: ["Healthcare"],
     repo: gh("Kidney-Disorder-Detection"),
     tags: ["Transfer Learning", "ResNet"],
   },
@@ -207,7 +232,8 @@ export const projects: Project[] = [
     name: "Cataract Detection",
     emoji: "🩻",
     blurb: "Automated cataract detection using CNNs and transfer learning.",
-    category: "Computer Vision",
+    categories: ["Computer Vision", "Deep Learning"],
+    domains: ["Healthcare"],
     repo: gh("Cataract-Detection"),
     tags: ["CNN", "Medical Imaging"],
   },
@@ -216,7 +242,7 @@ export const projects: Project[] = [
     emoji: "🚸",
     blurb:
       "VGG16 transfer learning + fine-tuning on GTSRB, 98% accuracy across 43 classes.",
-    category: "Computer Vision",
+    categories: ["Computer Vision", "Deep Learning"],
     repo: gh("Traffic-Sign-Classifier"),
     tags: ["VGG16", "Classification"],
   },
@@ -225,18 +251,18 @@ export const projects: Project[] = [
     emoji: "🌿",
     blurb:
       "ResNet50 transfer learning across 38 plant-disease classes with training, evaluation, and inference tools.",
-    category: "Computer Vision",
+    categories: ["Computer Vision", "Deep Learning"],
+    domains: ["Agriculture"],
     repo: gh("Plant-Disease-Detection"),
     tags: ["ResNet50", "Agriculture"],
   },
-
-  // ---------------- Classic ML ----------------
   {
     name: "Car Price Prediction",
     emoji: "🚗",
     blurb:
       "Predicts used-car prices (India), 65.6% R² with XGBoost + Optuna, SHAP explainability across 4 ensembles.",
-    category: "Predictive Analysis",
+    categories: ["Predictive Analysis", "Machine Learning"],
+    domains: ["Finance"],
     repo: gh("Car-Price-Prediction"),
     tags: ["XGBoost", "SHAP", "Optuna"],
   },
@@ -245,7 +271,8 @@ export const projects: Project[] = [
     emoji: "🍷",
     blurb:
       "Gradient Boosting on physicochemical properties with SHAP, feature importance, and PDPs for interpretability.",
-    category: "Machine Learning",
+    categories: ["Machine Learning"],
+    domains: ["Food & Nutrition"],
     repo: gh("Red-Wine-Quality-Prediction"),
     tags: ["Gradient Boosting", "SHAP"],
   },
@@ -254,7 +281,8 @@ export const projects: Project[] = [
     emoji: "🏦",
     blurb:
       "Production-style pipeline + Gradient Boosting for loan approval with SHAP explanations and an interactive UI.",
-    category: "Predictive Analysis",
+    categories: ["Predictive Analysis", "Machine Learning"],
+    domains: ["Finance"],
     repo: gh("Loan-Status-Prediction"),
     tags: ["Pipelines", "SHAP"],
   },
@@ -263,7 +291,7 @@ export const projects: Project[] = [
     emoji: "📰",
     blurb:
       "TF-IDF + Linear SVM on the WELFake dataset with a real-time credibility-prediction interface.",
-    category: "NLP",
+    categories: ["NLP", "Machine Learning"],
     repo: gh("Fake-News-Detection"),
     tags: ["NLP", "SVM", "TF-IDF"],
   },
@@ -272,7 +300,8 @@ export const projects: Project[] = [
     emoji: "🏡",
     blurb:
       "XGBoost regression on California housing with an interactive what-if explorer.",
-    category: "Predictive Analysis",
+    categories: ["Predictive Analysis", "Machine Learning"],
+    domains: ["Finance"],
     repo: gh("House-Price-Prediction"),
     tags: ["XGBoost", "Regression"],
   },
@@ -281,7 +310,8 @@ export const projects: Project[] = [
     emoji: "🩸",
     blurb:
       "Gradient Boosting on clinical indicators with SHAP for global and per-patient explanations.",
-    category: "Predictive Analysis",
+    categories: ["Predictive Analysis", "Machine Learning"],
+    domains: ["Healthcare"],
     repo: gh("Diabetes-Risk-Prediction"),
     tags: ["Gradient Boosting", "SHAP"],
   },
@@ -290,7 +320,7 @@ export const projects: Project[] = [
     emoji: "🪨",
     blurb:
       "Classifies sonar signals as rock or mine via cross-validated automated model selection.",
-    category: "Machine Learning",
+    categories: ["Machine Learning"],
     repo: gh("Rock-Mine-Prediction"),
     tags: ["Classification", "Model Selection"],
   },
@@ -299,7 +329,8 @@ export const projects: Project[] = [
     emoji: "🛍️",
     blurb:
       "Predicts repeat-purchase behavior for food-delivery businesses and surfaces key retention drivers.",
-    category: "Predictive Analysis",
+    categories: ["Predictive Analysis", "Machine Learning"],
+    domains: ["Food & Nutrition"],
     repo: gh("Customer-Churn-Prediction"),
     tags: ["Churn", "Retention"],
   },
@@ -308,7 +339,8 @@ export const projects: Project[] = [
     emoji: "❤️",
     blurb:
       "EDA, feature engineering, SMOTE for imbalance, and tuned models exploring heart-disease risk factors.",
-    category: "Predictive Analysis",
+    categories: ["Predictive Analysis", "Machine Learning"],
+    domains: ["Healthcare"],
     repo: gh("Heart-Disease-Prediction"),
     tags: ["SMOTE", "Tuning"],
   },
@@ -317,7 +349,8 @@ export const projects: Project[] = [
     emoji: "🤖",
     blurb:
       "Deep neural networks combining static + dynamic analysis to detect malicious Android apps.",
-    category: "Cybersecurity",
+    categories: ["Cybersecurity", "Deep Learning"],
+    domains: ["Cybersecurity"],
     repo: gh("Android-Malware-Analysis"),
     tags: ["Security", "Deep Learning"],
   },
@@ -326,7 +359,8 @@ export const projects: Project[] = [
     emoji: "🔗",
     blurb:
       "Secure storage of encrypted medical/review data using ECDSA signatures, Proof of Work, and hash chaining.",
-    category: "Cybersecurity",
+    categories: ["Cybersecurity"],
+    domains: ["Cybersecurity"],
     repo: gh("Blockchain-Secure-Data-Storage"),
     tags: ["Blockchain", "Cryptography"],
   },
@@ -345,3 +379,30 @@ export const categories: Category[] = [
   "High Performance Machine Learning",
   "Cybersecurity",
 ];
+
+export const domains: Domain[] = [
+  "Healthcare",
+  "Education",
+  "Public Sector",
+  "Legal",
+  "Human Rights",
+  "Finance",
+  "Cybersecurity",
+  "Agriculture",
+  "Food & Nutrition",
+  "Creative AI",
+];
+
+// Chip colors echoing the reference palette.
+export const domainColor: Record<Domain, string> = {
+  Healthcare: "#e0436b",
+  Education: "#2f93e0",
+  "Public Sector": "#6e5544",
+  Legal: "#2e3a8c",
+  "Human Rights": "#8a2fae",
+  Finance: "#4f9a3f",
+  Cybersecurity: "#3b3b3b",
+  Agriculture: "#8cc63f",
+  "Food & Nutrition": "#e87a3c",
+  "Creative AI": "#b14ad6",
+};

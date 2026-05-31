@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Category, Project } from "@/data/projects";
+import {
+  domainColor,
+  type Category,
+  type Domain,
+  type Project,
+} from "@/data/projects";
 
 function Links({ p }: { p: Project }) {
   return (
@@ -29,9 +34,26 @@ function Links({ p }: { p: Project }) {
   );
 }
 
-function Tags({ tags }: { tags: string[] }) {
+function DomainChips({ domains }: { domains?: Domain[] }) {
+  if (!domains?.length) return null;
   return (
     <div className="mt-3 flex flex-wrap gap-1.5">
+      {domains.map((d) => (
+        <span
+          key={d}
+          style={{ backgroundColor: domainColor[d] }}
+          className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-white"
+        >
+          {d}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function Tags({ tags }: { tags: string[] }) {
+  return (
+    <div className="mt-2 flex flex-wrap gap-1.5">
       {tags.map((t) => (
         <span
           key={t}
@@ -47,14 +69,21 @@ function Tags({ tags }: { tags: string[] }) {
 export default function WorkGallery({
   projects,
   categories,
+  domains,
 }: {
   projects: Project[];
   categories: Category[];
+  domains: Domain[];
 }) {
   const [filter, setFilter] = useState<Category | "All">("All");
+  const [domain, setDomain] = useState<Domain | "All">("All");
+
   const featured = projects.filter((p) => p.featured);
   const rest = projects.filter(
-    (p) => !p.featured && (filter === "All" || p.category === filter),
+    (p) =>
+      !p.featured &&
+      (filter === "All" || p.categories.includes(filter)) &&
+      (domain === "All" || (p.domains?.includes(domain) ?? false)),
   );
 
   return (
@@ -77,6 +106,7 @@ export default function WorkGallery({
             <span className="animate-float-med text-4xl">{p.emoji}</span>
             <h3 className="mt-2 font-body text-xl font-bold text-ink">{p.name}</h3>
             <p className="mt-1.5 font-body text-sm text-ink-soft">{p.blurb}</p>
+            <DomainChips domains={p.domains} />
             <Tags tags={p.tags} />
             <Links p={p} />
           </motion.article>
@@ -84,9 +114,25 @@ export default function WorkGallery({
       </div>
 
       {/* Filters */}
-      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        wander the patches
-      </h2>
+      <div className="mt-12 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-body text-2xl font-bold text-ink">wander the patches</h2>
+        <label className="flex items-center gap-2 font-body text-sm font-semibold text-ink-soft">
+          domain
+          <select
+            value={domain}
+            onChange={(e) => setDomain(e.target.value as Domain | "All")}
+            className="rounded-full border border-white/70 bg-white/80 px-4 py-1.5 font-body text-sm font-semibold text-ink outline-none transition focus:border-blush focus:ring-2 focus:ring-blush/40"
+          >
+            <option value="All">All domains</option>
+            {domains.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <div className="mt-4 flex flex-wrap gap-2">
         {(["All", ...categories] as const).map((c) => (
           <button
@@ -119,6 +165,7 @@ export default function WorkGallery({
               <span className="text-3xl">{p.emoji}</span>
               <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
               <p className="mt-1 font-body text-sm text-ink-soft">{p.blurb}</p>
+              <DomainChips domains={p.domains} />
               <Tags tags={p.tags} />
               <Links p={p} />
             </motion.article>

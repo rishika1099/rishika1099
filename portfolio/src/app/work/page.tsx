@@ -1,7 +1,7 @@
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import WorkGallery from "@/components/WorkGallery";
-import { categories } from "@/data/projects";
+import { categories, domains } from "@/data/projects";
 import { getAllProjects } from "@/lib/github-projects";
 
 export const metadata = { title: "Work" };
@@ -19,7 +19,7 @@ export default async function Work() {
         patch to wander through the rest.
       </p>
 
-      <WorkGallery projects={projects} categories={categories} />
+      <WorkGallery projects={projects} categories={categories} domains={domains} />
     </PageShell>
   );
 }

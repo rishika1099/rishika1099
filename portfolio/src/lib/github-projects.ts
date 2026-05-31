@@ -1,4 +1,4 @@
-import { projects as curated, type Category, type Project } from "@/data/projects";
+import { projects as curated, type Category, type Domain, type Project } from "@/data/projects";
 
 const GH_USER = "rishika1099";
 
@@ -33,6 +33,23 @@ const RULES: [Category, RegExp][] = [
 function categorize(text: string): Category {
   for (const [cat, re] of RULES) if (re.test(text)) return cat;
   return "Machine Learning";
+}
+
+const DOMAIN_RULES: [Domain, RegExp][] = [
+  ["Healthcare", /\b(health|clinic|medical|patient|disease|cancer|cardio|diabet|x-?ray|scan|kidney|heart)/i],
+  ["Education", /\b(educat|course|tutor|student|learn|study|exam)/i],
+  ["Legal", /\b(legal|law|court|usc|precedent|contract)/i],
+  ["Human Rights", /\b(human-?rights|welfare|child|refugee|equity)/i],
+  ["Finance", /\b(finance|loan|price|stock|credit|bank|churn|revenue)/i],
+  ["Cybersecurity", /\b(security|malware|crypto|blockchain|intrusion|encrypt)/i],
+  ["Agriculture", /\b(plant|crop|agricultur|farm|soil)/i],
+  ["Food & Nutrition", /\b(food|recipe|nutrition|diet|meal|cook|pantry)/i],
+  ["Creative AI", /\b(poem|verse|music|art|story|blog|creativ|diary)/i],
+  ["Public Sector", /\b(public|government|policy|civic|municipal)/i],
+];
+
+function detectDomains(text: string): Domain[] {
+  return DOMAIN_RULES.filter(([, re]) => re.test(text)).map(([d]) => d);
 }
 
 function prettyName(slug: string): string {
@@ -81,9 +98,8 @@ export async function getAllProjects(): Promise<Project[]> {
         !curatedSlugs.has(r.name.toLowerCase()),
     )
     .map((r) => {
-      const category = categorize(
-        `${r.name} ${r.description ?? ""} ${(r.topics ?? []).join(" ")} ${r.language ?? ""}`,
-      );
+      const text = `${r.name} ${r.description ?? ""} ${(r.topics ?? []).join(" ")} ${r.language ?? ""}`;
+      const category = categorize(text);
       const tags = (r.topics?.length ? r.topics.slice(0, 4) : [r.language])
         .filter(Boolean)
         .map((t) => String(t));
@@ -91,7 +107,8 @@ export async function getAllProjects(): Promise<Project[]> {
         name: prettyName(r.name),
         emoji: CATEGORY_EMOJI[category],
         blurb: r.description || "A little experiment on GitHub ✦",
-        category,
+        categories: [category],
+        domains: detectDomains(text),
         repo: r.html_url,
         demo: r.homepage && /^https?:\/\//.test(r.homepage) ? r.homepage : undefined,
         tags,
