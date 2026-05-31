@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { ADMIN_COOKIE, verifyAdminToken } from "@/lib/auth";
 import { deletePoem, listPoems, savePoem } from "@/lib/poems-store";
+import { ensurePoemArt } from "@/lib/poemArt";
 
 export const runtime = "nodejs";
 
@@ -39,6 +40,16 @@ export async function POST(request: Request) {
       },
       body.originalSlug ? String(body.originalSlug) : undefined,
     );
+
+    // Generate the symbolic art once, right when the poem is added. ensurePoemArt
+    // reuses any cached image, so existing poems are never regenerated. Best-effort:
+    // a generation hiccup shouldn't fail the save (the art route can retry lazily).
+    try {
+      await ensurePoemArt(poem.slug);
+    } catch (artErr) {
+      console.error("Poem art generation failed for", poem.slug, artErr);
+    }
+
     return NextResponse.json({ ok: true, poem });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Could not save";

@@ -52,3 +52,6 @@ next-env.d.ts
 # private photos — keep real photos out of the PUBLIC repo
 portfolio/public/photos/*
 !portfolio/public/photos/.gitkeep
+
+# generated poem art — derived from confidential poems, kept off the PUBLIC repo
+portfolio/public/poem-art/*.png
