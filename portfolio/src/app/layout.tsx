@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fredoka, Nunito, Caveat, Cormorant_Garamond } from "next/font/google";
+import { Nunito, Caveat, Cormorant_Garamond } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
@@ -16,11 +16,6 @@ const halimun = localFont({
   display: "swap",
 });
 
-const fredoka = Fredoka({
-  variable: "--font-fredoka",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
@@ -53,7 +48,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fredoka.variable} ${nunito.variable} ${caveat.variable} ${cormorant.variable} ${cattalague.variable} ${halimun.variable}`}
+      className={`${nunito.variable} ${caveat.variable} ${cormorant.variable} ${cattalague.variable} ${halimun.variable}`}
     >
       <body className="antialiased">
         <Nav />
