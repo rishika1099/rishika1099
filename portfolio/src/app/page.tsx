@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}
-      <div className="flex flex-col items-center gap-8 text-center md:flex-row md:gap-14 md:text-left">
+      <div className="flex flex-col items-center gap-8 text-center md:flex-row md:gap-14">
         <div className="shrink-0">
           <FlowerPortrait />
         </div>
@@ -35,7 +35,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.35, type: "spring", stiffness: 120 }}
-            className="mt-7 flex flex-col items-center gap-3 font-name text-5xl font-normal leading-[1.15] text-ink text-shadow-soft sm:mt-9 sm:text-6xl md:items-start"
+            className="mt-10 flex flex-col items-center gap-3 font-name text-5xl font-normal leading-[1.15] text-ink text-shadow-soft sm:mt-14 sm:text-6xl"
           >
             <motion.span
               className="block"
@@ -57,7 +57,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="mt-5 max-w-xl font-body text-base text-ink-soft sm:text-lg"
+            className="mx-auto mt-6 max-w-xl font-body text-base text-ink-soft sm:text-lg"
           >
             Teaching computers new tricks in New York 🗽 as a Data Scientist. When
             I&apos;m not wrangling data, you&apos;ll find me writing poetry, chasing
@@ -72,7 +72,7 @@ export default function Home() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="mt-10 grid w-full grid-cols-2 gap-4 sm:grid-cols-4"
+        className="mt-16 grid w-full grid-cols-2 gap-4 sm:mt-20 sm:grid-cols-4"
       >
         {tabs.map((t, i) => (
           <motion.div
