@@ -2,12 +2,18 @@ import fs from "node:fs";
 import path from "node:path";
 import OpenAI from "openai";
 import { getPoem } from "@/lib/poems-store";
+import { blobsEnabled, store } from "@/lib/blobs";
 
-// Generated art is cached as a PNG in this gitignored folder, so each poem's
-// image is made exactly once and reused forever after.
+// Generated art is cached as a PNG in this gitignored folder locally, and in the
+// private "poem-art" Blobs store on the deployed site (populated by `npm run sync`).
 const ART_DIR = path.join(process.cwd(), "public/poem-art");
 
-function readCachedArt(slug: string): Buffer | null {
+async function readCachedArt(slug: string): Promise<Buffer | null> {
+  if (blobsEnabled()) {
+    const s = await store("poem-art");
+    const buf = await s.get(slug, { type: "arrayBuffer" });
+    return buf ? Buffer.from(buf) : null;
+  }
   const outPath = path.join(ART_DIR, `${slug}.png`);
   return fs.existsSync(outPath) ? fs.readFileSync(outPath) : null;
 }
@@ -76,10 +82,14 @@ async function renderImage(prompt: string): Promise<Buffer> {
 export async function ensurePoemArt(slugRaw: string): Promise<Buffer> {
   const slug = safeSlug(slugRaw);
 
-  const cached = readCachedArt(slug);
+  const cached = await readCachedArt(slug);
   if (cached) return cached;
 
-  const poem = getPoem(slug);
+  // On the deployed site we never generate (no key, read-only fs); art is made
+  // locally via `npm run media` and pushed up with `npm run sync`.
+  if (blobsEnabled()) throw new Error("Poem art not found");
+
+  const poem = await getPoem(slug);
   if (!poem) throw new Error("Poem not found");
 
   const prompt = await buildPrompt(poem.title || slug, poem.content.trim());

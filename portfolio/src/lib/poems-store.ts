@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import { blobsEnabled, store } from "@/lib/blobs";
 
 export interface Poem {
   slug: string;
@@ -12,9 +13,9 @@ export interface Poem {
 }
 
 /**
- * Poems live as `.md` files in this local folder, which is gitignored so the
- * confidential text never lands in the public Git repo. Drop a new `.md` in
- * here to add a poem.
+ * Poems live as `.md` files in this local folder (gitignored, off the public
+ * repo). On the deployed site they're read from the private "poems" Blobs store,
+ * which `npm run sync` populates from this same folder.
  */
 const POEMS_DIR = path.join(process.cwd(), "src/content/poems");
 
@@ -34,18 +35,33 @@ function fromRaw(slug: string, raw: string): Poem {
   };
 }
 
-export function listPoems(): Poem[] {
-  if (!fs.existsSync(POEMS_DIR)) return [];
-  return fs
-    .readdirSync(POEMS_DIR)
-    .filter((f) => f.endsWith(".md"))
-    .map((file) =>
-      fromRaw(file.replace(/\.md$/, ""), fs.readFileSync(path.join(POEMS_DIR, file), "utf8")),
-    )
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
+export async function listPoems(): Promise<Poem[]> {
+  let poems: Poem[];
+  if (blobsEnabled()) {
+    const s = await store("poems");
+    const { blobs } = await s.list();
+    poems = await Promise.all(
+      blobs.map(async ({ key }) => fromRaw(key, (await s.get(key, { type: "text" })) ?? "")),
+    );
+  } else if (fs.existsSync(POEMS_DIR)) {
+    poems = fs
+      .readdirSync(POEMS_DIR)
+      .filter((f) => f.endsWith(".md"))
+      .map((file) =>
+        fromRaw(file.replace(/\.md$/, ""), fs.readFileSync(path.join(POEMS_DIR, file), "utf8")),
+      );
+  } else {
+    poems = [];
+  }
+  return poems.sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-export function getPoem(slug: string): Poem | null {
+export async function getPoem(slug: string): Promise<Poem | null> {
+  if (blobsEnabled()) {
+    const s = await store("poems");
+    const raw = await s.get(slug, { type: "text" });
+    return raw ? fromRaw(slug, raw) : null;
+  }
   const mdPath = path.join(POEMS_DIR, `${slug}.md`);
   if (!fs.existsSync(mdPath)) return null;
   return fromRaw(slug, fs.readFileSync(mdPath, "utf8"));

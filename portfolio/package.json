@@ -7,9 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "media": "node --env-file-if-exists=.env.local scripts/generate-media.mjs"
+    "media": "node --env-file-if-exists=.env.local scripts/generate-media.mjs",
+    "sync": "node --env-file-if-exists=.env.local scripts/sync-to-blobs.mjs",
+    "publish": "npm run media && npm run sync"
   },
   "dependencies": {
+    "@netlify/blobs": "^10.7.9",
     "framer-motion": "^12.40.0",
     "gray-matter": "^4.0.3",
     "next": "16.2.6",

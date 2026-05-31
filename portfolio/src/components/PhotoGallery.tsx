@@ -71,6 +71,7 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
                 src={photo.src}
                 alt={photo.caption || "a photo"}
                 fill
+                unoptimized
                 className="object-cover"
                 sizes="208px"
               />

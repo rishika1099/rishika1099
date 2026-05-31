@@ -5,9 +5,10 @@ import PhotoGallery from "@/components/PhotoGallery";
 import { listPhotos } from "@/lib/photos";
 
 export const metadata = { title: "Photography" };
+export const dynamic = "force-dynamic";
 
-export default function Photography() {
-  const photos = listPhotos();
+export default async function Photography() {
+  const photos = await listPhotos();
   return (
     <PageShell vibe="sunset">
       <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
