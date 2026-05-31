@@ -57,7 +57,7 @@ export const projects: Project[] = [
     emoji: "⚡",
     blurb:
       "Benchmarked KIVI quantization, TopK sparsity, SnapKV eviction & MLA on Llama-2-7B with Triton kernels, 4× cache compression, 1.93× faster decode, 3.1× peak throughput.",
-    categories: ["High Performance Machine Learning", "Generative AI"],
+    categories: ["High Performance Machine Learning"],
     featured: true,
     repo: gh("KV-Cache-Optimization"),
     demo: "https://rishika1099.substack.com/p/kv-cache-optimization",
@@ -291,7 +291,7 @@ export const projects: Project[] = [
     emoji: "📰",
     blurb:
       "TF-IDF + Linear SVM on the WELFake dataset with a real-time credibility-prediction interface.",
-    categories: ["NLP", "Machine Learning"],
+    categories: ["NLP"],
     repo: gh("Fake-News-Detection"),
     tags: ["NLP", "SVM", "TF-IDF"],
   },
