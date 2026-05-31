@@ -3,34 +3,16 @@ import path from "node:path";
 import OpenAI from "openai";
 import { getPoem } from "@/lib/poems-store";
 
+// Generated art is cached as a PNG in this gitignored folder, so each poem's
+// image is made exactly once and reused forever after.
 const ART_DIR = path.join(process.cwd(), "public/poem-art");
 
-function blobsEnabled(): boolean {
-  return !!(process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT);
-}
-
-async function artStore() {
-  const { getStore } = await import("@netlify/blobs");
-  return getStore("poem-art");
-}
-
-async function readCachedArt(slug: string): Promise<Buffer | null> {
-  if (blobsEnabled()) {
-    const store = await artStore();
-    const buf = await store.get(slug, { type: "arrayBuffer" });
-    return buf ? Buffer.from(buf) : null;
-  }
+function readCachedArt(slug: string): Buffer | null {
   const outPath = path.join(ART_DIR, `${slug}.png`);
   return fs.existsSync(outPath) ? fs.readFileSync(outPath) : null;
 }
 
-async function writeCachedArt(slug: string, png: Buffer): Promise<void> {
-  if (blobsEnabled()) {
-    const store = await artStore();
-    const ab = png.buffer.slice(png.byteOffset, png.byteOffset + png.byteLength);
-    await store.set(slug, ab as ArrayBuffer);
-    return;
-  }
+function writeCachedArt(slug: string, png: Buffer): void {
   fs.mkdirSync(ART_DIR, { recursive: true });
   fs.writeFileSync(path.join(ART_DIR, `${slug}.png`), png);
 }
@@ -94,15 +76,15 @@ async function renderImage(prompt: string): Promise<Buffer> {
 export async function ensurePoemArt(slugRaw: string): Promise<Buffer> {
   const slug = safeSlug(slugRaw);
 
-  const cached = await readCachedArt(slug);
+  const cached = readCachedArt(slug);
   if (cached) return cached;
 
-  const poem = await getPoem(slug);
+  const poem = getPoem(slug);
   if (!poem) throw new Error("Poem not found");
 
   const prompt = await buildPrompt(poem.title || slug, poem.content.trim());
   const png = await renderImage(prompt);
 
-  await writeCachedArt(slug, png);
+  writeCachedArt(slug, png);
   return png;
 }

@@ -35,7 +35,7 @@ export default async function PoemsPage() {
             <LockButton />
           </div>
 
-          <PoemRoom poems={await listPoems()} />
+          <PoemRoom poems={listPoems()} />
         </>
       )}
     </PageShell>
