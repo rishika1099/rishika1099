@@ -16,9 +16,50 @@ const links = [
 export default function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  const isHome = pathname === "/";
+
+  // On the home page the bar stays tucked away until you tap the hint.
+  if (isHome && !revealed) {
+    return (
+      <header className="sticky top-0 z-50">
+        <div className="flex justify-center pt-4">
+          <motion.button
+            onClick={() => setRevealed(true)}
+            aria-label="Open the menu"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: [0, -3, 0] }}
+            transition={{
+              opacity: { duration: 0.4 },
+              y: { repeat: Infinity, duration: 2, ease: "easeInOut" },
+            }}
+            className="flex items-center gap-2 rounded-full px-4 py-2 soft-card font-body text-sm font-semibold text-ink-soft"
+          >
+            <motion.span
+              animate={{ rotate: [0, -12, 12, 0] }}
+              transition={{ repeat: Infinity, repeatDelay: 3, duration: 0.8 }}
+              className="text-lg"
+            >
+              🐈
+            </motion.span>
+            <span>peek at the menu</span>
+            <motion.span
+              aria-hidden
+              animate={{ y: [0, 6, 0], scale: [1, 0.82, 1] }}
+              transition={{ repeat: Infinity, duration: 1.1, ease: "easeInOut" }}
+              className="text-base"
+            >
+              👆
+            </motion.span>
+          </motion.button>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50">

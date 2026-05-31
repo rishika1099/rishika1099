@@ -48,3 +48,7 @@ portfolio/src/content/poems/*.md
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# private photos — keep real photos out of the PUBLIC repo
+portfolio/public/photos/*
+!portfolio/public/photos/.gitkeep

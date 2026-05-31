@@ -16,7 +16,7 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const post = getBlogPost(slug);
-  return { title: post ? `${post.title} — Rishika` : "Post not found" };
+  return { title: post ? post.title : "Post not found" };
 }
 
 export default async function BlogPost({

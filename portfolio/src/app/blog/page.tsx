@@ -17,7 +17,7 @@ const doors = [
     href: "/blog/poems",
     icon: "🕯️",
     title: "Poems",
-    blurb: "a quiet room — knock with the secret word",
+    blurb: "a quiet room, knock with the secret word",
     tint: "bg-lavender/60",
     locked: true,
   },

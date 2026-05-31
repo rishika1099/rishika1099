@@ -11,7 +11,7 @@ type Entry = {
   title: string;
   place: string;
   note: string;
-  // extra highlights revealed when the card is clicked — add as many as you like
+  // extra highlights revealed when the card is clicked, add as many as you like
   details?: string[];
 };
 
@@ -22,11 +22,16 @@ const timeline: Entry[] = [
     title: "Data Science Intern",
     place: "NYC Administration for Children's Services",
     note: "Predictive risk models on child-welfare data with explainable ML, fairness auditing, and causal adjustment for high-stakes public-sector decisions.",
+    details: [
+      "Explainable ML on sensitive child-welfare data.",
+      "Fairness auditing baked into every model.",
+      "Causal adjustment for high-stakes public-sector decisions.",
+    ],
   },
   {
     icon: "🏥",
     when: "Jan 2026 – Present",
-    title: "Research Assistant — Clinical LLM & Phenotyping",
+    title: "Research Assistant: Clinical LLM & Phenotyping",
     place: "Columbia University Irving Medical Center",
     note: "Built an extraction system for cardiac-sarcoidosis phenotyping from clinical notes.",
     details: [
@@ -38,7 +43,7 @@ const timeline: Entry[] = [
   {
     icon: "⚖️",
     when: "Jan 2026 – Present",
-    title: "Research Assistant — Human Rights LLM Evaluation",
+    title: "Research Assistant: Human Rights LLM Evaluation",
     place: "Columbia GSAS",
     note: "A retrieval-augmented LLM framework for explainable human-rights due-diligence scoring.",
     details: [
@@ -63,7 +68,11 @@ const timeline: Entry[] = [
     when: "Jan – Jul 2023",
     title: "Technical Analyst Intern",
     place: "Novartis, Hyderabad",
-    note: "NLP workflow for clinical-trial sentiment mining & summarization, plus time-series pipelines supporting a 19% carbon-reduction goal.",
+    note: "NLP workflow for clinical-trial sentiment mining and summarization, plus time-series pipelines supporting a 19% carbon-reduction goal.",
+    details: [
+      "NLP for clinical-trial sentiment mining and summarization.",
+      "Time-series pipelines supporting a 19% carbon-reduction goal.",
+    ],
   },
 ];
 
@@ -73,7 +82,11 @@ const education: Entry[] = [
     when: "2025 – present",
     title: "M.S. in Data Science",
     place: "Columbia University, New York",
-    note: "GPA 3.87 — focus on machine learning, LLM systems, and causal inference.",
+    note: "GPA 3.87, focus on machine learning, LLM systems, and causal inference.",
+    details: [
+      "Graduate coursework in deep learning, NLP, and causal inference.",
+      "Research assistant in clinical NLP and human-rights LLM evaluation.",
+    ],
   },
   {
     icon: "🎓",
@@ -81,6 +94,10 @@ const education: Entry[] = [
     title: "B.Tech, Computer Science & Data Science",
     place: "Vellore Institute of Technology (VIT)",
     note: "4.0/4.0 GPA · graduated ranked 7th of 200.",
+    details: [
+      "Perfect 4.0/4.0 GPA, ranked 7th of 200.",
+      "Early ML and data-science research that set the whole path in motion.",
+    ],
   },
 ];
 
@@ -165,11 +182,11 @@ export default function About() {
 
       <div className="mt-6 max-w-2xl space-y-4 font-body text-lg text-ink-soft">
         <p>
-          I&apos;m Rishika — an M.S. Data Science student at{" "}
+          I&apos;m Rishika, an M.S. Data Science student at{" "}
           <strong className="text-ink">Columbia University</strong> (GPA 3.87),
           and before that I topped my B.Tech in CS &amp; Data Science at VIT
           (4.0/4.0, ranked 7th of 200). I like problems where careful modeling
-          actually changes a decision — healthcare, public policy, fairness.
+          actually changes a decision: healthcare, public policy, fairness.
         </p>
         <p>
           By day I build LLM systems, causal models, and ML pipelines. By night

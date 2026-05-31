@@ -16,7 +16,7 @@ const gh = (slug: string) => `https://github.com/rishika1099/${slug}`;
 export const projects: Project[] = [
   // ---------------- Featured ----------------
   {
-    name: "Folio — Clinical Multimodal RAG",
+    name: "Folio: Clinical Multimodal RAG",
     emoji: "🩺",
     blurb:
       "A multimodal medical-record companion unifying RAG, document understanding, speech, and vision. Consensus extraction across LLMs hit 85.1% micro-F1 with sub-2s latency.",
@@ -30,7 +30,7 @@ export const projects: Project[] = [
     name: "KV-Cache Optimization for LLM Inference",
     emoji: "⚡",
     blurb:
-      "Benchmarked KIVI quantization, TopK sparsity, SnapKV eviction & MLA on Llama-2-7B with Triton kernels — 4× cache compression, 1.93× faster decode, 3.1× peak throughput.",
+      "Benchmarked KIVI quantization, TopK sparsity, SnapKV eviction & MLA on Llama-2-7B with Triton kernels, 4× cache compression, 1.93× faster decode, 3.1× peak throughput.",
     category: "AI / LLM",
     featured: true,
     repo: gh("KV-Cache-Optimization"),
@@ -48,7 +48,7 @@ export const projects: Project[] = [
     tags: ["Causal Inference", "Biostatistics", "R"],
   },
   {
-    name: "Federal Eagle — AI Legal Assistant",
+    name: "Federal Eagle: AI Legal Assistant",
     emoji: "🦅",
     blurb:
       "A multi-agent CrewAI system for U.S. federal legal analysis: semantic USC retrieval, precedent search, elements analysis, and draft generation.",
@@ -59,7 +59,7 @@ export const projects: Project[] = [
     tags: ["Multi-Agent", "CrewAI", "RAG"],
   },
   {
-    name: "Just Ask Coach — NL → SQL",
+    name: "Just Ask Coach: NL → SQL",
     emoji: "🏅",
     blurb:
       "Full-stack RAG pipeline turning natural language into SQL and visualizations for sports performance analytics.",
@@ -70,7 +70,7 @@ export const projects: Project[] = [
     tags: ["Text-to-SQL", "ChromaDB", "Claude", "React"],
   },
   {
-    name: "Ruchi — Pantry-to-Plate Intelligence",
+    name: "Ruchi: Pantry-to-Plate Intelligence",
     emoji: "🍲",
     blurb:
       "AI food app for video-to-recipe extraction, pantry matching, and personalized health coaching. React + Vite + Framer Motion on Netlify.",
@@ -83,7 +83,7 @@ export const projects: Project[] = [
 
   // ---------------- AI / LLM ----------------
   {
-    name: "ReelChef — Video to Recipe",
+    name: "ReelChef: Video to Recipe",
     emoji: "🎬",
     blurb:
       "Converts cooking videos into structured recipes via a multi-stage vision-language pipeline: frame extraction, visual understanding, LLM reasoning.",
@@ -96,7 +96,7 @@ export const projects: Project[] = [
     name: "DSI Course Evaluation",
     emoji: "📚",
     blurb:
-      "Student-built dashboard for Columbia MSDS course reviews — live Google-Sheets data, AI-summarized reviews, rankings, and side-by-side comparisons.",
+      "Student-built dashboard for Columbia MSDS course reviews, live Google-Sheets data, AI-summarized reviews, rankings, and side-by-side comparisons.",
     category: "AI / LLM",
     repo: gh("DSI-Course-Evaluation-Website"),
     demo: "https://dsi-course-evaluation.streamlit.app/",
@@ -113,7 +113,7 @@ export const projects: Project[] = [
     tags: ["Retrieval", "FastAPI", "Claude"],
   },
   {
-    name: "Hey Swiftie — Emotion Verse",
+    name: "Hey Swiftie: Emotion Verse",
     emoji: "🎶",
     blurb:
       "AI diary turning journal entries into personalized verses + music recs. DistilRoBERTa emotion, K-Means over 867 songs, FAISS RAG, GPT-4o-mini.",
@@ -123,20 +123,20 @@ export const projects: Project[] = [
     tags: ["Emotion AI", "FAISS", "Clustering"],
   },
   {
-    name: "Ghost Writer — AI Blog Assistant",
+    name: "Ghost Writer: AI Blog Assistant",
     emoji: "👻",
     blurb:
-      "AI blog-post generator with DALL·E images — SEO-optimized content with customizable tone, length, and generated visuals.",
+      "AI blog-post generator with DALL·E images, SEO-optimized content with customizable tone, length, and generated visuals.",
     category: "AI / LLM",
     repo: gh("Ghost-Writer-AI-Blog-Assistant"),
     demo: "https://ghost-writer-ai.streamlit.app/",
     tags: ["Generative AI", "DALL·E"],
   },
   {
-    name: "Dr. Pixel — Medical Image Assistant",
+    name: "Dr. Pixel: Medical Image Assistant",
     emoji: "🔬",
     blurb:
-      "Educational medical-image analysis with Gemini Vision — upload or camera capture, safe non-diagnostic insights with built-in disclaimers.",
+      "Educational medical-image analysis with Gemini Vision, upload or camera capture, safe non-diagnostic insights with built-in disclaimers.",
     category: "AI / LLM",
     repo: gh("Dr-Pixel-Medical-Image-Analysis-Assistant"),
     demo: "https://doctor-pixel.streamlit.app/",
@@ -155,7 +155,7 @@ export const projects: Project[] = [
 
   // ---------------- Research & Causal ----------------
   {
-    name: "Safe Start — Child Welfare Prediction",
+    name: "Safe Start: Child Welfare Prediction",
     emoji: "🧒",
     blurb:
       "ML & predictive analytics framework for identifying high-risk child-welfare cases using NCANDS data.",
@@ -167,7 +167,7 @@ export const projects: Project[] = [
     name: "Colorectal Cancer Risk Analysis",
     emoji: "🥗",
     blurb:
-      "Visual analysis of how diet and lifestyle contribute to colorectal cancer risk — built in R/Shiny.",
+      "Visual analysis of how diet and lifestyle contribute to colorectal cancer risk, built in R/Shiny.",
     category: "Research & Causal",
     repo: gh("Colorectal-Cancer-Risk-Analysis"),
     demo: "https://rishika1099.shinyapps.io/colorectal_cancer_risk_analysis/",
@@ -187,7 +187,7 @@ export const projects: Project[] = [
     name: "Kidney Disorder Detection",
     emoji: "🫘",
     blurb:
-      "Classifies CT scans into Normal/Cyst/Stone/Tumor via VGG19 & ResNet50 transfer learning — 99.2% accuracy.",
+      "Classifies CT scans into Normal/Cyst/Stone/Tumor via VGG19 & ResNet50 transfer learning, 99.2% accuracy.",
     category: "Computer Vision",
     repo: gh("Kidney-Disorder-Detection"),
     tags: ["Transfer Learning", "ResNet"],
@@ -204,7 +204,7 @@ export const projects: Project[] = [
     name: "Traffic Sign Classifier",
     emoji: "🚸",
     blurb:
-      "VGG16 transfer learning + fine-tuning on GTSRB — 98% accuracy across 43 classes.",
+      "VGG16 transfer learning + fine-tuning on GTSRB, 98% accuracy across 43 classes.",
     category: "Computer Vision",
     repo: gh("Traffic-Sign-Classifier"),
     tags: ["VGG16", "Classification"],
@@ -224,7 +224,7 @@ export const projects: Project[] = [
     name: "Car Price Prediction",
     emoji: "🚗",
     blurb:
-      "Predicts used-car prices (India) — 65.6% R² with XGBoost + Optuna, SHAP explainability across 4 ensembles.",
+      "Predicts used-car prices (India), 65.6% R² with XGBoost + Optuna, SHAP explainability across 4 ensembles.",
     category: "Classic ML",
     repo: gh("Car-Price-Prediction"),
     tags: ["XGBoost", "SHAP", "Optuna"],

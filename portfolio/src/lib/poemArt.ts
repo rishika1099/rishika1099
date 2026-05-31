@@ -36,7 +36,7 @@ async function writeCachedArt(slug: string, png: Buffer): Promise<void> {
 }
 
 const INTERPRETER = `You are an artistic poetry interpreter. You read a poem and
-distill it into ONE symbolic, evocative image prompt — never literal, never
+distill it into ONE symbolic, evocative image prompt, never literal, never
 illustrating lines word-for-word. Choose a single central metaphor that captures
 the poem's deepest emotion.
 

@@ -11,6 +11,8 @@ export interface Doc {
   excerpt: string;
   content: string;
   image?: string;
+  // when set, the post lives off-site (e.g. Substack) and cards link out
+  external?: string;
 }
 
 function readDir(dir: string): Doc[] {
@@ -29,6 +31,7 @@ function readDir(dir: string): Doc[] {
         excerpt: (data.excerpt as string) ?? "",
         content,
         image: (data.image as string) ?? undefined,
+        external: (data.external as string) ?? undefined,
       };
     })
     .sort((a, b) => (a.date < b.date ? 1 : -1));

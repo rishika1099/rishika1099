@@ -27,7 +27,7 @@ export default function Home() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.35, type: "spring", stiffness: 120 }}
-        className="mt-6 flex flex-col items-center gap-3 font-name text-5xl font-normal leading-none text-ink text-shadow-soft sm:mt-8 sm:gap-6 sm:text-7xl"
+        className="mt-12 flex flex-col items-center gap-3 font-name text-5xl font-normal leading-none text-ink text-shadow-soft sm:mt-16 sm:gap-6 sm:text-7xl"
       >
         <motion.span
           className="block"
@@ -54,9 +54,9 @@ export default function Home() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="mt-5 max-w-xl font-body text-lg text-ink-soft sm:text-xl"
+        className="mt-10 max-w-xl font-body text-lg text-ink-soft sm:mt-12 sm:text-xl"
       >
-        Data scientist & ML engineer in New York 🗽 — I teach machines to be
+        Data scientist & ML engineer in New York 🗽, I teach machines to be
         helpful, and on weekends I write poems and chase good light with a
         camera.
       </motion.p>

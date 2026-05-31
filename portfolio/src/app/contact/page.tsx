@@ -8,7 +8,7 @@ const links = [
   { icon: "✉️", label: "Email", value: "rm4318@columbia.edu", href: "mailto:rm4318@columbia.edu" },
   { icon: "💼", label: "LinkedIn", value: "in/rishika-mamidibathula", href: "https://linkedin.com/in/rishika-mamidibathula" },
   { icon: "🐙", label: "GitHub", value: "github.com/rishika1099", href: "https://github.com/rishika1099" },
-  { icon: "📰", label: "Substack", value: "rishikamamidibathula.substack.com", href: "https://rishikamamidibathula.substack.com" },
+  { icon: "📰", label: "Substack", value: "rishika1099.substack.com", href: "https://rishika1099.substack.com" },
 ];
 
 export default function Contact() {
@@ -24,7 +24,7 @@ export default function Contact() {
       <PageTitle className="mt-3 text-ink">let&apos;s say hello 💌</PageTitle>
       <p className="mt-3 max-w-xl font-body text-lg text-ink-soft">
         Whether it&apos;s a role, a research idea, a poem you loved, or just a
-        nice photo of the sky — my inbox is always open.
+        nice photo of the sky, my inbox is always open.
       </p>
 
       <div className="mt-9 grid w-full max-w-xl gap-4 sm:grid-cols-2">

@@ -8,7 +8,7 @@ import PoemRoom from "@/components/PoemRoom";
 import { POEM_COOKIE, verifyToken } from "@/lib/auth";
 import { listPoems } from "@/lib/poems-store";
 
-export const metadata = { title: "Poems — Rishika" };
+export const metadata = { title: "Poems" };
 
 export default async function PoemsPage() {
   const cookieStore = await cookies();
@@ -30,7 +30,7 @@ export default async function PoemsPage() {
         <>
           <div className="mt-3 flex items-center justify-between">
             <p className="font-body text-lg text-lavender">
-              welcome in — make yourself a cup of something warm
+              welcome in, make yourself a cup of something warm
             </p>
             <LockButton />
           </div>

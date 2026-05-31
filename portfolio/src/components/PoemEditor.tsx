@@ -206,7 +206,7 @@ export default function PoemEditor({ initialPoems }: { initialPoems: Poem[] }) {
       <ul className="mt-7 flex flex-col gap-3">
         {poems.length === 0 && (
           <li className="font-body text-lavender/90">
-            no poems yet — write your first one above ✦
+            no poems yet, write your first one above ✦
           </li>
         )}
         {poems.map((p) => (

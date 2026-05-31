@@ -39,9 +39,12 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Rishika Mamidibathula — Portfolio",
+  title: {
+    default: "Rishika Mamidibathula",
+    template: "%s · Rishika Mamidibathula",
+  },
   description:
-    "Data scientist & ML engineer in NYC. Projects, writing, poems, and photography — a little whimsical corner of the internet.",
+    "Data scientist & ML engineer in NYC. Projects, writing, poems, and photography, a little whimsical corner of the internet.",
 };
 
 export default function RootLayout({

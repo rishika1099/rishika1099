@@ -57,7 +57,7 @@ export default function Work() {
     <PageShell vibe="meadow">
       <PageTitle>my little meadow of projects 🌱</PageTitle>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        31 things I&apos;ve grown — from clinical LLM systems to causal studies
+        31 things I&apos;ve grown, from clinical LLM systems to causal studies
         to weekend ML experiments. The big blooms are below; pick a patch to
         wander through the rest.
       </p>

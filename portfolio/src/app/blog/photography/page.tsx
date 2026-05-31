@@ -33,7 +33,7 @@ export default function Photography() {
       </Link>
       <PageTitle className="mt-2 text-ink">photography 📷</PageTitle>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        Light I caught and kept. (These are placeholder frames — drop your
+        Light I caught and kept. (These are placeholder frames, drop your
         photos into <code className="rounded bg-white/60 px-1">/public/photos</code>{" "}
         and they&apos;ll slot right in.)
       </p>
