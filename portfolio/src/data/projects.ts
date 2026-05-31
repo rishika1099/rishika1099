@@ -21,7 +21,7 @@ export type Domain =
   | "Cybersecurity"
   | "Agriculture"
   | "Food & Nutrition"
-  | "Creative AI";
+  | "Social Media";
 
 export interface Project {
   name: string;
@@ -150,7 +150,7 @@ export const projects: Project[] = [
     blurb:
       "AI diary turning journal entries into personalized verses + music recs. DistilRoBERTa emotion, K-Means over 867 songs, FAISS RAG, GPT-4o-mini.",
     categories: ["NLP", "Generative AI"],
-    domains: ["Creative AI"],
+    domains: ["Social Media"],
     repo: gh("Hey-Swiftie-Cluster-Emotion-Verse"),
     demo: "https://dear-diary-love-taylor.vercel.app/",
     tags: ["Emotion AI", "FAISS", "Clustering"],
@@ -161,7 +161,7 @@ export const projects: Project[] = [
     blurb:
       "AI blog-post generator with DALL·E images, SEO-optimized content with customizable tone, length, and generated visuals.",
     categories: ["Generative AI"],
-    domains: ["Creative AI"],
+    domains: ["Social Media"],
     repo: gh("Ghost-Writer-AI-Blog-Assistant"),
     demo: "https://ghost-writer-ai.streamlit.app/",
     tags: ["Generative AI", "DALL·E"],
@@ -390,7 +390,7 @@ export const domains: Domain[] = [
   "Cybersecurity",
   "Agriculture",
   "Food & Nutrition",
-  "Creative AI",
+  "Social Media",
 ];
 
 // Chip colors echoing the reference palette.
@@ -404,5 +404,5 @@ export const domainColor: Record<Domain, string> = {
   Cybersecurity: "#3b3b3b",
   Agriculture: "#8cc63f",
   "Food & Nutrition": "#e87a3c",
-  "Creative AI": "#b14ad6",
+  "Social Media": "#b14ad6",
 };

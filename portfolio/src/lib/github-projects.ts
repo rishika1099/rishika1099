@@ -44,7 +44,7 @@ const DOMAIN_RULES: [Domain, RegExp][] = [
   ["Cybersecurity", /\b(security|malware|crypto|blockchain|intrusion|encrypt)/i],
   ["Agriculture", /\b(plant|crop|agricultur|farm|soil)/i],
   ["Food & Nutrition", /\b(food|recipe|nutrition|diet|meal|cook|pantry)/i],
-  ["Creative AI", /\b(poem|verse|music|art|story|blog|creativ|diary)/i],
+  ["Social Media", /\b(social|media|post|tweet|twitter|instagram|reddit|feed|influencer|content)/i],
   ["Public Sector", /\b(public|government|policy|civic|municipal)/i],
 ];
 
