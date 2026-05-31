@@ -1,58 +1,84 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 import PageShell from "@/components/PageShell";
+import PageTitle from "@/components/PageTitle";
 
-const timeline = [
+type Entry = {
+  icon: string;
+  when: string;
+  title: string;
+  place: string;
+  note: string;
+  // extra highlights revealed when the card is clicked — add as many as you like
+  details?: string[];
+};
+
+const timeline: Entry[] = [
   {
     icon: "🗽",
     when: "Summer 2026",
-    role: "Data Science Intern",
+    title: "Data Science Intern",
     place: "NYC Administration for Children's Services",
     note: "Predictive risk models on child-welfare data with explainable ML, fairness auditing, and causal adjustment for high-stakes public-sector decisions.",
   },
   {
     icon: "🏥",
     when: "Jan 2026 – Present",
-    role: "Research Assistant — Clinical LLM & Phenotyping",
+    title: "Research Assistant — Clinical LLM & Phenotyping",
     place: "Columbia University Irving Medical Center",
-    note: "Built an extraction system with hybrid regex/LLM de-identification, longitudinal EHR reconstruction, and hallucination-aware validation into 56 cardiac-sarcoidosis phenotype variables.",
+    note: "Built an extraction system for cardiac-sarcoidosis phenotyping from clinical notes.",
+    details: [
+      "Hybrid regex/LLM de-identification pipeline for protected health data.",
+      "Longitudinal EHR reconstruction across fragmented patient records.",
+      "Hallucination-aware validation into 56 phenotype variables.",
+    ],
   },
   {
     icon: "⚖️",
     when: "Jan 2026 – Present",
-    role: "Research Assistant — Human Rights LLM Evaluation",
+    title: "Research Assistant — Human Rights LLM Evaluation",
     place: "Columbia GSAS",
-    note: "A retrieval-augmented LLM evaluation framework producing explainable human-rights due-diligence scores across 27 defense manufacturers, cutting manual review 80%.",
+    note: "A retrieval-augmented LLM framework for explainable human-rights due-diligence scoring.",
+    details: [
+      "Scored 27 defense manufacturers on human-rights due-diligence.",
+      "Cut manual review effort by ~80% with RAG-backed evidence retrieval.",
+    ],
   },
   {
     icon: "🐚",
     when: "2023 – 2025",
-    role: "Software Engineer",
+    title: "Software Engineer",
     place: "Shell, Bengaluru",
-    note: "ML forecasting in Databricks across 12 business units — 23% lower forecast error, $100K+ savings, and RPA bots that cut manual reporting 85%.",
+    note: "ML forecasting in Databricks across 12 business units.",
+    details: [
+      "23% lower forecast error across 12 business units.",
+      "$100K+ in operational savings.",
+      "RPA bots that cut manual reporting effort by 85%.",
+    ],
   },
   {
     icon: "💊",
     when: "Jan – Jul 2023",
-    role: "Technical Analyst Intern",
+    title: "Technical Analyst Intern",
     place: "Novartis, Hyderabad",
     note: "NLP workflow for clinical-trial sentiment mining & summarization, plus time-series pipelines supporting a 19% carbon-reduction goal.",
   },
 ];
 
-const education = [
+const education: Entry[] = [
   {
     icon: "🦁",
     when: "2025 – present",
-    degree: "M.S. in Data Science",
+    title: "M.S. in Data Science",
     place: "Columbia University, New York",
     note: "GPA 3.87 — focus on machine learning, LLM systems, and causal inference.",
   },
   {
     icon: "🎓",
     when: "2019 – 2023",
-    degree: "B.Tech, Computer Science & Data Science",
+    title: "B.Tech, Computer Science & Data Science",
     place: "Vellore Institute of Technology (VIT)",
     note: "4.0/4.0 GPA · graduated ranked 7th of 200.",
   },
@@ -65,12 +91,77 @@ const skills = [
   "AWS", "Azure", "Weights & Biases", "CI/CD",
 ];
 
+function EntryCard({ entry, i }: { entry: Entry; i: number }) {
+  const [open, setOpen] = useState(false);
+  const hasDetails = !!entry.details?.length;
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -16 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ delay: i * 0.06 }}
+      className="rounded-3xl p-5 soft-card"
+    >
+      <button
+        type="button"
+        onClick={() => hasDetails && setOpen((o) => !o)}
+        aria-expanded={hasDetails ? open : undefined}
+        className={`flex w-full gap-4 text-left ${
+          hasDetails ? "cursor-pointer" : "cursor-default"
+        }`}
+      >
+        <span className="animate-float-med text-3xl">{entry.icon}</span>
+        <div className="flex-1">
+          <p className="font-body text-sm italic text-ink-soft">{entry.when}</p>
+          <h3 className="font-display text-lg font-semibold text-ink">
+            {entry.title}
+          </h3>
+          <p className="font-body text-sm font-semibold text-ink-soft">
+            {entry.place}
+          </p>
+          <p className="mt-1 font-body text-sm text-ink-soft">{entry.note}</p>
+        </div>
+        {hasDetails && (
+          <motion.span
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-1 select-none font-body text-lg leading-none text-ink-soft"
+            aria-hidden
+          >
+            ⌄
+          </motion.span>
+        )}
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && hasDetails && (
+          <motion.ul
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="ml-[3.25rem] overflow-hidden"
+          >
+            {entry.details!.map((d) => (
+              <li
+                key={d}
+                className="mt-2 flex gap-2 font-body text-sm text-ink-soft"
+              >
+                <span aria-hidden className="text-blush">✦</span>
+                <span>{d}</span>
+              </li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 export default function About() {
   return (
     <PageShell vibe="cozy">
-      <h1 className="font-display text-4xl font-bold text-ink sm:text-5xl">
-        the human behind the models 🍵
-      </h1>
+      <PageTitle>the human behind the models 🍵</PageTitle>
 
       <div className="mt-6 max-w-2xl space-y-4 font-body text-lg text-ink-soft">
         <p>
@@ -93,28 +184,7 @@ export default function About() {
       </h2>
       <div className="mt-5 space-y-4">
         {education.map((e, i) => (
-          <motion.div
-            key={e.degree}
-            initial={{ opacity: 0, x: -16 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ delay: i * 0.06 }}
-            className="flex gap-4 rounded-3xl p-5 soft-card"
-          >
-            <span className="animate-float-med text-3xl">{e.icon}</span>
-            <div>
-              <p className="font-serif text-base italic text-ink-soft">
-                {e.when}
-              </p>
-              <h3 className="font-display text-lg font-semibold text-ink">
-                {e.degree}
-              </h3>
-              <p className="font-body text-sm font-semibold text-ink-soft">
-                {e.place}
-              </p>
-              <p className="mt-1 font-body text-sm text-ink-soft">{e.note}</p>
-            </div>
-          </motion.div>
+          <EntryCard key={e.title} entry={e} i={i} />
         ))}
       </div>
 
@@ -138,30 +208,12 @@ export default function About() {
       <h2 className="mt-12 font-display text-2xl font-semibold text-ink">
         where I&apos;ve been
       </h2>
+      <p className="mt-1 font-body text-sm text-ink-soft">
+        tap a card to unfold the details ✦
+      </p>
       <div className="mt-5 space-y-4">
         {timeline.map((t, i) => (
-          <motion.div
-            key={t.role}
-            initial={{ opacity: 0, x: -16 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ delay: i * 0.06 }}
-            className="flex gap-4 rounded-3xl p-5 soft-card"
-          >
-            <span className="animate-float-med text-3xl">{t.icon}</span>
-            <div>
-              <p className="font-serif text-base italic text-ink-soft">
-                {t.when}
-              </p>
-              <h3 className="font-display text-lg font-semibold text-ink">
-                {t.role}
-              </h3>
-              <p className="font-body text-sm font-semibold text-ink-soft">
-                {t.place}
-              </p>
-              <p className="mt-1 font-body text-sm text-ink-soft">{t.note}</p>
-            </div>
-          </motion.div>
+          <EntryCard key={t.title} entry={t} i={i} />
         ))}
       </div>
 

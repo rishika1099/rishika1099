@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import PageShell from "@/components/PageShell";
+import PageTitle from "@/components/PageTitle";
 import { projects, categories, type Category, type Project } from "@/data/projects";
 
 function Links({ p }: { p: Project }) {
@@ -54,9 +55,7 @@ export default function Work() {
 
   return (
     <PageShell vibe="meadow">
-      <h1 className="font-display text-4xl font-bold text-ink sm:text-5xl">
-        my little meadow of projects 🌱
-      </h1>
+      <PageTitle>my little meadow of projects 🌱</PageTitle>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
         31 things I&apos;ve grown — from clinical LLM systems to causal studies
         to weekend ML experiments. The big blooms are below; pick a patch to

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
+import PageTitle from "@/components/PageTitle";
 import { getBlogPosts } from "@/lib/content";
 
 export const metadata = { title: "Technical Blogs — Rishika" };
@@ -11,9 +12,7 @@ export default function TechnicalIndex() {
       <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
         ← back to the writing room
       </Link>
-      <h1 className="mt-2 font-display text-4xl font-bold text-ink sm:text-5xl">
-        technical blogs 📓
-      </h1>
+      <PageTitle className="mt-2 text-ink">technical blogs 📓</PageTitle>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
         Things I figured out and wanted to remember out loud.
       </p>

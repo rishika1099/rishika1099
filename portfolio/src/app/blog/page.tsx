@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
+import PageTitle from "@/components/PageTitle";
 
 const doors = [
   {
@@ -32,9 +33,7 @@ const doors = [
 export default function BlogHub() {
   return (
     <PageShell vibe="cozy">
-      <h1 className="font-display text-4xl font-bold text-ink sm:text-5xl">
-        the writing room ✍️
-      </h1>
+      <PageTitle>the writing room ✍️</PageTitle>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
         Three little doors. One for thinking, one for feeling, one for seeing.
       </p>

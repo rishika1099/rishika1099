@@ -41,7 +41,3 @@ export function getBlogPosts(): Doc[] {
 export function getBlogPost(slug: string): Doc | undefined {
   return getBlogPosts().find((d) => d.slug === slug);
 }
-
-export function getPoems(): Doc[] {
-  return readDir("poems");
-}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
+import PageTitle from "@/components/PageTitle";
 
 interface Photo {
   caption: string;
@@ -30,9 +31,7 @@ export default function Photography() {
       <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
         ← back to the writing room
       </Link>
-      <h1 className="mt-2 font-display text-4xl font-bold text-ink sm:text-5xl">
-        photography 📷
-      </h1>
+      <PageTitle className="mt-2 text-ink">photography 📷</PageTitle>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
         Light I caught and kept. (These are placeholder frames — drop your
         photos into <code className="rounded bg-white/60 px-1">/public/photos</code>{" "}

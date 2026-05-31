@@ -1,10 +1,39 @@
 import fs from "node:fs";
 import path from "node:path";
-import matter from "gray-matter";
 import OpenAI from "openai";
+import { getPoem } from "@/lib/poems-store";
 
-const POEMS_DIR = path.join(process.cwd(), "src/content/poems");
 const ART_DIR = path.join(process.cwd(), "public/poem-art");
+
+function blobsEnabled(): boolean {
+  return !!(process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT);
+}
+
+async function artStore() {
+  const { getStore } = await import("@netlify/blobs");
+  return getStore("poem-art");
+}
+
+async function readCachedArt(slug: string): Promise<Buffer | null> {
+  if (blobsEnabled()) {
+    const store = await artStore();
+    const buf = await store.get(slug, { type: "arrayBuffer" });
+    return buf ? Buffer.from(buf) : null;
+  }
+  const outPath = path.join(ART_DIR, `${slug}.png`);
+  return fs.existsSync(outPath) ? fs.readFileSync(outPath) : null;
+}
+
+async function writeCachedArt(slug: string, png: Buffer): Promise<void> {
+  if (blobsEnabled()) {
+    const store = await artStore();
+    const ab = png.buffer.slice(png.byteOffset, png.byteOffset + png.byteLength);
+    await store.set(slug, ab as ArrayBuffer);
+    return;
+  }
+  fs.mkdirSync(ART_DIR, { recursive: true });
+  fs.writeFileSync(path.join(ART_DIR, `${slug}.png`), png);
+}
 
 const INTERPRETER = `You are an artistic poetry interpreter. You read a poem and
 distill it into ONE symbolic, evocative image prompt — never literal, never
@@ -64,21 +93,16 @@ async function renderImage(prompt: string): Promise<Buffer> {
  */
 export async function ensurePoemArt(slugRaw: string): Promise<Buffer> {
   const slug = safeSlug(slugRaw);
-  const outPath = path.join(ART_DIR, `${slug}.png`);
 
-  if (fs.existsSync(outPath)) return fs.readFileSync(outPath);
+  const cached = await readCachedArt(slug);
+  if (cached) return cached;
 
-  const mdPath = path.join(POEMS_DIR, `${slug}.md`);
-  if (!fs.existsSync(mdPath)) throw new Error("Poem not found");
+  const poem = await getPoem(slug);
+  if (!poem) throw new Error("Poem not found");
 
-  const { data, content } = matter(fs.readFileSync(mdPath, "utf8"));
-  const prompt = await buildPrompt(
-    (data.title as string) || slug,
-    content.trim(),
-  );
+  const prompt = await buildPrompt(poem.title || slug, poem.content.trim());
   const png = await renderImage(prompt);
 
-  fs.mkdirSync(ART_DIR, { recursive: true });
-  fs.writeFileSync(outPath, png);
+  await writeCachedArt(slug, png);
   return png;
 }

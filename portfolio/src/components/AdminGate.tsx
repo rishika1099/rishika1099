@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
-export default function PoemGate() {
+export default function AdminGate() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,7 +16,7 @@ export default function PoemGate() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/unlock", {
+      const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
@@ -49,13 +49,13 @@ export default function PoemGate() {
           transition={{ repeat: Infinity, duration: 3 }}
           className="text-6xl"
         >
-          🚪
+          🗝️
         </motion.div>
         <h2 className="mt-3 font-display text-2xl font-bold text-ink">
-          this little room is locked
+          the writing desk
         </h2>
         <p className="mt-1 font-body text-base text-ink-soft">
-          whisper the secret word to come in ✦
+          only you can tend the poems here ✦
         </p>
 
         <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
@@ -63,7 +63,7 @@ export default function PoemGate() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="secret word…"
+            placeholder="admin key…"
             autoFocus
             className="rounded-full border border-lavender bg-white/80 px-5 py-3 text-center font-body text-ink outline-none focus:border-blush focus:ring-2 focus:ring-blush/50"
           />
@@ -72,7 +72,7 @@ export default function PoemGate() {
             disabled={loading || !password}
             className="rounded-full bg-blush px-6 py-3 font-display font-semibold text-ink transition hover:scale-105 disabled:opacity-50"
           >
-            {loading ? "knocking…" : "knock ✦"}
+            {loading ? "unlocking…" : "unlock the desk ✦"}
           </button>
         </form>
 

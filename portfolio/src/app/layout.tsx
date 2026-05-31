@@ -10,6 +10,12 @@ const cattalague = localFont({
   display: "swap",
 });
 
+const halimun = localFont({
+  src: "./fonts/Halimun.otf",
+  variable: "--font-halimun",
+  display: "swap",
+});
+
 const fredoka = Fredoka({
   variable: "--font-fredoka",
   subsets: ["latin"],
@@ -44,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fredoka.variable} ${nunito.variable} ${caveat.variable} ${cormorant.variable} ${cattalague.variable}`}
+      className={`${fredoka.variable} ${nunito.variable} ${caveat.variable} ${cormorant.variable} ${cattalague.variable} ${halimun.variable}`}
     >
       <body className="antialiased">
         <Nav />

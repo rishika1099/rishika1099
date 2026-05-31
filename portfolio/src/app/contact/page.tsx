@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
+import PageTitle from "@/components/PageTitle";
 
 const links = [
   { icon: "✉️", label: "Email", value: "rm4318@columbia.edu", href: "mailto:rm4318@columbia.edu" },
@@ -20,9 +21,7 @@ export default function Contact() {
       >
         🏮
       </motion.span>
-      <h1 className="mt-3 font-display text-4xl font-bold text-ink sm:text-5xl">
-        let&apos;s say hello 💌
-      </h1>
+      <PageTitle className="mt-3 text-ink">let&apos;s say hello 💌</PageTitle>
       <p className="mt-3 max-w-xl font-body text-lg text-ink-soft">
         Whether it&apos;s a role, a research idea, a poem you loved, or just a
         nice photo of the sky — my inbox is always open.
