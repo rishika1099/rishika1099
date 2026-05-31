@@ -78,22 +78,25 @@ export default function WorkGallery({
   const [filter, setFilter] = useState<Category | "All">("All");
   const [domain, setDomain] = useState<Domain | "All">("All");
 
+  const filtering = filter !== "All" || domain !== "All";
+  const matches = (p: Project) =>
+    (filter === "All" || p.categories.includes(filter)) &&
+    (domain === "All" || (p.domains?.includes(domain) ?? false));
   const featured = projects.filter((p) => p.featured);
-  const rest = projects.filter(
-    (p) =>
-      !p.featured &&
-      (filter === "All" || p.categories.includes(filter)) &&
-      (domain === "All" || (p.domains?.includes(domain) ?? false)),
-  );
+  // When a filter is active, show every match (featured included). Otherwise the
+  // featured blooms sit in their own section and the grid holds the rest.
+  const grid = projects.filter((p) => matches(p) && (filtering || !p.featured));
 
   return (
     <>
-      {/* Featured */}
-      <h2 className="mt-10 font-body text-2xl font-bold text-ink">
-        ⭐ featured blooms
-      </h2>
-      <div className="mt-5 grid gap-5 sm:grid-cols-2">
-        {featured.map((p, i) => (
+      {/* Featured (hidden while a filter is active so matches aren't split) */}
+      {!filtering && (
+        <>
+          <h2 className="mt-10 font-body text-2xl font-bold text-ink">
+            ⭐ featured blooms
+          </h2>
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+            {featured.map((p, i) => (
           <motion.article
             key={p.name}
             initial={{ opacity: 0, y: 18 }}
@@ -106,12 +109,14 @@ export default function WorkGallery({
             <span className="animate-float-med text-4xl">{p.emoji}</span>
             <h3 className="mt-2 font-body text-xl font-bold text-ink">{p.name}</h3>
             <p className="mt-1.5 font-body text-sm text-ink-soft">{p.blurb}</p>
-            <DomainChips domains={p.domains} />
-            <Tags tags={p.tags} />
-            <Links p={p} />
-          </motion.article>
-        ))}
-      </div>
+                <DomainChips domains={p.domains} />
+                <Tags tags={p.tags} />
+                <Links p={p} />
+              </motion.article>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Filters */}
       <div className="mt-12 flex flex-wrap items-center justify-between gap-3">
@@ -151,7 +156,7 @@ export default function WorkGallery({
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
-          {rest.map((p) => (
+          {grid.map((p) => (
             <motion.article
               layout
               key={p.name}
@@ -171,7 +176,7 @@ export default function WorkGallery({
             </motion.article>
           ))}
         </AnimatePresence>
-        {rest.length === 0 && (
+        {grid.length === 0 && (
           <p className="font-body text-ink-soft">nothing growing in this patch yet ✦</p>
         )}
       </div>

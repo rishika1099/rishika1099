@@ -8,7 +8,7 @@ const gradients: Record<Vibe, string> = {
   dawn: "from-sky via-lavender/60 to-dawn",
   cozy: "from-dawn via-cream to-gold/40",
   meadow: "from-mint via-cream to-meadow",
-  twilight: "from-twilight via-twilight-soft to-[#5b4a8a]",
+  twilight: "from-[#0f0f13] via-[#17171d] to-[#23232b]",
   sunset: "from-sunset via-blush/50 to-lavender",
 };
 

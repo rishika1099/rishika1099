@@ -72,7 +72,7 @@ export default function Home() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="mt-16 grid w-full grid-cols-2 gap-4 sm:mt-20 sm:grid-cols-4"
+        className="mt-10 grid w-full grid-cols-2 gap-4 sm:grid-cols-4"
       >
         {tabs.map((t, i) => (
           <motion.div
@@ -82,13 +82,13 @@ export default function Home() {
           >
             <Link
               href={t.href}
-              className="flex h-full flex-col items-center gap-1 rounded-3xl p-4 text-center soft-card"
+              className="flex h-full flex-col items-center gap-1 rounded-3xl p-5 text-center soft-card"
             >
-              <span className="animate-float-med text-3xl">{t.icon}</span>
-              <span className="mt-1 font-body text-lg font-bold text-ink">
+              <span className="animate-float-med text-4xl">{t.icon}</span>
+              <span className="mt-1 font-body text-xl font-bold text-ink">
                 {t.title}
               </span>
-              <span className="font-body text-xs text-ink-soft">{t.blurb}</span>
+              <span className="font-body text-sm text-ink-soft">{t.blurb}</span>
             </Link>
           </motion.div>
         ))}

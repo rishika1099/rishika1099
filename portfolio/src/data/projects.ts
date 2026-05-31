@@ -193,7 +193,7 @@ export const projects: Project[] = [
     emoji: "🧒",
     blurb:
       "ML & predictive analytics framework for identifying high-risk child-welfare cases using NCANDS data.",
-    categories: ["Predictive Analysis", "Machine Learning"],
+    categories: ["Causal Inference", "Predictive Analysis", "Machine Learning"],
     domains: ["Public Sector", "Human Rights"],
     repo: gh("Safe-Start-NCANDS-Child-Welfare-Prediction"),
     tags: ["Predictive", "Public Policy"],

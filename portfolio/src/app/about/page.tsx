@@ -243,10 +243,10 @@ export default function About() {
         ))}
       </div>
 
-      <div className="mt-10">
+      <div className="mt-10 text-center">
         <a
           href="/Rishika_Resume.pdf"
-          className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-6 py-3 font-display font-semibold text-ink transition hover:scale-105"
+          className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-serif text-lg font-semibold italic text-ink transition hover:scale-105"
         >
           📄 peek at my résumé
         </a>

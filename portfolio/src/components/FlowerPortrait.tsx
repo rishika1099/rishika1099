@@ -12,12 +12,10 @@ type Bloom = {
 };
 
 const blooms: Bloom[] = [
-  { e: "🌸", top: "-10%", left: "16%", d: 5 },
-  { e: "🌷", top: "2%", right: "-8%", d: 6 },
-  { e: "🌼", bottom: "-8%", right: "20%", d: 5.5 },
-  { e: "🌺", bottom: "4%", left: "-8%", d: 6.5 },
-  { e: "🌿", top: "44%", left: "-12%", d: 7 },
-  { e: "✿", top: "-6%", right: "34%", d: 6.2 },
+  { e: "🌸", top: "-10%", left: "12%", d: 5 },
+  { e: "🌷", top: "0%", right: "-8%", d: 6 },
+  { e: "🌼", bottom: "-6%", right: "14%", d: 5.5 },
+  { e: "🌺", bottom: "6%", left: "-8%", d: 6.5 },
 ];
 
 export default function FlowerPortrait() {

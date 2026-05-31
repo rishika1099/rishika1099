@@ -25,7 +25,7 @@ export default function Nav() {
       <nav className="mx-auto mt-3 flex max-w-5xl items-center justify-between rounded-full px-4 py-2 soft-card sm:px-6">
         <Link
           href="/"
-          className="flex items-center gap-2 font-body text-lg font-extrabold text-ink"
+          className="flex items-center gap-2 font-serif text-2xl font-semibold text-ink"
         >
           <motion.span
             animate={{ rotate: [0, -12, 12, 0] }}

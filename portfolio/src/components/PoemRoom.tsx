@@ -70,11 +70,6 @@ export default function PoemRoom({ poems }: { poems: Doc[] }) {
               <h2 className="font-display text-base font-semibold leading-snug text-cream sm:text-lg">
                 {poem.title}
               </h2>
-              {poem.date && (
-                <p className="mt-0.5 font-hand text-sm text-lavender/80">
-                  {poem.date}
-                </p>
-              )}
             </div>
           </motion.button>
         ))}
@@ -87,7 +82,7 @@ export default function PoemRoom({ poems }: { poems: Doc[] }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setActive(null)}
-            className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-twilight/70 p-4 backdrop-blur-sm sm:p-8"
+            className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#0b0b0e]/80 p-4 backdrop-blur-sm sm:p-8"
           >
             <motion.article
               initial={{ opacity: 0, y: 24, scale: 0.97 }}
@@ -95,7 +90,7 @@ export default function PoemRoom({ poems }: { poems: Doc[] }) {
               exit={{ opacity: 0, y: 24, scale: 0.97 }}
               transition={{ type: "spring", stiffness: 200, damping: 24 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative my-auto w-full max-w-2xl rounded-[2rem] border border-white/15 bg-twilight-soft/95 p-7 shadow-2xl sm:p-10"
+              className="relative my-auto w-full max-w-2xl rounded-[2rem] border border-white/10 bg-[#1c1c24]/98 p-7 shadow-2xl sm:p-10"
             >
               <button
                 type="button"
@@ -113,11 +108,6 @@ export default function PoemRoom({ poems }: { poems: Doc[] }) {
               <h2 className="font-display text-3xl font-semibold text-cream">
                 {active.title}
               </h2>
-              {active.date && (
-                <p className="mt-1 font-hand text-lg text-lavender/80">
-                  {active.date}
-                </p>
-              )}
               <div className="prose-poem mt-5 whitespace-pre-line font-serif text-lg leading-relaxed text-cream/90">
                 <ReactMarkdown>{active.content}</ReactMarkdown>
               </div>

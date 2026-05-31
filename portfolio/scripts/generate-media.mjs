@@ -47,6 +47,24 @@ structure (fill the three bracketed parts):
 
 A soft black-and-white oil pastel and charcoal-style drawing of [scene]. The composition is minimal, with large negative space and dreamy smudged shading. The artwork represents [emotion/theme] through [visual metaphor]. Monochrome grayscale, textured paper, soft blurred edges, expressive but not overly detailed, emotional Pinterest-style poetry illustration, no text.`;
 
+// Retry a call on 429 rate limits (OpenAI caps image gen at a few per minute).
+async function withRetry(fn, label) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const retryAfter = Number(err?.headers?.["retry-after"]);
+      if (err?.status === 429 && attempt <= 5) {
+        const wait = Number.isFinite(retryAfter) ? retryAfter * 1000 : 20000;
+        console.log(`  rate limited on ${label}, waiting ${Math.round(wait / 1000)}s …`);
+        await new Promise((r) => setTimeout(r, wait));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
 async function generatePoemArt() {
   if (!fs.existsSync(POEMS_DIR)) return;
   fs.mkdirSync(ART_DIR, { recursive: true });
@@ -74,7 +92,7 @@ async function generatePoemArt() {
     const model = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
     const params = { model, prompt, size: "1024x1024", n: 1 };
     if (model.startsWith("dall-e")) params.response_format = "b64_json";
-    const img = await openai.images.generate(params);
+    const img = await withRetry(() => openai.images.generate(params), `image ${slug}`);
     const b64 = img.data?.[0]?.b64_json;
     if (!b64) throw new Error("image model returned no data");
     fs.writeFileSync(out, Buffer.from(b64, "base64"));
