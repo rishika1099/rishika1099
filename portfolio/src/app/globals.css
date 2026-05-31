@@ -78,11 +78,25 @@ body {
 
 /* Soft glass card */
 .soft-card {
+  --card-hover: rgba(255, 255, 255, 0.92);
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.65);
   box-shadow: 0 10px 30px -12px rgba(74, 74, 94, 0.28);
+  transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
+.soft-card:hover {
+  background: var(--card-hover);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 38px -14px rgba(74, 74, 94, 0.34);
+}
+
+/* Each page's vibe gives its cards a hover tint that echoes the background */
+.vibe-dawn { --card-hover: rgba(255, 222, 205, 0.92); }
+.vibe-cozy { --card-hover: rgba(255, 226, 206, 0.92); }
+.vibe-meadow { --card-hover: rgba(214, 238, 214, 0.92); }
+.vibe-sunset { --card-hover: rgba(255, 213, 197, 0.92); }
+.vibe-twilight { --card-hover: rgba(232, 219, 248, 0.9); }
 
 .text-shadow-soft { text-shadow: 0 2px 14px rgba(255, 255, 255, 0.65); }
 

@@ -16,13 +16,15 @@ export default async function PoemsPage() {
 
   return (
     <PageShell vibe="twilight">
-      <Link
-        href="/blog"
-        className="font-body text-sm text-lavender/90 hover:text-white"
-      >
-        ← back to the writing room
-      </Link>
-      <PageTitle className="mt-2 text-cream">poems 🕯️</PageTitle>
+      <PageTitle className="text-cream">poems 🕯️</PageTitle>
+      <div className="mt-3">
+        <Link
+          href="/blog"
+          className="font-body text-sm text-lavender/90 hover:text-white"
+        >
+          ← back to the writing room
+        </Link>
+      </div>
 
       {!unlocked ? (
         <PoemGate />

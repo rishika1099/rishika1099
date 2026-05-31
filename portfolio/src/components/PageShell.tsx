@@ -13,7 +13,7 @@ export default function PageShell({
   className?: string;
 }) {
   return (
-    <div className="relative min-h-screen">
+    <div className={`relative min-h-screen vibe-${vibe}`}>
       <Scenery vibe={vibe} />
       <motion.div
         initial={{ opacity: 0, y: 16 }}

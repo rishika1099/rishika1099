@@ -9,10 +9,12 @@ export default function TechnicalIndex() {
   const posts = getBlogPosts();
   return (
     <PageShell vibe="meadow">
-      <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
-        ← back to the writing room
-      </Link>
-      <PageTitle className="mt-2 text-ink">technical blogs 📓</PageTitle>
+      <PageTitle className="text-ink">technical blogs 📓</PageTitle>
+      <div className="mt-3">
+        <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
+          ← back to the writing room
+        </Link>
+      </div>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
         Things I figured out and wanted to remember out loud.
       </p>

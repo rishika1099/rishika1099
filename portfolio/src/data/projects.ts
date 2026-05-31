@@ -1,4 +1,15 @@
-export type Category = "AI / LLM" | "Research & Causal" | "Computer Vision" | "Classic ML";
+export type Category =
+  | "Generative AI"
+  | "Agentic AI"
+  | "NLP"
+  | "Causal Inference"
+  | "Statistical Modeling"
+  | "Machine Learning"
+  | "Predictive Analysis"
+  | "Deep Learning"
+  | "Computer Vision"
+  | "High Performance Machine Learning"
+  | "Cybersecurity";
 
 export interface Project {
   name: string;
@@ -20,7 +31,7 @@ export const projects: Project[] = [
     emoji: "🩺",
     blurb:
       "A multimodal medical-record companion unifying RAG, document understanding, speech, and vision. Consensus extraction across LLMs hit 85.1% micro-F1 with sub-2s latency.",
-    category: "AI / LLM",
+    category: "Generative AI",
     featured: true,
     repo: gh("Folio-Clinical-Multimodal-RAG"),
     demo: "https://folio-health.vercel.app",
@@ -31,7 +42,7 @@ export const projects: Project[] = [
     emoji: "⚡",
     blurb:
       "Benchmarked KIVI quantization, TopK sparsity, SnapKV eviction & MLA on Llama-2-7B with Triton kernels, 4× cache compression, 1.93× faster decode, 3.1× peak throughput.",
-    category: "AI / LLM",
+    category: "High Performance Machine Learning",
     featured: true,
     repo: gh("KV-Cache-Optimization"),
     demo: "https://rishikamamidibathula.substack.com/p/kv-cache-optimization",
@@ -42,7 +53,7 @@ export const projects: Project[] = [
     emoji: "🧬",
     blurb:
       "Causal re-analysis of the Moertel 1990 trial (n=929): ATE, CATE, mediation, transport. Showed collider bias reversing the effect (HR 0.69 → 1.10).",
-    category: "Research & Causal",
+    category: "Causal Inference",
     featured: true,
     repo: gh("Colon-Cancer-Trial-Causal-Analysis"),
     tags: ["Causal Inference", "Biostatistics", "R"],
@@ -52,7 +63,7 @@ export const projects: Project[] = [
     emoji: "🦅",
     blurb:
       "A multi-agent CrewAI system for U.S. federal legal analysis: semantic USC retrieval, precedent search, elements analysis, and draft generation.",
-    category: "AI / LLM",
+    category: "Agentic AI",
     featured: true,
     repo: gh("Federal-Eagle-AI-Legal-Assistant"),
     demo: "https://federal-eagle.streamlit.app/",
@@ -63,7 +74,7 @@ export const projects: Project[] = [
     emoji: "🏅",
     blurb:
       "Full-stack RAG pipeline turning natural language into SQL and visualizations for sports performance analytics.",
-    category: "AI / LLM",
+    category: "Generative AI",
     featured: true,
     repo: gh("Just-Ask-Coach-Query-SQL-Translation"),
     demo: "https://just-ask-coach.netlify.app/",
@@ -74,7 +85,7 @@ export const projects: Project[] = [
     emoji: "🍲",
     blurb:
       "AI food app for video-to-recipe extraction, pantry matching, and personalized health coaching. React + Vite + Framer Motion on Netlify.",
-    category: "AI / LLM",
+    category: "Generative AI",
     featured: true,
     repo: gh("Ruchi-Pantry-to-Plate-Intelligence-Platform"),
     demo: "https://ruchi-app.netlify.app",
@@ -87,7 +98,7 @@ export const projects: Project[] = [
     emoji: "🎬",
     blurb:
       "Converts cooking videos into structured recipes via a multi-stage vision-language pipeline: frame extraction, visual understanding, LLM reasoning.",
-    category: "AI / LLM",
+    category: "Generative AI",
     repo: gh("Reel-Chef-Video-To-Recipie-Extractor"),
     demo: "https://reel-chef.streamlit.app/",
     tags: ["Vision-Language", "LLM"],
@@ -97,7 +108,7 @@ export const projects: Project[] = [
     emoji: "📚",
     blurb:
       "Student-built dashboard for Columbia MSDS course reviews, live Google-Sheets data, AI-summarized reviews, rankings, and side-by-side comparisons.",
-    category: "AI / LLM",
+    category: "Generative AI",
     repo: gh("DSI-Course-Evaluation-Website"),
     demo: "https://dsi-course-evaluation.streamlit.app/",
     tags: ["Streamlit", "LLM Summaries"],
@@ -107,7 +118,7 @@ export const projects: Project[] = [
     emoji: "🏃‍♀️",
     blurb:
       "AI coaching that maps fitness queries to personalized exercises via two-stage retrieval + LLM re-ranking. FastAPI, PostgreSQL, Claude.",
-    category: "AI / LLM",
+    category: "Generative AI",
     repo: gh("Prescribed-Motion-Exercise-Recommendation-LLM"),
     demo: "https://prescribed-motion.netlify.app",
     tags: ["Retrieval", "FastAPI", "Claude"],
@@ -117,7 +128,7 @@ export const projects: Project[] = [
     emoji: "🎶",
     blurb:
       "AI diary turning journal entries into personalized verses + music recs. DistilRoBERTa emotion, K-Means over 867 songs, FAISS RAG, GPT-4o-mini.",
-    category: "AI / LLM",
+    category: "NLP",
     repo: gh("Hey-Swiftie-Cluster-Emotion-Verse"),
     demo: "https://dear-diary-love-taylor.vercel.app/",
     tags: ["Emotion AI", "FAISS", "Clustering"],
@@ -127,7 +138,7 @@ export const projects: Project[] = [
     emoji: "👻",
     blurb:
       "AI blog-post generator with DALL·E images, SEO-optimized content with customizable tone, length, and generated visuals.",
-    category: "AI / LLM",
+    category: "Generative AI",
     repo: gh("Ghost-Writer-AI-Blog-Assistant"),
     demo: "https://ghost-writer-ai.streamlit.app/",
     tags: ["Generative AI", "DALL·E"],
@@ -137,7 +148,7 @@ export const projects: Project[] = [
     emoji: "🔬",
     blurb:
       "Educational medical-image analysis with Gemini Vision, upload or camera capture, safe non-diagnostic insights with built-in disclaimers.",
-    category: "AI / LLM",
+    category: "Computer Vision",
     repo: gh("Dr-Pixel-Medical-Image-Analysis-Assistant"),
     demo: "https://doctor-pixel.streamlit.app/",
     tags: ["Vision", "Gemini"],
@@ -147,7 +158,7 @@ export const projects: Project[] = [
     emoji: "💡",
     blurb:
       "Explains technical concepts through personalized analogies based on your interests. Interactive and friendly.",
-    category: "AI / LLM",
+    category: "Generative AI",
     repo: gh("Analogy-Tutor"),
     demo: "https://ai-concept-tutor.streamlit.app/",
     tags: ["LLM", "Education"],
@@ -159,7 +170,7 @@ export const projects: Project[] = [
     emoji: "🧒",
     blurb:
       "ML & predictive analytics framework for identifying high-risk child-welfare cases using NCANDS data.",
-    category: "Research & Causal",
+    category: "Predictive Analysis",
     repo: gh("Safe-Start-NCANDS-Child-Welfare-Prediction"),
     tags: ["Predictive", "Public Policy"],
   },
@@ -168,7 +179,7 @@ export const projects: Project[] = [
     emoji: "🥗",
     blurb:
       "Visual analysis of how diet and lifestyle contribute to colorectal cancer risk, built in R/Shiny.",
-    category: "Research & Causal",
+    category: "Statistical Modeling",
     repo: gh("Colorectal-Cancer-Risk-Analysis"),
     demo: "https://rishika1099.shinyapps.io/colorectal_cancer_risk_analysis/",
     tags: ["R", "Shiny", "EDA"],
@@ -225,7 +236,7 @@ export const projects: Project[] = [
     emoji: "🚗",
     blurb:
       "Predicts used-car prices (India), 65.6% R² with XGBoost + Optuna, SHAP explainability across 4 ensembles.",
-    category: "Classic ML",
+    category: "Predictive Analysis",
     repo: gh("Car-Price-Prediction"),
     tags: ["XGBoost", "SHAP", "Optuna"],
   },
@@ -234,7 +245,7 @@ export const projects: Project[] = [
     emoji: "🍷",
     blurb:
       "Gradient Boosting on physicochemical properties with SHAP, feature importance, and PDPs for interpretability.",
-    category: "Classic ML",
+    category: "Machine Learning",
     repo: gh("Red-Wine-Quality-Prediction"),
     tags: ["Gradient Boosting", "SHAP"],
   },
@@ -243,7 +254,7 @@ export const projects: Project[] = [
     emoji: "🏦",
     blurb:
       "Production-style pipeline + Gradient Boosting for loan approval with SHAP explanations and an interactive UI.",
-    category: "Classic ML",
+    category: "Predictive Analysis",
     repo: gh("Loan-Status-Prediction"),
     tags: ["Pipelines", "SHAP"],
   },
@@ -252,7 +263,7 @@ export const projects: Project[] = [
     emoji: "📰",
     blurb:
       "TF-IDF + Linear SVM on the WELFake dataset with a real-time credibility-prediction interface.",
-    category: "Classic ML",
+    category: "NLP",
     repo: gh("Fake-News-Detection"),
     tags: ["NLP", "SVM", "TF-IDF"],
   },
@@ -261,7 +272,7 @@ export const projects: Project[] = [
     emoji: "🏡",
     blurb:
       "XGBoost regression on California housing with an interactive what-if explorer.",
-    category: "Classic ML",
+    category: "Predictive Analysis",
     repo: gh("House-Price-Prediction"),
     tags: ["XGBoost", "Regression"],
   },
@@ -270,7 +281,7 @@ export const projects: Project[] = [
     emoji: "🩸",
     blurb:
       "Gradient Boosting on clinical indicators with SHAP for global and per-patient explanations.",
-    category: "Classic ML",
+    category: "Predictive Analysis",
     repo: gh("Diabetes-Risk-Prediction"),
     tags: ["Gradient Boosting", "SHAP"],
   },
@@ -279,7 +290,7 @@ export const projects: Project[] = [
     emoji: "🪨",
     blurb:
       "Classifies sonar signals as rock or mine via cross-validated automated model selection.",
-    category: "Classic ML",
+    category: "Machine Learning",
     repo: gh("Rock-Mine-Prediction"),
     tags: ["Classification", "Model Selection"],
   },
@@ -288,7 +299,7 @@ export const projects: Project[] = [
     emoji: "🛍️",
     blurb:
       "Predicts repeat-purchase behavior for food-delivery businesses and surfaces key retention drivers.",
-    category: "Classic ML",
+    category: "Predictive Analysis",
     repo: gh("Customer-Churn-Prediction"),
     tags: ["Churn", "Retention"],
   },
@@ -297,7 +308,7 @@ export const projects: Project[] = [
     emoji: "❤️",
     blurb:
       "EDA, feature engineering, SMOTE for imbalance, and tuned models exploring heart-disease risk factors.",
-    category: "Classic ML",
+    category: "Predictive Analysis",
     repo: gh("Heart-Disease-Prediction"),
     tags: ["SMOTE", "Tuning"],
   },
@@ -306,7 +317,7 @@ export const projects: Project[] = [
     emoji: "🤖",
     blurb:
       "Deep neural networks combining static + dynamic analysis to detect malicious Android apps.",
-    category: "Classic ML",
+    category: "Cybersecurity",
     repo: gh("Android-Malware-Analysis"),
     tags: ["Security", "Deep Learning"],
   },
@@ -315,15 +326,22 @@ export const projects: Project[] = [
     emoji: "🔗",
     blurb:
       "Secure storage of encrypted medical/review data using ECDSA signatures, Proof of Work, and hash chaining.",
-    category: "Classic ML",
+    category: "Cybersecurity",
     repo: gh("Blockchain-Secure-Data-Storage"),
     tags: ["Blockchain", "Cryptography"],
   },
 ];
 
 export const categories: Category[] = [
-  "AI / LLM",
-  "Research & Causal",
+  "Generative AI",
+  "Agentic AI",
+  "NLP",
+  "Causal Inference",
+  "Statistical Modeling",
+  "Machine Learning",
+  "Predictive Analysis",
+  "Deep Learning",
   "Computer Vision",
-  "Classic ML",
+  "High Performance Machine Learning",
+  "Cybersecurity",
 ];

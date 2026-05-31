@@ -11,10 +11,12 @@ export default async function Photography() {
   const photos = await listPhotos();
   return (
     <PageShell vibe="sunset">
-      <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
-        ← back to the writing room
-      </Link>
-      <PageTitle className="mt-2 text-ink">photography 📷</PageTitle>
+      <PageTitle className="text-ink">photography 📷</PageTitle>
+      <div className="mt-3">
+        <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
+          ← back to the writing room
+        </Link>
+      </div>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
         Light I caught and kept.{" "}
         {photos.length === 0 && (

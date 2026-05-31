@@ -130,7 +130,7 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
         <span className="animate-float-med text-3xl">{entry.icon}</span>
         <div className="flex-1">
           <p className="font-body text-sm italic text-ink-soft">{entry.when}</p>
-          <h3 className="font-display text-lg font-semibold text-ink">
+          <h3 className="font-body text-lg font-bold text-ink">
             {entry.title}
           </h3>
           <p className="font-body text-sm font-semibold text-ink-soft">
@@ -196,7 +196,7 @@ export default function About() {
       </div>
 
       {/* Education */}
-      <h2 className="mt-12 font-display text-2xl font-semibold text-ink">
+      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
         where I studied 🎓
       </h2>
       <div className="mt-5 space-y-4">
@@ -206,7 +206,7 @@ export default function About() {
       </div>
 
       {/* Skills */}
-      <h2 className="mt-12 font-display text-2xl font-semibold text-ink">
+      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
         things I tinker with
       </h2>
       <div className="mt-4 flex flex-wrap gap-2.5">
@@ -222,7 +222,7 @@ export default function About() {
       </div>
 
       {/* Timeline */}
-      <h2 className="mt-12 font-display text-2xl font-semibold text-ink">
+      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
         where I&apos;ve been
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">

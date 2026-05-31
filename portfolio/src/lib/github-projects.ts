@@ -1,0 +1,102 @@
+import { projects as curated, type Category, type Project } from "@/data/projects";
+
+const GH_USER = "rishika1099";
+
+const CATEGORY_EMOJI: Record<Category, string> = {
+  "Generative AI": "✨",
+  "Agentic AI": "🤖",
+  NLP: "💬",
+  "Causal Inference": "🧬",
+  "Statistical Modeling": "📈",
+  "Machine Learning": "🌼",
+  "Predictive Analysis": "🔮",
+  "Deep Learning": "🧠",
+  "Computer Vision": "👁️",
+  "High Performance Machine Learning": "⚡",
+  Cybersecurity: "🔐",
+};
+
+// Ordered keyword rules: first match wins, so put the more specific ones first.
+const RULES: [Category, RegExp][] = [
+  ["Agentic AI", /\b(agent|agentic|crew|autogen|multi-?agent|orchestrat)/i],
+  ["High Performance Machine Learning", /\b(triton|cuda|gpu|quantiz|kv-?cache|hpc|kernel|inference-?opt|throughput)/i],
+  ["Generative AI", /\b(rag|llm|gpt|generative|diffusion|dall|gemini|claude|chatbot|prompt|retrieval-?augmented|text-?to-)/i],
+  ["Causal Inference", /\b(causal|counterfactual|treatment-?effect|mediation|confound)/i],
+  ["Computer Vision", /\b(vision|image|cnn|resnet|vgg|yolo|segmentation|detection|ocr|x-?ray|scan)/i],
+  ["NLP", /\b(nlp|text|sentiment|language|bert|token|summari|translation|news)/i],
+  ["Cybersecurity", /\b(security|malware|crypto|blockchain|cyber|encrypt|intrusion)/i],
+  ["Statistical Modeling", /\b(statistic|shiny|\beda\b|distribution|hypothesis|bayesian|regression-?analysis)/i],
+  ["Predictive Analysis", /\b(forecast|predict|churn|price|risk|demand|recommend)/i],
+  ["Deep Learning", /\b(deep|neural|dnn|lstm|transformer|gan|autoencoder)/i],
+];
+
+function categorize(text: string): Category {
+  for (const [cat, re] of RULES) if (re.test(text)) return cat;
+  return "Machine Learning";
+}
+
+function prettyName(slug: string): string {
+  return slug
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .trim();
+}
+
+interface GhRepo {
+  name: string;
+  description: string | null;
+  html_url: string;
+  homepage: string | null;
+  topics?: string[];
+  language: string | null;
+  fork: boolean;
+}
+
+/**
+ * Curated projects (hand-written blurbs, featured) plus every other public repo
+ * pulled live from GitHub, so new projects show up here on their own. Falls back
+ * to just the curated list if GitHub is unreachable.
+ */
+export async function getAllProjects(): Promise<Project[]> {
+  const curatedSlugs = new Set(
+    curated.map((p) => p.repo.split("/").pop()!.toLowerCase()),
+  );
+
+  let repos: GhRepo[] = [];
+  try {
+    const res = await fetch(
+      `https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=updated`,
+      { headers: { Accept: "application/vnd.github+json" }, next: { revalidate: 3600 } },
+    );
+    if (res.ok) repos = (await res.json()) as GhRepo[];
+  } catch {
+    // offline / rate-limited: just show the curated list
+  }
+
+  const extra: Project[] = repos
+    .filter(
+      (r) =>
+        !r.fork &&
+        r.name.toLowerCase() !== GH_USER &&
+        !curatedSlugs.has(r.name.toLowerCase()),
+    )
+    .map((r) => {
+      const category = categorize(
+        `${r.name} ${r.description ?? ""} ${(r.topics ?? []).join(" ")} ${r.language ?? ""}`,
+      );
+      const tags = (r.topics?.length ? r.topics.slice(0, 4) : [r.language])
+        .filter(Boolean)
+        .map((t) => String(t));
+      return {
+        name: prettyName(r.name),
+        emoji: CATEGORY_EMOJI[category],
+        blurb: r.description || "A little experiment on GitHub ✦",
+        category,
+        repo: r.html_url,
+        demo: r.homepage && /^https?:\/\//.test(r.homepage) ? r.homepage : undefined,
+        tags,
+      };
+    });
+
+  return [...curated, ...extra];
+}

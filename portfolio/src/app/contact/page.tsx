@@ -51,8 +51,8 @@ export default function Contact() {
         ))}
       </div>
 
-      <p className="mt-12 font-hand text-xl text-ink-soft">
-        made with pastel skies & too much tea ✦
+      <p className="mt-12 font-serif text-xl italic text-ink-soft">
+        made with pastel skies &amp; too much tea ✦
       </p>
     </PageShell>
   );

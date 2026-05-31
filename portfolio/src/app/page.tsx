@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
+import FlowerPortrait from "@/components/FlowerPortrait";
 
 const tabs = [
   { href: "/about", icon: "🍵", title: "About", blurb: "the human behind the models" },
@@ -14,11 +15,13 @@ const tabs = [
 export default function Home() {
   return (
     <PageShell vibe="dawn" className="flex flex-col items-center text-center">
+      <FlowerPortrait />
+
       <motion.p
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="font-serif text-xl italic text-ink-soft sm:text-2xl"
+        className="mt-8 font-serif text-xl italic text-ink-soft sm:text-2xl"
       >
         hi, the internet! welcome to my little corner ✦
       </motion.p>
