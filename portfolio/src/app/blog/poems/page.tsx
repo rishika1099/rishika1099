@@ -38,6 +38,12 @@ export default async function PoemsPage() {
           </div>
 
           <PoemRoom poems={await listPoems()} />
+
+          <p className="mt-14 text-center font-body text-xs text-lavender/70">
+            © {new Date().getFullYear()} Rishika Mamidibathula. These poems are my
+            own work, shared here with love. Please don&apos;t reproduce or repost
+            them without permission. ✦
+          </p>
         </>
       )}
     </PageShell>
