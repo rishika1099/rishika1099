@@ -51,7 +51,10 @@ export default function AdminGate() {
         >
           🗝️
         </motion.div>
-        <h2 className="mt-3 font-display text-2xl font-bold text-ink">
+        <h2
+          style={{ fontFamily: "var(--font-halimun)" }}
+          className="mt-3 text-2xl text-ink"
+        >
           the writing desk
         </h2>
         <p className="mt-1 font-body text-base text-ink-soft">
