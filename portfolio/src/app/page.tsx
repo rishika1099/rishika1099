@@ -35,7 +35,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.35, type: "spring", stiffness: 120 }}
-            className="mt-3 flex flex-col items-center gap-1 font-name text-5xl font-normal leading-[1.05] text-ink text-shadow-soft sm:text-6xl md:items-start"
+            className="mt-7 flex flex-col items-center gap-3 font-name text-5xl font-normal leading-[1.15] text-ink text-shadow-soft sm:mt-9 sm:text-6xl md:items-start"
           >
             <motion.span
               className="block"
