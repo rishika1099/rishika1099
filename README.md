@@ -10,18 +10,23 @@
   <img src="https://skillicons.dev/icons?i=py,r,tensorflow,pytorch,sklearn,docker,linux,git,github,aws,gcp&perline=11" />
 </p>
 
-<p align="center">💡 <i>Passionate about leveraging AI to drive business impact and solve real-world problems.</i></p>
+<p align="center">
+  💡 <i>Building AI systems that turn messy real-world data into useful, explainable decisions.</i>
+</p>
 
 ---
+
 <p align="center">
-  <a href="https://rishika-m.netlify.app">
-    <img src="./images/computer-girl.gif" width="450">
+  <a href="https://rishika-m.netlify.app/">
+    <img src="./images/computer-girl.gif" width="450" alt="Portfolio">
   </a>
 </p>
 
 <p align="center">
   ↳ click the screen, she built something
 </p>
+
+---
 
 ## 💼 About Me
 
@@ -110,6 +115,11 @@ const rishika = {
 
 ---
 
+<details>
+<summary><b>🔬 Research Experience</b></summary>
+
+<br>
+
 ## 🔬 Research Experience
 
 ### 🏥 Columbia University Irving Medical Center | Research Assistant — Clinical LLM & Phenotyping
@@ -146,7 +156,14 @@ Built an automated **Human Rights Due Diligence scoring framework** for **27 def
 
 **Stack:** Claude API, Python, pandas, Excel reporting, statistical reliability metrics
 
+</details>
+
 ---
+
+<details>
+<summary><b>🎓 Teaching Experience</b></summary>
+
+<br>
 
 ## 🎓 Teaching Experience
 
@@ -164,7 +181,14 @@ teaching = {
 }
 ```
 
+</details>
+
 ---
+
+<details>
+<summary><b>🤝 Volunteer Experience</b></summary>
+
+<br>
 
 ## 🤝 Volunteer Experience
 
@@ -188,7 +212,14 @@ council = {
 }
 ```
 
+</details>
+
 ---
+
+<details>
+<summary><b>💼 Professional Journey</b></summary>
+
+<br>
 
 ## 💼 Professional Journey
 
@@ -254,7 +285,14 @@ achievements = {
 }
 ```
 
+</details>
+
 ---
+
+<details>
+<summary><b>🚀 Projects</b></summary>
+
+<br>
 
 # 🚀 Projects
 
@@ -298,9 +336,9 @@ achievements = {
 | [Folio-Clinical-Multimodal-RAG](https://github.com/rishika1099/Folio-Clinical-Multimodal-RAG) | Multimodal medical record companion with PDF, photo, voice, and text ingestion; five-stage extraction pipeline; consensus extraction using embedding-cluster voting; longitudinal context injection from prior reports; 85.1% extraction micro-F1, 100% RAG recall@1, sub-2s median latency | FastAPI, MongoDB, Redis, React, Vite, Claude API | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) ![RAG](https://img.shields.io/badge/RAG-00ACC1?style=flat-square) ![Multimodal AI](https://img.shields.io/badge/Multimodal_AI-3949AB?style=flat-square) |
 | [Federal-Eagle-AI-Legal-Assistant](https://github.com/rishika1099/Federal-Eagle-AI-Legal-Assistant) | Multi-agent CrewAI system for U.S. federal legal analysis with semantic retrieval over all 54 U.S. Code titles, precedent search, elements analysis, and draft generation; 87% precision@5 on benchmark queries | CrewAI, LangChain, ChromaDB, Streamlit | ![Legal](https://img.shields.io/badge/Legal-3949AB?style=flat-square) ![Agentic AI](https://img.shields.io/badge/Agentic_AI-5E35B1?style=flat-square) ![RAG](https://img.shields.io/badge/RAG-00ACC1?style=flat-square) |
 | [Just-Ask-Coach-Query-SQL-Translation](https://github.com/rishika1099/Just-Ask-Coach-Query-SQL-Translation) | Natural language to SQL to visualization pipeline for sports performance analytics with semantic KPI retrieval, SQL generation, AST safety validation, self-verification, charting, and follow-up suggestions | FastAPI, SQLite, ChromaDB, Claude, React, Vite | ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) |
-| [Prescibed-Motion-Exercise-Recommendation-LLM](https://github.com/rishika1099/Prescibed-Motion-Exercise-Recommendation-LLM) | AI coaching system mapping natural language fitness queries to personalized exercise recommendations using two-stage retrieval over 100k+ exercises and Claude tool-use re-ranking | FastAPI, PostgreSQL, Supabase, Claude, Fly.io, Netlify | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
+| [Prescribed-Motion-Exercise-Recommendation-LLM](https://github.com/rishika1099/Prescribed-Motion-Exercise-Recommendation-LLM) | AI coaching system mapping natural language fitness queries to personalized exercise recommendations using two-stage retrieval over 100k+ exercises and Claude tool-use re-ranking | FastAPI, PostgreSQL, Supabase, Claude, Fly.io, Netlify | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 | [Ruchi-Pantry-to-Plate-Intelligence-Platform](https://github.com/rishika1099/Ruchi-Pantry-to-Plate-Intelligence-Platform) | AI food platform with video-to-recipe extraction, pantry-to-plate matching, nutrition and allergen data, health coaching, smart swaps, and adaptive meal plans | React, Vite, Framer Motion, OpenAI, Serverless | ![Food & Nutrition](https://img.shields.io/badge/Food_%26_Nutrition-FF7043?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
-| [Reel-Chef-Video-To-Recipie-Extractor](https://github.com/rishika1099/Reel-Chef-Video-To-Recipie-Extractor) | Vision-language pipeline that converts cooking videos into structured recipes with ingredient lists, step-by-step instructions, timestamps, and estimated cook times | Python, Computer Vision, LLMs | ![Food & Nutrition](https://img.shields.io/badge/Food_%26_Nutrition-FF7043?style=flat-square) ![Multimodal AI](https://img.shields.io/badge/Multimodal_AI-3949AB?style=flat-square) |
+| [Reel-Chef-Video-To-Recipe-Extractor](https://github.com/rishika1099/Reel-Chef-Video-To-Recipe-Extractor) | Vision-language pipeline that converts cooking videos into structured recipes with ingredient lists, step-by-step instructions, timestamps, and estimated cook times | Python, Computer Vision, LLMs | ![Food & Nutrition](https://img.shields.io/badge/Food_%26_Nutrition-FF7043?style=flat-square) ![Multimodal AI](https://img.shields.io/badge/Multimodal_AI-3949AB?style=flat-square) |
 | [Hey-Swiftie-Cluster-Emotion-Verse](https://github.com/rishika1099/Hey-Swiftie-Cluster-Emotion-Verse) | AI diary that converts journal entries into personalized verses and music recommendations using DistilRoBERTa emotion classification, K-Means clustering, lyric embeddings, and RAG | Python, DistilRoBERTa, K-Means, OpenAI, React, RAG | ![Creative AI](https://img.shields.io/badge/Creative_AI-AB47BC?style=flat-square) ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 | [DSI-Course-Evaluation-Website](https://github.com/rishika1099/DSI-Course-Evaluation-Website) | Student dashboard for Columbia MSDS course reviews with live Google Sheets data, personalized course rankings, AI-summarized review deep dives, and course recommendations | Python, Google Sheets API, LLMs | ![Education](https://img.shields.io/badge/Education-1E88E5?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 | [AI-Blog-Assistant](https://github.com/rishika1099/AI-Blog-Assistant) | GPT-4 blog generator with image generation and SEO optimization | OpenAI, Streamlit | ![Creative AI](https://img.shields.io/badge/Creative_AI-AB47BC?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
@@ -363,7 +401,14 @@ achievements = {
 | [Blockchain-Secure-Data-Storage](https://github.com/rishika1099/Blockchain-Secure-Data-Storage) | Secure medical data storage prototype using ECDSA signatures and Proof of Work | Blockchain, ECDSA | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) |
 | [Modular-Image-Encryption](https://github.com/rishika1099/Modular-Image-Encryption) | Custom image encryption framework using image slicing and key-based transformations for secure image storage and transmission | Python, OpenCV, NumPy | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Image Processing](https://img.shields.io/badge/Image_Processing-5E35B1?style=flat-square) |
 
+</details>
+
 ---
+
+<details>
+<summary><b>🎓 Education</b></summary>
+
+<br>
 
 ## 🎓 Education
 
@@ -383,7 +428,7 @@ achievements = {
 - 🏛️ Data Science Institute Student Council — Communications & Professional Resources
 
 ### Vellore Institute of Technology | B.Tech Computer Science - Data Science
-**May 2023 | Vellore, IN | CGPA: 4.0/4.0**
+**May 2023 | Vellore, IN | CGPA: 9.51/10**
 
 - 🏆 Rank: **7/~200** — Top 4%
 - 🎖️ Recipient of **Merit Scholarship 2019-2023**
@@ -391,6 +436,8 @@ achievements = {
 
 <details>
 <summary>📚 <b>Coursework</b></summary>
+
+<br>
 
 | Math | Computer Science | Data Science |
 |------|------------------|--------------|
@@ -415,11 +462,19 @@ achievements = {
 
 </details>
 
+</details>
+
 ---
 
 ## 🌐 Connect with Me!
 
 <p align="center">
+  <a href="https://rishika-m.netlify.app/">
+    <img src="https://img.shields.io/badge/Portfolio-D9BED1?style=for-the-badge&logo=google-chrome&logoColor=white" />
+  </a>
+  <a href="https://substack.com/@rishika1099">
+    <img src="https://img.shields.io/badge/Substack-FF6719?style=for-the-badge&logo=substack&logoColor=white" />
+  </a>
   <a href="https://www.linkedin.com/in/rishika-mamidibathula/">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" />
   </a>
