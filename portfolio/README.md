@@ -12,6 +12,7 @@ Live: https://rishika-m.netlify.app
 
 This isn't a static site, several pieces are powered by ML/LLM pipelines. Where it makes
 sense, each one ships with a small **evaluation** so the quality is measured, not assumed.
+Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 
 - **AI-generated poem art.** Each poem gets its own piece of symbolic black-and-white
   art. A language model reads the poem and distills it into a single evocative image
