@@ -2,24 +2,19 @@
 
 import { motion } from "framer-motion";
 
-type Bloom = {
-  e: string;
-  d: number;
-  top?: string;
-  left?: string;
-  right?: string;
-  bottom?: string;
-};
+const flowers = ["🌸", "🌻", "🌷", "🌼", "🌹", "🌺", "🪻"];
+const R = 60; // ring radius (% from center), so blooms sit around the rim
 
-const blooms: Bloom[] = [
-  { e: "🌸", top: "-10%", left: "12%", d: 5 },
-  { e: "🌻", top: "-13%", left: "46%", d: 5.8 },
-  { e: "🌷", top: "0%", right: "-8%", d: 6 },
-  { e: "🌼", bottom: "-6%", right: "14%", d: 5.5 },
-  { e: "🌹", bottom: "-10%", left: "42%", d: 6.2 },
-  { e: "🌺", bottom: "6%", left: "-8%", d: 6.5 },
-  { e: "🪻", top: "44%", left: "-14%", d: 7 },
-];
+// evenly spaced around the circle, starting at the top
+const blooms = flowers.map((e, i) => {
+  const angle = -Math.PI / 2 + (i / flowers.length) * Math.PI * 2;
+  return {
+    e,
+    left: 50 + R * Math.cos(angle),
+    top: 50 + R * Math.sin(angle),
+    d: 5 + (i % 4) * 0.5,
+  };
+});
 
 export default function FlowerPortrait() {
   return (
@@ -42,10 +37,10 @@ export default function FlowerPortrait() {
         <motion.span
           key={i}
           aria-hidden
-          style={{ top: f.top, left: f.left, right: f.right, bottom: f.bottom }}
+          style={{ left: `${f.left}%`, top: `${f.top}%` }}
           animate={{ y: [0, -5, 0], rotate: [-8, 8, -8] }}
           transition={{ repeat: Infinity, duration: f.d, ease: "easeInOut", delay: i * 0.3 }}
-          className="absolute text-2xl drop-shadow-sm sm:text-3xl"
+          className="absolute -translate-x-1/2 -translate-y-1/2 text-2xl drop-shadow-sm sm:text-3xl"
         >
           {f.e}
         </motion.span>
