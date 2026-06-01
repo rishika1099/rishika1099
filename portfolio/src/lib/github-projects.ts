@@ -17,14 +17,15 @@ const CATEGORY_EMOJI: Record<Category, string> = {
 };
 
 // Ordered keyword rules: first match wins, so put the more specific ones first.
+// First match wins, so unambiguous signals (crypto, agents) go first.
 const RULES: [Category, RegExp][] = [
+  ["Cybersecurity", /\b(security|malware|crypto|blockchain|cyber|encrypt|encryption|cipher|intrusion)/i],
   ["Agentic AI", /\b(agent|agentic|crew|autogen|multi-?agent|orchestrat)/i],
   ["High Performance Machine Learning", /\b(triton|cuda|gpu|quantiz|kv-?cache|hpc|kernel|inference-?opt|throughput)/i],
-  ["Generative AI", /\b(rag|llm|gpt|generative|diffusion|dall|gemini|claude|chatbot|prompt|retrieval-?augmented|text-?to-)/i],
   ["Causal Inference", /\b(causal|counterfactual|treatment-?effect|mediation|confound)/i],
-  ["Computer Vision", /\b(vision|image|cnn|resnet|vgg|yolo|segmentation|detection|ocr|x-?ray|scan)/i],
-  ["NLP", /\b(nlp|text|sentiment|language|bert|token|summari|translation|news)/i],
-  ["Cybersecurity", /\b(security|malware|crypto|blockchain|cyber|encrypt|intrusion)/i],
+  ["Generative AI", /\b(rag|llm|gpt|generative|diffusion model|stable.?diffusion|dall|gemini|claude|chatbot|prompt|retrieval-?augmented|text-?to-)/i],
+  ["Computer Vision", /\b(vision|cnn|resnet|vgg|yolo|segmentation|object detection|ocr|x-?ray|ct scan)/i],
+  ["NLP", /\b(nlp|sentiment|language model|bert|tokeniz|summari|translation|fake news)/i],
   ["Statistical Modeling", /\b(statistic|shiny|\beda\b|distribution|hypothesis|bayesian|regression-?analysis)/i],
   ["Predictive Analysis", /\b(forecast|predict|churn|price|risk|demand|recommend)/i],
   ["Deep Learning", /\b(deep|neural|dnn|lstm|transformer|gan|autoencoder)/i],
