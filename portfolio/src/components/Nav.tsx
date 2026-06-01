@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -23,18 +24,16 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-50">
       <nav className="mx-auto mt-3 flex max-w-5xl items-center justify-between rounded-full px-4 py-2 soft-card sm:px-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 font-serif text-2xl font-semibold text-ink"
-        >
-          <motion.span
-            animate={{ rotate: [0, -12, 12, 0] }}
-            transition={{ repeat: Infinity, repeatDelay: 3, duration: 0.8 }}
-            className="text-2xl"
-          >
-            🐈
-          </motion.span>
-          <span className="hidden sm:inline">rishika</span>
+        <Link href="/" className="flex items-center" aria-label="rishika, home">
+          <Image
+            src="/rishika.gif"
+            alt="rishika"
+            width={224}
+            height={81}
+            unoptimized
+            priority
+            className="h-9 w-auto rounded-full"
+          />
         </Link>
 
         {/* Desktop links */}
