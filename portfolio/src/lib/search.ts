@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { getAllProjects } from "@/lib/github-projects";
+import { getReadmeSnippet } from "@/lib/github-readme";
 import type { Project } from "@/data/projects";
 
 export interface SearchHit {
@@ -13,8 +14,10 @@ export interface SearchHit {
   score: number; // cosine similarity, 0..1
 }
 
-function projectText(p: Project): string {
-  return [p.name, p.blurb, ...(p.categories ?? []), ...(p.domains ?? []), ...(p.tags ?? [])].join(" . ");
+function projectText(p: Project, readme = ""): string {
+  return [p.name, p.blurb, ...(p.categories ?? []), ...(p.domains ?? []), ...(p.tags ?? []), readme]
+    .filter(Boolean)
+    .join(" . ");
 }
 function normalize(v: number[]): number[] {
   const n = Math.sqrt(v.reduce((s, x) => s + x * x, 0)) || 1;
@@ -26,6 +29,10 @@ function dot(a: number[], b: number[]): number {
   return s;
 }
 
+// Below this cosine, a project isn't a real match (unrelated text still scores
+// ~0.15). Drop those instead of padding the list with weak "0% match" cards.
+const MIN_SCORE = 0.24;
+
 // Cache project embeddings per server instance, keyed by the project set.
 let cache: { key: string; projects: Project[]; vectors: number[][] } | null = null;
 
@@ -35,9 +42,10 @@ export async function searchProjects(query: string, topN = 8): Promise<SearchHit
   const key = projects.map((p) => p.name).join("|");
 
   if (!cache || cache.key !== key) {
+    const readmes = await Promise.all(projects.map((p) => getReadmeSnippet(p.repo)));
     const emb = await openai.embeddings.create({
       model: "text-embedding-3-small",
-      input: projects.map(projectText),
+      input: projects.map((p, i) => projectText(p, readmes[i])),
     });
     cache = { key, projects, vectors: emb.data.map((d) => normalize(d.embedding)) };
   }
@@ -47,6 +55,7 @@ export async function searchProjects(query: string, topN = 8): Promise<SearchHit
 
   return cache.projects
     .map((p, i) => ({ p, score: dot(qv, cache!.vectors[i]) }))
+    .filter((r) => r.score >= MIN_SCORE)
     .sort((a, b) => b.score - a.score)
     .slice(0, topN)
     .map(({ p, score }) => ({

@@ -3,6 +3,7 @@ import { Nunito, Caveat, Cormorant_Garamond } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import AskMe from "@/components/AskMe";
 
 const cattalague = localFont({
   src: "./fonts/Cattalague.ttf",
@@ -53,6 +54,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Nav />
         <main className="relative">{children}</main>
+        <AskMe />
       </body>
     </html>
   );
