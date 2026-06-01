@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
+import type { Category, Domain } from "@/data/projects";
 
 const root = process.cwd();
 
@@ -13,6 +14,9 @@ export interface Doc {
   image?: string;
   // when set, the post lives off-site (e.g. Substack) and cards link out
   external?: string;
+  // same tag taxonomy as projects: a domain + technical-area tags
+  domains?: Domain[];
+  tech?: Category[];
 }
 
 function readDir(dir: string): Doc[] {
@@ -32,6 +36,8 @@ function readDir(dir: string): Doc[] {
         content,
         image: (data.image as string) ?? undefined,
         external: (data.external as string) ?? undefined,
+        domains: (data.domains as Domain[]) ?? undefined,
+        tech: (data.tech as Category[]) ?? undefined,
       };
     })
     .sort((a, b) => (a.date < b.date ? 1 : -1));

@@ -3,6 +3,8 @@ title: "The Model Wasn't Wrong. I Was Asking the Wrong Question."
 date: "2026-06-01"
 excerpt: "How a cancer trial and one extra variable changed the way I think about causality."
 external: "https://rishika1099.substack.com/p/prediction-vs-causation"
+domains: ["Healthcare"]
+tech: ["Causal Inference", "Statistical Modeling"]
 ---
 
 I added one more variable to a Cox model and watched chemotherapy flip from

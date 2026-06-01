@@ -3,6 +3,7 @@ title: "Your LLM Is Carrying Around an Entire Library Every Time It Answers You"
 date: "2026-05-08"
 excerpt: "How KIVI, TokenSelect, SnapKV, TopK-Flash, and MLA each try to solve the KV-cache bottleneck, with real experiments on Llama-2-7B running on H100 GPUs."
 external: "https://rishika1099.substack.com/p/kv-cache-optimization"
+tech: ["High Performance Machine Learning", "Generative AI"]
 ---
 
 When you run inference on a large language model, the quiet villain isn't the

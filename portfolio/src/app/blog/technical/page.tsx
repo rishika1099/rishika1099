@@ -2,6 +2,7 @@ import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import { getBlogPosts } from "@/lib/content";
+import { domainColor } from "@/data/projects";
 
 export const metadata = { title: "Technical Blogs" };
 
@@ -35,7 +36,28 @@ export default function TechnicalIndex() {
                 {p.title}
               </h2>
               <p className="mt-1 font-body text-sm text-ink-soft">{p.excerpt}</p>
-              <span className="mt-2 inline-block font-body text-sm font-semibold text-[#c77dba]">
+              {Boolean(p.domains?.length || p.tech?.length) && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {p.domains?.map((d) => (
+                    <span
+                      key={d}
+                      style={{ backgroundColor: domainColor[d] }}
+                      className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
+                    >
+                      {d}
+                    </span>
+                  ))}
+                  {p.tech?.map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-full bg-mint/70 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <span className="mt-3 inline-block font-body text-sm font-semibold text-[#c77dba]">
                 {p.external ? "read on Substack ↗" : "read on →"}
               </span>
             </>
