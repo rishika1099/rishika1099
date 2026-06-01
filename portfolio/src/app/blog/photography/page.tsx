@@ -22,6 +22,13 @@ export default async function Photography() {
       </p>
 
       <PhotoGallery photos={photos} />
+
+      <p className="mt-14 text-center font-body text-xs text-ink-soft">
+        <span className="mr-1.5">©</span>
+        {new Date().getFullYear()}{" "}
+        Rishika Mamidibathula. These photos are my own, shared here with love.
+        Please don&apos;t reproduce or repost them without permission. ✦
+      </p>
     </PageShell>
   );
 }

@@ -15,7 +15,7 @@ const doors = [
   },
   {
     href: "/blog/poems",
-    icon: "🕯️",
+    icon: "🌙",
     title: "Poems",
     blurb: "a collection of midnight thoughts and daylight edits ☁️",
     tint: "bg-lavender/60",
@@ -33,8 +33,8 @@ const doors = [
 export default function BlogHub() {
   return (
     <PageShell vibe="cozy">
-      <PageTitle>the writing room ✍️</PageTitle>
-      <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
+      <PageTitle>the writing room 📖</PageTitle>
+      <p className="mt-3 max-w-4xl font-body text-lg text-ink-soft">
         Three little doors. One for curiosity, one for feelings, one for the
         moments I wanted to keep. They began as scattered notes, late-night
         thoughts, and photographs. Somehow, they all ended up here. ✨

@@ -16,7 +16,7 @@ export default async function PoemsPage() {
 
   return (
     <PageShell vibe="twilight">
-      <PageTitle className="text-cream">poems 🕯️</PageTitle>
+      <PageTitle className="text-cream">poems 🌙</PageTitle>
       <div className="mt-3">
         <Link
           href="/blog"
@@ -40,9 +40,10 @@ export default async function PoemsPage() {
           <PoemRoom poems={await listPoems()} />
 
           <p className="mt-14 text-center font-body text-xs text-lavender/70">
-            © {new Date().getFullYear()} Rishika Mamidibathula. These poems are my
-            own work, shared here with love. Please don&apos;t reproduce or repost
-            them without permission. ✦
+            <span className="mr-1.5">©</span>
+            {new Date().getFullYear()}{" "}
+            Rishika Mamidibathula. These poems are my own work, shared here with
+            love. Please don&apos;t reproduce or repost them without permission. ✦
           </p>
         </>
       )}

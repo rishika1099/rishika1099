@@ -5,7 +5,7 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 
 const links = [
-  { icon: "✉️", label: "Email", value: "rm4318@columbia.edu", href: "mailto:rm4318@columbia.edu" },
+  { icon: "📧", label: "Email", value: "rm4318@columbia.edu", href: "mailto:rm4318@columbia.edu" },
   { icon: "💼", label: "LinkedIn", value: "in/rishika-mamidibathula", href: "https://linkedin.com/in/rishika-mamidibathula" },
   { icon: "🐙", label: "GitHub", value: "github.com/rishika1099", href: "https://github.com/rishika1099" },
   { icon: "📰", label: "Substack", value: "rishika1099.substack.com", href: "https://rishika1099.substack.com" },
@@ -19,7 +19,7 @@ export default function Contact() {
         transition={{ repeat: Infinity, duration: 3 }}
         className="text-6xl"
       >
-        🏮
+        📮
       </motion.span>
       <PageTitle className="mt-3 text-ink">let&apos;s say hello 💌</PageTitle>
       <p className="mt-3 max-w-xl font-body text-lg text-ink-soft">
@@ -51,9 +51,25 @@ export default function Contact() {
         ))}
       </div>
 
-      <p className="mt-12 font-serif text-xl italic text-ink-soft">
-        made with pastel skies &amp; too much tea ✦
-      </p>
+      <motion.p
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="mt-12 max-w-xl font-body text-base text-ink-soft"
+      >
+        And while you&apos;re here, check out{" "}
+        <a
+          href="https://blog-praj3sh.web.app/"
+          target="_blank"
+          rel="noreferrer"
+          className="font-semibold text-[#c77dba] underline hover:text-ink"
+        >
+          this neighboring corner of the internet
+        </a>
+        .
+        <br />
+        (A totally unbiased recommendation, of course. 😌✨)
+      </motion.p>
     </PageShell>
   );
 }

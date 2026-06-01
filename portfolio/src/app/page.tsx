@@ -6,9 +6,9 @@ import PageShell from "@/components/PageShell";
 import FlowerPortrait from "@/components/FlowerPortrait";
 
 const tabs = [
-  { href: "/about", icon: "🍵", title: "About", blurb: "the human behind the models" },
+  { href: "/about", icon: "🦦", title: "About", blurb: "the human behind the models" },
   { href: "/work", icon: "🌱", title: "Work", blurb: "projects, growing in a meadow" },
-  { href: "/blog", icon: "🕯️", title: "Blog", blurb: "essays, poems & photographs" },
+  { href: "/blog", icon: "🌙", title: "Blog", blurb: "essays, poems & photographs" },
   { href: "/contact", icon: "💌", title: "Contact", blurb: "let's say hello" },
 ];
 

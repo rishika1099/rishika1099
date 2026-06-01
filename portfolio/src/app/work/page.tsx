@@ -12,8 +12,8 @@ export default async function Work() {
   return (
     <PageShell vibe="meadow">
       <PageTitle>my little meadow of projects 🌱</PageTitle>
-      <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        {projects.length} things I&apos;ve grown, from clinical LLM systems to
+      <p className="mt-3 max-w-4xl font-body text-lg text-ink-soft">
+        {projects.length}{" "}things I&apos;ve grown, from clinical LLM systems to
         causal studies to weekend ML experiments. New projects sprout here on
         their own as I push them to GitHub. The big blooms are below; pick a
         patch to wander through the rest.
