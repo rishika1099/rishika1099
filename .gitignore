@@ -55,3 +55,6 @@ portfolio/public/photos/*
 
 # generated poem art — derived from confidential poems, kept off the PUBLIC repo
 portfolio/public/poem-art/*.png
+
+# derived poem metadata (moods etc.) — keep private like the poems
+portfolio/src/content/poems/*.json

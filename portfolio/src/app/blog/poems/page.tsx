@@ -13,6 +13,11 @@ export const metadata = { title: "Poems" };
 export default async function PoemsPage() {
   const cookieStore = await cookies();
   const unlocked = verifyToken(cookieStore.get(POEM_COOKIE)?.value);
+  const poems = unlocked ? await listPoems() : [];
+  const conf = poems
+    .map((p) => p.moodConfidence)
+    .filter((c): c is number => typeof c === "number");
+  const avgConf = conf.length ? conf.reduce((s, c) => s + c, 0) / conf.length : null;
 
   return (
     <PageShell vibe="twilight">
@@ -37,7 +42,13 @@ export default async function PoemsPage() {
             <LockButton />
           </div>
 
-          <PoemRoom poems={await listPoems()} />
+          <PoemRoom poems={poems} />
+
+          {avgConf !== null && (
+            <p className="mt-6 font-body text-xs text-lavender/60">
+              moods inferred by a language model · avg confidence {avgConf.toFixed(2)} ✦
+            </p>
+          )}
 
           <p className="mt-14 text-center font-body text-xs text-lavender/70">
             <span className="mr-1.5">©</span>

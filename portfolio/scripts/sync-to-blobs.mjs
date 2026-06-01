@@ -71,8 +71,12 @@ const poemEntries = fs.existsSync(POEMS_DIR)
         value: fs.readFileSync(path.join(POEMS_DIR, f), "utf8"),
       }))
   : [];
-console.log(`poems: ${poemEntries.length}`);
-await mirror("poems", poemEntries, new Set(poemEntries.map((e) => e.key)));
+const MOODS_FILE = path.join(POEMS_DIR, "moods.json");
+if (fs.existsSync(MOODS_FILE)) {
+  poemEntries.push({ key: "__moods__", value: fs.readFileSync(MOODS_FILE, "utf8") });
+}
+console.log(`poems: ${poemEntries.filter((e) => !e.key.startsWith("__")).length}`);
+await mirror("poems", poemEntries, new Set([...poemEntries.map((e) => e.key), "__moods__"]));
 
 // --- poem art ---
 const artEntries = fs.existsSync(ART_DIR)

@@ -4,12 +4,11 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Doc } from "@/lib/content";
+import type { Poem } from "@/lib/poems-store";
+import { moodColor } from "@/lib/moods";
 
-function CardArt({ poem }: { poem: Doc }) {
+function CardArt({ poem }: { poem: Poem }) {
   const [broken, setBroken] = useState(false);
-  // Art is generated + cached on demand by /api/poem-art/[slug] (gated by the
-  // same unlock cookie). First view triggers generation; after that it's cached.
   if (!broken) {
     return (
       <Image
@@ -23,7 +22,6 @@ function CardArt({ poem }: { poem: Doc }) {
       />
     );
   }
-  // graceful placeholder while art is being conjured (or if the key is unset)
   return (
     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-lavender/40 to-twilight-soft/60">
       <span className="animate-float-med text-5xl opacity-80">🕯️</span>
@@ -31,8 +29,25 @@ function CardArt({ poem }: { poem: Doc }) {
   );
 }
 
-export default function PoemRoom({ poems }: { poems: Doc[] }) {
-  const [active, setActive] = useState<Doc | null>(null);
+function MoodChip({ mood }: { mood?: string }) {
+  if (!mood) return null;
+  return (
+    <span
+      style={{ backgroundColor: moodColor[mood] ?? "#8794b8" }}
+      className="inline-block rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-white"
+    >
+      {mood}
+    </span>
+  );
+}
+
+export default function PoemRoom({ poems }: { poems: Poem[] }) {
+  const [active, setActive] = useState<Poem | null>(null);
+  const [filter, setFilter] = useState<string>("all");
+
+  // moods present, in palette order of first appearance
+  const moods = Array.from(new Set(poems.map((p) => p.mood).filter(Boolean))) as string[];
+  const shown = filter === "all" ? poems : poems.filter((p) => p.mood === filter);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -51,28 +66,62 @@ export default function PoemRoom({ poems }: { poems: Doc[] }) {
 
   return (
     <>
-      <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-3">
-        {poems.map((poem, i) => (
-          <motion.button
-            key={poem.slug}
-            type="button"
-            onClick={() => setActive(poem)}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 * i }}
-            whileHover={{ y: -6, rotate: i % 2 ? 1.5 : -1.5 }}
-            className="group flex flex-col overflow-hidden rounded-3xl border border-white/15 bg-white/5 text-left backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blush/60"
+      {moods.length > 1 && (
+        <div className="mt-6 flex flex-wrap gap-2">
+          <button
+            onClick={() => setFilter("all")}
+            className={`rounded-full px-3.5 py-1 font-body text-sm font-semibold transition ${
+              filter === "all" ? "bg-cream text-ink" : "bg-white/10 text-cream/80 hover:bg-white/20"
+            }`}
           >
-            <div className="relative aspect-square w-full overflow-hidden">
-              <CardArt poem={poem} />
-            </div>
-            <div className="p-4">
-              <h2 className="font-display text-base font-semibold leading-snug text-cream sm:text-lg">
-                {poem.title}
-              </h2>
-            </div>
-          </motion.button>
-        ))}
+            all moods
+          </button>
+          {moods.map((m) => (
+            <button
+              key={m}
+              onClick={() => setFilter(m)}
+              style={filter === m ? { backgroundColor: moodColor[m] } : undefined}
+              className={`rounded-full px-3.5 py-1 font-body text-sm font-semibold transition ${
+                filter === m ? "text-white" : "bg-white/10 text-cream/80 hover:bg-white/20"
+              }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3">
+        <AnimatePresence mode="popLayout">
+          {shown.map((poem, i) => (
+            <motion.button
+              layout
+              key={poem.slug}
+              type="button"
+              onClick={() => setActive(poem)}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ delay: 0.03 * i }}
+              whileHover={{ y: -6, rotate: i % 2 ? 1.5 : -1.5 }}
+              className="group flex flex-col overflow-hidden rounded-3xl border border-white/15 bg-white/5 text-left backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blush/60"
+            >
+              <div className="relative aspect-square w-full overflow-hidden">
+                <CardArt poem={poem} />
+              </div>
+              <div className="p-4">
+                <h2 className="font-display text-base font-semibold leading-snug text-cream sm:text-lg">
+                  {poem.title}
+                </h2>
+                {poem.mood && (
+                  <div className="mt-2">
+                    <MoodChip mood={poem.mood} />
+                  </div>
+                )}
+              </div>
+            </motion.button>
+          ))}
+        </AnimatePresence>
       </div>
 
       <AnimatePresence>
@@ -105,9 +154,12 @@ export default function PoemRoom({ poems }: { poems: Doc[] }) {
                 <CardArt poem={active} />
               </div>
 
-              <h2 className="font-display text-3xl font-semibold text-cream">
-                {active.title}
-              </h2>
+              <h2 className="font-display text-3xl font-semibold text-cream">{active.title}</h2>
+              {active.mood && (
+                <div className="mt-2">
+                  <MoodChip mood={active.mood} />
+                </div>
+              )}
               <div className="prose-poem mt-5 whitespace-pre-line font-serif text-lg leading-relaxed text-cream/90">
                 <ReactMarkdown>{active.content}</ReactMarkdown>
               </div>

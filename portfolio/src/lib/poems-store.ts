@@ -10,7 +10,12 @@ export interface Poem {
   excerpt: string;
   content: string;
   image?: string;
+  mood?: string;
+  moodConfidence?: number | null;
 }
+
+const MOODS_KEY = "__moods__";
+type MoodMap = Record<string, { mood: string; confidence: number | null }>;
 
 /**
  * Poems live as `.md` files in this local folder (gitignored, off the public
@@ -35,13 +40,31 @@ function fromRaw(slug: string, raw: string): Poem {
   };
 }
 
+async function readMoods(): Promise<MoodMap> {
+  let raw: string | null = null;
+  if (blobsEnabled()) {
+    const s = await store("poems");
+    raw = (await s.get(MOODS_KEY, { type: "text" })) ?? null;
+  } else {
+    const f = path.join(POEMS_DIR, "moods.json");
+    if (fs.existsSync(f)) raw = fs.readFileSync(f, "utf8");
+  }
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw) as MoodMap;
+  } catch {
+    return {};
+  }
+}
+
 export async function listPoems(): Promise<Poem[]> {
   let poems: Poem[];
   if (blobsEnabled()) {
     const s = await store("poems");
     const { blobs } = await s.list();
+    const keys = blobs.map((b) => b.key).filter((k) => !k.startsWith("__"));
     poems = await Promise.all(
-      blobs.map(async ({ key }) => fromRaw(key, (await s.get(key, { type: "text" })) ?? "")),
+      keys.map(async (key) => fromRaw(key, (await s.get(key, { type: "text" })) ?? "")),
     );
   } else if (fs.existsSync(POEMS_DIR)) {
     poems = fs
@@ -52,6 +75,15 @@ export async function listPoems(): Promise<Poem[]> {
       );
   } else {
     poems = [];
+  }
+
+  const moods = await readMoods();
+  for (const p of poems) {
+    const m = moods[p.slug];
+    if (m) {
+      p.mood = m.mood;
+      p.moodConfidence = m.confidence;
+    }
   }
   return poems.sort((a, b) => (a.date < b.date ? 1 : -1));
 }

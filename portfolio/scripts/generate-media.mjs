@@ -100,6 +100,64 @@ async function generatePoemArt() {
   }
 }
 
+const MOODS = ["melancholy", "longing", "hope", "love", "peace", "restless", "dreamy", "self-love"];
+
+async function generatePoemMoods() {
+  if (!fs.existsSync(POEMS_DIR)) return;
+  const files = fs.readdirSync(POEMS_DIR).filter((f) => f.endsWith(".md"));
+  if (files.length === 0) return;
+
+  const MOODS_FILE = path.join(POEMS_DIR, "moods.json");
+  let moods = {};
+  if (fs.existsSync(MOODS_FILE)) {
+    try { moods = JSON.parse(fs.readFileSync(MOODS_FILE, "utf8")); } catch { moods = {}; }
+  }
+
+  let changed = false;
+  for (const file of files) {
+    const slug = file.replace(/\.md$/, "");
+    if (moods[slug]) continue; // already tagged, never re-tag
+
+    const { data, content } = matter(fs.readFileSync(path.join(POEMS_DIR, file), "utf8"));
+    process.stdout.write(`🎭 mood: ${slug} … `);
+    const res = await withRetry(
+      () =>
+        openai.chat.completions.create({
+          model: process.env.OPENAI_TEXT_MODEL || "gpt-4o-mini",
+          temperature: 0,
+          response_format: { type: "json_object" },
+          messages: [
+            {
+              role: "system",
+              content:
+                `Classify the poem's single dominant mood as exactly one of: ${MOODS.join(", ")}. ` +
+                `Reply as JSON: {"mood": <one of the list>, "confidence": <0..1 how sure you are>}.`,
+            },
+            { role: "user", content: `Title: ${data.title || slug}\n\n${content.trim()}` },
+          ],
+        }),
+      `mood ${slug}`,
+    );
+    let parsed = {};
+    try { parsed = JSON.parse(res.choices[0].message.content); } catch { parsed = {}; }
+    const mood = MOODS.includes(parsed.mood) ? parsed.mood : MOODS[0];
+    const confidence = typeof parsed.confidence === "number" ? Number(parsed.confidence.toFixed(2)) : null;
+    moods[slug] = { mood, confidence };
+    changed = true;
+    fs.writeFileSync(MOODS_FILE, JSON.stringify(moods, null, 2) + "\n");
+    console.log(`${mood} (${confidence ?? "?"})`);
+  }
+
+  if (changed) {
+    const vals = Object.values(moods);
+    const dist = {};
+    vals.forEach((v) => { dist[v.mood] = (dist[v.mood] || 0) + 1; });
+    const conf = vals.filter((v) => v.confidence != null).map((v) => v.confidence);
+    const avg = conf.length ? conf.reduce((s, x) => s + x, 0) / conf.length : 0;
+    console.log(`  mood distribution: ${JSON.stringify(dist)} · avg confidence ${avg.toFixed(2)}`);
+  }
+}
+
 async function generateCaptions() {
   if (!fs.existsSync(PHOTOS_DIR)) return;
   const files = fs.readdirSync(PHOTOS_DIR).filter((f) => IMAGE_RE.test(f));
@@ -167,5 +225,6 @@ async function generateCaptions() {
 }
 
 await generatePoemArt();
+await generatePoemMoods();
 await generateCaptions();
 console.log("✓ media up to date");
