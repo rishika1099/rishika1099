@@ -18,15 +18,7 @@ export default async function Photography() {
         </Link>
       </div>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        Light I caught and kept.{" "}
-        {photos.length === 0 && (
-          <>
-            (These are placeholder frames, drop photos into{" "}
-            <code className="rounded bg-white/60 px-1">/public/photos</code> and run{" "}
-            <code className="rounded bg-white/60 px-1">npm run media</code> to caption
-            them.)
-          </>
-        )}
+        sunsets, sidewalks, and other things that caught my eye ✨
       </p>
 
       <PhotoGallery photos={photos} />

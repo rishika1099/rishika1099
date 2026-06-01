@@ -10,14 +10,14 @@ const doors = [
     href: "/blog/technical",
     icon: "📓",
     title: "Technical Blogs",
-    blurb: "notes on ML, LLMs, and causal mischief",
+    blurb: "ideas that refused to stay inside a notebook 💡",
     tint: "bg-mint/50",
   },
   {
     href: "/blog/poems",
     icon: "🕯️",
     title: "Poems",
-    blurb: "a quiet room, knock with the secret word",
+    blurb: "a collection of midnight thoughts and daylight edits ☁️",
     tint: "bg-lavender/60",
     locked: true,
   },
@@ -25,7 +25,7 @@ const doors = [
     href: "/blog/photography",
     icon: "📷",
     title: "Photography",
-    blurb: "light I caught and kept",
+    blurb: "sunsets, sidewalks, and other things that caught my eye ✨",
     tint: "bg-dawn/60",
   },
 ];
@@ -35,7 +35,9 @@ export default function BlogHub() {
     <PageShell vibe="cozy">
       <PageTitle>the writing room ✍️</PageTitle>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        Three little doors. One for thinking, one for feeling, one for seeing.
+        Three little doors. One for curiosity, one for feelings, one for the
+        moments I wanted to keep. They began as scattered notes, late-night
+        thoughts, and photographs. Somehow, they all ended up here. ✨
       </p>
 
       <div className="mt-9 grid gap-5 sm:grid-cols-3">

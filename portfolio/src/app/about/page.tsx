@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
+import SkillGraph from "@/components/SkillGraph";
 
 type Entry = {
   icon: string;
@@ -110,12 +111,6 @@ const education: Entry[] = [
   },
 ];
 
-const skills = [
-  "Python", "PyTorch", "TensorFlow", "scikit-learn", "FastAPI", "SQL", "R", "C++",
-  "RAG", "LangChain", "Hugging Face", "ChromaDB", "FAISS", "Multimodal AI",
-  "Databricks", "PySpark", "MongoDB", "BigQuery", "Redis", "Docker",
-  "AWS", "Azure", "Weights & Biases", "CI/CD",
-];
 
 function EntryCard({ entry, i }: { entry: Entry; i: number }) {
   const [open, setOpen] = useState(false);
@@ -223,19 +218,12 @@ export default function About() {
 
       {/* Skills */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        things I tinker with
+        things I tinker with 🛠️
       </h2>
-      <div className="mt-4 flex flex-wrap gap-2.5">
-        {skills.map((s, i) => (
-          <motion.span
-            key={s}
-            whileHover={{ rotate: i % 2 ? 6 : -6, scale: 1.08 }}
-            className="cursor-default rounded-full bg-white/70 px-3.5 py-1.5 font-body text-sm font-semibold text-ink shadow-sm"
-          >
-            {s}
-          </motion.span>
-        ))}
-      </div>
+      <p className="mt-1 font-body text-sm text-ink-soft">
+        little clusters of tools, all tangled together ✦
+      </p>
+      <SkillGraph />
 
       {/* Jobs */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">

@@ -122,38 +122,48 @@ async function generateCaptions() {
     const b64 = fs.readFileSync(path.join(PHOTOS_DIR, file)).toString("base64");
     process.stdout.write(`📷 caption: ${file} … `);
 
-    const res = await openai.chat.completions.create({
-      model: process.env.OPENAI_VISION_MODEL || "gpt-4o-mini",
-      temperature: 0.8,
-      messages: [
-        {
-          role: "system",
-          content:
-            "Write a short, poetic, lowercase caption (4 to 8 words) for this photo. " +
-            "Evocative and gentle, like a line in a journal. No quotes, no period.",
-        },
-        {
-          role: "user",
-          content: [
-            { type: "text", text: "Caption this photo." },
+    const res = await withRetry(
+      () =>
+        openai.chat.completions.create({
+          model: process.env.OPENAI_VISION_MODEL || "gpt-4o-mini",
+          temperature: 1,
+          messages: [
             {
-              type: "image_url",
-              image_url: { url: `data:${MIME[ext] || "image/jpeg"};base64,${b64}` },
+              role: "system",
+              content:
+                "Write a short, lowercase caption (3 to 7 words) for this photo, like a line " +
+                "in a personal journal. Be concrete and specific to what you actually see: the " +
+                "place, subject, light, colour, or moment. Keep each one fresh and varied. " +
+                "Do NOT use the words whisper, whispers, dream, dreams, embrace, secrets, or soul. " +
+                "No quotes, no ending period.",
+            },
+            {
+              role: "user",
+              content: [
+                { type: "text", text: "Caption this photo." },
+                {
+                  type: "image_url",
+                  // low detail keeps each image to ~85 tokens, well under the TPM cap
+                  image_url: {
+                    url: `data:${MIME[ext] || "image/jpeg"};base64,${b64}`,
+                    detail: "low",
+                  },
+                },
+              ],
             },
           ],
-        },
-      ],
-    });
+        }),
+      `caption ${file}`,
+    );
 
     captions[file] = res.choices[0].message.content?.trim().replace(/^["']|["']$/g, "") ?? "";
     changed = true;
+    // write after every caption so a rate-limit crash never loses progress
+    fs.writeFileSync(CAPTIONS_FILE, JSON.stringify(captions, null, 2) + "\n");
     console.log(`"${captions[file]}"`);
   }
 
-  if (changed) {
-    fs.writeFileSync(CAPTIONS_FILE, JSON.stringify(captions, null, 2) + "\n");
-    console.log(`✦ wrote ${CAPTIONS_FILE}`);
-  }
+  if (changed) console.log(`✦ wrote ${CAPTIONS_FILE}`);
 }
 
 await generatePoemArt();

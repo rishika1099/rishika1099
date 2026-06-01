@@ -17,7 +17,7 @@ export default function TechnicalIndex() {
         </Link>
       </div>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        Things I figured out and wanted to remember out loud.
+        ideas that refused to stay inside a notebook 💡
       </p>
 
       <div className="mt-8 space-y-4">
