@@ -41,6 +41,17 @@ const gh = (slug: string) => `https://github.com/rishika1099/${slug}`;
 export const projects: Project[] = [
   // ---------------- Featured ----------------
   {
+    name: "This Portfolio: an AI-powered site",
+    emoji: "🌸",
+    blurb:
+      "The site you're on. A RAG chatbot grounded in my projects + READMEs, semantic project search (embeddings + cosine), CLIP image clustering for the gallery, and an LLM poem-mood classifier, each shipped with its own evaluation.",
+    categories: ["Generative AI", "NLP", "Computer Vision", "Machine Learning"],
+    featured: true,
+    repo: gh("rishika1099"),
+    demo: "https://rishika-m.netlify.app",
+    tags: ["RAG", "Embeddings", "CLIP", "Next.js", "TypeScript"],
+  },
+  {
     name: "Folio: Clinical Multimodal RAG",
     emoji: "🩺",
     blurb:
@@ -92,7 +103,6 @@ export const projects: Project[] = [
     blurb:
       "Full-stack RAG pipeline turning natural language into SQL and visualizations for sports performance analytics.",
     categories: ["Generative AI", "NLP"],
-    featured: true,
     repo: gh("Just-Ask-Coach-Query-SQL-Translation"),
     demo: "https://just-ask-coach.netlify.app/",
     tags: ["Text-to-SQL", "ChromaDB", "Claude", "React"],
