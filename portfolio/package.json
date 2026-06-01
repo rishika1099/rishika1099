@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "media": "node --env-file-if-exists=.env.local scripts/generate-media.mjs",
+    "media": "node --env-file-if-exists=.env.local scripts/generate-media.mjs && node --env-file-if-exists=.env.local scripts/cluster-photos.mjs",
+    "cluster": "node --env-file-if-exists=.env.local scripts/cluster-photos.mjs",
     "sync": "node --env-file-if-exists=.env.local scripts/sync-to-blobs.mjs",
     "publish": "npm run media && npm run sync"
   },
@@ -23,6 +24,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@huggingface/transformers": "^4.2.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

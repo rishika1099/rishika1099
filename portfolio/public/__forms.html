@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Netlify form detection</title>
+  </head>
+  <body>
+    <!-- This hidden static form lets Netlify detect the contact form at build time.
+         The real form is the React component on /contact, which posts here. -->
+    <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <textarea name="message"></textarea>
+      <input name="bot-field" />
+    </form>
+  </body>
+</html>

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
+import ContactForm from "@/components/ContactForm";
 
 const links = [
   { icon: "📧", label: "Email", value: "rm4318@columbia.edu", href: "mailto:rm4318@columbia.edu" },
@@ -50,6 +51,8 @@ export default function Contact() {
           </motion.a>
         ))}
       </div>
+
+      <ContactForm />
 
       <motion.p
         initial={{ opacity: 0, y: 12 }}

@@ -2,13 +2,14 @@ import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import PhotoGallery from "@/components/PhotoGallery";
-import { listPhotos } from "@/lib/photos";
+import { getPhotoData } from "@/lib/photos";
 
 export const metadata = { title: "Photography" };
 export const dynamic = "force-dynamic";
 
 export default async function Photography() {
-  const photos = await listPhotos();
+  const { groups, silhouette } = await getPhotoData();
+  const grouped = silhouette !== null && groups.length > 1;
   return (
     <PageShell vibe="sunset">
       <PageTitle className="text-ink">photography 📷</PageTitle>
@@ -20,8 +21,14 @@ export default async function Photography() {
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
         sunsets, sidewalks, and other things that caught my eye ✨
       </p>
+      {grouped && (
+        <p className="mt-2 max-w-2xl font-body text-xs text-ink-soft/80">
+          auto-grouped into {groups.length} themes by embedding the images with
+          CLIP and running k-means (silhouette {silhouette}) ✦
+        </p>
+      )}
 
-      <PhotoGallery photos={photos} />
+      <PhotoGallery groups={groups} />
 
       <p className="mt-14 text-center font-body text-xs text-ink-soft">
         <span className="mr-1.5">©</span>

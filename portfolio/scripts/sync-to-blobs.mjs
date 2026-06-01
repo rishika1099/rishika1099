@@ -24,6 +24,8 @@ const ART_DIR = path.join(ROOT, "public/poem-art");
 const PHOTOS_DIR = path.join(ROOT, "public/photos");
 const CAPTIONS_FILE = path.join(PHOTOS_DIR, "captions.json");
 const CAPTIONS_KEY = "__captions__";
+const CLUSTERS_FILE = path.join(PHOTOS_DIR, "clusters.json");
+const CLUSTERS_KEY = "__clusters__";
 const IMAGE_RE = /\.(jpe?g|png|webp|gif|avif)$/i;
 
 const siteID = process.env.NETLIFY_SITE_ID;
@@ -96,7 +98,10 @@ const photoEntries = photoFiles.map((f) => ({
 if (fs.existsSync(CAPTIONS_FILE)) {
   photoEntries.push({ key: CAPTIONS_KEY, value: fs.readFileSync(CAPTIONS_FILE, "utf8") });
 }
+if (fs.existsSync(CLUSTERS_FILE)) {
+  photoEntries.push({ key: CLUSTERS_KEY, value: fs.readFileSync(CLUSTERS_FILE, "utf8") });
+}
 console.log(`photos: ${photoFiles.length}`);
-await mirror("photos", photoEntries, new Set([...photoFiles, CAPTIONS_KEY]));
+await mirror("photos", photoEntries, new Set([...photoFiles, CAPTIONS_KEY, CLUSTERS_KEY]));
 
 console.log("✓ synced to Netlify Blobs");

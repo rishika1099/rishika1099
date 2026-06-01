@@ -2,11 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-
-interface Photo {
-  src: string;
-  caption: string;
-}
+import type { PhotoGroup } from "@/lib/photos";
 
 // Soft placeholder frames shown until you drop real photos into /public/photos.
 const placeholders = [
@@ -22,8 +18,40 @@ const placeholders = [
 
 const rotations = [-4, 3, -2, 5, -5, 2, -3, 4];
 
-export default function PhotoGallery({ photos }: { photos: Photo[] }) {
-  if (photos.length === 0) {
+function Frame({
+  src,
+  caption,
+  i,
+}: {
+  src?: string;
+  caption: string;
+  gradient?: string;
+  i: number;
+}) {
+  const rotate = rotations[i % rotations.length];
+  return (
+    <motion.figure
+      initial={{ opacity: 0, y: 20, rotate }}
+      whileInView={{ opacity: 1, y: 0, rotate }}
+      viewport={{ once: true }}
+      transition={{ delay: (i % 4) * 0.08 }}
+      whileHover={{ rotate: 0, scale: 1.04, y: -6 }}
+      className="w-52 rounded-sm bg-white p-3 pb-10 shadow-lg"
+    >
+      <div className="relative h-48 w-full overflow-hidden rounded-sm">
+        <Image src={src!} alt={caption || "a photo"} fill unoptimized className="object-cover" sizes="208px" />
+      </div>
+      <figcaption className="mt-3 text-center font-hand text-xl text-ink-soft">
+        {caption || "untitled ✦"}
+      </figcaption>
+    </motion.figure>
+  );
+}
+
+export default function PhotoGallery({ groups }: { groups: PhotoGroup[] }) {
+  const total = groups.reduce((n, g) => n + g.photos.length, 0);
+
+  if (total === 0) {
     return (
       <div className="mt-10 flex flex-wrap justify-center gap-6">
         {placeholders.map((p, i) => (
@@ -37,9 +65,7 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
             className="w-52 rounded-sm bg-white p-3 pb-10 shadow-lg"
           >
             <div className="relative h-48 w-full overflow-hidden rounded-sm">
-              <div
-                className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${p.gradient}`}
-              >
+              <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${p.gradient}`}>
                 <span className="text-3xl opacity-70">✦</span>
               </div>
             </div>
@@ -52,36 +78,34 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
     );
   }
 
+  // ungrouped (no clusters): one flat wall
+  if (groups.length === 1 && !groups[0].label) {
+    return (
+      <div className="mt-10 flex flex-wrap justify-center gap-6">
+        {groups[0].photos.map((p, i) => (
+          <Frame key={p.src} src={p.src} caption={p.caption} i={i} />
+        ))}
+      </div>
+    );
+  }
+
+  // grouped by cluster, each with its auto-label heading
   return (
-    <div className="mt-10 flex flex-wrap justify-center gap-6">
-      {photos.map((photo, i) => {
-        const rotate = rotations[i % rotations.length];
-        return (
-          <motion.figure
-            key={photo.src}
-            initial={{ opacity: 0, y: 20, rotate }}
-            whileInView={{ opacity: 1, y: 0, rotate }}
-            viewport={{ once: true }}
-            transition={{ delay: (i % 4) * 0.08 }}
-            whileHover={{ rotate: 0, scale: 1.04, y: -6 }}
-            className="w-52 rounded-sm bg-white p-3 pb-10 shadow-lg"
-          >
-            <div className="relative h-48 w-full overflow-hidden rounded-sm">
-              <Image
-                src={photo.src}
-                alt={photo.caption || "a photo"}
-                fill
-                unoptimized
-                className="object-cover"
-                sizes="208px"
-              />
-            </div>
-            <figcaption className="mt-3 text-center font-hand text-xl text-ink-soft">
-              {photo.caption || "untitled ✦"}
-            </figcaption>
-          </motion.figure>
-        );
-      })}
+    <div className="mt-8 space-y-12">
+      {groups.map((g, gi) => (
+        <section key={g.label ?? gi}>
+          {g.label && (
+            <h2 className="font-body text-xl font-bold text-ink">
+              {g.label} <span className="font-body text-sm font-normal text-ink-soft">· {g.photos.length}</span>
+            </h2>
+          )}
+          <div className="mt-5 flex flex-wrap justify-center gap-6 sm:justify-start">
+            {g.photos.map((p, i) => (
+              <Frame key={p.src} src={p.src} caption={p.caption} i={i} />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
