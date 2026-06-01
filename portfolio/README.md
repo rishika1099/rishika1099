@@ -1,4 +1,4 @@
-# 🌸 rishika.netlify — a whimsical data-science portfolio
+# 🌸 Portfolio of a Data Scientist & AI Engineer
 
 A personal portfolio + creative corner, built as a Studio-Ghibli-pastel, soft-animated
 Next.js site. It doubles as a little playground for data-science and AI ideas: the
