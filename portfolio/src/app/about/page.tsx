@@ -191,22 +191,29 @@ export default function About() {
 
       <div className="mt-6 max-w-2xl space-y-4 font-body text-lg text-ink-soft">
         <p>
-          I&apos;m Rishika, an M.S. Data Science student at{" "}
-          <strong className="text-ink">Columbia University</strong> (GPA 3.87),
-          and before that I topped my B.Tech in CS &amp; Data Science at VIT
-          (4.0/4.0, ranked 7th of 200). I like problems where careful modeling
-          actually changes a decision: healthcare, public policy, fairness.
+          I&apos;m Rishika, a Data Science master&apos;s student at{" "}
+          <strong className="text-ink">Columbia University</strong>. I spend my
+          days building models, asking questions, and staring at plots until they
+          either reveal something useful or make me question my life choices.
         </p>
         <p>
-          By day I build LLM systems, causal models, and ML pipelines. By night
-          I write poems, take photographs, and tinker with little apps for the
-          joy of it. This site is where all of that lives together.
+          I&apos;m interested in machine learning, LLM systems, causal inference,
+          and using data to understand complex problems in healthcare, public
+          policy, and beyond. Before Columbia, I studied Computer Science and
+          Data Science at VIT and worked as a software engineer.
         </p>
+        <p>
+          Most of my favorite projects begin with a simple thought:{" "}
+          &quot;I wonder if...&quot; Unfortunately, that thought is usually
+          followed by three weeks of research, six notebooks, and a new GitHub
+          repository.
+        </p>
+        <p>This website is where those adventures end up.</p>
       </div>
 
       {/* Education */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        where I studied 🎓
+        where curiosity took me 🎓
       </h2>
       <div className="mt-5 space-y-4">
         {education.map((e, i) => (
@@ -230,17 +237,34 @@ export default function About() {
         ))}
       </div>
 
-      {/* Timeline */}
+      {/* Jobs */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        where I&apos;ve been
+        where I clocked in 💼
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
         tap a card to unfold the details ✦
       </p>
       <div className="mt-5 space-y-4">
-        {timeline.map((t, i) => (
-          <EntryCard key={t.title} entry={t} i={i} />
-        ))}
+        {timeline
+          .filter((t) => !t.title.startsWith("Research Assistant"))
+          .map((t, i) => (
+            <EntryCard key={t.title} entry={t} i={i} />
+          ))}
+      </div>
+
+      {/* Research */}
+      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
+        the questions that kept me curious 🔬
+      </h2>
+      <p className="mt-1 font-body text-sm text-ink-soft">
+        tap a card to unfold the details ✦
+      </p>
+      <div className="mt-5 space-y-4">
+        {timeline
+          .filter((t) => t.title.startsWith("Research Assistant"))
+          .map((t, i) => (
+            <EntryCard key={t.title} entry={t} i={i} />
+          ))}
       </div>
 
       <div className="mt-10 text-center">

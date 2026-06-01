@@ -12,7 +12,19 @@ const gradients: Record<Vibe, string> = {
   sunset: "from-sunset via-blush/50 to-lavender",
 };
 
-function Cloud({ top, delay, scale = 1, opacity = 0.85 }: { top: string; delay: number; scale?: number; opacity?: number }) {
+function Cloud({
+  top,
+  start,
+  duration,
+  scale = 1,
+  opacity = 0.85,
+}: {
+  top: string;
+  start: number; // seconds already elapsed at load (negative delay) so it drifts immediately
+  duration: number;
+  scale?: number;
+  opacity?: number;
+}) {
   return (
     <div
       className="pointer-events-none absolute left-0 text-6xl sm:text-7xl"
@@ -20,7 +32,8 @@ function Cloud({ top, delay, scale = 1, opacity = 0.85 }: { top: string; delay: 
         top,
         opacity,
         transform: `scale(${scale})`,
-        animation: `drift ${38 + delay * 4}s linear ${delay}s infinite`,
+        animation: `drift ${duration}s linear infinite`,
+        animationDelay: `-${start}s`,
       }}
     >
       ☁️
@@ -68,9 +81,10 @@ export default function Scenery({ vibe }: { vibe: Vibe }) {
 
       {(vibe === "dawn" || vibe === "sunset" || vibe === "cozy") && (
         <>
-          <Cloud top="14%" delay={0} scale={1} />
-          <Cloud top="36%" delay={6} scale={0.8} opacity={0.7} />
-          <Cloud top="60%" delay={3} scale={1.2} opacity={0.6} />
+          <Cloud top="12%" start={9} duration={46} scale={1} />
+          <Cloud top="30%" start={30} duration={60} scale={0.75} opacity={0.65} />
+          <Cloud top="52%" start={20} duration={52} scale={1.2} opacity={0.6} />
+          <Cloud top="70%" start={42} duration={66} scale={0.9} opacity={0.55} />
         </>
       )}
 
