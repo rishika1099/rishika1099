@@ -393,16 +393,16 @@ export const domains: Domain[] = [
   "Social Media",
 ];
 
-// Chip colors echoing the reference palette.
+// Soft pastel chip colors (paired with dark text for readability).
 export const domainColor: Record<Domain, string> = {
-  Healthcare: "#e0436b",
-  Education: "#2f93e0",
-  "Public Sector": "#6e5544",
-  Legal: "#2e3a8c",
-  "Human Rights": "#8a2fae",
-  Finance: "#4f9a3f",
-  Cybersecurity: "#3b3b3b",
-  Agriculture: "#8cc63f",
-  "Food & Nutrition": "#e87a3c",
-  "Social Media": "#b14ad6",
+  Healthcare: "#f6c9d5",
+  Education: "#c5e0f5",
+  "Public Sector": "#ddcbb8",
+  Legal: "#ccd3f2",
+  "Human Rights": "#e0cdf2",
+  Finance: "#bfe3d2",
+  Cybersecurity: "#d4d7dd",
+  Agriculture: "#d9eab0",
+  "Food & Nutrition": "#f8d4bd",
+  "Social Media": "#f0c8e8",
 };

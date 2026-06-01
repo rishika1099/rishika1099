@@ -79,12 +79,15 @@ export default function Scenery({ vibe }: { vibe: Vibe }) {
         }`}
       />
 
-      {(vibe === "dawn" || vibe === "sunset" || vibe === "cozy") && (
+      {(vibe === "dawn" || vibe === "sunset" || vibe === "cozy" || vibe === "meadow") && (
         <>
-          <Cloud top="12%" start={9} duration={46} scale={1} />
-          <Cloud top="30%" start={30} duration={60} scale={0.75} opacity={0.65} />
-          <Cloud top="52%" start={20} duration={52} scale={1.2} opacity={0.6} />
-          <Cloud top="70%" start={42} duration={66} scale={0.9} opacity={0.55} />
+          {/* same duration + evenly spaced starts (0, 15, 30, 45 of a 60s loop)
+              keeps horizontal spacing even; heights are scrambled (not increasing
+              with the phase) so the clouds zig-zag instead of forming a diagonal */}
+          <Cloud top="48%" start={0} duration={60} scale={1} opacity={0.8} />
+          <Cloud top="14%" start={15} duration={60} scale={0.7} opacity={0.6} />
+          <Cloud top="66%" start={30} duration={60} scale={1.2} opacity={0.62} />
+          <Cloud top="28%" start={45} duration={60} scale={0.9} opacity={0.55} />
         </>
       )}
 

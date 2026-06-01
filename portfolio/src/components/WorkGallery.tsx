@@ -42,7 +42,7 @@ function DomainChips({ domains }: { domains?: Domain[] }) {
         <span
           key={d}
           style={{ backgroundColor: domainColor[d] }}
-          className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-white"
+          className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
         >
           {d}
         </span>
@@ -51,15 +51,15 @@ function DomainChips({ domains }: { domains?: Domain[] }) {
   );
 }
 
-function Tags({ tags }: { tags: string[] }) {
+function TechChips({ categories }: { categories: Category[] }) {
   return (
     <div className="mt-2 flex flex-wrap gap-1.5">
-      {tags.map((t) => (
+      {categories.map((c) => (
         <span
-          key={t}
-          className="rounded-full bg-mint/60 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
+          key={c}
+          className="rounded-full bg-mint/70 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
         >
-          {t}
+          {c}
         </span>
       ))}
     </div>
@@ -110,7 +110,7 @@ export default function WorkGallery({
             <h3 className="mt-2 font-body text-xl font-bold text-ink">{p.name}</h3>
             <p className="mt-1.5 font-body text-sm text-ink-soft">{p.blurb}</p>
                 <DomainChips domains={p.domains} />
-                <Tags tags={p.tags} />
+                <TechChips categories={p.categories} />
                 <Links p={p} />
               </motion.article>
             ))}
@@ -126,11 +126,12 @@ export default function WorkGallery({
           <select
             value={domain}
             onChange={(e) => setDomain(e.target.value as Domain | "All")}
+            style={domain !== "All" ? { backgroundColor: domainColor[domain] } : undefined}
             className="rounded-full border border-white/70 bg-white/80 px-4 py-1.5 font-body text-sm font-semibold text-ink outline-none transition focus:border-blush focus:ring-2 focus:ring-blush/40"
           >
             <option value="All">All domains</option>
             {domains.map((d) => (
-              <option key={d} value={d}>
+              <option key={d} value={d} style={{ backgroundColor: domainColor[d] }}>
                 {d}
               </option>
             ))}
@@ -171,7 +172,7 @@ export default function WorkGallery({
               <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
               <p className="mt-1 font-body text-sm text-ink-soft">{p.blurb}</p>
               <DomainChips domains={p.domains} />
-              <Tags tags={p.tags} />
+              <TechChips categories={p.categories} />
               <Links p={p} />
             </motion.article>
           ))}
