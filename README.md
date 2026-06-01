@@ -13,6 +13,15 @@
 <p align="center">💡 <i>Passionate about leveraging AI to drive business impact and solve real-world problems.</i></p>
 
 ---
+<p align="center">
+  <a href="https://rishika-m.netlify.app">
+    <img src="./images/computer-girl.gif" width="450">
+  </a>
+</p>
+
+<p align="center">
+  ↳ click the screen, she built something
+</p>
 
 ## 💼 About Me
 
