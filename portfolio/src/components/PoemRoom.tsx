@@ -26,7 +26,7 @@ function CardArt({ poem }: { poem: Doc }) {
   // graceful placeholder while art is being conjured (or if the key is unset)
   return (
     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-lavender/40 to-twilight-soft/60">
-      <span className="animate-float-med text-5xl opacity-80">🌙</span>
+      <span className="animate-float-med text-5xl opacity-80">🕯️</span>
     </div>
   );
 }

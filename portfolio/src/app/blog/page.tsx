@@ -15,7 +15,7 @@ const doors = [
   },
   {
     href: "/blog/poems",
-    icon: "🌙",
+    icon: "🕯️",
     title: "Poems",
     blurb: "a collection of midnight thoughts and daylight edits ☁️",
     tint: "bg-lavender/60",

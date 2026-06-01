@@ -8,7 +8,7 @@ import FlowerPortrait from "@/components/FlowerPortrait";
 const tabs = [
   { href: "/about", icon: "🦦", title: "About", blurb: "the human behind the models" },
   { href: "/work", icon: "🌱", title: "Work", blurb: "projects, growing in a meadow" },
-  { href: "/blog", icon: "🌙", title: "Blog", blurb: "essays, poems & photographs" },
+  { href: "/blog", icon: "🎐", title: "Blog", blurb: "essays, poems & photographs" },
   { href: "/contact", icon: "💌", title: "Contact", blurb: "let's say hello" },
 ];
 
@@ -35,7 +35,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.35, type: "spring", stiffness: 120 }}
-            className="mt-10 flex flex-col items-center gap-3 font-name text-5xl font-normal leading-[1.15] text-ink text-shadow-soft sm:mt-14 sm:text-6xl"
+            className="mt-10 flex flex-col items-center gap-6 font-name text-5xl font-normal leading-[1.15] text-ink text-shadow-soft sm:mt-14 sm:text-6xl"
           >
             <motion.span
               className="block"

@@ -16,7 +16,7 @@ export default async function PoemsPage() {
 
   return (
     <PageShell vibe="twilight">
-      <PageTitle className="text-cream">poems 🌙</PageTitle>
+      <PageTitle className="text-cream">poems 🕯️</PageTitle>
       <div className="mt-3">
         <Link
           href="/blog"
