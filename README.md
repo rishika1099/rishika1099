@@ -361,6 +361,7 @@ achievements = {
 |---------|-------------|------------|------|
 | [Android-Malware-Analysis](https://github.com/rishika1099/Android-Malware-Analysis) | Deep learning malware detection using static and dynamic Android application features with 98% accuracy | Python, Deep Learning | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Deep Learning](https://img.shields.io/badge/Deep_Learning-D84315?style=flat-square) |
 | [Blockchain-Secure-Data-Storage](https://github.com/rishika1099/Blockchain-Secure-Data-Storage) | Secure medical data storage prototype using ECDSA signatures and Proof of Work | Blockchain, ECDSA | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) |
+| [Modular-Image-Encryption](https://github.com/rishika1099/Modular-Image-Encryption) | Custom image encryption framework using image slicing and key-based transformations for secure image storage and transmission | Python, OpenCV, NumPy | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Image Processing](https://img.shields.io/badge/Image_Processing-5E35B1?style=flat-square) |
 
 ---
 
