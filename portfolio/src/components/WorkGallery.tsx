@@ -105,7 +105,7 @@ function FindSimilarButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="mt-3 font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
+      className="mt-auto pt-3 text-left font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
     >
       ✦ find similar
     </button>
@@ -277,7 +277,7 @@ export default function WorkGallery({
                   exit={{ opacity: 0, scale: 0.92 }}
                   transition={{ duration: 0.25 }}
                   whileHover={{ y: -5 }}
-                  className="rounded-3xl p-5 soft-card"
+                  className="flex flex-col rounded-3xl p-5 soft-card"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-3xl">{p.emoji}</span>
@@ -324,7 +324,7 @@ export default function WorkGallery({
                   exit={{ opacity: 0, scale: 0.92 }}
                   transition={{ duration: 0.25 }}
                   whileHover={{ y: -5 }}
-                  className="rounded-3xl p-5 soft-card"
+                  className="flex flex-col rounded-3xl p-5 soft-card"
                 >
                   <span className="text-3xl">{p.emoji}</span>
                   <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
@@ -379,7 +379,7 @@ export default function WorkGallery({
             viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: i * 0.05 }}
             whileHover={{ y: -6, rotate: i % 2 ? 1 : -1 }}
-            className="rounded-3xl p-6 soft-card"
+            className="flex flex-col rounded-3xl p-6 soft-card"
           >
             <span className="animate-float-med text-4xl">{p.emoji}</span>
             <h3 className="mt-2 font-body text-xl font-bold text-ink">{p.name}</h3>
@@ -442,7 +442,7 @@ export default function WorkGallery({
               exit={{ opacity: 0, scale: 0.92 }}
               transition={{ duration: 0.25 }}
               whileHover={{ y: -5 }}
-              className="rounded-3xl p-5 soft-card"
+              className="flex flex-col rounded-3xl p-5 soft-card"
             >
               <span className="text-3xl">{p.emoji}</span>
               <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
