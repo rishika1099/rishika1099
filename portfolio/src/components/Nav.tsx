@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import ModeToggle from "@/components/ModeToggle";
 
 const links = [
   { href: "/", label: "Home", icon: "🎀" },
@@ -63,17 +62,14 @@ export default function Nav() {
           ))}
         </ul>
 
-        <div className="flex items-center gap-2">
-          <ModeToggle />
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setOpen((o) => !o)}
-            className="rounded-full bg-lavender/60 px-3 py-1.5 text-xl md:hidden"
-            aria-label="Toggle menu"
-          >
-            {open ? "✦" : "☰"}
-          </button>
-        </div>
+        {/* Mobile toggle */}
+        <button
+          onClick={() => setOpen((o) => !o)}
+          className="rounded-full bg-lavender/60 px-3 py-1.5 text-xl md:hidden"
+          aria-label="Toggle menu"
+        >
+          {open ? "✦" : "☰"}
+        </button>
       </nav>
 
       {/* Mobile menu */}

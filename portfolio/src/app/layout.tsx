@@ -4,7 +4,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import AskMe from "@/components/AskMe";
-import { ModeProvider } from "@/components/ModeProvider";
 
 const cattalague = localFont({
   src: "./fonts/Cattalague.ttf",
@@ -53,11 +52,9 @@ export default function RootLayout({
       className={`${nunito.variable} ${caveat.variable} ${cormorant.variable} ${cattalague.variable} ${halimun.variable}`}
     >
       <body className="antialiased">
-        <ModeProvider>
-          <Nav />
-          <main className="relative">{children}</main>
-          <AskMe />
-        </ModeProvider>
+        <Nav />
+        <main className="relative">{children}</main>
+        <AskMe />
       </body>
     </html>
   );

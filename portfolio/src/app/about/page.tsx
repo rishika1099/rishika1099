@@ -6,8 +6,6 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import SkillGraph from "@/components/SkillGraph";
 import { education, timeline, type Entry } from "@/data/about";
-import { useMode } from "@/components/ModeProvider";
-import { copy } from "@/data/copy";
 
 
 // render a detail string, bolding any **wrapped** segment
@@ -91,37 +89,30 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
 }
 
 export default function About() {
-  const { mode } = useMode();
   return (
     <PageShell vibe="lilac">
-      <PageTitle>{mode === "recruiter" ? "Rishika Mamidibathula 🦦" : "the human behind the models 🦦"}</PageTitle>
+      <PageTitle>the human behind the models 🦦</PageTitle>
 
       <div className="mt-6 max-w-4xl space-y-4 font-body text-lg text-ink-soft">
-        {mode === "recruiter" ? (
-          copy.about.recruiter.map((para, i) => <p key={i}>{para}</p>)
-        ) : (
-          <>
-            <p>
-              I&apos;m Rishika, a Data Science master&apos;s student at{" "}
-              <strong className="text-ink">Columbia University</strong>. I spend my
-              days building models, asking questions, and staring at plots until they
-              either reveal something useful or make me question my life choices.
-            </p>
-            <p>
-              I&apos;m interested in machine learning, LLM systems, causal inference,
-              and using data to understand complex problems in healthcare, public
-              policy, and beyond. Before Columbia, I studied Computer Science and
-              Data Science at VIT and worked as a software engineer.
-            </p>
-            <p>
-              Most of my favorite projects begin with a simple thought:{" "}
-              &quot;I wonder if...&quot; Unfortunately, that thought is usually
-              followed by three weeks of research, six notebooks, and a new GitHub
-              repository.
-            </p>
-            <p>This website is where those adventures end up.</p>
-          </>
-        )}
+        <p>
+          I&apos;m Rishika, a Data Science master&apos;s student at{" "}
+          <strong className="text-ink">Columbia University</strong>. I spend my
+          days building models, asking questions, and staring at plots until they
+          either reveal something useful or make me question my life choices.
+        </p>
+        <p>
+          I&apos;m interested in machine learning, LLM systems, causal inference,
+          and using data to understand complex problems in healthcare, public
+          policy, and beyond. Before Columbia, I studied Computer Science and
+          Data Science at VIT and worked as a software engineer.
+        </p>
+        <p>
+          Most of my favorite projects begin with a simple thought:{" "}
+          &quot;I wonder if...&quot; Unfortunately, that thought is usually
+          followed by three weeks of research, six notebooks, and a new GitHub
+          repository.
+        </p>
+        <p>This website is where those adventures end up.</p>
       </div>
 
       {/* Education */}
