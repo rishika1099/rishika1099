@@ -274,7 +274,7 @@ async function describeClusters(
         {
           role: "system",
           content:
-            "You are given clusters of a data scientist's projects, grouped by embedding similarity. For each cluster, give a short theme label (2 to 4 words) and one sentence explaining what the projects genuinely share (methods, domain, or problem type). Be specific and truthful, do not use em dashes. Return JSON: {\"clusters\":[{\"id\":0,\"label\":\"...\",\"description\":\"...\"}]}.",
+            "You are given clusters of a data scientist's projects, grouped by embedding similarity. For each cluster, give a BROAD, high-level theme label naming a recognizable area of ML/AI/DS (2 to 3 words, e.g. 'Generative AI', 'Computer Vision', 'Predictive Modeling', 'Causal Inference'), not a narrow or project-specific label. Then one short, plain sentence on what the projects broadly share. Do not use em dashes. Return JSON: {\"clusters\":[{\"id\":0,\"label\":\"...\",\"description\":\"...\"}]}.",
         },
         { role: "user", content: JSON.stringify(payload) },
       ],
@@ -306,19 +306,17 @@ export async function projectMap(): Promise<GalaxyData> {
   const coords = pca2d(vectors);
   const n = projects.length;
 
-  // evaluate k from 2..6 for reference, then prefer the FINEST k>=3 within
-  // tolerance of the best silhouette (richer themes over a coarse 2-way split)
-  const maxK = Math.min(6, Math.max(3, Math.floor(n / 4)));
+  // a few BROAD themes (3 or 4), not hyper-specific groups. Evaluate k=2..4 and
+  // pick the best-separated grouping among k>=3 (avoids singletons/over-splitting).
+  const maxK = Math.min(4, Math.max(3, n - 1));
   const results: { k: number; assign: number[]; sil: number }[] = [];
   for (let k = 2; k <= maxK; k++) {
     const assign = kmeans(vectors, k);
     results.push({ k, assign, sil: silhouette(vectors, assign) });
   }
   const best = results.reduce((a, b) => (b.sil > a.sil ? b : a));
-  const TOL = 0.04;
-  const chosen = results
-    .filter((r) => r.k >= 3 && r.sil >= best.sil - TOL)
-    .sort((a, b) => b.k - a.k)[0] ?? best;
+  const candidates = results.filter((r) => r.k >= 3);
+  const chosen = candidates.reduce((a, b) => (b.sil > a.sil ? b : a));
 
   // members per cluster
   const groups = Array.from({ length: chosen.k }, (_, c) => ({
