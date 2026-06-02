@@ -28,7 +28,7 @@ export default function Home() {
             transition={{ delay: 0.2 }}
             className="font-serif text-lg italic text-ink-soft sm:text-xl"
           >
-            hi, the internet! welcome to my little corner ✦
+            hi, the internet! welcome to my little corner 🧋
           </motion.p>
 
           <motion.h1
