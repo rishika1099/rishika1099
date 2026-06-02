@@ -4,6 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import FlowerPortrait from "@/components/FlowerPortrait";
+import { useMode } from "@/components/ModeProvider";
+import { copy } from "@/data/copy";
 
 const tabs = [
   { href: "/about", icon: "🦦", title: "About", blurb: "the human behind the models" },
@@ -13,6 +15,7 @@ const tabs = [
 ];
 
 export default function Home() {
+  const { mode } = useMode();
   return (
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}
@@ -28,7 +31,7 @@ export default function Home() {
             transition={{ delay: 0.2 }}
             className="font-serif text-lg italic text-ink-soft sm:text-xl"
           >
-            hi, the internet! welcome to my little corner ✦
+            {copy.home.greeting[mode]}
           </motion.p>
 
           <motion.h1
@@ -59,10 +62,7 @@ export default function Home() {
             transition={{ delay: 0.6 }}
             className="mx-auto mt-6 max-w-xl font-body text-base text-ink-soft sm:text-lg"
           >
-            Teaching computers new tricks in New York 🗽 as a Data Scientist. When
-            I&apos;m not wrangling data, you&apos;ll find me writing poetry, chasing
-            good light, and filling my camera roll faster than my storage can
-            handle.
+            {copy.home.bio[mode]}
           </motion.p>
         </div>
       </div>
