@@ -25,6 +25,8 @@ interface GalaxyData {
   clusters: ClusterMeta[];
   k: number;
   silhouette: number;
+  bestK: number;
+  bestSilhouette: number;
 }
 
 // soft pastel palette, indexed by cluster id
@@ -134,11 +136,13 @@ export default function ProjectGalaxy() {
             ))}
           </ul>
 
-          {/* evaluation */}
-          <p className="mt-3 font-body text-xs text-ink-soft/80">
-            {data.k} clusters via k-means (k biased toward finer groups within tolerance of the
-            best silhouette score, {data.silhouette.toFixed(2)}). Labels and explanations are
-            generated from each cluster&apos;s member projects. ✦
+          {/* evaluation, framed honestly */}
+          <p className="mt-3 max-w-3xl font-body text-xs text-ink-soft/80">
+            These projects sit on a fairly continuous spectrum, so silhouette scores stay low
+            throughout (they peak around {data.bestSilhouette.toFixed(2)} for a coarse{" "}
+            {data.bestK}-way split). I trade a little separation for finer, more interpretable
+            themes: {data.k} clusters via k-means (silhouette {data.silhouette.toFixed(2)}),
+            with labels and explanations generated from each cluster&apos;s member projects. ✦
           </p>
         </>
       )}

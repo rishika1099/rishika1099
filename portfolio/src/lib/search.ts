@@ -118,6 +118,8 @@ export interface GalaxyData {
   clusters: ClusterMeta[];
   k: number;
   silhouette: number;
+  bestK: number;
+  bestSilhouette: number;
 }
 
 // --- k-means + silhouette on the embeddings (deterministic) ---
@@ -304,20 +306,19 @@ export async function projectMap(): Promise<GalaxyData> {
   const coords = pca2d(vectors);
   const n = projects.length;
 
-  // evaluate k from 3..6, then prefer the FINEST k within tolerance of the best
-  // silhouette (more, more-specific clusters, like the photo clustering)
-  const minK = Math.min(3, n);
-  const maxK = Math.min(6, Math.max(minK, Math.floor(n / 4)));
+  // evaluate k from 2..6 for reference, then prefer the FINEST k>=3 within
+  // tolerance of the best silhouette (richer themes over a coarse 2-way split)
+  const maxK = Math.min(6, Math.max(3, Math.floor(n / 4)));
   const results: { k: number; assign: number[]; sil: number }[] = [];
-  for (let k = minK; k <= maxK; k++) {
+  for (let k = 2; k <= maxK; k++) {
     const assign = kmeans(vectors, k);
     results.push({ k, assign, sil: silhouette(vectors, assign) });
   }
-  const topSil = Math.max(...results.map((r) => r.sil));
+  const best = results.reduce((a, b) => (b.sil > a.sil ? b : a));
   const TOL = 0.04;
   const chosen = results
-    .filter((r) => r.sil >= topSil - TOL)
-    .sort((a, b) => b.k - a.k)[0];
+    .filter((r) => r.k >= 3 && r.sil >= best.sil - TOL)
+    .sort((a, b) => b.k - a.k)[0] ?? best;
 
   // members per cluster
   const groups = Array.from({ length: chosen.k }, (_, c) => ({
@@ -360,6 +361,8 @@ export async function projectMap(): Promise<GalaxyData> {
     clusters,
     k: chosen.k,
     silhouette: Number(chosen.sil.toFixed(3)),
+    bestK: best.k,
+    bestSilhouette: Number(best.sil.toFixed(3)),
   };
   galaxyCache = { key, data };
   return data;
