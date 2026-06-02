@@ -98,81 +98,17 @@ function ScoreBadge({ score }: { score: number }) {
   );
 }
 
-// "More like this": on demand, fetch the projects most similar to this one
-// (by embedding) and reveal them inline. Reuses the cached project vectors.
-function RelatedRow({ name }: { name: string }) {
-  const [open, setOpen] = useState(false);
-  const [hits, setHits] = useState<SearchHit[] | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function toggle() {
-    if (open) {
-      setOpen(false);
-      return;
-    }
-    setOpen(true);
-    if (hits === null && !loading) {
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/related-projects?name=${encodeURIComponent(name)}`);
-        const data = (await res.json()) as { results?: SearchHit[] };
-        setHits(data.results ?? []);
-      } catch {
-        setHits([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-  }
-
+// "More like this": filters the grid down to the projects most similar to this
+// one (by embedding), the same way the category filter narrows the grid.
+function FindSimilarButton({ onClick }: { onClick: () => void }) {
   return (
-    <div className="relative mt-3">
-      <button
-        type="button"
-        onClick={toggle}
-        className="font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
-      >
-        ✦ {open ? "hide similar" : "find similar"}
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.18 }}
-            className="absolute left-0 right-0 top-full z-20 mt-2 rounded-2xl border border-white/70 bg-cream/98 p-2 shadow-xl backdrop-blur"
-          >
-            {loading && (
-              <p className="px-1 py-1 font-body text-xs text-ink-soft">finding kindred projects… 🌿</p>
-            )}
-            {hits && hits.length > 0 && (
-              <ul className="space-y-1.5">
-                {hits.map((h) => (
-                  <li key={h.name}>
-                    <a
-                      href={h.demo ?? h.repo}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-2 rounded-xl bg-white/60 px-2.5 py-1.5 font-body text-xs text-ink-soft transition hover:bg-white"
-                    >
-                      <span>{h.emoji}</span>
-                      <span className="font-semibold text-ink">{h.name}</span>
-                      <span className="ml-auto rounded-full bg-lavender/60 px-1.5 py-0.5 text-[10px] font-semibold text-ink">
-                        {relevancePct(h.score)}%
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {hits && hits.length === 0 && !loading && (
-              <p className="px-1 py-1 font-body text-xs text-ink-soft">no close matches ✦</p>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className="mt-3 font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
+    >
+      ✦ find similar
+    </button>
   );
 }
 
@@ -193,8 +129,28 @@ export default function WorkGallery({
   const [level, setLevel] = useState<"default" | "eli5" | "expert">("default");
   const [rewrites, setRewrites] = useState<Record<string, Record<string, string>>>({});
   const [explaining, setExplaining] = useState(false);
+  const [similarTo, setSimilarTo] = useState<string | null>(null);
+  const [similarHits, setSimilarHits] = useState<SearchHit[]>([]);
+  const [similarLoading, setSimilarLoading] = useState(false);
 
   const searching = query.trim().length >= 2;
+
+  // Narrow the grid to the projects most similar to `name`, like a filter.
+  async function findSimilar(name: string) {
+    setQuery("");
+    setSimilarTo(name);
+    setSimilarLoading(true);
+    setSimilarHits([]);
+    try {
+      const res = await fetch(`/api/related-projects?name=${encodeURIComponent(name)}`);
+      const data = (await res.json()) as { results?: SearchHit[] };
+      setSimilarHits(data.results ?? []);
+    } catch {
+      setSimilarHits([]);
+    } finally {
+      setSimilarLoading(false);
+    }
+  }
 
   // Fetch the rewritten blurbs once per level (cached after first fetch).
   useEffect(() => {
@@ -220,6 +176,7 @@ export default function WorkGallery({
       return;
     }
     setStatus("loading");
+    setSimilarTo(null);
     const ctrl = new AbortController();
     const timer = setTimeout(async () => {
       try {
@@ -336,6 +293,51 @@ export default function WorkGallery({
             </AnimatePresence>
           </div>
         </div>
+      ) : similarTo ? (
+        <div className="mt-8">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-body text-2xl font-bold text-ink">
+              ✦ similar to &ldquo;{similarTo}&rdquo;
+            </h2>
+            <button
+              type="button"
+              onClick={() => setSimilarTo(null)}
+              className="rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft transition hover:bg-white"
+            >
+              ← show all
+            </button>
+          </div>
+          {similarLoading && (
+            <p className="mt-4 font-body text-ink-soft">finding kindred projects… 🌿</p>
+          )}
+          {!similarLoading && similarHits.length === 0 && (
+            <p className="mt-4 font-body text-ink-soft">no close matches for this one ✦</p>
+          )}
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <AnimatePresence mode="popLayout">
+              {similarHits.map((p) => (
+                <motion.article
+                  layout
+                  key={p.name}
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.25 }}
+                  whileHover={{ y: -5 }}
+                  className="rounded-3xl p-5 soft-card"
+                >
+                  <span className="text-3xl">{p.emoji}</span>
+                  <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
+                  <p className="mt-1 font-body text-sm text-ink-soft">{blurbFor(p)}</p>
+                  <DomainChips domains={p.domains} />
+                  <TechChips categories={p.categories} />
+                  <Links p={p} />
+                  <FindSimilarButton onClick={() => findSimilar(p.name)} />
+                </motion.article>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
       ) : (
       <>
       {/* Explain-level toggle: rewrites every blurb for the chosen audience */}
@@ -385,7 +387,7 @@ export default function WorkGallery({
                 <DomainChips domains={p.domains} />
                 <TechChips categories={p.categories} />
                 <Links p={p} />
-                <RelatedRow name={p.name} />
+                <FindSimilarButton onClick={() => findSimilar(p.name)} />
               </motion.article>
             ))}
           </div>
@@ -448,7 +450,7 @@ export default function WorkGallery({
               <DomainChips domains={p.domains} />
               <TechChips categories={p.categories} />
               <Links p={p} />
-              <RelatedRow name={p.name} />
+              <FindSimilarButton onClick={() => findSimilar(p.name)} />
             </motion.article>
           ))}
         </AnimatePresence>
