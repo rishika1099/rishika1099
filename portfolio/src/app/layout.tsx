@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import AskMe from "@/components/AskMe";
+import CursorCompanion from "@/components/CursorCompanion";
 
 const cattalague = localFont({
   src: "./fonts/Cattalague.ttf",
@@ -55,6 +56,7 @@ export default function RootLayout({
         <Nav />
         <main className="relative">{children}</main>
         <AskMe />
+        <CursorCompanion />
       </body>
     </html>
   );
