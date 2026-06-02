@@ -37,12 +37,38 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://rishika-m.netlify.app"),
   title: {
     default: "Rishika Mamidibathula",
     template: "%s · Rishika Mamidibathula",
   },
   description:
     "Data scientist & ML engineer in NYC. Projects, writing, poems, and photography, a little whimsical corner of the internet.",
+  keywords: [
+    "Rishika Mamidibathula",
+    "data scientist",
+    "machine learning engineer",
+    "LLM systems",
+    "causal inference",
+    "NYC",
+    "Columbia University",
+    "portfolio",
+  ],
+  authors: [{ name: "Rishika Mamidibathula" }],
+  openGraph: {
+    type: "website",
+    siteName: "Rishika Mamidibathula",
+    url: "https://rishika-m.netlify.app",
+    title: "Rishika Mamidibathula",
+    description:
+      "Data scientist & ML engineer in NYC. Projects, writing, poems, and photography.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rishika Mamidibathula",
+    description:
+      "Data scientist & ML engineer in NYC. Projects, writing, poems, and photography.",
+  },
 };
 
 export default function RootLayout({

@@ -62,14 +62,27 @@ export default function Nav() {
           ))}
         </ul>
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setOpen((o) => !o)}
-          className="rounded-full bg-lavender/60 px-3 py-1.5 text-xl md:hidden"
-          aria-label="Toggle menu"
-        >
-          {open ? "✦" : "☰"}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* command palette hint */}
+          <button
+            onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
+            className="hidden items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white md:inline-flex"
+            aria-label="open quick jump"
+            title="quick jump to any page or project"
+          >
+            <span>🔍</span>
+            <kbd className="rounded bg-lavender/60 px-1.5 py-0.5 font-body text-[10px] text-ink">⌘K</kbd>
+          </button>
+
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="rounded-full bg-lavender/60 px-3 py-1.5 text-xl md:hidden"
+            aria-label="Toggle menu"
+          >
+            {open ? "✦" : "☰"}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
