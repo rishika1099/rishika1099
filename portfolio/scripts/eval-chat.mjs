@@ -39,7 +39,7 @@ async function ask(question) {
   const res = await fetch(`${BASE}/api/ask`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify({ question, stream: false }),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status} for: ${question}`);
   return res.json();

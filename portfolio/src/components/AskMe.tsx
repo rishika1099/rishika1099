@@ -14,6 +14,18 @@ interface Message {
   sources?: Source[];
 }
 
+// Replace the most recent bot message via a transform (used while streaming).
+function withLastBot(arr: Message[], fn: (b: Message) => Message): Message[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i >= 0; i--) {
+    if (copy[i].role === "bot") {
+      copy[i] = fn(copy[i]);
+      break;
+    }
+  }
+  return copy;
+}
+
 const STARTERS = [
   "What has Rishika worked on in healthcare?",
   "Tell me about her LLM experience",
@@ -25,6 +37,7 @@ export default function AskMe() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [followups, setFollowups] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "bot",
@@ -41,7 +54,9 @@ export default function AskMe() {
     const q = question.trim();
     if (!q || busy) return;
     setInput("");
-    setMessages((m) => [...m, { role: "user", text: q }]);
+    setFollowups([]);
+    // push the user turn + an empty bot placeholder that fills in as tokens stream
+    setMessages((m) => [...m, { role: "user", text: q }, { role: "bot", text: "" }]);
     setBusy(true);
     try {
       const res = await fetch("/api/ask", {
@@ -50,20 +65,62 @@ export default function AskMe() {
         body: JSON.stringify({ question: q }),
       });
       if (res.status === 503) {
-        setMessages((m) => [
-          ...m,
-          { role: "bot", text: "my chat brain isn't switched on for this deploy yet. ✦" },
-        ]);
+        setMessages((m) =>
+          withLastBot(m, (b) => ({ ...b, text: "my chat brain isn't switched on for this deploy yet. ✦" })),
+        );
         return;
       }
-      if (!res.ok) throw new Error(String(res.status));
-      const data = (await res.json()) as { answer: string; sources?: Source[] };
-      setMessages((m) => [...m, { role: "bot", text: data.answer, sources: data.sources }]);
+      if (!res.ok || !res.body) throw new Error(String(res.status));
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        let nl;
+        while ((nl = buf.indexOf("\n")) >= 0) {
+          const line = buf.slice(0, nl).trim();
+          buf = buf.slice(nl + 1);
+          if (!line) continue;
+          let ev: { type: string; sources?: Source[]; text?: string; items?: string[] };
+          try {
+            ev = JSON.parse(line);
+          } catch {
+            continue;
+          }
+          if (ev.type === "sources") {
+            setMessages((m) => withLastBot(m, (b) => ({ ...b, sources: ev.sources })));
+          } else if (ev.type === "delta") {
+            setMessages((m) => withLastBot(m, (b) => ({ ...b, text: b.text + (ev.text ?? "") })));
+          } else if (ev.type === "followups") {
+            setFollowups(ev.items ?? []);
+          } else if (ev.type === "error") {
+            setMessages((m) =>
+              withLastBot(m, (b) => ({
+                ...b,
+                text: b.text || "oops, something fluttered away. try again? ✦",
+              })),
+            );
+          }
+        }
+      }
+      // safety net if the stream produced no answer text
+      setMessages((m) =>
+        withLastBot(m, (b) =>
+          b.text
+            ? b
+            : { ...b, text: "I'm not sure about that one. The Contact page is the best way to reach Rishika. ✦" },
+        ),
+      );
     } catch {
-      setMessages((m) => [
-        ...m,
-        { role: "bot", text: "oops, something fluttered away. try asking again in a moment? ✦" },
-      ]);
+      setMessages((m) =>
+        withLastBot(m, (b) => ({
+          ...b,
+          text: "oops, something fluttered away. try asking again in a moment? ✦",
+        })),
+      );
     } finally {
       setBusy(false);
     }
@@ -119,7 +176,11 @@ export default function AskMe() {
                         : "bg-white/80 text-ink-soft"
                     }`}
                   >
-                    <p className="whitespace-pre-line">{m.text}</p>
+                    {m.role === "bot" && m.text === "" ? (
+                      <p className="whitespace-pre-line italic text-ink-soft/70">thinking… 🌷</p>
+                    ) : (
+                      <p className="whitespace-pre-line">{m.text}</p>
+                    )}
                     {m.sources && m.sources.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {m.sources.map((s, j) =>
@@ -148,14 +209,6 @@ export default function AskMe() {
                 </div>
               ))}
 
-              {busy && (
-                <div className="flex justify-start">
-                  <div className="rounded-2xl bg-white/80 px-3.5 py-2 font-body text-sm text-ink-soft">
-                    thinking… 🌷
-                  </div>
-                </div>
-              )}
-
               {messages.length <= 1 && !busy && (
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {STARTERS.map((s) => (
@@ -166,6 +219,21 @@ export default function AskMe() {
                       className="rounded-full border border-ink/10 bg-white/70 px-2.5 py-1 text-left font-body text-[11px] text-ink-soft transition hover:bg-white"
                     >
                       {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {followups.length > 0 && !busy && (
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {followups.map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      onClick={() => ask(f)}
+                      className="rounded-full border border-blush/40 bg-blush/15 px-2.5 py-1 text-left font-body text-[11px] text-ink-soft transition hover:bg-blush/30"
+                    >
+                      {f}
                     </button>
                   ))}
                 </div>
