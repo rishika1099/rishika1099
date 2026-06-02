@@ -100,11 +100,13 @@ export default function ProjectGalaxy() {
                   className="absolute -translate-x-1/2 -translate-y-1/2"
                 >
                   <span
-                    className={`block h-4 w-4 rounded-full shadow-sm ring-2 ring-white/70 transition-transform ${
-                      isActive ? "scale-150" : "hover:scale-150"
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-sm shadow-sm ring-2 ring-white/80 transition-transform ${
+                      isActive ? "scale-[1.6]" : "hover:scale-[1.6]"
                     }`}
                     style={{ backgroundColor: colorFor(p.cluster) }}
-                  />
+                  >
+                    {p.emoji}
+                  </span>
                   {isActive && (
                     <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-2.5 py-1 font-body text-[11px] font-semibold text-cream shadow-lg">
                       {p.emoji} {p.name}
