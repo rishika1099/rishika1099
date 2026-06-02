@@ -41,7 +41,7 @@ export default function AskMe() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "bot",
-      text: "hi! i'm Rishika's little portfolio guide 🌸 ask me about her work, research, projects, or studies.",
+      text: "hi! i'm Rishika's little portfolio guide 🐻‍❄️ ask me about her work, research, projects, or studies.",
     },
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -142,7 +142,7 @@ export default function AskMe() {
           transition={{ repeat: open ? 0 : Infinity, repeatDelay: 1.6, duration: 1.2 }}
           className="text-xl"
         >
-          {open ? "✕" : "🌸"}
+          {open ? "✕" : "🐻‍❄️"}
         </motion.span>
         {open ? "close" : "ask about me"}
       </motion.button>
@@ -157,7 +157,7 @@ export default function AskMe() {
             className="fixed bottom-24 right-5 z-50 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[1.75rem] border border-white/70 bg-cream/95 shadow-2xl backdrop-blur"
           >
             <div className="flex items-center gap-2 border-b border-ink/10 bg-white/60 px-4 py-3">
-              <span className="text-xl">🌸</span>
+              <span className="text-xl">🐻‍❄️</span>
               <div>
                 <p className="font-body text-sm font-bold text-ink">ask about Rishika</p>
                 <p className="font-body text-[11px] text-ink-soft">

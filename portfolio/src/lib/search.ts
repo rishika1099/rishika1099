@@ -103,6 +103,91 @@ export interface GalaxyPoint {
   demo?: string;
   x: number; // 0..1
   y: number; // 0..1
+  cluster: number;
+}
+
+export interface ClusterMeta {
+  id: number;
+  label: string;
+  size: number;
+}
+
+export interface GalaxyData {
+  points: GalaxyPoint[];
+  clusters: ClusterMeta[];
+  k: number;
+  silhouette: number;
+}
+
+// --- k-means + silhouette on the embeddings (deterministic) ---
+function euclid(a: number[], b: number[]): number {
+  let s = 0;
+  for (let j = 0; j < a.length; j++) {
+    const d = a[j] - b[j];
+    s += d * d;
+  }
+  return Math.sqrt(s);
+}
+
+function kmeans(V: number[][], k: number, iters = 60): number[] {
+  const n = V.length;
+  const d = V[0].length;
+  // deterministic init: evenly spread starting points
+  let centroids = Array.from({ length: k }, (_, c) => V[Math.floor((c * n) / k)].slice());
+  const assign = new Array(n).fill(0);
+  for (let it = 0; it < iters; it++) {
+    let changed = false;
+    for (let i = 0; i < n; i++) {
+      let best = 0;
+      let bd = Infinity;
+      for (let c = 0; c < k; c++) {
+        const dd = euclid(V[i], centroids[c]);
+        if (dd < bd) {
+          bd = dd;
+          best = c;
+        }
+      }
+      if (assign[i] !== best) {
+        assign[i] = best;
+        changed = true;
+      }
+    }
+    const sums = Array.from({ length: k }, () => new Array(d).fill(0));
+    const cnt = new Array(k).fill(0);
+    for (let i = 0; i < n; i++) {
+      cnt[assign[i]]++;
+      const row = sums[assign[i]];
+      for (let j = 0; j < d; j++) row[j] += V[i][j];
+    }
+    centroids = sums.map((row, c) => (cnt[c] ? row.map((x) => x / cnt[c]) : centroids[c]));
+    if (!changed && it > 0) break;
+  }
+  return assign;
+}
+
+function silhouette(V: number[][], assign: number[]): number {
+  const n = V.length;
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    const same: number[] = [];
+    const others: Record<number, number[]> = {};
+    for (let j = 0; j < n; j++) {
+      if (j === i) continue;
+      const dij = euclid(V[i], V[j]);
+      if (assign[j] === assign[i]) same.push(dij);
+      else (others[assign[j]] ??= []).push(dij);
+    }
+    const a = same.length ? same.reduce((s, x) => s + x, 0) / same.length : 0;
+    let b = Infinity;
+    for (const c in others) {
+      const arr = others[c];
+      const m = arr.reduce((s, x) => s + x, 0) / arr.length;
+      if (m < b) b = m;
+    }
+    if (!isFinite(b)) b = 0;
+    total += same.length === 0 ? 0 : (b - a) / Math.max(a, b || 1);
+  }
+  return n ? total / n : 0;
 }
 
 // Classical PCA via the small n×n Gram matrix (n projects, d=1536 dims).
@@ -168,12 +253,44 @@ function pca2d(vectors: number[][]): [number, number][] {
   return raw.map((_, i) => [xs[i], ys[i]]);
 }
 
-// 2D map of every project from its embedding, for the "embeddings galaxy".
-export async function projectMap(): Promise<GalaxyPoint[]> {
+// 2D map of every project from its embedding, clustered with k-means (k chosen
+// by silhouette) and each cluster labelled by its dominant category.
+export async function projectMap(): Promise<GalaxyData> {
   const openai = new OpenAI();
   const { projects, vectors } = await ensureCache(openai);
   const coords = pca2d(vectors);
-  return projects.map((p, i) => ({
+  const n = projects.length;
+
+  // pick k in [2, 6] by best silhouette
+  let bestK = 2;
+  let bestAssign: number[] = new Array(n).fill(0);
+  let bestSil = -Infinity;
+  const maxK = Math.min(6, Math.max(2, Math.floor(n / 3)));
+  for (let k = 2; k <= maxK; k++) {
+    const assign = kmeans(vectors, k);
+    const sil = silhouette(vectors, assign);
+    if (sil > bestSil) {
+      bestSil = sil;
+      bestK = k;
+      bestAssign = assign;
+    }
+  }
+
+  // label each cluster by its most common primary category
+  const clusters: ClusterMeta[] = [];
+  for (let c = 0; c < bestK; c++) {
+    const members = projects.filter((_, i) => bestAssign[i] === c);
+    if (members.length === 0) continue;
+    const counts: Record<string, number> = {};
+    for (const m of members) {
+      const cat = m.categories[0] ?? "Machine Learning";
+      counts[cat] = (counts[cat] ?? 0) + 1;
+    }
+    const label = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    clusters.push({ id: c, label, size: members.length });
+  }
+
+  const points: GalaxyPoint[] = projects.map((p, i) => ({
     name: p.name,
     emoji: p.emoji,
     category: p.categories[0] ?? "Machine Learning",
@@ -182,5 +299,8 @@ export async function projectMap(): Promise<GalaxyPoint[]> {
     demo: p.demo,
     x: coords[i]?.[0] ?? 0.5,
     y: coords[i]?.[1] ?? 0.5,
+    cluster: bestAssign[i],
   }));
+
+  return { points, clusters, k: bestK, silhouette: Number(bestSil.toFixed(3)) };
 }

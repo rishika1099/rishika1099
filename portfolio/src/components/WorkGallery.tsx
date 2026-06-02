@@ -396,7 +396,7 @@ export default function WorkGallery({
 
       {/* Filters */}
       <div className="mt-12 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-body text-2xl font-bold text-ink">wander the patches</h2>
+        <h2 className="font-body text-2xl font-bold text-ink">🐝 wander the patches</h2>
         <label className="flex items-center gap-2 font-body text-sm font-semibold text-ink-soft">
           domain
           <select

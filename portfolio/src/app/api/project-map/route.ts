@@ -8,8 +8,8 @@ export async function GET() {
     return NextResponse.json({ error: "map-unconfigured" }, { status: 503 });
   }
   try {
-    const points = await projectMap();
-    return NextResponse.json({ points });
+    const data = await projectMap();
+    return NextResponse.json(data);
   } catch (err) {
     console.error("project map failed", err);
     return NextResponse.json({ error: "map-failed" }, { status: 500 });
