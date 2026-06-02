@@ -98,6 +98,84 @@ function ScoreBadge({ score }: { score: number }) {
   );
 }
 
+// "More like this": on demand, fetch the projects most similar to this one
+// (by embedding) and reveal them inline. Reuses the cached project vectors.
+function RelatedRow({ name }: { name: string }) {
+  const [open, setOpen] = useState(false);
+  const [hits, setHits] = useState<SearchHit[] | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function toggle() {
+    if (open) {
+      setOpen(false);
+      return;
+    }
+    setOpen(true);
+    if (hits === null && !loading) {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/related-projects?name=${encodeURIComponent(name)}`);
+        const data = (await res.json()) as { results?: SearchHit[] };
+        setHits(data.results ?? []);
+      } catch {
+        setHits([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+  }
+
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        onClick={toggle}
+        className="font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
+      >
+        ✦ {open ? "hide similar" : "find similar"}
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            {loading && (
+              <p className="mt-2 font-body text-xs text-ink-soft">finding kindred projects… 🌿</p>
+            )}
+            {hits && hits.length > 0 && (
+              <ul className="mt-2 space-y-1.5">
+                {hits.map((h) => (
+                  <li key={h.name}>
+                    <a
+                      href={h.demo ?? h.repo}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 rounded-xl bg-white/60 px-2.5 py-1.5 font-body text-xs text-ink-soft transition hover:bg-white"
+                    >
+                      <span>{h.emoji}</span>
+                      <span className="font-semibold text-ink">{h.name}</span>
+                      <span className="ml-auto rounded-full bg-lavender/60 px-1.5 py-0.5 text-[10px] font-semibold text-ink">
+                        {relevancePct(h.score)}%
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {hits && hits.length === 0 && !loading && (
+              <p className="mt-2 font-body text-xs text-ink-soft">no close matches ✦</p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function WorkGallery({
   projects,
   categories,
@@ -264,6 +342,7 @@ export default function WorkGallery({
                 <DomainChips domains={p.domains} />
                 <TechChips categories={p.categories} />
                 <Links p={p} />
+                <RelatedRow name={p.name} />
               </motion.article>
             ))}
           </div>
@@ -326,6 +405,7 @@ export default function WorkGallery({
               <DomainChips domains={p.domains} />
               <TechChips categories={p.categories} />
               <Links p={p} />
+              <RelatedRow name={p.name} />
             </motion.article>
           ))}
         </AnimatePresence>
