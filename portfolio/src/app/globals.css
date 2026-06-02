@@ -18,6 +18,7 @@
   --color-gold: #f6d99b;
   --color-mint: #bfe9d6;
   --color-petal: #f5c9e0;
+  --color-rose: #f7aabc;
 
   --font-display: var(--font-nunito);
   --font-body: var(--font-nunito);
@@ -93,9 +94,12 @@ body {
 
 /* Each page's vibe gives its cards a hover tint that echoes the background */
 .vibe-dawn { --card-hover: rgba(255, 222, 205, 0.92); }
-.vibe-cozy { --card-hover: rgba(255, 226, 206, 0.92); }
+.vibe-lilac { --card-hover: rgba(230, 215, 245, 0.92); }
+.vibe-azure { --card-hover: rgba(207, 232, 243, 0.92); }
 .vibe-meadow { --card-hover: rgba(214, 238, 214, 0.92); }
+.vibe-peach { --card-hover: rgba(255, 226, 206, 0.92); }
 .vibe-sunset { --card-hover: rgba(255, 213, 197, 0.92); }
+.vibe-rose { --card-hover: rgba(247, 183, 201, 0.9); }
 .vibe-twilight { --card-hover: rgba(232, 219, 248, 0.9); }
 
 .text-shadow-soft { text-shadow: 0 2px 14px rgba(255, 255, 255, 0.65); }

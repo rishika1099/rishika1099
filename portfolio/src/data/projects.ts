@@ -21,7 +21,8 @@ export type Domain =
   | "Cybersecurity"
   | "Agriculture"
   | "Food & Nutrition"
-  | "Social Media";
+  | "Social Media"
+  | "Sports";
 
 export interface Project {
   name: string;
@@ -103,6 +104,7 @@ export const projects: Project[] = [
     blurb:
       "Full-stack RAG pipeline turning natural language into SQL and visualizations for sports performance analytics.",
     categories: ["Generative AI", "NLP"],
+    domains: ["Sports"],
     repo: gh("Just-Ask-Coach-Query-SQL-Translation"),
     demo: "https://just-ask-coach.netlify.app/",
     tags: ["Text-to-SQL", "ChromaDB", "Claude", "React"],
@@ -302,6 +304,7 @@ export const projects: Project[] = [
     blurb:
       "TF-IDF + Linear SVM on the WELFake dataset with a real-time credibility-prediction interface.",
     categories: ["NLP"],
+    domains: ["Social Media"],
     repo: gh("Fake-News-Detection"),
     tags: ["NLP", "SVM", "TF-IDF"],
   },
@@ -415,4 +418,5 @@ export const domainColor: Record<Domain, string> = {
   Agriculture: "#d9eab0",
   "Food & Nutrition": "#f8d4bd",
   "Social Media": "#f0c8e8",
+  Sports: "#bfe0e8",
 };

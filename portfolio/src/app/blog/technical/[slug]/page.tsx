@@ -29,7 +29,7 @@ export default async function BlogPost({
   if (!post) notFound();
 
   return (
-    <PageShell vibe="meadow">
+    <PageShell vibe="azure">
       <Link
         href="/blog/technical"
         className="font-body text-sm text-ink-soft hover:text-ink"

@@ -9,7 +9,7 @@ export const metadata = { title: "Technical Blogs" };
 export default function TechnicalIndex() {
   const posts = getBlogPosts();
   return (
-    <PageShell vibe="meadow">
+    <PageShell vibe="azure">
       <PageTitle className="text-ink">technical blogs 📓</PageTitle>
       <div className="mt-3">
         <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">

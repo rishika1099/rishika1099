@@ -32,7 +32,7 @@ const doors = [
 
 export default function BlogHub() {
   return (
-    <PageShell vibe="cozy">
+    <PageShell vibe="peach">
       <PageTitle>the writing room 📖</PageTitle>
       <p className="mt-3 max-w-4xl font-body text-lg text-ink-soft">
         Three little doors. One for curiosity, one for feelings, one for the

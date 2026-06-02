@@ -14,7 +14,7 @@ const links = [
 
 export default function Contact() {
   return (
-    <PageShell vibe="sunset" className="flex flex-col items-center text-center">
+    <PageShell vibe="rose" className="flex flex-col items-center text-center">
       <motion.span
         animate={{ y: [0, -10, 0] }}
         transition={{ repeat: Infinity, duration: 3 }}

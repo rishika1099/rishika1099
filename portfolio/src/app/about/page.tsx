@@ -90,7 +90,7 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
 
 export default function About() {
   return (
-    <PageShell vibe="cozy">
+    <PageShell vibe="lilac">
       <PageTitle>the human behind the models 🦦</PageTitle>
 
       <div className="mt-6 max-w-4xl space-y-4 font-body text-lg text-ink-soft">

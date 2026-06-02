@@ -47,6 +47,7 @@ const DOMAIN_RULES: [Domain, RegExp][] = [
   ["Food & Nutrition", /\b(food|recipe|nutrition|diet|meal|cook|pantry)/i],
   ["Social Media", /\b(social|media|post|tweet|twitter|instagram|reddit|feed|influencer|content)/i],
   ["Public Sector", /\b(public|government|policy|civic|municipal)/i],
+  ["Sports", /\b(sport|fitness|exercise|workout|athlet|gym|coach)/i],
 ];
 
 function detectDomains(text: string): Domain[] {

@@ -2,14 +2,27 @@
 
 import { motion } from "framer-motion";
 
-export type Vibe = "dawn" | "cozy" | "meadow" | "twilight" | "sunset";
+export type Vibe =
+  | "dawn"
+  | "lilac"
+  | "azure"
+  | "meadow"
+  | "peach"
+  | "sunset"
+  | "rose"
+  | "twilight";
 
+// A soft-pastel arc from sunrise blues through golden hour to a sunset rose,
+// one distinct gradient per page (twilight stays dark for the poem room).
 const gradients: Record<Vibe, string> = {
   dawn: "from-sky via-lavender/60 to-dawn",
-  cozy: "from-dawn via-cream to-gold/40",
+  lilac: "from-lavender via-petal/40 to-sky/50",
+  azure: "from-sky via-cream to-mint/50",
   meadow: "from-mint via-cream to-meadow",
-  twilight: "from-[#0f0f13] via-[#17171d] to-[#23232b]",
+  peach: "from-gold/60 via-cream to-dawn",
   sunset: "from-sunset via-blush/50 to-lavender",
+  rose: "from-rose via-blush/50 to-gold/40",
+  twilight: "from-[#0f0f13] via-[#17171d] to-[#23232b]",
 };
 
 function Cloud({
@@ -79,7 +92,7 @@ export default function Scenery({ vibe }: { vibe: Vibe }) {
         }`}
       />
 
-      {(vibe === "dawn" || vibe === "sunset" || vibe === "cozy" || vibe === "meadow") && (
+      {!isNight && (
         <>
           {/* same duration + evenly spaced starts (0, 15, 30, 45 of a 60s loop)
               keeps horizontal spacing even; heights are scrambled (not increasing
