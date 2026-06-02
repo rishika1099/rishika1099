@@ -5,6 +5,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import AskMe from "@/components/AskMe";
 import CursorCompanion from "@/components/CursorCompanion";
+import CommandPalette from "@/components/CommandPalette";
 
 const cattalague = localFont({
   src: "./fonts/Cattalague.ttf",
@@ -57,6 +58,7 @@ export default function RootLayout({
         <main className="relative">{children}</main>
         <AskMe />
         <CursorCompanion />
+        <CommandPalette />
       </body>
     </html>
   );
