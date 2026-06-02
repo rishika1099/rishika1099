@@ -17,6 +17,7 @@ interface Point {
 interface ClusterMeta {
   id: number;
   label: string;
+  description: string;
   size: number;
 }
 interface GalaxyData {
@@ -114,24 +115,28 @@ export default function ProjectGalaxy() {
             })}
           </div>
 
-          {/* cluster legend */}
-          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
+          {/* cluster explanations */}
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
             {data.clusters.map((c) => (
-              <span key={c.id} className="flex items-center gap-1.5 font-body text-xs text-ink-soft">
+              <li key={c.id} className="flex gap-2 rounded-2xl bg-white/50 p-3">
                 <span
-                  className="h-3 w-3 rounded-full ring-1 ring-white/70"
+                  className="mt-1 h-3 w-3 shrink-0 rounded-full ring-1 ring-white/70"
                   style={{ backgroundColor: colorFor(c.id) }}
                 />
-                {c.label} · {c.size}
-              </span>
+                <span className="font-body text-xs text-ink-soft">
+                  <span className="font-bold text-ink">{c.label}</span>{" "}
+                  <span className="text-ink-soft/70">· {c.size}</span>
+                  {c.description && <span className="block">{c.description}</span>}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
 
           {/* evaluation */}
           <p className="mt-3 font-body text-xs text-ink-soft/80">
-            {data.k} clusters via k-means, chosen by silhouette score (
-            {data.silhouette.toFixed(2)}). Higher silhouette means tighter, better-separated
-            groups. ✦
+            {data.k} clusters via k-means (k biased toward finer groups within tolerance of the
+            best silhouette score, {data.silhouette.toFixed(2)}). Labels and explanations are
+            generated from each cluster&apos;s member projects. ✦
           </p>
         </>
       )}

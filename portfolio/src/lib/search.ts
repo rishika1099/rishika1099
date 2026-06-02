@@ -109,6 +109,7 @@ export interface GalaxyPoint {
 export interface ClusterMeta {
   id: number;
   label: string;
+  description: string;
   size: number;
 }
 
@@ -253,42 +254,94 @@ function pca2d(vectors: number[][]): [number, number][] {
   return raw.map((_, i) => [xs[i], ys[i]]);
 }
 
-// 2D map of every project from its embedding, clustered with k-means (k chosen
-// by silhouette) and each cluster labelled by its dominant category.
+// Ask an LLM to name + explain each cluster from its member projects.
+async function describeClusters(
+  openai: OpenAI,
+  groups: { id: number; members: Project[] }[],
+): Promise<Record<number, { label: string; description: string }>> {
+  const payload = groups.map((g) => ({
+    id: g.id,
+    projects: g.members.map((m) => ({ name: m.name, blurb: m.blurb, area: m.categories[0] })),
+  }));
+  try {
+    const res = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.3,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are given clusters of a data scientist's projects, grouped by embedding similarity. For each cluster, give a short theme label (2 to 4 words) and one sentence explaining what the projects genuinely share (methods, domain, or problem type). Be specific and truthful, do not use em dashes. Return JSON: {\"clusters\":[{\"id\":0,\"label\":\"...\",\"description\":\"...\"}]}.",
+        },
+        { role: "user", content: JSON.stringify(payload) },
+      ],
+    });
+    const parsed = JSON.parse(res.choices[0]?.message?.content ?? "{}");
+    const out: Record<number, { label: string; description: string }> = {};
+    for (const c of parsed.clusters ?? []) {
+      if (typeof c.id === "number") {
+        out[c.id] = { label: String(c.label ?? ""), description: String(c.description ?? "") };
+      }
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+// Cache the whole galaxy (clustering + LLM labels) per project set.
+let galaxyCache: { key: string; data: GalaxyData } | null = null;
+
+// 2D map of every project from its embedding, clustered with k-means (k biased
+// toward finer groups) and each cluster named + explained by an LLM.
 export async function projectMap(): Promise<GalaxyData> {
   const openai = new OpenAI();
   const { projects, vectors } = await ensureCache(openai);
+  const key = projects.map((p) => p.name).join("|");
+  if (galaxyCache && galaxyCache.key === key) return galaxyCache.data;
+
   const coords = pca2d(vectors);
   const n = projects.length;
 
-  // pick k in [2, 6] by best silhouette
-  let bestK = 2;
-  let bestAssign: number[] = new Array(n).fill(0);
-  let bestSil = -Infinity;
-  const maxK = Math.min(6, Math.max(2, Math.floor(n / 3)));
-  for (let k = 2; k <= maxK; k++) {
+  // evaluate k from 3..6, then prefer the FINEST k within tolerance of the best
+  // silhouette (more, more-specific clusters, like the photo clustering)
+  const minK = Math.min(3, n);
+  const maxK = Math.min(6, Math.max(minK, Math.floor(n / 4)));
+  const results: { k: number; assign: number[]; sil: number }[] = [];
+  for (let k = minK; k <= maxK; k++) {
     const assign = kmeans(vectors, k);
-    const sil = silhouette(vectors, assign);
-    if (sil > bestSil) {
-      bestSil = sil;
-      bestK = k;
-      bestAssign = assign;
-    }
+    results.push({ k, assign, sil: silhouette(vectors, assign) });
   }
+  const topSil = Math.max(...results.map((r) => r.sil));
+  const TOL = 0.04;
+  const chosen = results
+    .filter((r) => r.sil >= topSil - TOL)
+    .sort((a, b) => b.k - a.k)[0];
 
-  // label each cluster by its most common primary category
-  const clusters: ClusterMeta[] = [];
-  for (let c = 0; c < bestK; c++) {
-    const members = projects.filter((_, i) => bestAssign[i] === c);
-    if (members.length === 0) continue;
+  // members per cluster
+  const groups = Array.from({ length: chosen.k }, (_, c) => ({
+    id: c,
+    members: projects.filter((_, i) => chosen.assign[i] === c),
+  })).filter((g) => g.members.length > 0);
+
+  const labels = await describeClusters(openai, groups);
+
+  const clusters: ClusterMeta[] = groups.map((g) => {
+    // fallback label = dominant category
     const counts: Record<string, number> = {};
-    for (const m of members) {
+    for (const m of g.members) {
       const cat = m.categories[0] ?? "Machine Learning";
       counts[cat] = (counts[cat] ?? 0) + 1;
     }
-    const label = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
-    clusters.push({ id: c, label, size: members.length });
-  }
+    const fallback = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    return {
+      id: g.id,
+      label: labels[g.id]?.label || fallback,
+      description: labels[g.id]?.description || "",
+      size: g.members.length,
+    };
+  });
 
   const points: GalaxyPoint[] = projects.map((p, i) => ({
     name: p.name,
@@ -299,8 +352,15 @@ export async function projectMap(): Promise<GalaxyData> {
     demo: p.demo,
     x: coords[i]?.[0] ?? 0.5,
     y: coords[i]?.[1] ?? 0.5,
-    cluster: bestAssign[i],
+    cluster: chosen.assign[i],
   }));
 
-  return { points, clusters, k: bestK, silhouette: Number(bestSil.toFixed(3)) };
+  const data: GalaxyData = {
+    points,
+    clusters,
+    k: chosen.k,
+    silhouette: Number(chosen.sil.toFixed(3)),
+  };
+  galaxyCache = { key, data };
+  return data;
 }
