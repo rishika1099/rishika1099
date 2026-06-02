@@ -92,5 +92,19 @@ Two lighter touches that reuse the same machinery:
 
 ---
 
+## 6. Embeddings galaxy (project clustering)
+
+Method: every project embedded with `text-embedding-3-small`, projected to 2D with PCA (via
+the Gram matrix), then grouped with **k-means** into a few broad themes (k chosen for the
+best-separated grouping among k=3–4). Each cluster is named and explained by an LLM.
+
+This is presented as a **grouping/visualization, not a separation claim**: silhouette stays
+near 0 throughout (these projects sit on a continuous spectrum, and high-dimensional text
+embeddings rarely separate cleanly), so the value is the interpretable themes, e.g.
+Generative AI, Computer Vision, Predictive Analytics, NLP, confirmed by the LLM labels and a
+manual read of each cluster's members.
+
+---
+
 > Reproduce: `npm run eval:chat` for the chatbot; clustering and mood metrics are written
 > to `clusters.json` / `moods.json` during `npm run media`.

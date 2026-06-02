@@ -39,18 +39,25 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   that filters the grid down to its nearest neighbors by **embedding cosine similarity**,
   reusing the cached project vectors (no query embedding needed).
   (`src/lib/search.ts` `relatedProjects`, `src/app/api/related-projects/route.ts`)
+- **Embeddings galaxy.** An interactive 2D map of every project: each is embedded, projected
+  to 2D with a hand-rolled **PCA** (via the n×n Gram matrix), and grouped into broad themes
+  with **k-means**. The clusters are named and explained by an LLM, and each project shows
+  as its emoji on a cluster-colored dot. A data-science visualization of how the model
+  "sees" the work. (`src/lib/search.ts` `projectMap`, `src/app/api/project-map/route.ts`,
+  `src/components/ProjectGalaxy.tsx`)
 - **ELI5 / expert toggle.** A toggle on the Work tab rewrites every project blurb for the
   chosen audience (a curious 10-year-old, or a senior ML engineer) in one batched, cached
   `gpt-4o-mini` call. (`src/lib/explain.ts`, `src/app/api/explain/route.ts`)
 - **Ask-my-portfolio chatbot (RAG).** A floating "ask about me" widget answers questions
-  grounded in a knowledge base built from the bio, education, experience, research, and
-  **every project's GitHub README** (fetched and cleaned). It retrieves the top chunks by
-  embedding similarity, then **streams** the answer token-by-token from `gpt-4o-mini`,
-  cites its sources, suggests follow-up questions, and refuses to invent facts (poems and
-  photos are deliberately excluded). *Eval:* `npm run eval:chat` reports retrieval hit rate,
-  answer accuracy, and refusal correctness on a labeled question set.
+  grounded in a knowledge base built from the bio, education, experience, research,
+  **every project's GitHub README** (fetched and cleaned), and her **Substack posts** (pulled
+  from the RSS feed). It retrieves the top chunks by embedding similarity, then **streams**
+  the answer token-by-token from `gpt-4o-mini`, cites its sources, suggests follow-up
+  questions, and refuses to invent facts (poems and photos are deliberately excluded).
+  *Eval:* `npm run eval:chat` reports retrieval hit rate, answer accuracy, and refusal
+  correctness on a labeled question set (currently 100% on all three).
   (`src/lib/rag.ts`, `src/lib/knowledge.ts`, `src/lib/github-readme.ts`,
-  `src/app/api/ask/route.ts`, `src/components/AskMe.tsx`)
+  `src/lib/substack.ts`, `src/app/api/ask/route.ts`, `src/components/AskMe.tsx`)
 - **Live GitHub project sync + auto-categorization.** The Work tab fetches public repos
   straight from GitHub (ISR, hourly) and **classifies each one** into a technical area
   (Generative AI, Causal Inference, Computer Vision, etc.) and a domain (Healthcare,
@@ -69,18 +76,55 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 ## ✨ Site features
 
 - **Per-tab "vibes":** each page has its own pastel gradient scenery, drifting clouds,
-  twinkling sparkles, and a synced card-hover tint.
+  twinkling sparkles, and a synced card-hover tint. The active nav tab tints to match the
+  page it leads to.
 - **Home:** flower-framed portrait, animated cursive name, quick links.
 - **About:** expandable study/work/research cards, and the skills network graph.
-- **Work:** semantic search box + featured projects + filterable grid (by technical area
-  and domain), auto-fed from GitHub.
+- **Work:** semantic search box + ELI5/expert toggle + featured projects + filterable grid
+  (by technical area and domain, auto-fed from GitHub) + the embeddings galaxy.
 - **Writing room (Blog):** three doors, Technical Blogs (Markdown + external Substack
-  links), Poems (password-gated, with AI art + mood filter), and Photography
-  (auto-captioned + auto-clustered).
+  links), Poems (password-gated and **re-locking on every refresh**, with AI art + mood
+  filter), and Photography (auto-captioned + auto-clustered).
+- **Quick jump (⌘K):** a command palette to fuzzy-jump to any page or project.
 - **Ask-about-me chatbot:** a floating widget, available site-wide, that answers questions
   about Rishika from her real portfolio with source citations.
+- **Whimsy:** a butterfly cursor companion (desktop, respects reduced-motion).
 - **Contact:** ways to reach me + a message form.
+- **SEO:** sitemap, robots, and an auto-generated Open Graph preview image so links unfurl
+  nicely. (`src/app/sitemap.ts`, `robots.ts`, `opengraph-image.tsx`)
 - **Responsive** with a mobile menu, and **no em dashes anywhere** (a personal style rule).
+
+---
+
+## 🌟 Featured projects
+
+A few of the projects showcased on the Work tab:
+
+- **Folio: Clinical Multimodal RAG** — a multimodal medical-record companion unifying RAG,
+  document understanding, speech, and vision; consensus extraction across LLMs hit 85.1%
+  micro-F1 with sub-2s latency.
+  ([code](https://github.com/rishika1099/Folio-Clinical-Multimodal-RAG) ·
+  [demo](https://folio-health.vercel.app))
+- **KV-Cache Optimization for LLM Inference** — benchmarked KIVI quantization, TopK
+  sparsity, SnapKV eviction & MLA on Llama-2-7B with Triton kernels: 4× cache compression,
+  1.93× faster decode, 3.1× peak throughput.
+  ([code](https://github.com/rishika1099/KV-Cache-Optimization) ·
+  [writeup](https://rishika1099.substack.com/p/kv-cache-optimization))
+- **Colon Cancer Trial Causal Analysis** — causal re-analysis of the Moertel 1990 trial
+  (n=929): ATE, CATE, mediation, transport; showed collider bias reversing the effect.
+  ([code](https://github.com/rishika1099/Colon-Cancer-Trial-Causal-Analysis) ·
+  [writeup](https://open.substack.com/pub/rishika1099/p/prediction-vs-causation))
+- **Federal Eagle: AI Legal Assistant** — a multi-agent CrewAI system for U.S. federal legal
+  analysis: semantic USC retrieval, precedent search, elements analysis, draft generation.
+  ([code](https://github.com/rishika1099/Federal-Eagle-AI-Legal-Assistant) ·
+  [demo](https://federal-eagle.streamlit.app/))
+- **This portfolio** — the site itself: RAG chatbot, semantic search, embeddings galaxy,
+  CLIP photo clustering, and an LLM poem-mood classifier.
+  ([code](https://github.com/rishika1099/rishika1099) ·
+  [live](https://rishika-m.netlify.app))
+
+The full, always-current list is generated live on the Work tab (curated entries plus every
+public GitHub repo, auto-categorized).
 
 ---
 
