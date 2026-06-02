@@ -126,7 +126,7 @@ function RelatedRow({ name }: { name: string }) {
   }
 
   return (
-    <div className="mt-3">
+    <div className="relative mt-3">
       <button
         type="button"
         onClick={toggle}
@@ -137,17 +137,17 @@ function RelatedRow({ name }: { name: string }) {
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18 }}
+            className="absolute left-0 right-0 top-full z-20 mt-2 rounded-2xl border border-white/70 bg-cream/98 p-2 shadow-xl backdrop-blur"
           >
             {loading && (
-              <p className="mt-2 font-body text-xs text-ink-soft">finding kindred projects… 🌿</p>
+              <p className="px-1 py-1 font-body text-xs text-ink-soft">finding kindred projects… 🌿</p>
             )}
             {hits && hits.length > 0 && (
-              <ul className="mt-2 space-y-1.5">
+              <ul className="space-y-1.5">
                 {hits.map((h) => (
                   <li key={h.name}>
                     <a
@@ -167,7 +167,7 @@ function RelatedRow({ name }: { name: string }) {
               </ul>
             )}
             {hits && hits.length === 0 && !loading && (
-              <p className="mt-2 font-body text-xs text-ink-soft">no close matches ✦</p>
+              <p className="px-1 py-1 font-body text-xs text-ink-soft">no close matches ✦</p>
             )}
           </motion.div>
         )}
