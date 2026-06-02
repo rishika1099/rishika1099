@@ -21,6 +21,9 @@ The three refusal cases ("favorite poem?", "phone number?", "2024 Super Bowl?") 
 out-of-scope on purpose: the bot declines all three and points to the Contact page,
 with zero hallucination. The poem refusal matters because poems are private/gated.
 
+The answer streams token-by-token and ends with three suggested follow-up questions.
+Streaming and follow-ups do not change retrieval or grounding, so these scores still hold.
+
 ---
 
 ## 2. Semantic project search
@@ -71,6 +74,21 @@ score (temperature 0, JSON output).
 | distribution | melancholy 4 · longing 1 · love 1 · self-love 1 · hope 1 |
 
 The Poems page reports the average classifier confidence as an honest quality signal.
+
+---
+
+## 5. Related projects & ELI5/expert toggle
+
+Two lighter touches that reuse the same machinery:
+
+- **Related projects** ("find similar") rank by cosine similarity over the cached project
+  embeddings, the same vectors semantic search uses. Spot check: Folio (clinical RAG) →
+  Dr. Pixel (medical imaging) + Prescribed Motion (LLM retrieval); KV-Cache → other
+  LLM-systems work. Quality is the ranking itself; no separate metric.
+- **ELI5/expert toggle** rewrites blurbs with `gpt-4o-mini` under a strict "keep every fact
+  truthful, do not invent" instruction. Manual read-through confirmed the expert voice
+  preserves the real metrics (e.g. Folio "85.1% micro-F1, sub-2s latency") and the ELI5
+  voice stays jargon-free.
 
 ---
 

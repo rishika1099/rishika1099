@@ -35,12 +35,20 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   by meaning, not keywords. Weak matches are thresholded out, and the raw cosine is rescaled
   into an intuitive relevance %. *Eval:* each result shows its relevance score.
   (`src/lib/search.ts`, `src/app/api/search-projects/route.ts`)
+- **"More like this" project suggestions.** Each project card has a "find similar" action
+  that filters the grid down to its nearest neighbors by **embedding cosine similarity**,
+  reusing the cached project vectors (no query embedding needed).
+  (`src/lib/search.ts` `relatedProjects`, `src/app/api/related-projects/route.ts`)
+- **ELI5 / expert toggle.** A toggle on the Work tab rewrites every project blurb for the
+  chosen audience (a curious 10-year-old, or a senior ML engineer) in one batched, cached
+  `gpt-4o-mini` call. (`src/lib/explain.ts`, `src/app/api/explain/route.ts`)
 - **Ask-my-portfolio chatbot (RAG).** A floating "ask about me" widget answers questions
   grounded in a knowledge base built from the bio, education, experience, research, and
   **every project's GitHub README** (fetched and cleaned). It retrieves the top chunks by
-  embedding similarity, then answers with `gpt-4o-mini`, citing its sources and refusing to
-  invent facts (poems/photos are deliberately excluded). *Eval:* `npm run eval:chat` reports
-  retrieval hit rate, answer accuracy, and refusal correctness on a labeled question set.
+  embedding similarity, then **streams** the answer token-by-token from `gpt-4o-mini`,
+  cites its sources, suggests follow-up questions, and refuses to invent facts (poems and
+  photos are deliberately excluded). *Eval:* `npm run eval:chat` reports retrieval hit rate,
+  answer accuracy, and refusal correctness on a labeled question set.
   (`src/lib/rag.ts`, `src/lib/knowledge.ts`, `src/lib/github-readme.ts`,
   `src/app/api/ask/route.ts`, `src/components/AskMe.tsx`)
 - **Live GitHub project sync + auto-categorization.** The Work tab fetches public repos
