@@ -1,6 +1,7 @@
 import { bio, education, timeline, skillAreas, type Entry } from "@/data/about";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
+import { getSubstackChunks } from "@/lib/substack";
 
 export type ChunkKind =
   | "bio"
@@ -8,7 +9,8 @@ export type ChunkKind =
   | "experience"
   | "research"
   | "education"
-  | "project";
+  | "project"
+  | "writing";
 
 export interface Chunk {
   id: string;
@@ -92,6 +94,18 @@ export async function buildKnowledge(): Promise<Chunk[]> {
       href: p.demo ?? p.repo,
     });
   });
+
+  // Substack posts: her technical writing, so the bot can speak to it in depth.
+  const writings = await getSubstackChunks();
+  for (const w of writings) {
+    chunks.push({
+      id: w.id,
+      title: w.title,
+      kind: "writing",
+      text: w.text,
+      href: w.href,
+    });
+  }
 
   return chunks;
 }
