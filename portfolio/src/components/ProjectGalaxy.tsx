@@ -137,10 +137,8 @@ export default function ProjectGalaxy() {
           </ul>
 
           {/* note: this is a k-means grouping, not a claim of tight separation */}
-          <p className="mt-3 max-w-3xl font-body text-xs text-ink-soft/80">
-            Grouped into {data.k} themes with k-means over the project embeddings. Each project
-            is placed near the others it&apos;s most semantically similar to, and every cluster&apos;s
-            label and description are generated from its member projects. ✦
+          <p className="mt-3 font-body text-xs text-ink-soft/80">
+            Grouped into {data.k} themes with k-means over the project embeddings.
           </p>
         </>
       )}
