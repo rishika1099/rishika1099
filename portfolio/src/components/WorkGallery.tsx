@@ -309,7 +309,7 @@ export default function WorkGallery({
             </p>
           )}
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {hits.map((p) => (
                 <motion.article
@@ -368,7 +368,7 @@ export default function WorkGallery({
           <h2 className="mt-10 font-body text-2xl font-bold text-ink">
             ⭐ featured blooms
           </h2>
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          <div className="mt-5 grid items-start gap-5 sm:grid-cols-2">
             {featured.map((p, i) => (
           <motion.article
             key={p.name}
@@ -429,7 +429,7 @@ export default function WorkGallery({
         ))}
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {grid.map((p) => (
             <motion.article
