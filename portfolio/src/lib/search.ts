@@ -93,3 +93,94 @@ export async function relatedProjects(name: string, k = 3): Promise<SearchHit[]>
     .slice(0, k)
     .map(({ p, score }) => toHit(p, score));
 }
+
+export interface GalaxyPoint {
+  name: string;
+  emoji: string;
+  category: string;
+  domains: string[];
+  repo: string;
+  demo?: string;
+  x: number; // 0..1
+  y: number; // 0..1
+}
+
+// Classical PCA via the small n×n Gram matrix (n projects, d=1536 dims).
+// Returns each point's first two principal coordinates. Deterministic init so
+// the layout is stable across requests.
+function pca2d(vectors: number[][]): [number, number][] {
+  const n = vectors.length;
+  const d = vectors[0]?.length ?? 0;
+  if (n === 0) return [];
+
+  const mean = new Array(d).fill(0);
+  for (const v of vectors) for (let j = 0; j < d; j++) mean[j] += v[j];
+  for (let j = 0; j < d; j++) mean[j] /= n;
+  const X = vectors.map((v) => v.map((x, j) => x - mean[j]));
+
+  // Gram matrix G = X X^T  (n×n)
+  const G: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let i = 0; i < n; i++) {
+    for (let k = i; k < n; k++) {
+      let s = 0;
+      for (let j = 0; j < d; j++) s += X[i][j] * X[k][j];
+      G[i][k] = s;
+      G[k][i] = s;
+    }
+  }
+
+  function topEigen(M: number[][]) {
+    let v = Array.from({ length: n }, (_, i) => Math.sin(i + 1)); // deterministic seed
+    const norm0 = Math.sqrt(v.reduce((s, x) => s + x * x, 0)) || 1;
+    v = v.map((x) => x / norm0);
+    let val = 0;
+    for (let it = 0; it < 300; it++) {
+      const Mv = M.map((row) => row.reduce((s, mij, j) => s + mij * v[j], 0));
+      const nrm = Math.sqrt(Mv.reduce((s, x) => s + x * x, 0)) || 1;
+      const nv = Mv.map((x) => x / nrm);
+      val = nrm;
+      let diff = 0;
+      for (let i = 0; i < n; i++) diff += Math.abs(nv[i] - v[i]);
+      v = nv;
+      if (diff < 1e-8) break;
+    }
+    return { val, vec: v };
+  }
+
+  const e1 = topEigen(G);
+  // deflate, then second component
+  const G2 = G.map((row, i) => row.map((mij, j) => mij - e1.val * e1.vec[i] * e1.vec[j]));
+  const e2 = topEigen(G2);
+
+  const sx = Math.sqrt(Math.max(e1.val, 0));
+  const sy = Math.sqrt(Math.max(e2.val, 0));
+  const raw: [number, number][] = e1.vec.map((vi, i) => [vi * sx, e2.vec[i] * sy]);
+
+  // min-max normalize each axis into [0.06, 0.94] for padded plotting
+  const norm = (vals: number[]) => {
+    const lo = Math.min(...vals);
+    const hi = Math.max(...vals);
+    const span = hi - lo || 1;
+    return vals.map((x) => 0.06 + ((x - lo) / span) * 0.88);
+  };
+  const xs = norm(raw.map((r) => r[0]));
+  const ys = norm(raw.map((r) => r[1]));
+  return raw.map((_, i) => [xs[i], ys[i]]);
+}
+
+// 2D map of every project from its embedding, for the "embeddings galaxy".
+export async function projectMap(): Promise<GalaxyPoint[]> {
+  const openai = new OpenAI();
+  const { projects, vectors } = await ensureCache(openai);
+  const coords = pca2d(vectors);
+  return projects.map((p, i) => ({
+    name: p.name,
+    emoji: p.emoji,
+    category: p.categories[0] ?? "Machine Learning",
+    domains: p.domains ?? [],
+    repo: p.repo,
+    demo: p.demo,
+    x: coords[i]?.[0] ?? 0.5,
+    y: coords[i]?.[1] ?? 0.5,
+  }));
+}
