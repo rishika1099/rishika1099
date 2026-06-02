@@ -14,6 +14,15 @@ const links = [
   { href: "/contact", label: "Contact", icon: "💌" },
 ];
 
+// each tab's pill echoes the background gradient of the page it leads to
+const tabTint: Record<string, string> = {
+  "/": "rgba(255, 222, 205, 0.85)", // dawn
+  "/about": "rgba(230, 215, 245, 0.85)", // lilac
+  "/work": "rgba(214, 238, 214, 0.9)", // meadow
+  "/blog": "rgba(255, 226, 206, 0.9)", // peach
+  "/contact": "rgba(247, 183, 201, 0.85)", // rose
+};
+
 export default function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -53,7 +62,8 @@ export default function Nav() {
                 {isActive(l.href) && (
                   <motion.span
                     layoutId="nav-pill"
-                    className="absolute inset-0 -z-10 rounded-full bg-lavender/70"
+                    className="absolute inset-0 -z-10 rounded-full"
+                    style={{ backgroundColor: tabTint[l.href] ?? "rgba(230, 215, 245, 0.85)" }}
                     transition={{ type: "spring", stiffness: 400, damping: 32 }}
                   />
                 )}
@@ -97,10 +107,9 @@ export default function Nav() {
               <Link
                 href={l.href}
                 onClick={() => setOpen(false)}
+                style={isActive(l.href) ? { backgroundColor: tabTint[l.href] } : undefined}
                 className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 font-body font-semibold ${
-                  isActive(l.href)
-                    ? "bg-lavender/70 text-ink"
-                    : "text-ink-soft"
+                  isActive(l.href) ? "text-ink" : "text-ink-soft"
                 }`}
               >
                 <span className="text-lg">{l.icon}</span>
