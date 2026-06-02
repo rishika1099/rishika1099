@@ -32,6 +32,9 @@ export interface Project {
   categories: Category[];
   domains?: Domain[];
   featured?: boolean;
+  // when true, the blurb follows the GitHub repo description live (else the
+  // hand-written blurb here is used)
+  syncBlurb?: boolean;
   repo: string;
   demo?: string;
   tags: string[];
@@ -83,6 +86,7 @@ export const projects: Project[] = [
     categories: ["Causal Inference", "Statistical Modeling"],
     domains: ["Healthcare"],
     featured: true,
+    syncBlurb: true,
     repo: gh("Colon-Cancer-Trial-Causal-Analysis"),
     demo: "https://open.substack.com/pub/rishika1099/p/prediction-vs-causation",
     tags: ["Causal Inference", "Biostatistics", "R"],

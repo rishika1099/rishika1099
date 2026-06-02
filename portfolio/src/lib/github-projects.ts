@@ -117,5 +117,24 @@ export async function getAllProjects(): Promise<Project[]> {
       };
     });
 
-  return [...curated, ...extra];
+  // Refresh curated projects from GitHub too: their blurb (description) and demo
+  // (homepage) follow the repo live, with the hand-written values as fallback.
+  // The curated name, emoji, categories, domains, tags, and featured flag stay.
+  const repoBySlug = new Map(repos.map((r) => [r.name.toLowerCase(), r]));
+  const validHomepage = (h: string | null) =>
+    h && /^https?:\/\//.test(h) ? h : undefined;
+  const mergedCurated: Project[] = curated.map((p) => {
+    const r = repoBySlug.get(p.repo.split("/").pop()!.toLowerCase());
+    if (!r) return p;
+    return {
+      ...p,
+      // Blurb follows GitHub only for projects that opt in (syncBlurb), so the
+      // hand-written blurbs with metrics aren't clobbered by a terse repo line.
+      blurb: p.syncBlurb && r.description?.trim() ? r.description.trim() : p.blurb,
+      // Demo link fills a gap from the GitHub homepage; a curated demo wins.
+      demo: p.demo ?? validHomepage(r.homepage),
+    };
+  });
+
+  return [...mergedCurated, ...extra];
 }
