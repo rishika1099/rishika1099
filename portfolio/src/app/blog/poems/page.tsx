@@ -1,24 +1,11 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
-import PoemGate from "@/components/PoemGate";
-import LockButton from "@/components/LockButton";
-import PoemRoom from "@/components/PoemRoom";
-import { POEM_COOKIE, verifyToken } from "@/lib/auth";
-import { listPoems } from "@/lib/poems-store";
+import PoemsClient from "@/components/PoemsClient";
 
 export const metadata = { title: "Poems" };
 
-export default async function PoemsPage() {
-  const cookieStore = await cookies();
-  const unlocked = verifyToken(cookieStore.get(POEM_COOKIE)?.value);
-  const poems = unlocked ? await listPoems() : [];
-  const conf = poems
-    .map((p) => p.moodConfidence)
-    .filter((c): c is number => typeof c === "number");
-  const avgConf = conf.length ? conf.reduce((s, c) => s + c, 0) / conf.length : null;
-
+export default function PoemsPage() {
   return (
     <PageShell vibe="twilight">
       <PageTitle className="text-cream">poems 🕯️</PageTitle>
@@ -31,33 +18,7 @@ export default async function PoemsPage() {
         </Link>
       </div>
 
-      {!unlocked ? (
-        <PoemGate />
-      ) : (
-        <>
-          <div className="mt-3 flex items-center justify-between">
-            <p className="font-body text-lg text-lavender">
-              welcome in, make yourself a cup of something warm
-            </p>
-            <LockButton />
-          </div>
-
-          <PoemRoom poems={poems} />
-
-          {avgConf !== null && (
-            <p className="mt-6 font-body text-xs text-lavender/60">
-              moods inferred by a language model · avg confidence {avgConf.toFixed(2)} ✦
-            </p>
-          )}
-
-          <p className="mt-14 text-center font-body text-xs text-lavender/70">
-            <span className="mr-1.5">©</span>
-            {new Date().getFullYear()}{" "}
-            Rishika Mamidibathula. These poems are my own work, shared here with
-            love. Please don&apos;t reproduce or repost them without permission. ✦
-          </p>
-        </>
-      )}
+      <PoemsClient />
     </PageShell>
   );
 }

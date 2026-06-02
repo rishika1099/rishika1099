@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
-export default function PoemGate() {
-  const router = useRouter();
+export default function PoemGate({ onUnlocked }: { onUnlocked: () => void }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +21,7 @@ export default function PoemGate() {
       });
       const data = await res.json();
       if (res.ok && data.ok) {
-        router.refresh();
+        onUnlocked();
       } else {
         setError(data.error || "Hmm, try again ✦");
         setShake((s) => s + 1);
