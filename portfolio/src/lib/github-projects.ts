@@ -14,12 +14,14 @@ const CATEGORY_EMOJI: Record<Category, string> = {
   "Computer Vision": "👁️",
   "High Performance Machine Learning": "⚡",
   Cybersecurity: "🔐",
+  "Internet of Things": "📡",
 };
 
 // Ordered keyword rules: first match wins, so put the more specific ones first.
 // First match wins, so unambiguous signals (crypto, agents) go first.
 const RULES: [Category, RegExp][] = [
   ["Cybersecurity", /\b(security|malware|crypto|blockchain|cyber|encrypt|encryption|cipher|intrusion)/i],
+  ["Internet of Things", /\b(iot|internet of things|sensor|arduino|raspberry ?pi|mqtt|embedded|smart home|edge device|wearable)/i],
   ["Agentic AI", /\b(agent|agentic|crew|autogen|multi-?agent|orchestrat)/i],
   ["High Performance Machine Learning", /\b(triton|cuda|gpu|quantiz|kv-?cache|hpc|kernel|inference-?opt|throughput)/i],
   ["Causal Inference", /\b(causal|counterfactual|treatment-?effect|mediation|confound)/i],

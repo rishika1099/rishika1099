@@ -9,7 +9,8 @@ export type Category =
   | "Deep Learning"
   | "Computer Vision"
   | "High Performance Machine Learning"
-  | "Cybersecurity";
+  | "Cybersecurity"
+  | "Internet of Things";
 
 export type Domain =
   | "Healthcare"
@@ -396,6 +397,7 @@ export const categories: Category[] = [
   "Computer Vision",
   "High Performance Machine Learning",
   "Cybersecurity",
+  "Internet of Things",
 ];
 
 export const domains: Domain[] = [
