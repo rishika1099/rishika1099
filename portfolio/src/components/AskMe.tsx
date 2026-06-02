@@ -1,7 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+
+// tint the launcher to the current page's vibe so it feels integrated, the
+// white ring + shadow keep it visible against the matching background
+function launcherTint(path: string): string {
+  if (path.startsWith("/about")) return "#d9c2f0"; // lilac
+  if (path.startsWith("/work")) return "#bfe3b0"; // meadow
+  if (path.startsWith("/blog/technical")) return "#bfe0f0"; // azure
+  if (path.startsWith("/blog/photography")) return "#ffc0a0"; // sunset
+  if (path.startsWith("/blog/poems")) return "#d9c2f0"; // twilight (light pill on dark)
+  if (path.startsWith("/blog")) return "#ffd9a8"; // peach
+  if (path.startsWith("/contact")) return "#f7a8bc"; // rose
+  return "#ffd0b0"; // dawn (home + fallback)
+}
 
 interface Source {
   title: string;
@@ -34,6 +48,8 @@ const STARTERS = [
 ];
 
 export default function AskMe() {
+  const pathname = usePathname();
+  const tint = launcherTint(pathname);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -135,7 +151,8 @@ export default function AskMe() {
         aria-label={open ? "close the portfolio guide" : "ask about Rishika"}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-blush px-5 py-3.5 font-body text-sm font-bold text-ink shadow-lg shadow-blush/50 ring-2 ring-white/70 backdrop-blur transition hover:brightness-105"
+        style={{ backgroundColor: tint }}
+        className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full px-5 py-3.5 font-body text-sm font-bold text-ink shadow-lg shadow-ink/20 ring-2 ring-white/80 backdrop-blur transition hover:brightness-105"
       >
         <motion.span
           animate={{ rotate: open ? 0 : [0, 12, -8, 0] }}
