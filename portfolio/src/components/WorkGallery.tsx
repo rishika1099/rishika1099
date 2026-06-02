@@ -190,8 +190,27 @@ export default function WorkGallery({
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [status, setStatus] = useState<SearchStatus>("idle");
+  const [level, setLevel] = useState<"default" | "eli5" | "expert">("default");
+  const [rewrites, setRewrites] = useState<Record<string, Record<string, string>>>({});
+  const [explaining, setExplaining] = useState(false);
 
   const searching = query.trim().length >= 2;
+
+  // Fetch the rewritten blurbs once per level (cached after first fetch).
+  useEffect(() => {
+    if (level === "default" || rewrites[level]) return;
+    setExplaining(true);
+    fetch(`/api/explain?level=${level}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d: { blurbs?: Record<string, string> }) =>
+        setRewrites((prev) => ({ ...prev, [level]: d.blurbs ?? {} })),
+      )
+      .catch(() => setLevel("default"))
+      .finally(() => setExplaining(false));
+  }, [level, rewrites]);
+
+  const blurbFor = (p: { name: string; blurb: string }) =>
+    level === "default" ? p.blurb : rewrites[level]?.[p.name] ?? p.blurb;
 
   useEffect(() => {
     const q = query.trim();
@@ -319,6 +338,30 @@ export default function WorkGallery({
         </div>
       ) : (
       <>
+      {/* Explain-level toggle: rewrites every blurb for the chosen audience */}
+      <div className="mt-8 flex flex-wrap items-center gap-2">
+        <span className="font-body text-xs font-semibold text-ink-soft">explain like:</span>
+        {(
+          [
+            ["default", "🌷 default"],
+            ["eli5", "🧸 i'm 5"],
+            ["expert", "🎓 expert"],
+          ] as const
+        ).map(([lv, label]) => (
+          <button
+            key={lv}
+            type="button"
+            onClick={() => setLevel(lv)}
+            className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition ${
+              level === lv ? "bg-ink text-cream" : "bg-white/70 text-ink-soft hover:bg-white"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+        {explaining && <span className="font-body text-xs text-ink-soft">rewriting… ✨</span>}
+      </div>
+
       {/* Featured (hidden while a filter is active so matches aren't split) */}
       {!filtering && (
         <>
@@ -338,7 +381,7 @@ export default function WorkGallery({
           >
             <span className="animate-float-med text-4xl">{p.emoji}</span>
             <h3 className="mt-2 font-body text-xl font-bold text-ink">{p.name}</h3>
-            <p className="mt-1.5 font-body text-sm text-ink-soft">{p.blurb}</p>
+            <p className="mt-1.5 font-body text-sm text-ink-soft">{blurbFor(p)}</p>
                 <DomainChips domains={p.domains} />
                 <TechChips categories={p.categories} />
                 <Links p={p} />
@@ -401,7 +444,7 @@ export default function WorkGallery({
             >
               <span className="text-3xl">{p.emoji}</span>
               <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-              <p className="mt-1 font-body text-sm text-ink-soft">{p.blurb}</p>
+              <p className="mt-1 font-body text-sm text-ink-soft">{blurbFor(p)}</p>
               <DomainChips domains={p.domains} />
               <TechChips categories={p.categories} />
               <Links p={p} />
