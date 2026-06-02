@@ -342,7 +342,7 @@ export default function WorkGallery({
       <>
       {/* Explain-level toggle: rewrites every blurb for the chosen audience */}
       <div className="mt-8 flex flex-wrap items-center gap-2">
-        <span className="font-body text-xs font-semibold text-ink-soft">explain like:</span>
+        <span className="font-body text-sm font-semibold text-ink-soft">explain like:</span>
         {(
           [
             ["default", "🌷 default"],
@@ -354,7 +354,7 @@ export default function WorkGallery({
             key={lv}
             type="button"
             onClick={() => setLevel(lv)}
-            className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition ${
+            className={`rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
               level === lv ? "bg-ink text-cream" : "bg-white/70 text-ink-soft hover:bg-white"
             }`}
           >
