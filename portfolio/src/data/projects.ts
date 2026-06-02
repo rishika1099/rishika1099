@@ -84,6 +84,7 @@ export const projects: Project[] = [
     domains: ["Healthcare"],
     featured: true,
     repo: gh("Colon-Cancer-Trial-Causal-Analysis"),
+    demo: "https://open.substack.com/pub/rishika1099/p/prediction-vs-causation",
     tags: ["Causal Inference", "Biostatistics", "R"],
   },
   {
