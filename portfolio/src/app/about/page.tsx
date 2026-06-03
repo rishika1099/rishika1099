@@ -169,7 +169,7 @@ export default function About() {
           href="/Rishika_Resume.pdf"
           className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink transition hover:scale-105"
         >
-          👀 peek at my résumé
+          👀 peek at my resume
         </a>
       </div>
     </PageShell>
