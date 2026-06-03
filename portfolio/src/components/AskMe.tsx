@@ -152,7 +152,7 @@ export default function AskMe() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         style={{ backgroundColor: tint }}
-        className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full px-5 py-3.5 font-body text-sm font-bold text-ink shadow-lg shadow-ink/20 ring-2 ring-white/80 backdrop-blur transition hover:brightness-105"
+        className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full px-5 py-3.5 font-body text-sm font-bold text-ink shadow-lg shadow-ink/25 backdrop-blur transition hover:brightness-105"
       >
         <motion.span
           animate={{ rotate: open ? 0 : [0, 12, -8, 0] }}
