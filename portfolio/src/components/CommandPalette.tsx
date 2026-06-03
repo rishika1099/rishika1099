@@ -21,6 +21,7 @@ const PAGES: Item[] = [
   { label: "Poems", hint: "page", href: "/blog/poems" },
   { label: "Photography", hint: "page", href: "/blog/photography" },
   { label: "Contact", hint: "page", href: "/contact" },
+  { label: "Résumé (PDF)", hint: "résumé", href: "/Rishika_Resume.pdf", external: true },
 ];
 
 const PROJECT_ITEMS: Item[] = projects.map((p) => ({

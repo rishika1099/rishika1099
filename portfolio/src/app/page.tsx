@@ -17,8 +17,20 @@ export default function Home() {
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}
       <div className="flex flex-col items-center gap-8 text-center md:flex-row md:gap-14">
-        <div className="shrink-0">
+        <div className="flex shrink-0 flex-col items-center gap-4">
           <FlowerPortrait />
+          <motion.a
+            href="/Rishika_Resume.pdf"
+            target="_blank"
+            rel="noreferrer"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+            className="inline-flex items-center gap-2 rounded-full bg-white/75 px-5 py-2.5 font-body text-base font-semibold text-ink shadow-sm ring-1 ring-white/70 backdrop-blur transition hover:bg-white"
+          >
+            👀 peek at my résumé
+          </motion.a>
         </div>
 
         <div className="flex-1">
