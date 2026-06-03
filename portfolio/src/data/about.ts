@@ -114,7 +114,6 @@ export const education: Entry[] = [
     place: "Vellore Institute of Technology (VIT)",
     note: "4.0/4.0 GPA · graduated ranked 7th of ~200 (top 4%).",
     details: [
-      "Perfect 4.0/4.0 GPA, ranked 7th of ~200 (top 4%).",
       "Merit Scholarship recipient, 2019 to 2023, and Program Representative for all four years.",
       "**Data Science** coursework: Artificial Intelligence, Machine Learning, Deep Learning, Natural Language Processing, Image Processing, Predictive Analytics, Business Intelligence and Analytics, and Social and Information Networks.",
       "**Computer Science** coursework: Data Structures and Algorithms, Object-Oriented Programming, Database Management Systems, Operating Systems, Computer Architecture, Theory of Computation and Compiler Design, Network and Communication, Internet Programming and Web Technologies, Internet of Things, and Cryptography and Network Security.",
