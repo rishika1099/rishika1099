@@ -39,11 +39,11 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   that filters the grid down to its nearest neighbors by **embedding cosine similarity**,
   reusing the cached project vectors (no query embedding needed).
   (`src/lib/search.ts` `relatedProjects`, `src/app/api/related-projects/route.ts`)
-- **Embeddings galaxy.** An interactive 2D map of every project: each is embedded, projected
-  to 2D with a hand-rolled **PCA** (via the n×n Gram matrix), and grouped into broad themes
-  with **k-means**. The clusters are named and explained by an LLM, and each project shows
-  as its emoji on a cluster-colored dot. A data-science visualization of how the model
-  "sees" the work. (`src/lib/search.ts` `projectMap`, `src/app/api/project-map/route.ts`,
+- **Embeddings galaxy.** An interactive 2D map of every project: each is embedded, then
+  projected to 2D with a hand-rolled **PCA** (via the n×n Gram matrix) on a graph-paper grid.
+  Each project shows as its emoji on a dot colored by its real technical area, so nearby dots
+  tend to be semantically similar and the colors stay truthful (no fuzzy cluster mislabeling).
+  (`src/lib/search.ts` `projectMap`, `src/app/api/project-map/route.ts`,
   `src/components/ProjectGalaxy.tsx`)
 - **ELI5 / expert toggle.** A toggle on the Work tab rewrites every project blurb for the
   chosen audience (a curious 10-year-old, or a senior ML engineer) in one batched, cached
@@ -65,7 +65,7 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   (`src/lib/github-projects.ts`)
 - **Skills as a network graph.** The About page renders skills as a force-directed-style
   cluster graph: specialty areas are hubs, tools/methods orbit them, all wired into a
-  little mesh you can pan and zoom. (`src/components/SkillGraph.tsx`)
+  little mesh you can pan, zoom, and open fullscreen. (`src/components/SkillGraph.tsx`)
 - **Private content store.** Poems, their art, and photos are confidential, they live in
   **Netlify Blobs** (never committed to Git) and are read at request time on the deployed
   site, with a local-folder fallback for development. (`src/lib/blobs.ts`,

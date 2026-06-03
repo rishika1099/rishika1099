@@ -92,17 +92,17 @@ Two lighter touches that reuse the same machinery:
 
 ---
 
-## 6. Embeddings galaxy (project clustering)
+## 6. Embeddings galaxy (projection)
 
-Method: every project embedded with `text-embedding-3-small`, projected to 2D with PCA (via
-the Gram matrix), then grouped with **k-means** into a few broad themes (k chosen for the
-best-separated grouping among k=3–4). Each cluster is named and explained by an LLM.
+Method: every project embedded with `text-embedding-3-small`, then projected to 2D with PCA
+(via the Gram matrix) and plotted, colored by its real technical area.
 
-This is presented as a **grouping/visualization, not a separation claim**: silhouette stays
-near 0 throughout (these projects sit on a continuous spectrum, and high-dimensional text
-embeddings rarely separate cleanly), so the value is the interpretable themes, e.g.
-Generative AI, Computer Vision, Predictive Analytics, NLP, confirmed by the LLM labels and a
-manual read of each cluster's members.
+It is framed as an **exploratory visualization, not a clustering claim**. An earlier version
+ran k-means and had an LLM name the clusters, but at near-zero silhouette the groups were
+fuzzy and produced mislabels (e.g. car-price prediction landing in a "Computer Vision"
+cluster). Coloring by the ground-truth area instead keeps every dot truthful, while the PCA
+layout still shows that semantically similar projects tend to land near each other, the
+model roughly rediscovering the areas from text alone.
 
 ---
 
