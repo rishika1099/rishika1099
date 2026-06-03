@@ -115,6 +115,15 @@ export default function About() {
         <p>This website is where those adventures end up.</p>
       </div>
 
+      <div className="mt-6">
+        <a
+          href="/Rishika_Resume.pdf"
+          className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105"
+        >
+          👀 peek at my resume
+        </a>
+      </div>
+
       {/* Education */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
         where curiosity took me 🎓
@@ -162,15 +171,6 @@ export default function About() {
           .map((t, i) => (
             <EntryCard key={t.title} entry={t} i={i} />
           ))}
-      </div>
-
-      <div className="mt-10 text-center">
-        <a
-          href="/Rishika_Resume.pdf"
-          className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105"
-        >
-          👀 peek at my resume
-        </a>
       </div>
     </PageShell>
   );
