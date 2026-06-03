@@ -89,8 +89,6 @@ export default function ProjectGalaxy() {
                 backgroundSize: "38px 38px",
               }}
             />
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-ink/10" />
-            <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-ink/10" />
 
             {/* axis tick numbers + labels */}
             <div
@@ -115,6 +113,40 @@ export default function ProjectGalaxy() {
             <span aria-hidden className="pointer-events-none absolute left-2 top-1.5 font-body text-[9px] font-semibold text-ink/40">
               ↑ PC 2
             </span>
+
+            {/* one reference vector (PC1) + each project's distance from it */}
+            <svg
+              aria-hidden
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              className="pointer-events-none absolute inset-0 h-full w-full"
+            >
+              {/* perpendicular drop from each project to the PC1 axis */}
+              {data.points.map((p) => (
+                <line
+                  key={p.name}
+                  x1={p.x * 100}
+                  y1={p.y * 100}
+                  x2={p.x * 100}
+                  y2={50}
+                  stroke={colorFor(p.category)}
+                  strokeWidth={1}
+                  vectorEffect="non-scaling-stroke"
+                  opacity={0.35}
+                />
+              ))}
+              {/* the single reference vector: the principal direction PC1 */}
+              <line
+                x1={2}
+                y1={50}
+                x2={98}
+                y2={50}
+                stroke="#4a4a5e"
+                strokeWidth={1.75}
+                vectorEffect="non-scaling-stroke"
+                opacity={0.55}
+              />
+            </svg>
 
             {data.points.map((p, i) => {
               const isActive = active === p.name;
@@ -163,8 +195,10 @@ export default function ProjectGalaxy() {
             ))}
           </div>
 
-          <p className="mt-3 font-body text-xs text-ink-soft/80">
-            Embedded with OpenAI, projected to 2D with PCA, colored by technical area.
+          <p className="mt-3 max-w-3xl font-body text-xs text-ink-soft/80">
+            Embedded with OpenAI and projected with PCA. The horizontal line is the main
+            direction of variation (PC1), and each project&apos;s line shows how far it sits
+            from that direction. Dots are colored by technical area.
           </p>
         </>
       )}
