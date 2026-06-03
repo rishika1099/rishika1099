@@ -161,7 +161,7 @@ function pca2d(vectors: number[][]): [number, number][] {
   const sy = Math.sqrt(Math.max(e2.val, 0));
   const raw: [number, number][] = e1.vec.map((vi, i) => [vi * sx, e2.vec[i] * sy]);
 
-  // min-max normalize each axis into [0.06, 0.94] for padded plotting
+  // min-max normalize each axis into [0.06, 0.94] for a padded, well-filled plot
   const norm = (vals: number[]) => {
     const lo = Math.min(...vals);
     const hi = Math.max(...vals);
