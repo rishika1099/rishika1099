@@ -84,7 +84,7 @@ export default function RootLayout({
         <main className="relative">{children}</main>
         <footer className="relative px-5 py-8 text-center font-body text-xs text-ink-soft/70">
           <span className="mr-1">©</span>
-          {new Date().getFullYear()} Rishika Mamidibathula · made with love and too much chai 🧋
+          {new Date().getFullYear()} Rishika Mamidibathula
         </footer>
         <AskMe />
         <CursorCompanion />
