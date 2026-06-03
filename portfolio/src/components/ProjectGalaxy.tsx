@@ -85,6 +85,19 @@ export default function ProjectGalaxy() {
       {status === "done" && data && (
         <>
           <div className="relative mt-5 aspect-[16/10] w-full overflow-hidden rounded-3xl soft-card">
+            {/* subtle xy grid so it reads like a coordinate space */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(74,74,94,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(74,74,94,0.06) 1px, transparent 1px)",
+                backgroundSize: "38px 38px",
+              }}
+            />
+            {/* faint center axes */}
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-ink/10" />
+            <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-ink/10" />
             {data.points.map((p, i) => {
               const isActive = active === p.name;
               return (
