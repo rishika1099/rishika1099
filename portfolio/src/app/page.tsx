@@ -27,7 +27,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             whileHover={{ scale: 1.05 }}
-            className="inline-flex items-center gap-2 rounded-full bg-white/75 px-5 py-2.5 font-body text-base font-semibold text-ink shadow-sm ring-1 ring-white/70 backdrop-blur transition hover:bg-white"
+            className="inline-flex items-center gap-2 rounded-full bg-white/75 px-5 py-2.5 font-body text-base font-semibold text-ink shadow-sm backdrop-blur transition hover:bg-white"
           >
             👀 peek at my résumé
           </motion.a>
