@@ -17,7 +17,7 @@ export default function Home() {
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}
       <div className="flex flex-col items-center gap-8 text-center md:flex-row md:gap-14">
-        <div className="flex shrink-0 flex-col items-center gap-4">
+        <div className="flex shrink-0 flex-col items-center gap-7">
           <FlowerPortrait />
           <motion.a
             href="/Rishika_Resume.pdf"
