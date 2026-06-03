@@ -61,10 +61,6 @@ export default function ProjectGalaxy() {
   return (
     <section className="mt-14">
       <h2 className="font-body text-2xl font-bold text-ink">🌌 the embeddings galaxy</h2>
-      <p className="mt-1 max-w-3xl font-body text-sm text-ink-soft">
-        every project embedded with OpenAI and projected to 2D with PCA. Nearby projects are
-        roughly similar in meaning, and each dot is colored by its technical area.
-      </p>
 
       {status === "off" && (
         <p className="mt-4 font-body text-ink-soft">the galaxy isn&apos;t configured on this deploy yet. ✦</p>
