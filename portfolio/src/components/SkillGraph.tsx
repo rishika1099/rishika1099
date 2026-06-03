@@ -50,7 +50,7 @@ const nodes: Node[] = clusters.flatMap((c, ci) =>
   }),
 );
 
-const clamp = (v: number) => Math.min(1.8, Math.max(0.5, v));
+const clamp = (v: number) => Math.min(1.8, Math.max(0.3, v));
 
 export default function SkillGraph() {
   const [scale, setScale] = useState(0.8);
@@ -58,10 +58,25 @@ export default function SkillGraph() {
   const [full, setFull] = useState(false);
   const [hint, setHint] = useState(false);
 
+  // fit the whole 1000x760 canvas to the viewport (handles small phones)
+  function enterFull() {
+    if (typeof window !== "undefined") {
+      const fit = Math.min(window.innerWidth / 1000, window.innerHeight / 760) * 0.92;
+      setScale(Math.max(0.3, Math.min(1, fit)));
+    }
+    setResetKey((k) => k + 1); // recenter the pan
+    setFull(true);
+  }
+  function exitFull() {
+    setFull(false);
+    setScale(0.8);
+    setResetKey((k) => k + 1);
+  }
+
   // Esc exits fullscreen; lock body scroll while fullscreen
   useEffect(() => {
     if (!full) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setFull(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && exitFull();
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
@@ -184,13 +199,24 @@ export default function SkillGraph() {
           reset
         </button>
         <button
-          onClick={() => setFull((f) => !f)}
+          onClick={() => (full ? exitFull() : enterFull())}
           aria-label={full ? "exit fullscreen" : "fullscreen"}
           className="flex h-8 items-center justify-center rounded-full bg-white/85 px-3 font-body text-xs font-semibold text-ink-soft shadow-sm transition hover:bg-white"
         >
           {full ? "✕ close" : "⛶ fullscreen"}
         </button>
       </div>
+
+      {/* easy-to-reach close button while fullscreen (esp. on mobile) */}
+      {full && (
+        <button
+          onClick={exitFull}
+          aria-label="exit fullscreen"
+          className="absolute right-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-xl text-ink shadow-md transition hover:bg-white"
+        >
+          ✕
+        </button>
+      )}
 
       <span className="pointer-events-none absolute bottom-3 left-4 font-body text-xs text-ink-soft/80">
         drag to explore · + / − to zoom

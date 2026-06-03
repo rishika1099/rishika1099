@@ -2,12 +2,24 @@ import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import { getBlogPosts } from "@/lib/content";
+import { getSubstackPosts } from "@/lib/substack";
 import { domainColor } from "@/data/projects";
 
 export const metadata = { title: "Technical Blogs" };
+export const revalidate = 3600; // re-check Substack hourly
 
-export default function TechnicalIndex() {
-  const posts = getBlogPosts();
+// the /p/<slug> part of a Substack URL, to dedupe against curated entries
+const postSlug = (url?: string) => url?.match(/\/p\/([^/?#]+)/)?.[1];
+
+export default async function TechnicalIndex() {
+  const local = getBlogPosts();
+  const localSlugs = new Set(local.map((p) => postSlug(p.external)).filter(Boolean));
+  const substack = (await getSubstackPosts()).filter(
+    (s) => !localSlugs.has(postSlug(s.external)),
+  );
+  const posts = [...local, ...substack].sort(
+    (a, b) => (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0),
+  );
   return (
     <PageShell vibe="azure">
       <PageTitle className="text-ink">technical blogs 📓</PageTitle>

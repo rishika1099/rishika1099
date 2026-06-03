@@ -1,6 +1,8 @@
 // Pull Rishika's Substack posts into the chatbot's knowledge base so it can
 // speak to her technical writing in depth. Public RSS, cached for a day.
 
+import type { Doc } from "@/lib/content";
+
 const FEED = "https://rishika1099.substack.com/feed";
 
 export interface WritingChunk {
@@ -52,6 +54,44 @@ export async function getSubstackChunks(): Promise<WritingChunk[]> {
         } as WritingChunk;
       })
       .filter((c): c is WritingChunk => c !== null);
+  } catch {
+    return [];
+  }
+}
+
+// Substack posts shaped as blog Docs, so new posts show up on the Technical
+// Blogs page automatically (cached hourly).
+export async function getSubstackPosts(): Promise<Doc[]> {
+  try {
+    const res = await fetch(FEED, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    const items = xml.match(/<item>([\s\S]*?)<\/item>/g) ?? [];
+    return items
+      .map((item, i) => {
+        const title = stripTag(item, "title");
+        const link = stripTag(item, "link");
+        const pub = stripTag(item, "pubDate");
+        const body = stripTag(item, "content:encoded") || stripTag(item, "description");
+        const excerpt = htmlToText(body, 160);
+        if (!title || !link) return null;
+        const date = pub
+          ? new Date(pub).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })
+          : "";
+        return {
+          slug: `substack-${i}`,
+          title,
+          date,
+          excerpt,
+          content: "",
+          external: link,
+        } as Doc;
+      })
+      .filter((d): d is Doc => d !== null);
   } catch {
     return [];
   }
