@@ -12,33 +12,28 @@ interface Point {
   demo?: string;
   x: number;
   y: number;
-  cluster: number;
-}
-interface ClusterMeta {
-  id: number;
-  label: string;
-  description: string;
-  size: number;
 }
 interface GalaxyData {
   points: Point[];
-  clusters: ClusterMeta[];
-  k: number;
-  silhouette: number;
-  bestK: number;
-  bestSilhouette: number;
+  areas: string[];
 }
 
-// soft pastel palette, indexed by cluster id
-const CLUSTER_COLORS = [
-  "#c9b6f0",
-  "#9fe0cd",
-  "#f6c2d2",
-  "#ffd49a",
-  "#a9c5f2",
-  "#cdeac0",
-];
-const colorFor = (c: number) => CLUSTER_COLORS[c % CLUSTER_COLORS.length];
+// soft pastel color per technical area (matches the Work filter areas)
+const AREA_COLOR: Record<string, string> = {
+  "Generative AI": "#c9b6f0",
+  "Agentic AI": "#a9c5f2",
+  NLP: "#f0c2e0",
+  "Causal Inference": "#9fe0cd",
+  "Statistical Modeling": "#f3d79a",
+  "Machine Learning": "#cdeac0",
+  "Predictive Analysis": "#f4c1ac",
+  "Deep Learning": "#bcccf5",
+  "Computer Vision": "#f6c2d2",
+  "High Performance Machine Learning": "#ffd49a",
+  Cybersecurity: "#d2d6de",
+  "Internet of Things": "#bfe0e8",
+};
+const colorFor = (area: string) => AREA_COLOR[area] ?? "#cdeac0";
 
 export default function ProjectGalaxy() {
   const [data, setData] = useState<GalaxyData | null>(null);
@@ -67,9 +62,8 @@ export default function ProjectGalaxy() {
     <section className="mt-14">
       <h2 className="font-body text-2xl font-bold text-ink">🌌 the embeddings galaxy</h2>
       <p className="mt-1 max-w-3xl font-body text-sm text-ink-soft">
-        every project embedded with OpenAI, projected to 2D with PCA, then grouped with
-        k-means. Projects that sit close together are semantically similar, and the clusters
-        are the model&apos;s, not mine.
+        every project embedded with OpenAI and projected to 2D with PCA. Nearby projects are
+        roughly similar in meaning, and each dot is colored by its technical area.
       </p>
 
       {status === "off" && (
@@ -95,7 +89,6 @@ export default function ProjectGalaxy() {
                 backgroundSize: "38px 38px",
               }}
             />
-            {/* faint center axes */}
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-ink/10" />
             <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-ink/10" />
 
@@ -122,6 +115,7 @@ export default function ProjectGalaxy() {
             <span aria-hidden className="pointer-events-none absolute left-2 top-1.5 font-body text-[9px] font-semibold text-ink/40">
               ↑ PC 2
             </span>
+
             {data.points.map((p, i) => {
               const isActive = active === p.name;
               return (
@@ -142,13 +136,13 @@ export default function ProjectGalaxy() {
                     className={`flex h-7 w-7 items-center justify-center rounded-full text-sm shadow-sm ring-2 ring-white/80 transition-transform ${
                       isActive ? "scale-[1.6]" : "hover:scale-[1.6]"
                     }`}
-                    style={{ backgroundColor: colorFor(p.cluster) }}
+                    style={{ backgroundColor: colorFor(p.category) }}
                   >
                     {p.emoji}
                   </span>
                   {isActive && (
                     <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-2.5 py-1 font-body text-[11px] font-semibold text-cream shadow-lg">
-                      {p.emoji} {p.name}
+                      {p.emoji} {p.name} · {p.category}
                     </span>
                   )}
                 </motion.a>
@@ -156,26 +150,21 @@ export default function ProjectGalaxy() {
             })}
           </div>
 
-          {/* cluster explanations */}
-          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-            {data.clusters.map((c) => (
-              <li key={c.id} className="flex gap-2 rounded-2xl bg-white/50 p-3">
+          {/* area legend */}
+          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
+            {data.areas.map((a) => (
+              <span key={a} className="flex items-center gap-1.5 font-body text-xs text-ink-soft">
                 <span
-                  className="mt-1 h-3 w-3 shrink-0 rounded-full ring-1 ring-white/70"
-                  style={{ backgroundColor: colorFor(c.id) }}
+                  className="h-3 w-3 rounded-full ring-1 ring-white/70"
+                  style={{ backgroundColor: colorFor(a) }}
                 />
-                <span className="font-body text-xs text-ink-soft">
-                  <span className="font-bold text-ink">{c.label}</span>{" "}
-                  <span className="text-ink-soft/70">· {c.size}</span>
-                  {c.description && <span className="block">{c.description}</span>}
-                </span>
-              </li>
+                {a}
+              </span>
             ))}
-          </ul>
+          </div>
 
-          {/* note: this is a k-means grouping, not a claim of tight separation */}
           <p className="mt-3 font-body text-xs text-ink-soft/80">
-            Grouped into {data.k} themes with k-means over the project embeddings.
+            Embedded with OpenAI, projected to 2D with PCA, colored by technical area.
           </p>
         </>
       )}

@@ -103,94 +103,11 @@ export interface GalaxyPoint {
   demo?: string;
   x: number; // 0..1
   y: number; // 0..1
-  cluster: number;
-}
-
-export interface ClusterMeta {
-  id: number;
-  label: string;
-  description: string;
-  size: number;
 }
 
 export interface GalaxyData {
   points: GalaxyPoint[];
-  clusters: ClusterMeta[];
-  k: number;
-  silhouette: number;
-  bestK: number;
-  bestSilhouette: number;
-}
-
-// --- k-means + silhouette on the embeddings (deterministic) ---
-function euclid(a: number[], b: number[]): number {
-  let s = 0;
-  for (let j = 0; j < a.length; j++) {
-    const d = a[j] - b[j];
-    s += d * d;
-  }
-  return Math.sqrt(s);
-}
-
-function kmeans(V: number[][], k: number, iters = 60): number[] {
-  const n = V.length;
-  const d = V[0].length;
-  // deterministic init: evenly spread starting points
-  let centroids = Array.from({ length: k }, (_, c) => V[Math.floor((c * n) / k)].slice());
-  const assign = new Array(n).fill(0);
-  for (let it = 0; it < iters; it++) {
-    let changed = false;
-    for (let i = 0; i < n; i++) {
-      let best = 0;
-      let bd = Infinity;
-      for (let c = 0; c < k; c++) {
-        const dd = euclid(V[i], centroids[c]);
-        if (dd < bd) {
-          bd = dd;
-          best = c;
-        }
-      }
-      if (assign[i] !== best) {
-        assign[i] = best;
-        changed = true;
-      }
-    }
-    const sums = Array.from({ length: k }, () => new Array(d).fill(0));
-    const cnt = new Array(k).fill(0);
-    for (let i = 0; i < n; i++) {
-      cnt[assign[i]]++;
-      const row = sums[assign[i]];
-      for (let j = 0; j < d; j++) row[j] += V[i][j];
-    }
-    centroids = sums.map((row, c) => (cnt[c] ? row.map((x) => x / cnt[c]) : centroids[c]));
-    if (!changed && it > 0) break;
-  }
-  return assign;
-}
-
-function silhouette(V: number[][], assign: number[]): number {
-  const n = V.length;
-  let total = 0;
-  for (let i = 0; i < n; i++) {
-    const same: number[] = [];
-    const others: Record<number, number[]> = {};
-    for (let j = 0; j < n; j++) {
-      if (j === i) continue;
-      const dij = euclid(V[i], V[j]);
-      if (assign[j] === assign[i]) same.push(dij);
-      else (others[assign[j]] ??= []).push(dij);
-    }
-    const a = same.length ? same.reduce((s, x) => s + x, 0) / same.length : 0;
-    let b = Infinity;
-    for (const c in others) {
-      const arr = others[c];
-      const m = arr.reduce((s, x) => s + x, 0) / arr.length;
-      if (m < b) b = m;
-    }
-    if (!isFinite(b)) b = 0;
-    total += same.length === 0 ? 0 : (b - a) / Math.max(a, b || 1);
-  }
-  return n ? total / n : 0;
+  areas: string[]; // distinct technical areas present, for the legend
 }
 
 // Classical PCA via the small n×n Gram matrix (n projects, d=1536 dims).
@@ -256,91 +173,12 @@ function pca2d(vectors: number[][]): [number, number][] {
   return raw.map((_, i) => [xs[i], ys[i]]);
 }
 
-// Ask an LLM to name + explain each cluster from its member projects.
-async function describeClusters(
-  openai: OpenAI,
-  groups: { id: number; members: Project[] }[],
-): Promise<Record<number, { label: string; description: string }>> {
-  const payload = groups.map((g) => ({
-    id: g.id,
-    projects: g.members.map((m) => ({ name: m.name, blurb: m.blurb, area: m.categories[0] })),
-  }));
-  try {
-    const res = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0.3,
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are given clusters of a data scientist's projects, grouped by embedding similarity. For each cluster, give a BROAD, high-level theme label naming a recognizable area of ML/AI/DS (2 to 3 words, e.g. 'Generative AI', 'Computer Vision', 'Predictive Modeling', 'Causal Inference'), not a narrow or project-specific label. Then one short, plain sentence on what the projects broadly share. Do not use em dashes. Return JSON: {\"clusters\":[{\"id\":0,\"label\":\"...\",\"description\":\"...\"}]}.",
-        },
-        { role: "user", content: JSON.stringify(payload) },
-      ],
-    });
-    const parsed = JSON.parse(res.choices[0]?.message?.content ?? "{}");
-    const out: Record<number, { label: string; description: string }> = {};
-    for (const c of parsed.clusters ?? []) {
-      if (typeof c.id === "number") {
-        out[c.id] = { label: String(c.label ?? ""), description: String(c.description ?? "") };
-      }
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-// Cache the whole galaxy (clustering + LLM labels) per project set.
-let galaxyCache: { key: string; data: GalaxyData } | null = null;
-
-// 2D map of every project from its embedding, clustered with k-means (k biased
-// toward finer groups) and each cluster named + explained by an LLM.
+// 2D map of every project from its embedding (PCA), colored by its real
+// technical area so nothing is mislabeled by fuzzy clustering.
 export async function projectMap(): Promise<GalaxyData> {
   const openai = new OpenAI();
   const { projects, vectors } = await ensureCache(openai);
-  const key = projects.map((p) => p.name).join("|");
-  if (galaxyCache && galaxyCache.key === key) return galaxyCache.data;
-
   const coords = pca2d(vectors);
-  const n = projects.length;
-
-  // a few BROAD themes (3 or 4), not hyper-specific groups. Evaluate k=2..4 and
-  // pick the best-separated grouping among k>=3 (avoids singletons/over-splitting).
-  const maxK = Math.min(4, Math.max(3, n - 1));
-  const results: { k: number; assign: number[]; sil: number }[] = [];
-  for (let k = 2; k <= maxK; k++) {
-    const assign = kmeans(vectors, k);
-    results.push({ k, assign, sil: silhouette(vectors, assign) });
-  }
-  const best = results.reduce((a, b) => (b.sil > a.sil ? b : a));
-  const candidates = results.filter((r) => r.k >= 3);
-  const chosen = candidates.reduce((a, b) => (b.sil > a.sil ? b : a));
-
-  // members per cluster
-  const groups = Array.from({ length: chosen.k }, (_, c) => ({
-    id: c,
-    members: projects.filter((_, i) => chosen.assign[i] === c),
-  })).filter((g) => g.members.length > 0);
-
-  const labels = await describeClusters(openai, groups);
-
-  const clusters: ClusterMeta[] = groups.map((g) => {
-    // fallback label = dominant category
-    const counts: Record<string, number> = {};
-    for (const m of g.members) {
-      const cat = m.categories[0] ?? "Machine Learning";
-      counts[cat] = (counts[cat] ?? 0) + 1;
-    }
-    const fallback = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
-    return {
-      id: g.id,
-      label: labels[g.id]?.label || fallback,
-      description: labels[g.id]?.description || "",
-      size: g.members.length,
-    };
-  });
 
   const points: GalaxyPoint[] = projects.map((p, i) => ({
     name: p.name,
@@ -351,17 +189,8 @@ export async function projectMap(): Promise<GalaxyData> {
     demo: p.demo,
     x: coords[i]?.[0] ?? 0.5,
     y: coords[i]?.[1] ?? 0.5,
-    cluster: chosen.assign[i],
   }));
 
-  const data: GalaxyData = {
-    points,
-    clusters,
-    k: chosen.k,
-    silhouette: Number(chosen.sil.toFixed(3)),
-    bestK: best.k,
-    bestSilhouette: Number(best.sil.toFixed(3)),
-  };
-  galaxyCache = { key, data };
-  return data;
+  const areas = Array.from(new Set(points.map((p) => p.category)));
+  return { points, areas };
 }
