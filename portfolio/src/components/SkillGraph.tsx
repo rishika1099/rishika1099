@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 type Cluster = {
   label: string;
@@ -55,14 +55,37 @@ const clamp = (v: number) => Math.min(1.8, Math.max(0.5, v));
 export default function SkillGraph() {
   const [scale, setScale] = useState(0.8);
   const [resetKey, setResetKey] = useState(0);
+  const [full, setFull] = useState(false);
+  const [hint, setHint] = useState(false);
+
+  // Esc exits fullscreen; lock body scroll while fullscreen
+  useEffect(() => {
+    if (!full) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setFull(false);
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [full]);
 
   return (
-    <div className="relative mt-5 h-[520px] w-full overflow-hidden rounded-3xl border border-white/50 bg-white/25">
+    <div
+      className={
+        full
+          ? "fixed inset-0 z-[80] overflow-hidden bg-cream"
+          : "relative mt-5 h-[520px] w-full overflow-hidden rounded-3xl border border-white/50 bg-white/25"
+      }
+    >
       <div className="flex h-full w-full items-center justify-center">
         <motion.div
           key={resetKey}
           drag
           dragMomentum={false}
+          onHoverStart={() => setHint(true)}
+          onHoverEnd={() => setHint(false)}
+          onDragStart={() => setHint(false)}
           style={{ scale }}
           className="relative h-[760px] w-[1000px] shrink-0 cursor-grab active:cursor-grabbing"
         >
@@ -120,6 +143,20 @@ export default function SkillGraph() {
         </motion.div>
       </div>
 
+      {/* hover hint */}
+      <AnimatePresence>
+        {hint && (
+          <motion.span
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            className="pointer-events-none absolute left-1/2 top-4 z-20 -translate-x-1/2 rounded-full bg-ink px-3 py-1 font-body text-xs font-semibold text-cream shadow-lg"
+          >
+            ✦ drag me
+          </motion.span>
+        )}
+      </AnimatePresence>
+
       {/* zoom controls */}
       <div className="absolute bottom-3 right-3 flex items-center gap-1.5">
         <button
@@ -145,6 +182,13 @@ export default function SkillGraph() {
           className="flex h-8 items-center justify-center rounded-full bg-white/85 px-3 font-body text-xs font-semibold text-ink-soft shadow-sm transition hover:bg-white"
         >
           reset
+        </button>
+        <button
+          onClick={() => setFull((f) => !f)}
+          aria-label={full ? "exit fullscreen" : "fullscreen"}
+          className="flex h-8 items-center justify-center rounded-full bg-white/85 px-3 font-body text-xs font-semibold text-ink-soft shadow-sm transition hover:bg-white"
+        >
+          {full ? "✕ close" : "⛶ fullscreen"}
         </button>
       </div>
 
