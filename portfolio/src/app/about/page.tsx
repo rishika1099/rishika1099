@@ -115,7 +115,7 @@ export default function About() {
         <p>This website is where those adventures end up.</p>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 text-center">
         <a
           href="/Rishika_Resume.pdf"
           className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105"
