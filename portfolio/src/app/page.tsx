@@ -17,6 +17,16 @@ export default function Home() {
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}
       <div className="flex flex-col items-center gap-8 text-center md:flex-row md:gap-14">
+        {/* greeting leads on mobile (above the photo) */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="font-serif text-lg italic text-ink-soft sm:text-xl md:hidden"
+        >
+          hi, the internet! welcome to my little corner 🧋
+        </motion.p>
+
         <div className="flex shrink-0 flex-col items-center gap-7">
           <FlowerPortrait />
           <motion.a
@@ -38,7 +48,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="font-serif text-lg italic text-ink-soft sm:text-xl"
+            className="hidden font-serif text-lg italic text-ink-soft sm:text-xl md:block"
           >
             hi, the internet! welcome to my little corner 🧋
           </motion.p>
