@@ -27,7 +27,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             whileHover={{ scale: 1.05 }}
-            className="font-body text-xl text-ink underline-offset-4 transition hover:text-blush hover:underline"
+            className="inline-flex items-center rounded-full bg-white/75 px-6 py-2.5 font-body text-xl text-ink shadow-sm backdrop-blur transition hover:bg-white"
           >
             Résumé
           </motion.a>
