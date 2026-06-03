@@ -39,7 +39,7 @@ export const timeline: Entry[] = [
       "Built an end-to-end system that reads years of cardiology and rheumatology notes for a cohort of cardiac-sarcoidosis patients and extracts dozens of structured clinical variables.",
       "Reconstructed fragmented hospital records into clean, chronological patient timelines so the model could reason over how the disease and treatments evolved.",
       "Designed a HIPAA-safe de-identification step that strips out patient identifiers before anything reaches the model, with no protected data ever written to disk.",
-      "Engineered safeguards so the model only captures facts that are explicitly stated, never guessing or filling in missing details.",
+      "Engineered safeguards so the model extracts only explicitly stated facts, without inferring or imputing missing values.",
       "Validated the extracted data against blinded chart review by two clinicians to measure real-world accuracy.",
     ],
   },
@@ -52,7 +52,7 @@ export const timeline: Entry[] = [
     details: [
       "Automated human-rights due-diligence scoring for 27 defense manufacturers, grounded in UN, UNICEF, and Arms Trade Treaty frameworks.",
       "Scored each company across nine dimensions, including a dedicated set of children's-rights criteria.",
-      "Two-stage design so the model can't make things up: one stage gathers and quotes real evidence from company policy documents, a second stage scores it with transparent reasoning.",
+      "Designed a two-stage, evidence-grounded pipeline: the first stage retrieves and quotes source text from company policy documents, and the second scores it with transparent, auditable reasoning.",
       "Benchmarked the model's scores against expert human raters and reported how closely they agreed.",
       "Produced an auditable report where every score traces back to its source.",
     ],
@@ -62,11 +62,12 @@ export const timeline: Entry[] = [
     when: "2023 – 2025",
     title: "Software Engineer",
     place: "Shell, Bengaluru",
-    note: "ML forecasting in Databricks across 12 business units.",
+    note: "Built and deployed machine-learning forecasting pipelines in Databricks across 12 business units.",
     details: [
-      "23% lower forecast error across 12 business units.",
-      "$100K+ in operational savings.",
-      "RPA bots that cut manual reporting effort by 85%.",
+      "Designed and shipped ML forecasting models in Databricks across 12 business units, cutting forecast error by 23%.",
+      "Drove over $100K in operational savings through improved demand forecasting and process automation.",
+      "Built RPA bots that automated recurring reporting, cutting manual effort by 85%.",
+      "Partnered with business stakeholders to translate forecasts into planning and resource decisions.",
     ],
   },
   {
@@ -74,10 +75,11 @@ export const timeline: Entry[] = [
     when: "Jan – Jul 2023",
     title: "Technical Analyst Intern",
     place: "Novartis, Hyderabad",
-    note: "NLP workflow for clinical-trial sentiment mining and summarization, plus time-series pipelines supporting a 19% carbon-reduction goal.",
+    note: "Built NLP and time-series workflows supporting clinical-trial analysis and sustainability goals.",
     details: [
-      "NLP for clinical-trial sentiment mining and summarization.",
-      "Time-series pipelines supporting a 19% carbon-reduction goal.",
+      "Developed an NLP workflow to mine and summarize sentiment from clinical-trial text at scale.",
+      "Built time-series pipelines that informed operations toward a 19% carbon-reduction goal.",
+      "Delivered analyses that fed into cross-functional decision-making.",
     ],
   },
   {
@@ -87,8 +89,8 @@ export const timeline: Entry[] = [
     place: "Saint Louis University",
     note: "Built Tableau dashboards to analyze campaign performance and guide resource allocation.",
     details: [
-      "Tableau dashboards on campaign performance metrics.",
-      "Insights that sharpened analysis and resource allocation.",
+      "Designed Tableau dashboards tracking campaign-performance metrics across channels.",
+      "Surfaced insights that sharpened analysis and guided how resources were allocated.",
     ],
   },
 ];
@@ -114,10 +116,10 @@ export const education: Entry[] = [
     place: "Vellore Institute of Technology (VIT)",
     note: "4.0/4.0 GPA · graduated ranked 7th of ~200 (top 4%).",
     details: [
-      "Merit Scholarship recipient, 2019 to 2023, and Program Representative for all four years.",
-      "**Data Science** coursework: Artificial Intelligence, Machine Learning, Deep Learning, Natural Language Processing, Image Processing, Predictive Analytics, Business Intelligence and Analytics, and Social and Information Networks.",
-      "**Computer Science** coursework: Data Structures and Algorithms, Object-Oriented Programming, Database Management Systems, Operating Systems, Computer Architecture, Theory of Computation and Compiler Design, Network and Communication, Internet Programming and Web Technologies, Internet of Things, and Cryptography and Network Security.",
-      "**Mathematics** coursework: Calculus, Applied Linear Algebra, Discrete Mathematics and Graph Theory, Statistics, and Differential Equations.",
+      "Merit Scholarship recipient and Program Representative, 2019 to 2023.",
+      "**Data Science coursework:** Artificial Intelligence, Machine Learning, Deep Learning, Natural Language Processing, Image Processing, Predictive Analytics, Business Intelligence and Analytics, and Social and Information Networks.",
+      "**Computer Science coursework:** Data Structures and Algorithms, Object-Oriented Programming, Database Management Systems, Operating Systems, Computer Architecture, Theory of Computation and Compiler Design, Network and Communication, Internet Programming and Web Technologies, Internet of Things, and Cryptography and Network Security.",
+      "**Mathematics coursework:** Calculus, Applied Linear Algebra, Discrete Mathematics and Graph Theory, Statistics, and Differential Equations.",
     ],
   },
 ];
