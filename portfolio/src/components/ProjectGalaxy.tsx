@@ -98,6 +98,30 @@ export default function ProjectGalaxy() {
             {/* faint center axes */}
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-ink/10" />
             <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-ink/10" />
+
+            {/* axis tick numbers + labels */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-4 bottom-1 flex justify-between font-body text-[9px] text-ink/30"
+            >
+              {[0, 0.25, 0.5, 0.75, 1].map((t) => (
+                <span key={`x${t}`}>{t.toFixed(2)}</span>
+              ))}
+            </div>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-4 left-1.5 flex flex-col justify-between font-body text-[9px] text-ink/30"
+            >
+              {[1, 0.75, 0.5, 0.25, 0].map((t) => (
+                <span key={`y${t}`}>{t.toFixed(2)}</span>
+              ))}
+            </div>
+            <span aria-hidden className="pointer-events-none absolute bottom-1 right-3 font-body text-[9px] font-semibold text-ink/40">
+              PC 1 →
+            </span>
+            <span aria-hidden className="pointer-events-none absolute left-2 top-1.5 font-body text-[9px] font-semibold text-ink/40">
+              ↑ PC 2
+            </span>
             {data.points.map((p, i) => {
               const isActive = active === p.name;
               return (
