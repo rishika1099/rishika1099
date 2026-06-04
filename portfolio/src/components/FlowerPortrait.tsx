@@ -40,7 +40,7 @@ export default function FlowerPortrait() {
           style={{ left: `${f.left}%`, top: `${f.top}%` }}
           animate={{ y: [0, -5, 0], rotate: [-8, 8, -8] }}
           transition={{ repeat: Infinity, duration: f.d, ease: "easeInOut", delay: i * 0.3 }}
-          className="absolute -translate-x-1/2 -translate-y-1/2 text-xs drop-shadow-sm sm:text-base"
+          className="absolute -translate-x-1/2 -translate-y-1/2 text-[0.9rem] drop-shadow-sm sm:text-[1.2rem]"
         >
           {f.e}
         </motion.span>
