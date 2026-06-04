@@ -11,6 +11,22 @@ export const revalidate = 3600; // re-check Substack hourly
 // the /p/<slug> part of a Substack URL, to dedupe against curated entries
 const postSlug = (url?: string) => url?.match(/\/p\/([^/?#]+)/)?.[1];
 
+// one friendly date style for every post (local + Substack)
+const fmtDate = (raw: string) => {
+  // bare YYYY-MM-DD parses as UTC midnight, which can render a day early in
+  // US timezones, so pin it to local noon before formatting
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(raw)
+    ? new Date(`${raw}T12:00:00`)
+    : new Date(raw);
+  return isNaN(d.getTime())
+    ? raw
+    : d.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+};
+
 export default async function TechnicalIndex() {
   const local = getBlogPosts();
   const localSlugs = new Set(local.map((p) => postSlug(p.external)).filter(Boolean));
@@ -43,7 +59,7 @@ export default async function TechnicalIndex() {
             "block rounded-3xl p-6 soft-card transition hover:-translate-y-1";
           const inner = (
             <>
-              <p className="font-hand text-lg text-ink-soft">{p.date}</p>
+              <p className="font-hand text-lg text-ink-soft">{fmtDate(p.date)}</p>
               <h2 className="font-display text-xl font-semibold text-ink">
                 {p.title}
               </h2>

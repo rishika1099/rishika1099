@@ -76,13 +76,12 @@ export async function getSubstackPosts(): Promise<Doc[]> {
         const body = stripTag(item, "content:encoded") || stripTag(item, "description");
         const excerpt = htmlToText(body, 160);
         if (!title || !link) return null;
-        const date = pub
-          ? new Date(pub).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })
-          : "";
+        // store ISO (YYYY-MM-DD) like the local posts; the page formats it
+        const parsed = pub ? new Date(pub) : null;
+        const date =
+          parsed && !isNaN(parsed.getTime())
+            ? parsed.toISOString().slice(0, 10)
+            : "";
         // auto-tag from the title + body using the same classifier as projects
         const tagText = `${title} ${htmlToText(body, 600)}`;
         return {
