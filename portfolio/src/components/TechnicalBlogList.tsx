@@ -34,6 +34,34 @@ export default function TechnicalBlogList({ posts }: { posts: Doc[] }) {
 
   return (
     <>
+      {/* pinned: the meta post about how this site is built */}
+      <Link
+        href="/blog/technical/under-the-hood"
+        className="mt-6 block overflow-hidden rounded-3xl border border-lavender/40 bg-gradient-to-br from-blush/25 via-lavender/20 to-mint/20 p-6 soft-card transition hover:-translate-y-1"
+      >
+        <p className="font-hand text-lg text-ink-soft">📌 pinned</p>
+        <h2 className="font-display text-xl font-semibold text-ink">
+          The Data Science Hiding in My Portfolio
+        </h2>
+        <p className="mt-1 font-body text-sm text-ink-soft">
+          A tour of the ML and LLM pipelines behind this site, with the concepts explained, live
+          demos, and an eval for every claim.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {["RAG", "Embeddings", "Zero-shot", "PCA", "Clustering"].map((t) => (
+            <span
+              key={t}
+              className="rounded-full bg-white/70 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+        <span className="mt-3 inline-block font-body text-sm font-semibold text-[#c77dba]">
+          read the tour →
+        </span>
+      </Link>
+
       {tags.length > 1 && (
         <div className="mt-6">
           <h2 className="font-body text-sm font-semibold text-ink-soft">
