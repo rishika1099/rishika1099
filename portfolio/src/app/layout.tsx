@@ -62,12 +62,21 @@ export const metadata: Metadata = {
     title: "Rishika Mamidibathula",
     description:
       "Data scientist & ML engineer in NYC. Projects, writing, poems, and photography.",
+    images: [
+      {
+        url: "/og.png",
+        width: 1536,
+        height: 1024,
+        alt: "Rishika Mamidibathula, Data Scientist",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rishika Mamidibathula",
     description:
       "Data scientist & ML engineer in NYC. Projects, writing, poems, and photography.",
+    images: ["/og.png"],
   },
 };
 
