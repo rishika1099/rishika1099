@@ -33,7 +33,7 @@ const RULES: [Category, RegExp][] = [
   ["Deep Learning", /\b(deep|neural|dnn|lstm|transformer|gan|autoencoder)/i],
 ];
 
-function categorize(text: string): Category {
+export function categorize(text: string): Category {
   for (const [cat, re] of RULES) if (re.test(text)) return cat;
   return "Machine Learning";
 }
@@ -52,7 +52,7 @@ const DOMAIN_RULES: [Domain, RegExp][] = [
   ["Sports", /\b(sport|fitness|exercise|workout|athlet|gym|coach)/i],
 ];
 
-function detectDomains(text: string): Domain[] {
+export function detectDomains(text: string): Domain[] {
   return DOMAIN_RULES.filter(([, re]) => re.test(text)).map(([d]) => d);
 }
 

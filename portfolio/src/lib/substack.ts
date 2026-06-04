@@ -2,6 +2,7 @@
 // speak to her technical writing in depth. Public RSS, cached for a day.
 
 import type { Doc } from "@/lib/content";
+import { categorize, detectDomains } from "@/lib/github-projects";
 
 const FEED = "https://rishika1099.substack.com/feed";
 
@@ -82,6 +83,8 @@ export async function getSubstackPosts(): Promise<Doc[]> {
               day: "numeric",
             })
           : "";
+        // auto-tag from the title + body using the same classifier as projects
+        const tagText = `${title} ${htmlToText(body, 600)}`;
         return {
           slug: `substack-${i}`,
           title,
@@ -89,6 +92,8 @@ export async function getSubstackPosts(): Promise<Doc[]> {
           excerpt,
           content: "",
           external: link,
+          domains: detectDomains(tagText),
+          tech: [categorize(tagText)],
         } as Doc;
       })
       .filter((d): d is Doc => d !== null);
