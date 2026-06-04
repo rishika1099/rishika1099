@@ -53,27 +53,30 @@ export default function Home() {
             hi, the internet! welcome to my little corner 🧋
           </motion.p>
 
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.35, type: "spring", stiffness: 120 }}
-            className="mt-10 flex flex-col items-center gap-6 font-name text-[2.1rem] font-normal leading-[1.15] text-ink text-shadow-soft sm:mt-14 sm:text-6xl"
-          >
+          <h1 className="mt-8 flex flex-col items-center gap-2 sm:mt-12">
+            <span className="sr-only">Rishika Mamidibathula</span>
+            <motion.img
+              src="/rishika-logo.png"
+              alt="Rishika"
+              aria-hidden
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1, y: [0, -7, 0] }}
+              transition={{
+                opacity: { delay: 0.35 },
+                scale: { delay: 0.35, type: "spring", stiffness: 120 },
+                y: { repeat: Infinity, duration: 6, ease: "easeInOut" },
+              }}
+              className="w-64 max-w-full drop-shadow-sm sm:w-80"
+            />
             <motion.span
-              className="block"
-              animate={{ y: [0, -8, 0], rotate: [-1.5, 1.5, -1.5] }}
-              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-            >
-              Rishika
-            </motion.span>
-            <motion.span
-              className="block"
-              animate={{ y: [0, -6, 0], rotate: [1.5, -1.5, 1.5] }}
+              aria-hidden
+              animate={{ y: [0, -5, 0], rotate: [1, -1, 1] }}
               transition={{ repeat: Infinity, duration: 7.5, ease: "easeInOut", delay: 0.6 }}
+              className="block font-name text-2xl font-normal leading-tight text-ink text-shadow-soft sm:text-4xl"
             >
               Mamidibathula
             </motion.span>
-          </motion.h1>
+          </h1>
 
           <motion.p
             initial={{ opacity: 0 }}
