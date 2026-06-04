@@ -10,7 +10,8 @@ export type Vibe =
   | "peach"
   | "sunset"
   | "rose"
-  | "twilight";
+  | "twilight"
+  | "aurora";
 
 // A soft-pastel arc from sunrise blues through golden hour to a sunset rose,
 // one distinct gradient per page (twilight stays dark for the poem room).
@@ -23,6 +24,8 @@ const gradients: Record<Vibe, string> = {
   sunset: "from-sunset via-blush/50 to-lavender",
   rose: "from-rose via-blush/50 to-gold/40",
   twilight: "from-[#0f0f13] via-[#17171d] to-[#23232b]",
+  // distinct cool aurora for the feature-tour article (mint -> sky -> lavender)
+  aurora: "from-mint via-sky/60 to-lavender",
 };
 
 function Cloud({

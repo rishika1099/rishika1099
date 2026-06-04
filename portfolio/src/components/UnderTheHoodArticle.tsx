@@ -184,7 +184,7 @@ function SearchDemo() {
 
 export default function UnderTheHoodArticle() {
   return (
-    <PageShell vibe="azure">
+    <PageShell vibe="aurora">
       <div className="mx-auto max-w-3xl">
         <Link href="/blog/technical" className="font-body text-sm text-ink-soft hover:text-ink">
           ← all technical blogs
