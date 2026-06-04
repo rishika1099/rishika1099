@@ -75,7 +75,7 @@ export default function BlogHub() {
           href="/blog/technical/under-the-hood"
           className="block overflow-hidden rounded-[2rem] border border-lavender/40 bg-gradient-to-br from-mint/30 via-lavender/25 to-blush/25 p-7 soft-card transition hover:-translate-y-1"
         >
-          <p className="font-hand text-lg text-ink-soft">📌 featured</p>
+          <p className="font-body text-sm italic text-ink-soft">📌 featured</p>
           <h2 className="mt-1 font-display text-2xl font-semibold text-ink">
             The Data Science Hiding in My Portfolio ✨
           </h2>
