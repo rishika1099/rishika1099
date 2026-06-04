@@ -35,13 +35,12 @@ export default function Nav() {
       <nav className="mx-auto mt-3 flex max-w-5xl items-center justify-between rounded-full px-4 py-2 soft-card sm:px-6">
         <Link href="/" className="flex items-center" aria-label="rishika, home">
           <Image
-            src="/rishika.gif"
+            src="/rishika-logo.png"
             alt="rishika"
-            width={224}
-            height={81}
-            unoptimized
+            width={447}
+            height={161}
             priority
-            className="h-9 w-auto rounded-full"
+            className="h-8 w-auto sm:h-9"
           />
         </Link>
 
