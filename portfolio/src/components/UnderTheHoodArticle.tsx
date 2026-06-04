@@ -197,7 +197,7 @@ export default function UnderTheHoodArticle() {
           transition={{ duration: 0.6 }}
           className="mt-4 text-center"
         >
-          <p className="font-hand text-lg text-ink-soft">📌 pinned · a tour of the build</p>
+          <p className="font-body text-sm italic text-ink-soft">📌 pinned · a tour of the build</p>
           <h1 className="mt-2 bg-gradient-to-r from-[#c77dba] via-[#8e7bd6] to-[#6aa6d6] bg-clip-text font-display text-4xl font-bold leading-tight text-transparent sm:text-5xl">
             The Data Science Hiding in My Portfolio
           </h1>
