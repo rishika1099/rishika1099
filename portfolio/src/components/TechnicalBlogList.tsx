@@ -18,21 +18,19 @@ const fmtDate = (raw: string) => {
     : d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 };
 
-// every tag on a post (domains + tech), de-duplicated and order-preserving
-const tagsOf = (p: Doc): string[] => [
-  ...new Set([...(p.domains ?? []), ...(p.tech ?? [])]),
-];
+// the tech areas a post is tagged with (domains stay as chips, not filters)
+const techOf = (p: Doc): string[] => [...new Set(p.tech ?? [])];
 
 export default function TechnicalBlogList({ posts }: { posts: Doc[] }) {
   const [active, setActive] = useState<string>("All");
 
-  // collect the tag list once, sorted by how often each appears (popular first)
+  // filter only by technical area, sorted by how often each appears (popular first)
   const counts = new Map<string, number>();
-  for (const p of posts) for (const t of tagsOf(p)) counts.set(t, (counts.get(t) ?? 0) + 1);
+  for (const p of posts) for (const t of techOf(p)) counts.set(t, (counts.get(t) ?? 0) + 1);
   const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
 
   const shown =
-    active === "All" ? posts : posts.filter((p) => tagsOf(p).includes(active));
+    active === "All" ? posts : posts.filter((p) => techOf(p).includes(active));
 
   return (
     <>
