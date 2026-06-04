@@ -63,6 +63,19 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   (Generative AI, Causal Inference, Computer Vision, etc.) and a domain (Healthcare,
   Finance, …) using a keyword/topic matcher, so new projects appear on their own.
   (`src/lib/github-projects.ts`)
+- **Auto-pulled blog with embedding zero-shot tagging.** New Substack posts flow into the
+  Technical Blogs page on their own (RSS, ISR hourly): the title, date, and subtitle (the
+  RSS `<description>`) are parsed out, and each post is **tagged by an embedding zero-shot
+  text classifier** rather than brittle keyword rules. Every technical-area and domain
+  label is described with a few short phrases that are embedded and **averaged into one
+  prototype vector** (multi-prototype denoising); the post is embedded once (title weighted
+  2×, since it's the strongest topic signal) and scored against all labels by **cosine
+  similarity**. The closest area wins (argmax), while a domain is only attached when it
+  **clears a confidence floor *and* clearly beats the runner-up**, so ambiguous or incidental
+  matches get no tag instead of a wrong one. Label vectors are cached per server and posts
+  are embedded in one batched call; if the embeddings API is unavailable it **degrades
+  gracefully to the keyword classifier**. (`src/lib/classify.ts`, `src/lib/substack.ts`,
+  `src/app/blog/technical/page.tsx`)
 - **Skills as a network graph.** The About page renders skills as a force-directed-style
   cluster graph: specialty areas are hubs, tools/methods orbit them, all wired into a
   little mesh you can pan, zoom, and open fullscreen. (`src/components/SkillGraph.tsx`)
@@ -82,8 +95,9 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 - **About:** expandable study/work/research cards, and the skills network graph.
 - **Work:** semantic search box + ELI5/expert toggle + featured projects + filterable grid
   (by technical area and domain, auto-fed from GitHub) + the embeddings galaxy.
-- **Writing room (Blog):** three doors, Technical Blogs (Markdown + external Substack
-  links), Poems (password-gated and **re-locking on every refresh**, with AI art + mood
+- **Writing room (Blog):** three doors, Technical Blogs (Markdown + Substack posts pulled
+  and tagged automatically by embedding similarity), Poems (password-gated and **re-locking
+  on every refresh**, with AI art + mood
   filter), and Photography (auto-captioned + auto-clustered).
 - **Quick jump (⌘K):** a command palette to fuzzy-jump to any page or project.
 - **Ask-about-me chatbot:** a floating widget, available site-wide, that answers questions
