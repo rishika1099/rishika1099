@@ -252,6 +252,12 @@ export default function UnderTheHoodArticle() {
           </p>
         </Reveal>
 
+        <Figure
+          src="/blog/home.png"
+          alt="The portfolio home page"
+          caption="The front door: a soft pastel site sitting on top of a stack of ML pipelines."
+        />
+
         <Section id="embeddings" emoji="🧭" title="The one idea everything is built on: embeddings">
           <Concept>
             <p>
