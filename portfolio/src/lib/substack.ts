@@ -82,8 +82,15 @@ export async function getSubstackPosts(): Promise<Doc[]> {
           parsed && !isNaN(parsed.getTime())
             ? parsed.toISOString().slice(0, 10)
             : "";
-        // auto-tag from the title + body using the same classifier as projects
-        const tagText = `${title} ${htmlToText(body, 600)}`;
+        // Domains come from the title + short excerpt only: domain keywords are
+        // common words ("post", "food", "study") that show up incidentally deep
+        // in prose, so a wide scan mislabels posts. The tech category uses
+        // specific terms ("encrypt", "causal", "kv-cache"), so it can scan more
+        // of the body safely and pick the real topic.
+        const domainText = `${title}. ${excerpt}`;
+        const techText = `${title}. ${htmlToText(body, 2000)}`;
+        const domains = detectDomains(domainText);
+        const cat = categorize(techText);
         return {
           slug: `substack-${i}`,
           title,
@@ -91,8 +98,9 @@ export async function getSubstackPosts(): Promise<Doc[]> {
           excerpt,
           content: "",
           external: link,
-          domains: detectDomains(tagText),
-          tech: [categorize(tagText)],
+          domains,
+          // skip the tech chip when it just repeats a domain (e.g. Cybersecurity)
+          tech: domains.includes(cat as never) ? [] : [cat],
         } as Doc;
       })
       .filter((d): d is Doc => d !== null);

@@ -75,14 +75,16 @@ export default async function TechnicalIndex() {
                       {d}
                     </span>
                   ))}
-                  {p.tech?.map((t) => (
-                    <span
-                      key={t}
-                      className="rounded-full bg-mint/70 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
-                    >
-                      {t}
-                    </span>
-                  ))}
+                  {p.tech
+                    ?.filter((t) => !p.domains?.some((d) => d === t))
+                    .map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full bg-mint/70 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
+                      >
+                        {t}
+                      </span>
+                    ))}
                 </div>
               )}
               <span className="mt-3 inline-block font-body text-sm font-semibold text-[#c77dba]">

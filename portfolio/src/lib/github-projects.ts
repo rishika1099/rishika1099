@@ -40,7 +40,8 @@ export function categorize(text: string): Category {
 
 const DOMAIN_RULES: [Domain, RegExp][] = [
   ["Healthcare", /\b(health|clinic|medical|patient|disease|cancer|cardio|diabet|x-?ray|scan|kidney|heart)/i],
-  ["Education", /\b(educat|course|tutor|student|learn|study|exam)/i],
+  // note: no bare "learn" here, it false-matches "machine learning" everywhere
+  ["Education", /\b(educat|course|tutor|student|study|exam|classroom|lecture)/i],
   ["Legal", /\b(legal|law|court|usc|precedent|contract)/i],
   ["Human Rights", /\b(human-?rights|welfare|child|refugee|equity)/i],
   ["Finance", /\b(finance|loan|price|stock|credit|bank|churn|revenue)/i],
