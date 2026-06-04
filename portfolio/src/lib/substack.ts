@@ -75,16 +75,20 @@ export async function getSubstackPosts(): Promise<Doc[]> {
         const title = stripTag(item, "title");
         const link = stripTag(item, "link");
         const pub = stripTag(item, "pubDate");
-        const body = stripTag(item, "content:encoded") || stripTag(item, "description");
-        const excerpt = htmlToText(body, 160);
+        const body = stripTag(item, "content:encoded");
+        // Substack puts the post subtitle in <description>; show that under the
+        // title (like the curated posts), falling back to a body snippet.
+        const subtitle = htmlToText(stripTag(item, "description"), 200);
+        const bodyExcerpt = htmlToText(body || stripTag(item, "description"), 160);
+        const excerpt = subtitle || bodyExcerpt;
         if (!title || !link) return null;
         // store ISO (YYYY-MM-DD) like the local posts; the page formats it
         const d = pub ? new Date(pub) : null;
         const date = d && !isNaN(d.getTime()) ? d.toISOString().slice(0, 10) : "";
         // text the classifier sees: the title twice (it's the strongest topic
-        // signal) plus a short excerpt. A longer body sample drifts toward
+        // signal) plus a short body snippet. A longer body sample drifts toward
         // generic or incidental topics.
-        const sample = `${title}. ${title}. ${excerpt}`;
+        const sample = `${title}. ${title}. ${bodyExcerpt}`;
         return { slug: `substack-${i}`, title, date, excerpt, link, sample };
       })
       .filter((p): p is NonNullable<typeof p> => p !== null);
