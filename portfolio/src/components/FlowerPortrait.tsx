@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 
 const flowers = ["🌸", "🌻", "🌷", "🌼", "🌹", "🌺", "🪻", "🪷"];
-const R = 60; // ring radius (% from center), so blooms sit around the rim
+const R = 52; // ring radius (% from center), so blooms hug the frame rim
 
 // evenly spaced around the circle, starting at the top
 const blooms = flowers.map((e, i) => {
