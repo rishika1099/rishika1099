@@ -70,7 +70,7 @@ export default function TechnicalBlogList({ posts }: { posts: Doc[] }) {
               "block rounded-3xl p-6 soft-card transition hover:-translate-y-1";
             const inner = (
               <>
-                <p className="font-hand text-lg text-ink-soft">{fmtDate(p.date)}</p>
+                <p className="font-body text-sm italic text-ink-soft">{fmtDate(p.date)}</p>
                 <h2 className="font-display text-xl font-semibold text-ink">{p.title}</h2>
                 <p className="mt-1 font-body text-sm text-ink-soft">{p.excerpt}</p>
                 {Boolean(p.domains?.length || p.tech?.length) && (
