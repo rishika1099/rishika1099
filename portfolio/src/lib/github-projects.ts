@@ -29,6 +29,8 @@ const RULES: [Category, RegExp][] = [
   ["Computer Vision", /\b(vision|cnn|resnet|vgg|yolo|segmentation|object detection|ocr|x-?ray|ct scan)/i],
   ["NLP", /\b(nlp|sentiment|language model|bert|tokeniz|summari|translation|fake news)/i],
   ["Statistical Modeling", /\b(statistic|shiny|\beda\b|distribution|hypothesis|bayesian|regression-?analysis)/i],
+  // self-declared "machine learning" beats a stray "predict" in the prose
+  ["Machine Learning", /\bmachine learning\b/i],
   ["Predictive Analysis", /\b(forecast|predict|churn|price|risk|demand|recommend)/i],
   ["Deep Learning", /\b(deep|neural|dnn|lstm|transformer|gan|autoencoder)/i],
 ];
