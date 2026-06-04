@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, animate, useInView } from "framer-motion";
@@ -76,19 +75,6 @@ function Concept({ children }: { children: React.ReactNode }) {
         {children}
       </div>
     </div>
-  );
-}
-
-function Figure({ src, alt, caption }: { src: string; alt: string; caption: string }) {
-  return (
-    <figure className="my-7">
-      <div className="overflow-hidden rounded-3xl border border-white/70 shadow-lg shadow-ink/10">
-        <Image src={src} alt={alt} width={1280} height={1000} className="h-auto w-full" />
-      </div>
-      <figcaption className="mt-2 text-center font-body text-xs italic text-ink-soft/80">
-        {caption}
-      </figcaption>
-    </figure>
   );
 }
 
@@ -252,12 +238,6 @@ export default function UnderTheHoodArticle() {
           </p>
         </Reveal>
 
-        <Figure
-          src="/blog/home.png"
-          alt="The portfolio home page"
-          caption="The front door: a soft pastel site sitting on top of a stack of ML pipelines."
-        />
-
         <Section id="embeddings" emoji="🧭" title="The one idea everything is built on: embeddings">
           <Concept>
             <p>
@@ -317,12 +297,6 @@ export default function UnderTheHoodArticle() {
           <SearchDemo />
         </Section>
 
-        <Figure
-          src="/blog/work.png"
-          alt="The Work page with semantic search and tagged project cards"
-          caption="The Work tab: search by meaning, an ELI5/expert toggle, and projects auto-categorized from GitHub."
-        />
-
         <Section id="galaxy" emoji="🌌" title="The embeddings galaxy (PCA)">
           <Concept>
             <p>
@@ -358,12 +332,6 @@ export default function UnderTheHoodArticle() {
             weight the <strong>title 2x</strong> in the embedded text, and this very post tagged itself.
           </p>
         </Section>
-
-        <Figure
-          src="/blog/blog.png"
-          alt="The Technical Blogs page with auto tags and filter pills"
-          caption="The Technical Blogs page: posts auto-pulled from Substack, tagged by the classifier, filterable by area."
-        />
 
         <Section id="clustering" emoji="📸" title="Photo clustering (k-means + silhouette + CLIP)">
           <Concept>
