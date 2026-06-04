@@ -41,6 +41,19 @@ export default function Home() {
           >
             Resume
           </motion.a>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <Link
+              href="/blog/technical/under-the-hood"
+              className="inline-flex items-center gap-1.5 rounded-full bg-lavender/70 px-5 py-2 font-body text-base font-semibold text-ink shadow-sm backdrop-blur transition hover:bg-lavender"
+            >
+              ✨ explore features
+            </Link>
+          </motion.div>
         </div>
 
         <div className="flex-1">
