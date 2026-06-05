@@ -230,11 +230,10 @@ export default function UnderTheHoodArticle() {
 
         <Reveal delay={0.1}>
           <p className="mt-8 font-body text-base leading-relaxed text-ink">
-            Most portfolios are brochures. Mine is a little ML playground wearing a pastel dress. The
-            content here isn&apos;t only <em>displayed</em>: chunks of it are <em>generated</em>,{" "}
-            <em>organized</em>, and <em>answered</em> by models. And because I&apos;m a data scientist
-            and not a vibes scientist, almost every piece ships with a small <strong>evaluation</strong>,
-            so quality is measured, not assumed.
+            The content on this site is not only displayed, a lot of it is generated, organized, and
+            answered by models. And because I care whether each piece actually works, almost every one
+            ships with a small <strong>evaluation</strong>, so quality is measured, not assumed. Here is
+            how each part works, with the concept behind it.
           </p>
         </Reveal>
 
@@ -242,7 +241,7 @@ export default function UnderTheHoodArticle() {
           <Concept>
             <p>
               An <strong>embedding</strong> turns text (or an image) into a list of numbers, a{" "}
-              <em>vector</em>. A good model places similar <em>meanings</em> close together, even with
+              vector. A good model places similar meanings close together, even with
               no shared words: &ldquo;make LLMs faster&rdquo; and &ldquo;reduce inference latency&rdquo;
               land near each other.
             </p>
@@ -264,9 +263,9 @@ export default function UnderTheHoodArticle() {
           <Concept>
             <p>
               <strong>Retrieval-augmented generation</strong> fixes the fact that LLMs confidently make
-              things up. Instead of asking the model to recall facts, you <em>retrieve</em> the relevant
-              source text first (by embedding similarity), then ask it to answer <em>using only that
-              text</em>. It becomes a careful summarizer of real sources, not a fuzzy memory.
+              things up. Instead of asking the model to recall facts, you retrieve the relevant
+              source text first (by embedding similarity), then ask it to answer using only that
+              text. It becomes a careful summarizer of real sources, not a fuzzy memory.
             </p>
           </Concept>
           <p>
@@ -310,7 +309,7 @@ export default function UnderTheHoodArticle() {
             Similar projects drift near each other, so the model roughly rediscovers my technical areas
             from text alone. An earlier version ran k-means and let an LLM name the clusters, but at
             near-zero separation it mislabeled things (a car-price project once landed in a
-            &ldquo;Computer Vision&rdquo; cluster). So I color each dot by its <em>real</em> area instead.
+            &ldquo;Computer Vision&rdquo; cluster). So I color each dot by its real area instead.
             The layout shows the structure; the colors stay honest.
           </p>
         </Section>
@@ -318,16 +317,16 @@ export default function UnderTheHoodArticle() {
         <Section id="tagging" emoji="🏷️" title="Auto-pulled blog with embedding zero-shot tagging">
           <Concept>
             <p>
-              <strong>Zero-shot classification</strong> labels things with <em>no</em> training examples:
+              <strong>Zero-shot classification</strong> labels things with no training examples:
               describe each label in words, embed the descriptions and the post, and the closest label
               wins. Two refinements make it robust. <strong>Multi-prototype labels</strong>: average a few
               phrasings per category to cancel noise. And a <strong>confidence rule</strong> instead of
-              blind argmax: a domain is attached only when it clears a floor <em>and</em> clearly beats the
+              blind argmax: a domain is attached only when it clears a floor and clearly beats the
               runner-up. When two are close, that&apos;s ambiguity, so it tags none. Precision over recall.
             </p>
           </Concept>
           <p>
-            This replaced a brittle keyword system that once tagged an <em>encryption</em> post as
+            This replaced a brittle keyword system that once tagged an encryption post as
             &ldquo;Food &amp; Nutrition&rdquo; because the intro mentioned my cat&apos;s empty food bowl. I
             weight the <strong>title 2x</strong> in the embedded text, and this very post tagged itself.
           </p>
@@ -348,7 +347,7 @@ export default function UnderTheHoodArticle() {
             <MetricBar label="silhouette with CLIP image embeddings" value={0.143 / 0.2} display="0.143" />
           </div>
           <p className="text-sm text-ink-soft">
-            Switching from caption text to CLIP <em>image</em> embeddings roughly doubled the silhouette
+            Switching from caption text to CLIP image embeddings roughly doubled the silhouette
             and produced more meaningful groups. The pixels knew something the captions didn&apos;t.
           </p>
         </Section>
@@ -356,7 +355,7 @@ export default function UnderTheHoodArticle() {
         <Section id="llm" emoji="✨" title="The smaller LLM touches">
           <Concept>
             <p>
-              A few features use an LLM as a <em>function</em>, not a chatbot: a strict instruction,{" "}
+              A few features use an LLM as a function, not a chatbot: a strict instruction,{" "}
               <strong>temperature 0</strong> (minimum randomness, repeatable output), and structured{" "}
               <strong>JSON</strong>. Constrained like that, it becomes a reliable little classifier or
               rewriter.
@@ -403,7 +402,7 @@ export default function UnderTheHoodArticle() {
 
         <Reveal>
           <p className="my-12 text-center font-serif text-xl italic text-ink-soft">
-            A pastel site that quietly embeds, retrieves, clusters, classifies, and grades its own
+            That is the whole machine: it embeds, retrieves, clusters, classifies, and grades its own
             homework. Thanks for reading the tour. 🌸
           </p>
         </Reveal>
