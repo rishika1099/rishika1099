@@ -40,6 +40,13 @@ export function categorize(text: string): Category {
   return "Machine Learning";
 }
 
+// Every matching technical area (not just the first), ordered by rule priority
+// and capped, so a project that is both IoT and Computer Vision shows both.
+export function categorizeAll(text: string, max = 3): Category[] {
+  const hits = RULES.filter(([, re]) => re.test(text)).map(([c]) => c);
+  return hits.length ? hits.slice(0, max) : ["Machine Learning"];
+}
+
 const DOMAIN_RULES: [Domain, RegExp][] = [
   ["Healthcare", /\b(health|clinic|medical|patient|disease|cancer|cardio|diabet|x-?ray|scan|kidney|heart)/i],
   // note: no bare "learn" here, it false-matches "machine learning" everywhere
@@ -106,15 +113,15 @@ export async function getAllProjects(): Promise<Project[]> {
     )
     .map((r) => {
       const text = `${r.name} ${r.description ?? ""} ${(r.topics ?? []).join(" ")} ${r.language ?? ""}`;
-      const category = categorize(text);
+      const categories = categorizeAll(text);
       const tags = (r.topics?.length ? r.topics.slice(0, 4) : [r.language])
         .filter(Boolean)
         .map((t) => String(t));
       return {
         name: prettyName(r.name),
-        emoji: CATEGORY_EMOJI[category],
+        emoji: CATEGORY_EMOJI[categories[0]],
         blurb: r.description || "A little experiment on GitHub ✦",
-        categories: [category],
+        categories,
         domains: detectDomains(text),
         repo: r.html_url,
         demo: r.homepage && /^https?:\/\//.test(r.homepage) ? r.homepage : undefined,
