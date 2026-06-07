@@ -46,15 +46,15 @@ const gh = (slug: string) => `https://github.com/rishika1099/${slug}`;
 export const projects: Project[] = [
   // ---------------- Featured ----------------
   {
-    name: "This Portfolio: an AI-powered site",
-    emoji: "🌸",
+    name: "Sentinel Intruder Detection System",
+    emoji: "🛡️",
     blurb:
-      "The site you're on. A RAG chatbot grounded in my projects + READMEs, semantic project search (embeddings + cosine), CLIP image clustering for the gallery, and an LLM poem-mood classifier, each shipped with its own evaluation.",
-    categories: ["Generative AI", "NLP", "Computer Vision", "Machine Learning"],
+      "An intruder-detection system fusing simulated Wokwi hardware sensors with computer vision (YOLO person + weapon detection, fire, and face recognition), wired to a Streamlit dashboard with real-time email alerts.",
+    categories: ["Internet of Things", "Computer Vision"],
+    domains: ["Cybersecurity"],
     featured: true,
-    repo: gh("rishika1099"),
-    demo: "https://rishika-m.netlify.app",
-    tags: ["RAG", "Embeddings", "CLIP", "Next.js", "TypeScript"],
+    repo: gh("Sentinel-Intruder-Detection-System"),
+    tags: ["YOLO", "Computer Vision", "IoT", "Streamlit", "Python"],
   },
   {
     name: "Folio: Clinical Multimodal RAG",

@@ -29,31 +29,33 @@ export default function Home() {
 
         <div className="flex shrink-0 flex-col items-center gap-7">
           <FlowerPortrait />
-          <motion.a
-            href="/Rishika_Resume.pdf"
-            target="_blank"
-            rel="noreferrer"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            whileHover={{ scale: 1.05 }}
-            className="inline-flex items-center rounded-full bg-white/75 px-5 py-2 font-body text-base font-bold text-ink shadow-sm backdrop-blur transition hover:bg-white"
-          >
-            Resume
-          </motion.a>
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <Link
-              href="/blog/technical/under-the-hood"
-              className="inline-flex items-center gap-1.5 rounded-full bg-lavender/70 px-5 py-2 font-body text-base font-semibold text-ink shadow-sm backdrop-blur transition hover:bg-lavender"
+          <div className="flex flex-col items-center gap-2.5">
+            <motion.a
+              href="/Rishika_Resume.pdf"
+              target="_blank"
+              rel="noreferrer"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+              className="inline-flex items-center rounded-full bg-white/75 px-5 py-2 font-body text-base font-bold text-ink shadow-sm backdrop-blur transition hover:bg-white"
             >
-              ✨ explore features
-            </Link>
-          </motion.div>
+              Resume
+            </motion.a>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <Link
+                href="/blog/technical/under-the-hood"
+                className="inline-flex items-center gap-1.5 rounded-full bg-lavender/70 px-5 py-2 font-body text-base font-semibold text-ink shadow-sm backdrop-blur transition hover:bg-lavender"
+              >
+                ✨ explore features
+              </Link>
+            </motion.div>
+          </div>
         </div>
 
         <div className="flex-1">
