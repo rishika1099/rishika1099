@@ -22,7 +22,7 @@ export default function FlowerPortrait() {
       initial={{ opacity: 0, scale: 0.85 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.1, type: "spring", stiffness: 120 }}
-      className="relative mx-auto h-40 w-40 sm:h-48 sm:w-48"
+      className="relative mx-auto h-52 w-52 sm:h-64 sm:w-64"
     >
       {/* soft pastel glow behind the photo */}
       <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-blush/60 to-lavender/60 blur-lg" />
