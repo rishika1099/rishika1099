@@ -84,10 +84,16 @@ export default function BlogHub() {
             explained, a live demo, and an eval for every claim.
           </p>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {["RAG", "Embeddings", "Zero-shot", "PCA", "Clustering"].map((t) => (
+            {[
+              ["RAG", "bg-blush/50"],
+              ["Embeddings", "bg-lavender/50"],
+              ["Zero-shot", "bg-mint/60"],
+              ["PCA", "bg-dawn/60"],
+              ["Clustering", "bg-petal/50"],
+            ].map(([t, tint]) => (
               <span
                 key={t}
-                className="rounded-full bg-white/70 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
+                className={`rounded-full ${tint} px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink`}
               >
                 {t}
               </span>
