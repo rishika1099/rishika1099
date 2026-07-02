@@ -113,7 +113,7 @@ export interface GalaxyData {
 // Classical PCA via the small n×n Gram matrix (n projects, d=1536 dims).
 // Returns each point's first two principal coordinates. Deterministic init so
 // the layout is stable across requests.
-function pca2d(vectors: number[][]): [number, number][] {
+export function pca2d(vectors: number[][]): [number, number][] {
   const n = vectors.length;
   const d = vectors[0]?.length ?? 0;
   if (n === 0) return [];
