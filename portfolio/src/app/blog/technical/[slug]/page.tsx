@@ -4,6 +4,19 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import PageShell from "@/components/PageShell";
 import { getBlogPost, getBlogPosts } from "@/lib/content";
+import ViewCount from "@/components/ViewCount";
+
+// one friendly date style (matches the technical index)
+const fmtDate = (raw: string) => {
+  const d = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? new Date(`${raw}T12:00:00`) : new Date(raw);
+  return isNaN(d.getTime())
+    ? raw
+    : d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+};
+
+// ~220 wpm is a comfortable technical reading pace
+const readingMinutes = (text: string) =>
+  Math.max(1, Math.round(text.split(/\s+/).filter(Boolean).length / 220));
 
 export function generateStaticParams() {
   return getBlogPosts().map((p) => ({ slug: p.slug }));
@@ -37,7 +50,11 @@ export default async function BlogPost({
         ← all technical blogs
       </Link>
       <article className="mt-3 rounded-3xl p-7 soft-card sm:p-10">
-        <p className="font-hand text-lg text-ink-soft">{post.date}</p>
+        <p className="flex flex-wrap gap-x-1.5 font-body text-sm italic text-ink-soft">
+          <span>{fmtDate(post.date)}</span>
+          <span>· {readingMinutes(post.content)} min read ☕</span>
+          <ViewCount path={`/blog/technical/${post.slug}`} />
+        </p>
         <h1 className="font-display text-3xl font-bold text-ink sm:text-4xl">
           {post.title}
         </h1>

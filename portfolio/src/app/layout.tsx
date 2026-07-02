@@ -6,6 +6,7 @@ import Nav from "@/components/Nav";
 import AskMe from "@/components/AskMe";
 import CursorCompanion from "@/components/CursorCompanion";
 import CommandPalette from "@/components/CommandPalette";
+import VisitPing from "@/components/VisitPing";
 
 const cattalague = localFont({
   src: "./fonts/Cattalague.ttf",
@@ -98,6 +99,7 @@ export default function RootLayout({
         <AskMe />
         <CursorCompanion />
         <CommandPalette />
+        <VisitPing />
       </body>
     </html>
   );

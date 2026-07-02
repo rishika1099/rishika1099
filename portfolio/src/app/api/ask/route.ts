@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { answerQuestion, answerStream } from "@/lib/rag";
+import { recordQuestion } from "@/lib/analytics";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -22,6 +23,11 @@ export async function POST(request: Request) {
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json({ error: "ask-unconfigured" }, { status: 503 });
   }
+
+  // Private question log (what visitors actually ask), must never break asking.
+  try {
+    await recordQuestion(question);
+  } catch {}
 
   // Non-streaming JSON mode (used by the eval harness).
   if (!wantStream) {
