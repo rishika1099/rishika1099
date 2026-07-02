@@ -6,6 +6,7 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import SkillGraph from "@/components/SkillGraph";
 import { education, timeline, type Entry } from "@/data/about";
+import { domainColor } from "@/data/projects";
 
 
 // render a detail string, bolding any **wrapped** segment
@@ -50,6 +51,27 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
             {entry.place}
           </p>
           <p className="mt-1 font-body text-sm text-ink-soft">{entry.note}</p>
+          {Boolean(entry.domains?.length || entry.tech?.length) && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {entry.domains?.map((d) => (
+                <span
+                  key={d}
+                  style={{ backgroundColor: domainColor[d] }}
+                  className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
+                >
+                  {d}
+                </span>
+              ))}
+              {entry.tech?.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full bg-mint/70 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         {hasDetails && (
           <motion.span

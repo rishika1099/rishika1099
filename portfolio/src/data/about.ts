@@ -1,3 +1,5 @@
+import type { Category, Domain } from "@/data/projects";
+
 export type Entry = {
   icon: string;
   when: string;
@@ -6,6 +8,9 @@ export type Entry = {
   note: string;
   // extra highlights revealed when the card is clicked, add as many as you like
   details?: string[];
+  // same chips as project cards: colored domain + mint tech area
+  domains?: Domain[];
+  tech?: Category[];
 };
 
 // Short first-person intro shown at the top of the About page.
@@ -23,6 +28,8 @@ export const timeline: Entry[] = [
     title: "Data Science Intern",
     place: "NYC Administration for Children's Services",
     note: "Predictive risk models on child-welfare data with explainable ML, fairness auditing, and causal adjustment for high-stakes public-sector decisions.",
+    domains: ["Public Sector", "Human Rights"],
+    tech: ["Machine Learning", "Causal Inference"],
     details: [
       "Explainable ML on sensitive child-welfare data.",
       "Fairness auditing baked into every model.",
@@ -35,6 +42,8 @@ export const timeline: Entry[] = [
     title: "Research Assistant: Clinical LLM & Phenotyping",
     place: "Columbia University Irving Medical Center",
     note: "An LLM pipeline that turns years of messy clinical notes into structured, research-ready data, with patient privacy and accuracy built in.",
+    domains: ["Healthcare"],
+    tech: ["Generative AI", "NLP"],
     details: [
       "Built an end-to-end system that reads years of cardiology and rheumatology notes for a cohort of cardiac-sarcoidosis patients and extracts dozens of structured clinical variables.",
       "Reconstructed fragmented hospital records into clean, chronological patient timelines so the model could reason over how the disease and treatments evolved.",
@@ -49,6 +58,8 @@ export const timeline: Entry[] = [
     title: "Research Assistant: Human Rights LLM Evaluation",
     place: "Columbia GSAS",
     note: "An LLM framework that scores defense manufacturers on human-rights due diligence and checks its own judgments against expert raters.",
+    domains: ["Human Rights", "Legal"],
+    tech: ["Generative AI"],
     details: [
       "Automated human-rights due-diligence scoring for 27 defense manufacturers, grounded in UN, UNICEF, and Arms Trade Treaty frameworks.",
       "Scored each company across nine dimensions, including a dedicated set of children's-rights criteria.",
@@ -63,6 +74,7 @@ export const timeline: Entry[] = [
     title: "Software Engineer",
     place: "Shell, Bengaluru",
     note: "Built and deployed machine-learning forecasting pipelines in Databricks across 12 business units.",
+    tech: ["Predictive Analysis", "Machine Learning"],
     details: [
       "Designed and shipped ML forecasting models in Databricks across 12 business units, cutting forecast error by 23%.",
       "Drove over $100K in operational savings through improved demand forecasting and process automation.",
@@ -76,6 +88,8 @@ export const timeline: Entry[] = [
     title: "Technical Analyst Intern",
     place: "Novartis, Hyderabad",
     note: "Built NLP and time-series workflows supporting clinical-trial analysis and sustainability goals.",
+    domains: ["Healthcare"],
+    tech: ["NLP", "Predictive Analysis"],
     details: [
       "Developed an NLP workflow to mine and summarize sentiment from clinical-trial text at scale.",
       "Built time-series pipelines that informed operations toward a 19% carbon-reduction goal.",
@@ -88,6 +102,8 @@ export const timeline: Entry[] = [
     title: "Data Visualization Intern",
     place: "Saint Louis University",
     note: "Built Tableau dashboards to analyze campaign performance and guide resource allocation.",
+    domains: ["Education"],
+    tech: ["Statistical Modeling"],
     details: [
       "Designed Tableau dashboards tracking campaign-performance metrics across channels.",
       "Surfaced insights that sharpened analysis and guided how resources were allocated.",
