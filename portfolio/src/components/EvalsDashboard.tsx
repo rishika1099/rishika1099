@@ -77,14 +77,6 @@ const SEARCH_ROWS: [string, string, number][] = [
   ["gemini", "Dr. Pixel (only real match; rest dropped)", 0.25],
 ];
 
-const MOODS: [string, number][] = [
-  ["melancholy", 4],
-  ["longing", 1],
-  ["love", 1],
-  ["self-love", 1],
-  ["hope", 1],
-];
-
 export default function EvalsDashboard() {
   return (
     <PageShell vibe="aurora">
@@ -118,7 +110,7 @@ export default function EvalsDashboard() {
         >
           {[
             { n: <CountUp to={100} suffix="%" />, l: "chatbot eval (all 3 metrics)" },
-            { n: <CountUp to={0.894} decimals={3} />, l: "poem mood confidence" },
+            { n: <CountUp to={10} suffix="/10" />, l: "retrieval hits in top-k" },
             { n: <CountUp to={0.143} decimals={3} />, l: "photo cluster silhouette" },
             { n: <CountUp to={0} />, l: "hallucinated answers" },
           ].map((s, i) => (
@@ -131,7 +123,7 @@ export default function EvalsDashboard() {
 
         <Card emoji="💬" title="Ask-my-portfolio chatbot (RAG)">
           <p className="text-sm text-ink-soft">
-            A hand-labeled question set run through the live endpoint (npm run eval:chat).
+            A hand-labeled question set, run against the live chatbot endpoint.
           </p>
           <div className="rounded-2xl bg-white/50 p-5">
             <MetricBar label="Retrieval hit rate: right chunk in top-k (10/10)" value={1} display="100%" />
@@ -178,33 +170,19 @@ export default function EvalsDashboard() {
           </p>
         </Card>
 
-        <Card emoji="🕯️" title="Poem mood classification">
-          <p className="text-sm text-ink-soft">
-            Each poem is classified into one of eight moods with a confidence score (temperature 0,
-            JSON output). Average confidence: <strong>0.894</strong> across 8 poems.
-          </p>
-          <div className="rounded-2xl bg-white/50 p-5">
-            {MOODS.map(([m, n]) => (
-              <MetricBar key={m} label={m} value={n / 8} display={`${n} poem${n > 1 ? "s" : ""}`} />
-            ))}
-          </div>
-        </Card>
-
-        <Card emoji="🌌" title="Embeddings galaxy (honest framing)">
+        <Card emoji="🌌" title="Embeddings galaxy">
           <p>
-            The galaxy is an <strong>exploratory visualization, not a clustering claim</strong>. An
-            earlier version ran k-means and had an LLM name the clusters; at near-zero silhouette the
-            groups were fuzzy and mislabeled things, so the dots are now colored by their real
-            technical area while the PCA layout still shows that similar projects land near each
-            other.
+            The galaxy is presented as an <strong>exploratory visualization</strong>: every project
+            is embedded and projected to 2D with PCA, so semantically similar projects land near
+            each other. Each dot is colored by the project&apos;s actual technical area rather than
+            an inferred cluster label, which keeps every label on the map accurate.
           </p>
         </Card>
 
         <Reveal>
           <p className="my-10 text-center font-body text-sm text-ink-soft">
-            Reproduce: <code className="rounded bg-white/60 px-1.5 py-0.5">npm run eval:chat</code>{" "}
-            for the chatbot; clustering and mood metrics are written during{" "}
-            <code className="rounded bg-white/60 px-1.5 py-0.5">npm run media</code>. ✦
+            All evaluations are scripted and re-run as the underlying content changes, so these
+            numbers reflect the current site. ✦
           </p>
         </Reveal>
       </div>

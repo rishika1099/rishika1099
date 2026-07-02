@@ -71,9 +71,10 @@ score (temperature 0, JSON output).
 |---|---|
 | poems classified | 8 |
 | average confidence | 0.894 |
-| distribution | melancholy 4 · longing 1 · love 1 · self-love 1 · hope 1 |
 
 The Poems page reports the average classifier confidence as an honest quality signal.
+(The per-mood distribution is intentionally not published: the poems are private, and
+their mood breakdown would reveal their content.)
 
 ---
 
