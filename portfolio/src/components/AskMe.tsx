@@ -66,6 +66,20 @@ export default function AskMe() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, busy, open]);
 
+  // Deep-link: project cards dispatch "ask-question" to open the chat
+  // pre-loaded with a question about themselves.
+  const askRef = useRef<(q: string) => void>(() => {});
+  useEffect(() => {
+    const onAsk = (e: Event) => {
+      const q = (e as CustomEvent<string>).detail;
+      if (!q) return;
+      setOpen(true);
+      askRef.current(q);
+    };
+    window.addEventListener("ask-question", onAsk);
+    return () => window.removeEventListener("ask-question", onAsk);
+  }, []);
+
   async function ask(question: string) {
     const q = question.trim();
     if (!q || busy) return;
@@ -141,6 +155,7 @@ export default function AskMe() {
       setBusy(false);
     }
   }
+  askRef.current = ask;
 
   return (
     <>

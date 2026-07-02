@@ -115,12 +115,12 @@ export default function ProjectGalaxy() {
 
             {data.points.map((p, i) => {
               const isActive = active === p.name;
+              // flip the popover for dots near the plot edges so it stays inside
+              const popBelow = p.y < 0.55;
+              const popLeft = p.x > 0.75;
               return (
-                <motion.a
+                <motion.div
                   key={p.name}
-                  href={p.demo ?? p.repo}
-                  target="_blank"
-                  rel="noreferrer"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.02, type: "spring", stiffness: 200, damping: 18 }}
@@ -129,20 +129,68 @@ export default function ProjectGalaxy() {
                   style={{ left: `${p.x * 100}%`, top: `${p.y * 100}%`, zIndex: isActive ? 20 : 1 }}
                   className="absolute -translate-x-1/2 -translate-y-1/2"
                 >
-                  <span
+                  <button
+                    type="button"
+                    onClick={() => setActive((a) => (a === p.name ? null : p.name))}
+                    onFocus={() => setActive(p.name)}
+                    aria-label={`${p.name}, ${p.category}`}
                     className={`flex h-7 w-7 items-center justify-center rounded-full text-sm shadow-sm ring-2 ring-white/80 transition-transform ${
                       isActive ? "scale-[1.6]" : "hover:scale-[1.6]"
                     }`}
                     style={{ backgroundColor: colorFor(p.category) }}
                   >
                     {p.emoji}
-                  </span>
+                  </button>
                   {isActive && (
-                    <span className="pointer-events-none absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-2.5 py-1 font-body text-[11px] font-semibold text-cream shadow-lg">
-                      {p.emoji} {p.name} · {p.category}
-                    </span>
+                    <div
+                      className={`absolute z-30 w-52 rounded-2xl border border-white/70 bg-white/95 p-3 shadow-xl backdrop-blur ${
+                        popBelow ? "top-full mt-2" : "bottom-full mb-2"
+                      } ${popLeft ? "right-0" : "left-1/2 -translate-x-1/2"}`}
+                    >
+                      <p className="font-body text-sm font-bold leading-snug text-ink">
+                        {p.emoji} {p.name}
+                      </p>
+                      <p className="mt-0.5 font-body text-[11px] font-semibold text-ink-soft">
+                        {p.category}
+                        {p.domains.length > 0 && ` · ${p.domains.join(", ")}`}
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
+                        <a
+                          href={p.repo}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
+                        >
+                          ⭑ code
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            window.dispatchEvent(
+                              new CustomEvent("find-similar", { detail: p.name }),
+                            )
+                          }
+                          className="font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
+                        >
+                          ✦ find similar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            window.dispatchEvent(
+                              new CustomEvent("ask-question", {
+                                detail: `Walk me through the "${p.name}" project: what it does, how it's built, and what makes it interesting.`,
+                              }),
+                            )
+                          }
+                          className="font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
+                        >
+                          💬 ask
+                        </button>
+                      </div>
+                    </div>
                   )}
-                </motion.a>
+                </motion.div>
               );
             })}
           </div>

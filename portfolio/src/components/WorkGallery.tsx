@@ -98,17 +98,32 @@ function ScoreBadge({ score }: { score: number }) {
   );
 }
 
-// "More like this": filters the grid down to the projects most similar to this
-// one (by embedding), the same way the category filter narrows the grid.
-function FindSimilarButton({ onClick }: { onClick: () => void }) {
+// Card footer actions: "find similar" narrows the grid by embedding
+// similarity; "ask about this" opens the chatbot pre-loaded with the project.
+function CardActions({ name, onSimilar }: { name: string; onSimilar: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="mt-auto pt-3 text-left font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
-    >
-      ✦ find similar
-    </button>
+    <div className="mt-auto flex flex-wrap gap-3 pt-3">
+      <button
+        type="button"
+        onClick={onSimilar}
+        className="text-left font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
+      >
+        ✦ find similar
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          window.dispatchEvent(
+            new CustomEvent("ask-question", {
+              detail: `Walk me through the "${name}" project: what it does, how it's built, and what makes it interesting.`,
+            }),
+          )
+        }
+        className="text-left font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
+      >
+        💬 ask about this
+      </button>
+    </div>
   );
 }
 
@@ -151,6 +166,22 @@ export default function WorkGallery({
       setSimilarLoading(false);
     }
   }
+
+  // The galaxy's popover can also trigger "find similar" from below the grid.
+  useEffect(() => {
+    const onFind = (e: Event) => {
+      const name = (e as CustomEvent<string>).detail;
+      if (!name) return;
+      findSimilar(name);
+      setTimeout(
+        () => document.getElementById("similar-results")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+        150,
+      );
+    };
+    window.addEventListener("find-similar", onFind);
+    return () => window.removeEventListener("find-similar", onFind);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch the rewritten blurbs once per level (cached after first fetch).
   useEffect(() => {
@@ -294,7 +325,7 @@ export default function WorkGallery({
           </div>
         </div>
       ) : similarTo ? (
-        <div className="mt-8">
+        <div id="similar-results" className="mt-8 scroll-mt-24">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-body text-2xl font-bold text-ink">
               ✦ similar to &ldquo;{similarTo}&rdquo;
@@ -332,7 +363,7 @@ export default function WorkGallery({
                   <DomainChips domains={p.domains} />
                   <TechChips categories={p.categories} />
                   <Links p={p} />
-                  <FindSimilarButton onClick={() => findSimilar(p.name)} />
+                  <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
                 </motion.article>
               ))}
             </AnimatePresence>
@@ -387,7 +418,7 @@ export default function WorkGallery({
                 <DomainChips domains={p.domains} />
                 <TechChips categories={p.categories} />
                 <Links p={p} />
-                <FindSimilarButton onClick={() => findSimilar(p.name)} />
+                <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
               </motion.article>
             ))}
           </div>
@@ -450,7 +481,7 @@ export default function WorkGallery({
               <DomainChips domains={p.domains} />
               <TechChips categories={p.categories} />
               <Links p={p} />
-              <FindSimilarButton onClick={() => findSimilar(p.name)} />
+              <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
             </motion.article>
           ))}
         </AnimatePresence>
