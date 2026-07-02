@@ -109,8 +109,9 @@ export default function CareerGalaxy() {
             ))}
           </svg>
           <p className="mt-2 text-center font-body text-xs italic text-ink-soft/80">
-            each stop embedded with OpenAI and projected to 2D with PCA, then connected in time.
-            watch the drift from software toward LLM research ✦
+            how to read this: dots that sit close together were similar kinds of work, and the
+            dotted line follows time. the software-era stops huddle on one side, the Columbia
+            LLM-research stops on the other, so the big jump in the line is the career pivot ✦
           </p>
         </>
       )}
