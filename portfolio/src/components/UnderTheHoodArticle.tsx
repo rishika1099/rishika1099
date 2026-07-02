@@ -396,6 +396,11 @@ export default function UnderTheHoodArticle() {
             </li>
             <li>
               <strong>Evals as a habit.</strong> If I can&apos;t measure it, I try not to claim it.
+              The latest numbers live on the{" "}
+              <Link href="/evals" className="font-semibold text-[#c77dba] underline hover:text-ink">
+                live eval dashboard
+              </Link>
+              .
             </li>
           </ul>
         </Section>

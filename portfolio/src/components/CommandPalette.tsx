@@ -21,6 +21,9 @@ const PAGES: Item[] = [
   { label: "Poems", hint: "page", href: "/blog/poems" },
   { label: "Photography", hint: "page", href: "/blog/photography" },
   { label: "Contact", hint: "page", href: "/contact" },
+  { label: "Feature tour", hint: "page", href: "/blog/technical/under-the-hood" },
+  { label: "Evaluations", hint: "page", href: "/evals" },
+  { label: "Now", hint: "page", href: "/now" },
   { label: "Resume (PDF)", hint: "resume", href: "/Rishika_Resume.pdf", external: true },
 ];
 
