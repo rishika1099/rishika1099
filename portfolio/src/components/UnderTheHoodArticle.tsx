@@ -273,6 +273,13 @@ export default function UnderTheHoodArticle() {
             (poems and photos are private and excluded). Answers stream token-by-token, cite sources,
             and refuse when out of scope.
           </p>
+          <p>
+            It also carries <strong>conversation memory</strong>: recent turns travel with each
+            question, both into retrieval (the last exchange is embedded alongside the new question)
+            and into the prompt, so a follow-up like &ldquo;can I see a demo of it?&rdquo; still knows
+            what &ldquo;it&rdquo; is. And every project card has an <strong>ask about this</strong>{" "}
+            button that opens the chat pre-loaded with that project, retrieval and grounding included.
+          </p>
           <div className="mt-4 rounded-2xl bg-white/50 p-5">
             <MetricBar label="Retrieval hit rate (right chunk in top-k)" value={1} display="100%" />
             <MetricBar label="Answer accuracy (contains the fact)" value={1} display="100%" />
@@ -312,6 +319,12 @@ export default function UnderTheHoodArticle() {
             &ldquo;Computer Vision&rdquo; cluster). So I color each dot by its real area instead.
             The layout shows the structure; the colors stay honest.
           </p>
+          <p>
+            The dots are interactive too: hover or tap one and a little card pops up with the
+            project&apos;s area, domains, and actions, open the code, ask the chatbot about it, or{" "}
+            <strong>find similar</strong>, which runs nearest-neighbors over the same cached vectors
+            and filters the project grid above.
+          </p>
         </Section>
 
         <Section id="tagging" emoji="🏷️" title="Auto-pulled blog with embedding zero-shot tagging">
@@ -329,6 +342,17 @@ export default function UnderTheHoodArticle() {
             This replaced a brittle keyword system that once tagged an encryption post as
             &ldquo;Food &amp; Nutrition&rdquo; because the intro mentioned my cat&apos;s empty food bowl. I
             weight the <strong>title 2x</strong> in the embedded text, and this very post tagged itself.
+          </p>
+          <p>
+            The tags then earn their keep: the Technical Blogs page builds its{" "}
+            <strong>topic filter pills</strong> from whatever tags exist across posts, so publishing a
+            post on a new area grows a new filter on its own, no code change.
+          </p>
+          <p>
+            The Work grid has a cheaper cousin for terse GitHub repo descriptions: a deterministic
+            keyword classifier, now <strong>multi-label</strong>, so a project that is genuinely both
+            IoT and Computer Vision wears both tags instead of whichever rule fired first. Matching
+            the method to the input: embeddings for prose, rules for metadata.
           </p>
         </Section>
 
