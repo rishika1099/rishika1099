@@ -21,7 +21,7 @@ function Board({ title, rec, max = 10 }: { title: string; rec: Record<string, nu
         {rows.map(([k, n]) => (
           <div key={k}>
             <div className="flex items-center justify-between gap-3 font-body text-sm">
-              <span className="truncate text-ink">{k}</span>
+              <span className="truncate text-ink">{k === "/" ? "home 🏠" : k}</span>
               <span className="shrink-0 font-semibold text-ink-soft">{n}</span>
             </div>
             <div className="mt-0.5 h-1.5 w-full overflow-hidden rounded-full bg-white/60">
