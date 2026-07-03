@@ -5,7 +5,6 @@ import { useState } from "react";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import SkillGraph from "@/components/SkillGraph";
-import CareerGalaxy from "@/components/CareerGalaxy";
 import { education, timeline, type Entry } from "@/data/about";
 import { domainColor } from "@/data/projects";
 
@@ -195,15 +194,6 @@ export default function About() {
             <EntryCard key={t.title} entry={t} i={i} />
           ))}
       </div>
-
-      {/* Career trajectory: entries embedded + PCA'd, connected in time */}
-      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        the journey, as a map 🗺️
-      </h2>
-      <p className="mt-1 font-body text-sm text-ink-soft">
-        every stop above, embedded and projected like the project galaxy ✦
-      </p>
-      <CareerGalaxy />
     </PageShell>
   );
 }
