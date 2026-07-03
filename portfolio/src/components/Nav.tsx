@@ -14,14 +14,19 @@ const links = [
   { href: "/contact", label: "Contact", icon: "💌" },
 ];
 
-// each tab's pill echoes the background gradient of the page it leads to
-const tabTint: Record<string, string> = {
-  "/": "rgba(255, 222, 205, 0.85)", // dawn
-  "/about": "rgba(230, 215, 245, 0.85)", // lilac
-  "/work": "rgba(214, 238, 214, 0.9)", // meadow
-  "/blog": "rgba(255, 226, 206, 0.9)", // peach
-  "/contact": "rgba(247, 183, 201, 0.85)", // rose
-};
+// the active tab's pill echoes the vibe of the page currently on screen,
+// including blog sub-rooms (technical/poems/photography have their own vibes)
+function pillTint(path: string): string {
+  if (path.startsWith("/about")) return "rgba(230, 215, 245, 0.85)"; // lilac
+  if (path.startsWith("/work")) return "rgba(214, 238, 214, 0.9)"; // meadow
+  if (path.startsWith("/blog/technical/under-the-hood")) return "rgba(214, 235, 225, 0.9)"; // aurora
+  if (path.startsWith("/blog/technical")) return "rgba(207, 232, 243, 0.9)"; // azure
+  if (path.startsWith("/blog/photography")) return "rgba(255, 213, 197, 0.9)"; // sunset
+  if (path.startsWith("/blog/poems")) return "rgba(232, 219, 248, 0.9)"; // twilight (light pill)
+  if (path.startsWith("/blog")) return "rgba(255, 226, 206, 0.9)"; // peach
+  if (path.startsWith("/contact")) return "rgba(247, 183, 201, 0.85)"; // rose
+  return "rgba(255, 222, 205, 0.85)"; // dawn (home + fallback)
+}
 
 export default function Nav() {
   const pathname = usePathname();
@@ -62,7 +67,7 @@ export default function Nav() {
                   <motion.span
                     layoutId="nav-pill"
                     className="absolute inset-0 -z-10 rounded-full"
-                    style={{ backgroundColor: tabTint[l.href] ?? "rgba(230, 215, 245, 0.85)" }}
+                    style={{ backgroundColor: pillTint(pathname) }}
                     transition={{ type: "spring", stiffness: 400, damping: 32 }}
                   />
                 )}
@@ -106,7 +111,7 @@ export default function Nav() {
               <Link
                 href={l.href}
                 onClick={() => setOpen(false)}
-                style={isActive(l.href) ? { backgroundColor: tabTint[l.href] } : undefined}
+                style={isActive(l.href) ? { backgroundColor: pillTint(pathname) } : undefined}
                 className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 font-body font-semibold ${
                   isActive(l.href) ? "text-ink" : "text-ink-soft"
                 }`}

@@ -9,12 +9,14 @@ import { AnimatePresence, motion } from "framer-motion";
 function launcherTint(path: string): string {
   if (path.startsWith("/about")) return "#d9c2f0"; // lilac
   if (path.startsWith("/work")) return "#bfe3b0"; // meadow
+  if (path.startsWith("/blog/technical/under-the-hood")) return "#c5e8d5"; // aurora
   if (path.startsWith("/blog/technical")) return "#bfe0f0"; // azure
   if (path.startsWith("/blog/photography")) return "#ffc0a0"; // sunset
   if (path.startsWith("/blog/poems")) return "#d9c2f0"; // twilight (light pill on dark)
   if (path.startsWith("/blog")) return "#ffd9a8"; // peach
   if (path.startsWith("/contact")) return "#f7a8bc"; // rose
-  return "#ffd0b0"; // dawn (home + fallback)
+  if (path.startsWith("/stats")) return "#c7d3f2"; // midnight (moonlit periwinkle)
+  return "#ffd0b0"; // dawn (home, /now + fallback)
 }
 
 interface Source {
