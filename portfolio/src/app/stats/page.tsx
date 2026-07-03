@@ -87,14 +87,16 @@ export default function StatsPage() {
 
   return (
     <PageShell vibe="midnight">
-      <PageTitle className="text-cream">the night garden 🌙</PageTitle>
-      <p className="mt-3 font-body text-base text-cream/70">
-        nothing blooms here without a key ✦
-      </p>
+      <div className="text-center">
+        <PageTitle className="text-cream">the night garden 🌙</PageTitle>
+        <p className="mt-3 font-body text-base text-cream/70">
+          nothing blooms here without a key ✦
+        </p>
+      </div>
 
       {!stats && (
         <form
-          className="mt-8 flex max-w-md gap-2"
+          className="mx-auto mt-8 flex max-w-md gap-2"
           onSubmit={(e) => {
             e.preventDefault();
             if (key.trim()) load(key.trim());
@@ -116,7 +118,7 @@ export default function StatsPage() {
           </button>
         </form>
       )}
-      {err && <p className="mt-3 font-body text-sm text-blush">{err}</p>}
+      {err && <p className="mt-3 text-center font-body text-sm text-blush">{err}</p>}
 
       {stats && (
         <>
