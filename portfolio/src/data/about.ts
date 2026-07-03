@@ -13,13 +13,7 @@ export type Entry = {
   tech?: Category[];
 };
 
-// Short first-person intro shown at the top of the About page.
-export const bio: string[] = [
-  "I'm Rishika, a Data Science master's student at Columbia University. I spend my days building models, asking questions, and staring at plots until they either reveal something useful or make me question my life choices.",
-  "I'm interested in machine learning, LLM systems, causal inference, and using data to understand complex problems in healthcare, public policy, and beyond. Before Columbia, I studied Computer Science and Data Science at VIT and worked as a software engineer.",
-  "Most of my favorite projects begin with a simple thought: \"I wonder if...\" Unfortunately, that thought is usually followed by three weeks of research, six notebooks, and a new GitHub repository.",
-  "This website is where those adventures end up.",
-];
+// The bio now lives in src/data/copy.ts (editable in the atelier).
 
 export const timeline: Entry[] = [
   {

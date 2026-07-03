@@ -1,5 +1,6 @@
-import { bio, skillAreas, type Entry } from "@/data/about";
+import { skillAreas, type Entry } from "@/data/about";
 import { getAboutEntries } from "@/lib/aboutData";
+import { getCopy } from "@/lib/siteCopy";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
 import { getSubstackChunks } from "@/lib/substack";
@@ -38,11 +39,13 @@ function entryText(e: Entry): string {
 export async function buildKnowledge(): Promise<Chunk[]> {
   const chunks: Chunk[] = [];
 
+  // the bio passage is editable in the atelier, use the merged copy
+  const copyMap = await getCopy();
   chunks.push({
     id: "bio",
     title: "About Rishika",
     kind: "bio",
-    text: bio.map(clean).join(" "),
+    text: clean(copyMap["about.bio"].replace(/\*\*/g, "").replace(/\n+/g, " ")),
     href: "/about",
   });
 

@@ -4,7 +4,8 @@
 // About journey. Everything writes through key-gated admin APIs into Netlify
 // Blobs (or local files in dev), so edits go live with no rebuild.
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import type { Entry } from "@/data/about";
@@ -209,6 +210,95 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
   );
 }
 
+/* ---------------- passages (site copy) ---------------- */
+
+interface CopyBlockRow {
+  id: string;
+  page: string;
+  label: string;
+  text: string;
+  isDefault: boolean;
+}
+
+function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: string | null }) {
+  const api = useAdminApi(keyVal);
+  const [blocks, setBlocks] = useState<CopyBlockRow[] | null>(null);
+  const [pageFilter, setPageFilter] = useState<string | null>(initialPage);
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    api<{ blocks: CopyBlockRow[] }>("/api/admin/copy")
+      .then((d) => setBlocks(d.blocks))
+      .catch(() => setMsg("couldn't load passages"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function save() {
+    if (!blocks) return;
+    setMsg("saving…");
+    try {
+      const texts = Object.fromEntries(blocks.map((b) => [b.id, b.text]));
+      await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
+      setMsg("saved ✓ live immediately");
+    } catch {
+      setMsg("save failed, try again?");
+    }
+  }
+
+  async function revert() {
+    if (!confirm("Revert every passage to the version written in the code?")) return;
+    await api("/api/admin/copy", { method: "DELETE" });
+    const d = await api<{ blocks: CopyBlockRow[] }>("/api/admin/copy");
+    setBlocks(d.blocks);
+    setMsg("reverted to repo defaults ✓");
+  }
+
+  if (!blocks) return <p className="mt-6 font-body text-sm text-ink-soft">opening the pages… ✦</p>;
+
+  const pages = [...new Set(blocks.map((b) => b.page))];
+  const shown = pageFilter ? blocks.filter((b) => b.page === pageFilter) : blocks;
+
+  return (
+    <div className="mt-4">
+      {msg && <p className="font-body text-sm text-ink-soft">{msg}</p>}
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <button className={btnDark} onClick={save}>save everything</button>
+        <button className={btnSoft} onClick={revert}>revert all to defaults</button>
+        <span className="ml-auto flex flex-wrap gap-1.5">
+          <button className={pageFilter === null ? btnDark : btnSoft} onClick={() => setPageFilter(null)}>
+            all pages
+          </button>
+          {pages.map((p) => (
+            <button key={p} className={pageFilter === p ? btnDark : btnSoft} onClick={() => setPageFilter(p)}>
+              {p}
+            </button>
+          ))}
+        </span>
+      </div>
+      <div className="mt-4 space-y-4">
+        {shown.map((b) => (
+          <div key={b.id} className="rounded-3xl p-4 soft-card">
+            <p className="font-body text-sm font-bold text-ink">
+              {b.page} · {b.label}
+              {!b.isDefault && <span className="ml-2 font-normal text-ink-soft">(edited)</span>}
+            </p>
+            <textarea
+              className={`${field} mt-2 min-h-24`}
+              value={b.text}
+              onChange={(e) =>
+                setBlocks(blocks.map((x) => (x.id === b.id ? { ...x, text: e.target.value, isDefault: false } : x)))
+              }
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-4">
+        <button className={btnDark} onClick={save}>save everything</button>
+      </div>
+    </div>
+  );
+}
+
 /* ---------------- journey (about entries) ---------------- */
 
 function EntryForm({ entry, onChange, onRemove }: { entry: Entry; onChange: (e: Entry) => void; onRemove: () => void }) {
@@ -322,11 +412,14 @@ function JourneyTab({ keyVal }: { keyVal: string }) {
 
 /* ---------------- shell ---------------- */
 
-export default function EditPage() {
+function EditRoom() {
+  const sp = useSearchParams();
+  const initialTab = (sp.get("tab") ?? "passages") as "passages" | "poems" | "photos" | "journey";
+  const initialPage = sp.get("page");
   const [key, setKey] = useState("");
   const [entered, setEntered] = useState(false);
   const [err, setErr] = useState("");
-  const [tab, setTab] = useState<"poems" | "photos" | "journey">("poems");
+  const [tab, setTab] = useState<"passages" | "poems" | "photos" | "journey">(initialTab);
 
   useEffect(() => {
     const saved = localStorage.getItem("admin-key");
@@ -382,6 +475,7 @@ export default function EditPage() {
           <div className="flex flex-wrap gap-2">
             {(
               [
+                ["passages", "✍️ passages"],
                 ["poems", "🕯️ poems"],
                 ["photos", "📷 photos"],
                 ["journey", "🎓 journey"],
@@ -402,11 +496,20 @@ export default function EditPage() {
               lock up 🔒
             </button>
           </div>
+          {tab === "passages" && <PassagesTab keyVal={key} initialPage={initialPage} />}
           {tab === "poems" && <PoemsTab keyVal={key} />}
           {tab === "photos" && <PhotosTab keyVal={key} />}
           {tab === "journey" && <JourneyTab keyVal={key} />}
         </div>
       )}
     </PageShell>
+  );
+}
+
+export default function EditPage() {
+  return (
+    <Suspense fallback={null}>
+      <EditRoom />
+    </Suspense>
   );
 }
