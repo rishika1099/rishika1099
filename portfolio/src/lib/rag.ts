@@ -17,6 +17,13 @@ export type StreamEvent =
   | { type: "followups"; items: string[] }
   | { type: "error" };
 
+// A prior conversation turn, so follow-ups like "can I see a demo of it?"
+// keep their referent.
+export interface Turn {
+  role: "user" | "bot";
+  text: string;
+}
+
 function normalize(v: number[]): number[] {
   const n = Math.sqrt(v.reduce((s, x) => s + x * x, 0)) || 1;
   return v.map((x) => x / n);
@@ -51,12 +58,23 @@ Rules:
 - Do not use em dashes or en dashes; use commas, colons, or separate sentences.
 - You do not have access to her private poems or photos, so do not claim to.`;
 
+// Follow-up questions often lean on pronouns ("a demo of it?"), so retrieval
+// embeds a little recent conversation alongside the question to keep the
+// referent, while the raw question still goes to the model as-is.
+function retrievalText(question: string, history: Turn[]): string {
+  if (!history.length) return question;
+  const recent = history.slice(-4);
+  const lastUser = [...recent].reverse().find((t) => t.role === "user")?.text ?? "";
+  const lastBot = [...recent].reverse().find((t) => t.role === "bot")?.text ?? "";
+  return [lastUser, lastBot.slice(0, 300), question].filter(Boolean).join("\n");
+}
+
 // Retrieve the top-k chunks for a question and build the prompt context + sources.
-async function retrieve(openai: OpenAI, question: string, k: number) {
+async function retrieve(openai: OpenAI, question: string, k: number, history: Turn[] = []) {
   const { chunks, vectors } = await getCorpus(openai);
   const q = await openai.embeddings.create({
     model: "text-embedding-3-small",
-    input: question,
+    input: retrievalText(question, history),
   });
   const qv = normalize(q.data[0].embedding);
   const ranked = chunks
@@ -107,10 +125,22 @@ async function suggestFollowups(
   }
 }
 
+// Recent turns as chat messages so the model can resolve "it"/"that project".
+function historyMessages(history: Turn[]) {
+  return history.slice(-6).map((t) => ({
+    role: t.role === "bot" ? ("assistant" as const) : ("user" as const),
+    content: t.text.slice(0, 600),
+  }));
+}
+
 // Streaming answer: yields sources first, then answer deltas, then follow-ups.
-export async function* answerStream(question: string, k = 5): AsyncGenerator<StreamEvent> {
+export async function* answerStream(
+  question: string,
+  history: Turn[] = [],
+  k = 5,
+): AsyncGenerator<StreamEvent> {
   const openai = new OpenAI();
-  const { context, sources } = await retrieve(openai, question, k);
+  const { context, sources } = await retrieve(openai, question, k, history);
   yield { type: "sources", sources };
 
   const stream = await openai.chat.completions.create({
@@ -119,6 +149,7 @@ export async function* answerStream(question: string, k = 5): AsyncGenerator<Str
     stream: true,
     messages: [
       { role: "system", content: SYSTEM },
+      ...historyMessages(history),
       { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` },
     ],
   });
@@ -137,14 +168,19 @@ export async function* answerStream(question: string, k = 5): AsyncGenerator<Str
 }
 
 // Non-streaming answer (used by the eval harness for a simple JSON response).
-export async function answerQuestion(question: string, k = 5): Promise<Answer> {
+export async function answerQuestion(
+  question: string,
+  history: Turn[] = [],
+  k = 5,
+): Promise<Answer> {
   const openai = new OpenAI();
-  const { context, sources } = await retrieve(openai, question, k);
+  const { context, sources } = await retrieve(openai, question, k, history);
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     temperature: 0.3,
     messages: [
       { role: "system", content: SYSTEM },
+      ...historyMessages(history),
       { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` },
     ],
   });

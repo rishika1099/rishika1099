@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { answerQuestion, answerStream } from "@/lib/rag";
+import { answerQuestion, answerStream, type Turn } from "@/lib/rag";
 import { recordQuestion } from "@/lib/analytics";
 
 export const runtime = "nodejs";
@@ -8,10 +8,28 @@ export const maxDuration = 60;
 export async function POST(request: Request) {
   let question = "";
   let wantStream = true;
+  let history: Turn[] = [];
   try {
-    const body = (await request.json()) as { question?: string; stream?: boolean };
+    const body = (await request.json()) as {
+      question?: string;
+      stream?: boolean;
+      history?: unknown;
+    };
     question = (body.question ?? "").trim();
     if (body.stream === false) wantStream = false;
+    // recent turns so follow-up questions keep their referent; strictly validated
+    if (Array.isArray(body.history)) {
+      history = body.history
+        .filter(
+          (t): t is Turn =>
+            !!t &&
+            typeof t === "object" &&
+            ((t as Turn).role === "user" || (t as Turn).role === "bot") &&
+            typeof (t as Turn).text === "string",
+        )
+        .slice(-6)
+        .map((t) => ({ role: t.role, text: t.text.slice(0, 600) }));
+    }
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
   }
@@ -32,7 +50,7 @@ export async function POST(request: Request) {
   // Non-streaming JSON mode (used by the eval harness).
   if (!wantStream) {
     try {
-      return NextResponse.json(await answerQuestion(question));
+      return NextResponse.json(await answerQuestion(question, history));
     } catch (err) {
       console.error("ask failed", err);
       return NextResponse.json({ error: "ask-failed" }, { status: 500 });
@@ -44,7 +62,7 @@ export async function POST(request: Request) {
   const stream = new ReadableStream({
     async start(controller) {
       try {
-        for await (const ev of answerStream(question)) {
+        for await (const ev of answerStream(question, history)) {
           controller.enqueue(encoder.encode(JSON.stringify(ev) + "\n"));
         }
       } catch (err) {

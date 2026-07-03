@@ -88,13 +88,20 @@ export default function AskMe() {
     setInput("");
     setFollowups([]);
     // push the user turn + an empty bot placeholder that fills in as tokens stream
+    // recent turns (minus the greeting) so follow-ups like "a demo of it?"
+    // keep their referent on the server
+    const history = messages
+      .slice(1)
+      .filter((m) => m.text.trim())
+      .slice(-6)
+      .map((m) => ({ role: m.role, text: m.text.slice(0, 600) }));
     setMessages((m) => [...m, { role: "user", text: q }, { role: "bot", text: "" }]);
     setBusy(true);
     try {
       const res = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: q }),
+        body: JSON.stringify({ question: q, history }),
       });
       if (res.status === 503) {
         setMessages((m) =>
