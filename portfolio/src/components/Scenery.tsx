@@ -11,7 +11,8 @@ export type Vibe =
   | "sunset"
   | "rose"
   | "twilight"
-  | "aurora";
+  | "aurora"
+  | "midnight";
 
 // A soft-pastel arc from sunrise blues through golden hour to a sunset rose,
 // one distinct gradient per page (twilight stays dark for the poem room).
@@ -26,6 +27,8 @@ const gradients: Record<Vibe, string> = {
   twilight: "from-[#0f0f13] via-[#17171d] to-[#23232b]",
   // distinct cool aurora for the feature-tour article (mint -> sky -> lavender)
   aurora: "from-mint via-sky/60 to-lavender",
+  // deep navy night for the private stats room (distinct from the poems' twilight)
+  midnight: "from-[#0b1020] via-[#101830] to-[#1a2440]",
 };
 
 function Cloud({
@@ -80,7 +83,7 @@ const sparkles = [
 ];
 
 export default function Scenery({ vibe }: { vibe: Vibe }) {
-  const isNight = vibe === "twilight";
+  const isNight = vibe === "twilight" || vibe === "midnight";
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
       <div className={`absolute inset-0 bg-gradient-to-b ${gradients[vibe]}`} />

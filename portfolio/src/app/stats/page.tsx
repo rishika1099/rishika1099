@@ -86,7 +86,7 @@ export default function StatsPage() {
     : {};
 
   return (
-    <PageShell vibe="twilight">
+    <PageShell vibe="midnight">
       <PageTitle className="text-cream">the quiet stats room 📈</PageTitle>
       <p className="mt-3 font-body text-base text-cream/70">
         aggregate visits + chatbot questions. private, cookie-free, just for me.
