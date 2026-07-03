@@ -87,9 +87,9 @@ export default function StatsPage() {
 
   return (
     <PageShell vibe="midnight">
-      <PageTitle className="text-cream">the quiet stats room 📈</PageTitle>
+      <PageTitle className="text-cream">the night garden 🌙</PageTitle>
       <p className="mt-3 font-body text-base text-cream/70">
-        aggregate visits + chatbot questions. private, cookie-free, just for me.
+        nothing blooms here without a key ✦
       </p>
 
       {!stats && (
@@ -104,7 +104,7 @@ export default function StatsPage() {
             type="password"
             value={key}
             onChange={(e) => setKey(e.target.value)}
-            placeholder="stats key"
+            placeholder="the key"
             className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-2.5 font-body text-cream outline-none placeholder:text-cream/40 focus:border-blush/60"
           />
           <button
