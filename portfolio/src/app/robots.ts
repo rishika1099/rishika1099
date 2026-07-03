@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       // keep private/utility routes out of search results
-      disallow: ["/api/", "/blog/poems", "/stats"],
+      disallow: ["/api/", "/blog/poems", "/stats", "/edit"],
     },
     sitemap: "https://rishika-m.netlify.app/sitemap.xml",
   };

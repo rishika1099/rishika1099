@@ -98,3 +98,44 @@ export async function getPoem(slug: string): Promise<Poem | null> {
   if (!fs.existsSync(mdPath)) return null;
   return fromRaw(slug, fs.readFileSync(mdPath, "utf8"));
 }
+
+// ---- write operations for the secret /edit room ----
+
+export function slugify(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60) || "untitled";
+}
+
+export async function savePoem(p: {
+  slug: string;
+  title: string;
+  date: string;
+  excerpt: string;
+  content: string;
+}): Promise<void> {
+  const raw = matter.stringify(`\n${p.content.trim()}\n`, {
+    title: p.title,
+    date: p.date,
+    excerpt: p.excerpt,
+  });
+  if (blobsEnabled()) {
+    const s = await store("poems");
+    await s.set(p.slug, raw);
+  } else {
+    fs.mkdirSync(POEMS_DIR, { recursive: true });
+    fs.writeFileSync(path.join(POEMS_DIR, `${p.slug}.md`), raw);
+  }
+}
+
+export async function deletePoem(slug: string): Promise<void> {
+  if (blobsEnabled()) {
+    const s = await store("poems");
+    await s.delete(slug);
+  } else {
+    const f = path.join(POEMS_DIR, `${slug}.md`);
+    if (fs.existsSync(f)) fs.unlinkSync(f);
+  }
+}

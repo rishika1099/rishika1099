@@ -58,3 +58,6 @@ portfolio/public/poem-art/*.png
 
 # derived poem metadata (moods etc.) — keep private like the poems
 portfolio/src/content/poems/*.json
+
+# about-page overrides edited via the secret /edit room (private, lives in Blobs on deploy)
+portfolio/src/content/about-overrides.json

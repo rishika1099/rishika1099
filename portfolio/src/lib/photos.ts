@@ -112,3 +112,59 @@ export async function getPhotoData(): Promise<{ groups: PhotoGroup[]; silhouette
 
   return { groups, silhouette: clusters.silhouette };
 }
+
+// ---- write operations for the secret /edit room ----
+
+async function readCaptionsAny(): Promise<Record<string, string>> {
+  if (blobsEnabled()) {
+    const s = await store("photos");
+    const raw = await s.get(CAPTIONS_KEY, { type: "text" });
+    try {
+      return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+    } catch {
+      return {};
+    }
+  }
+  return readCaptions();
+}
+
+async function writeCaptionsAny(captions: Record<string, string>): Promise<void> {
+  if (blobsEnabled()) {
+    const s = await store("photos");
+    await s.setJSON(CAPTIONS_KEY, captions);
+  } else {
+    fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+    fs.writeFileSync(CAPTIONS_FILE, JSON.stringify(captions, null, 2));
+  }
+}
+
+export async function writePhoto(file: string, buf: Buffer): Promise<void> {
+  if (blobsEnabled()) {
+    const s = await store("photos");
+    await s.set(file, new Blob([new Uint8Array(buf)]));
+  } else {
+    fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+    fs.writeFileSync(path.join(PHOTOS_DIR, file), buf);
+  }
+}
+
+export async function setCaption(file: string, caption: string): Promise<void> {
+  const captions = await readCaptionsAny();
+  captions[file] = caption;
+  await writeCaptionsAny(captions);
+}
+
+export async function removePhoto(file: string): Promise<void> {
+  if (blobsEnabled()) {
+    const s = await store("photos");
+    await s.delete(file);
+  } else {
+    const f = path.join(PHOTOS_DIR, file);
+    if (fs.existsSync(f)) fs.unlinkSync(f);
+  }
+  const captions = await readCaptionsAny();
+  if (file in captions) {
+    delete captions[file];
+    await writeCaptionsAny(captions);
+  }
+}

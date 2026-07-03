@@ -1,4 +1,5 @@
-import { bio, education, timeline, skillAreas, type Entry } from "@/data/about";
+import { bio, skillAreas, type Entry } from "@/data/about";
+import { getAboutEntries } from "@/lib/aboutData";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
 import { getSubstackChunks } from "@/lib/substack";
@@ -52,6 +53,9 @@ export async function buildKnowledge(): Promise<Chunk[]> {
     text: `Rishika works across these areas: ${skillAreas.join(", ")}.`,
     href: "/about",
   });
+
+  // entries may be edited via the secret /edit room; use the merged view
+  const { education, timeline } = await getAboutEntries();
 
   for (const e of education) {
     chunks.push({
