@@ -312,7 +312,7 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
       </div>
       <div className="mt-4 space-y-4">
         {shown.map((b) => (
-          <div key={b.id} className="rounded-3xl p-4 soft-card" style={{ backgroundColor: `${tintOf(b.page)}59` }}>
+          <div key={b.id} className="rounded-3xl p-4 soft-card transition focus-within:ring-2 focus-within:ring-blush focus-within:shadow-lg" style={{ backgroundColor: `${tintOf(b.page)}59` }}>
             <p className="flex items-center gap-1.5 font-body text-sm font-bold text-ink">
               <span aria-hidden className="h-3 w-3 rounded-full ring-1 ring-white/80" style={{ backgroundColor: tintOf(b.page) }} />
               {b.page} · {b.label}

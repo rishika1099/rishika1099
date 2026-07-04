@@ -63,13 +63,13 @@ export default function InkEditor({
 
   const emit = () => onChange(ref.current?.innerHTML ?? "");
 
-  // wrap the current selection in a styled span (works across most selections)
-  function wrapSelection(styles: Record<string, string>) {
+  // wrap the current selection in a styled element (works across most selections)
+  function wrapSelection(styles: Record<string, string>, tag = "span") {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
     if (!ref.current?.contains(sel.anchorNode)) return;
     const range = sel.getRangeAt(0);
-    const span = document.createElement("span");
+    const span = document.createElement(tag);
     for (const [k, v] of Object.entries(styles)) span.style.setProperty(k, v);
     try {
       range.surroundContents(span);
@@ -85,8 +85,16 @@ export default function InkEditor({
     emit();
   }
 
-  function cmd(name: "bold" | "italic" | "underline" | "removeFormat") {
-    document.execCommand(name);
+  function cmd(name: string, value?: string) {
+    document.execCommand(name, false, value);
+    emit();
+  }
+
+  function link() {
+    const url = prompt("link to… (https://)");
+    if (!url) return;
+    if (!/^https?:\/\/|^mailto:|^\//i.test(url)) return alert("links must start with https://, mailto: or /");
+    document.execCommand("createLink", false, url);
     emit();
   }
 
@@ -94,11 +102,18 @@ export default function InkEditor({
   const keepSel = (e: React.MouseEvent) => e.preventDefault();
 
   return (
-    <div className="rounded-3xl border border-white/70 bg-white/70 shadow-sm backdrop-blur">
+    <div className="rounded-3xl border border-white/70 bg-white/70 shadow-sm backdrop-blur transition focus-within:border-blush focus-within:ring-2 focus-within:ring-blush/50">
       <div
         onMouseDown={keepSel}
         className="flex flex-wrap items-center gap-1.5 rounded-t-3xl border-b border-ink/10 bg-white/60 px-3 py-2"
       >
+        <button type="button" title="undo" onClick={() => cmd("undo")} className={tbBtn}>
+          ↺
+        </button>
+        <button type="button" title="redo" onClick={() => cmd("redo")} className={tbBtn}>
+          ↻
+        </button>
+        <span className="mx-1 h-4 w-px bg-ink/15" />
         <span className="mr-1 font-body text-[10px] font-bold uppercase tracking-wide text-ink-soft/70">
           font
         </span>
@@ -144,6 +159,28 @@ export default function InkEditor({
         </button>
         <button type="button" onClick={() => cmd("italic")} className={`${tbBtn} italic`}>
           I
+        </button>
+        <span className="mx-1 h-4 w-px bg-ink/15" />
+        <button type="button" title="heading" onClick={() => cmd("formatBlock", "H2")} className={tbBtn}>
+          H
+        </button>
+        <button type="button" title="quote" onClick={() => cmd("formatBlock", "BLOCKQUOTE")} className={tbBtn}>
+          ❝
+        </button>
+        <button type="button" title="inline code" onClick={() => wrapSelection({}, "code")} className={`${tbBtn} font-mono`}>
+          {"<>"}
+        </button>
+        <button type="button" title="code block" onClick={() => cmd("formatBlock", "PRE")} className={`${tbBtn} font-mono`}>
+          {"{ }"}
+        </button>
+        <button type="button" title="bullet list" onClick={() => cmd("insertUnorderedList")} className={tbBtn}>
+          ••
+        </button>
+        <button type="button" title="link" onClick={link} className={tbBtn}>
+          🔗
+        </button>
+        <button type="button" title="back to a plain paragraph" onClick={() => cmd("formatBlock", "P")} className={tbBtn}>
+          ¶
         </button>
         <button type="button" onClick={() => cmd("removeFormat")} className={tbBtn}>
           ⌫ plain

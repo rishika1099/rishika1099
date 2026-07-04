@@ -24,14 +24,14 @@ export default function HomeClient({
       {/* Hero: portrait on the left, name + words on the right */}
       <div className="flex flex-col items-center gap-8 text-center md:flex-row md:gap-14">
         {/* greeting leads on mobile (above the photo) */}
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
           className="font-serif text-lg italic text-ink-soft sm:text-xl md:hidden"
         >
           {greeting}
-        </motion.p>
+        </motion.div>
 
         <div className="flex shrink-0 flex-col items-center gap-7">
           <FlowerPortrait />
@@ -65,14 +65,14 @@ export default function HomeClient({
         </div>
 
         <div className="flex-1">
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="hidden font-serif text-lg italic text-ink-soft sm:text-xl md:block"
           >
             {greeting}
-          </motion.p>
+          </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, scale: 0.9 }}
@@ -96,14 +96,14 @@ export default function HomeClient({
             </motion.span>
           </motion.h1>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
             className="mx-auto mt-6 max-w-xl font-body text-base text-ink-soft sm:text-lg"
           >
             {intro}
-          </motion.p>
+          </motion.div>
         </div>
       </div>
 

@@ -21,9 +21,7 @@ export default function BlogHubClient({
   return (
     <PageShell vibe="peach">
       <PageTitle>the writing room 📖</PageTitle>
-      <p className="mt-3 max-w-4xl font-body text-lg text-ink-soft">
-        {intro}
-      </p>
+      <div className="mt-3 max-w-4xl font-body text-lg text-ink-soft">{intro}</div>
 
       <div className="mt-9 grid gap-5 sm:grid-cols-3">
         {doors.map((d, i) => (
@@ -43,7 +41,7 @@ export default function BlogHubClient({
                 {d.title}
                 {d.locked && <span className="text-sm">🔒</span>}
               </span>
-              <span className="font-body text-base text-ink-soft">{doorBlurbs[d.key]}</span>
+              <div className="w-full font-body text-base text-ink-soft">{doorBlurbs[d.key]}</div>
             </Link>
           </motion.div>
         ))}

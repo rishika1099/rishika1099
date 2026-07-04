@@ -162,3 +162,25 @@ body {
 .rich-passage p:first-child, .rich-passage div:first-child { margin-top: 0; }
 .rich-passage p:last-child, .rich-passage div:last-child { margin-bottom: 0; }
 .rich-passage b, .rich-passage strong { color: var(--color-ink); }
+
+/* structure blocks inside the ink editor + rendered passages */
+.ink-editor-surface h2, .rich-passage h2 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.35em; font-weight: 700; color: var(--color-ink); margin: 0.8em 0 0.4em;
+}
+.ink-editor-surface blockquote, .rich-passage blockquote {
+  border-left: 4px solid var(--color-blush); padding-left: 1rem; font-style: italic;
+  color: var(--color-ink-soft); margin: 0.7em 0;
+}
+.ink-editor-surface code, .rich-passage code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: rgba(74, 74, 94, 0.08); padding: 0.1em 0.35em; border-radius: 0.35rem; font-size: 0.9em;
+}
+.ink-editor-surface pre, .rich-passage pre {
+  background: #2b2a4a; color: #f3eefe; padding: 0.9rem; border-radius: 0.9rem;
+  overflow-x: auto; margin: 0.7em 0; white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em;
+}
+.ink-editor-surface pre code, .rich-passage pre code { background: transparent; padding: 0; color: inherit; }
+.ink-editor-surface ul, .rich-passage ul { list-style: disc; padding-left: 1.4rem; margin: 0.6em 0; }
+.ink-editor-surface a, .rich-passage a { color: #c77dba; text-decoration: underline; }

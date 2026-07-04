@@ -134,7 +134,14 @@ function ProjectManager({ keyVal }: { keyVal: string }) {
           <p className="font-body text-sm text-ink-soft">gathering the seedlings… ✦</p>
         )}
         {shown.map((p) => (
-          <li key={p.slug} className="rounded-2xl bg-white/50 p-2.5">
+          <li
+            key={p.slug}
+            className={`rounded-2xl p-2.5 transition ${
+              open === p.slug
+                ? "bg-blush/25 ring-2 ring-blush shadow-md"
+                : "bg-white/50"
+            }`}
+          >
             <div className="flex items-center gap-2">
               <button
                 type="button"

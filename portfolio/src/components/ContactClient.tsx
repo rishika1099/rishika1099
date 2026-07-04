@@ -24,9 +24,7 @@ export default function ContactClient({
         📮
       </motion.span>
       <PageTitle className="mt-3 text-ink">let&apos;s say hello 💌</PageTitle>
-      <p className="mt-3 max-w-xl font-body text-lg text-ink-soft">
-        {intro}
-      </p>
+      <div className="mt-3 max-w-xl font-body text-lg text-ink-soft">{intro}</div>
 
       <div className="mt-9 grid w-full max-w-xl gap-4 sm:grid-cols-2">
         {links.map((l, i) => (

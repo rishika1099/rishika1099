@@ -196,7 +196,12 @@ function AutoPostManager({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
         {auto.map((p) => {
           const key = pKey(p.external);
           return (
-            <li key={key} className="rounded-2xl bg-white/50 p-2.5">
+            <li
+              key={key}
+              className={`rounded-2xl p-2.5 transition ${
+                open === key ? "bg-blush/25 ring-2 ring-blush shadow-md" : "bg-white/50"
+              }`}
+            >
               <div className="flex items-center gap-2">
                 <span className="flex-1 truncate font-body text-sm font-semibold text-ink">{p.title}</span>
                 <button
