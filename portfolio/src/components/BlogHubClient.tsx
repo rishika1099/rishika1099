@@ -6,31 +6,18 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 
 const doors = [
-  {
-    href: "/blog/technical",
-    icon: "📓",
-    title: "Technical Blogs",
-    blurb: "ideas that refused to stay inside a notebook 💡",
-    tint: "bg-mint/50",
-  },
-  {
-    href: "/blog/poems",
-    icon: "🕯️",
-    title: "Poems",
-    blurb: "a collection of midnight thoughts and daylight edits ☁️",
-    tint: "bg-lavender/60",
-    locked: true,
-  },
-  {
-    href: "/blog/photography",
-    icon: "📷",
-    title: "Photography",
-    blurb: "sunsets, sidewalks, and other things that caught my eye ✨",
-    tint: "bg-dawn/60",
-  },
+  { href: "/blog/technical", key: "technical", icon: "📓", title: "Technical Blogs", tint: "bg-mint/50" },
+  { href: "/blog/poems", key: "poems", icon: "🕯️", title: "Poems", tint: "bg-lavender/60", locked: true },
+  { href: "/blog/photography", key: "photography", icon: "📷", title: "Photography", tint: "bg-dawn/60" },
 ];
 
-export default function BlogHubClient({ intro }: { intro: React.ReactNode }) {
+export default function BlogHubClient({
+  intro,
+  doorBlurbs,
+}: {
+  intro: React.ReactNode;
+  doorBlurbs: Record<string, React.ReactNode>;
+}) {
   return (
     <PageShell vibe="peach">
       <PageTitle>the writing room 📖</PageTitle>
@@ -56,7 +43,7 @@ export default function BlogHubClient({ intro }: { intro: React.ReactNode }) {
                 {d.title}
                 {d.locked && <span className="text-sm">🔒</span>}
               </span>
-              <span className="font-body text-base text-ink-soft">{d.blurb}</span>
+              <span className="font-body text-base text-ink-soft">{doorBlurbs[d.key]}</span>
             </Link>
           </motion.div>
         ))}

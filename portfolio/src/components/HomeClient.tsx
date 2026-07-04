@@ -37,7 +37,7 @@ export default function HomeClient({
           <FlowerPortrait />
           <div className="flex flex-col items-center gap-2.5">
             <motion.a
-              href="/Rishika_Resume.pdf"
+              href="/resume"
               target="_blank"
               rel="noreferrer"
               initial={{ opacity: 0, y: 8 }}

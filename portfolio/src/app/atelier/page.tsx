@@ -37,6 +37,8 @@ const PAGE_TINT: Record<string, string> = {
   work: "#cdeac0", // meadow
   blog: "#ffe2ce", // peach
   photography: "#ffc6a8", // sunset
+  now: "#ffd9c0", // dawn
+  tour: "#c5e8d5", // aurora
   contact: "#f7b7c9", // rose
 };
 const tintOf = (page: string) => PAGE_TINT[page] ?? "#f6d99b";

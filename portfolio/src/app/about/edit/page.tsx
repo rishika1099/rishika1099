@@ -11,6 +11,7 @@ import SkillGraph from "@/components/SkillGraph";
 import PageTitle from "@/components/PageTitle";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { copyDefaults } from "@/data/copy";
+import FileSwapPanel from "@/components/FileSwapPanel";
 import type { Entry } from "@/data/about";
 
 const isResearch = (e: Entry) => e.title.startsWith("Research Assistant");
@@ -198,6 +199,7 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <>
       <SaveBar saving={saving} msg={msg} onSave={save} onRevert={revert} viewHref="/about" />
+      <FileSwapPanel keyVal={keyVal} />
       <PageTitle>the human behind the models 🦦</PageTitle>
 
       <p className="mt-6 font-body text-xs text-ink-soft/70">
@@ -213,7 +215,7 @@ function Editor({ keyVal }: { keyVal: string }) {
 
       <div className="mt-6 text-center">
         <a
-          href="/Rishika_Resume.pdf"
+          href="/resume"
           className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105"
         >
           👀 peek at my resume

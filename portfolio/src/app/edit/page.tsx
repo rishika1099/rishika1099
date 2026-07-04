@@ -7,6 +7,7 @@
 import HomeClient from "@/components/HomeClient";
 import { AdminGate } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
+import FileSwapPanel from "@/components/FileSwapPanel";
 
 function Editor({ keyVal }: { keyVal: string }) {
   const { ready, box, bar } = usePassageEditor(
@@ -19,6 +20,9 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <>
       {bar}
+      <div className="pt-16">
+        <FileSwapPanel keyVal={keyVal} />
+      </div>
       <HomeClient
         greeting={box("home.greeting", "font-serif text-lg italic text-ink-soft sm:text-xl")}
         intro={box("home.intro", "font-body text-base text-ink-soft sm:text-lg")}

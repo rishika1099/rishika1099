@@ -27,7 +27,7 @@ export default function FlowerPortrait() {
       {/* soft pastel glow behind the photo */}
       <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-blush/60 to-lavender/60 blur-lg" />
       <motion.img
-        src="https://github.com/rishika1099.png"
+        src="/portrait"
         alt="Rishika"
         animate={{ y: [0, -6, 0] }}
         transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}

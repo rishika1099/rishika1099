@@ -56,5 +56,7 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
 
   const bar = <SaveBar saving={saving} msg={msg} onSave={save} viewHref={viewHref} />;
 
-  return { ready: texts !== null, box, bar, texts };
+  const setText = (id: string, v: string) => setTexts((t) => (t ? { ...t, [id]: v } : t));
+
+  return { ready: texts !== null, box, bar, texts, setText };
 }

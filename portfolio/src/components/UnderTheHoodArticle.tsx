@@ -1,5 +1,10 @@
 "use client";
 
+// The under-the-hood tour. Every prose passage is a copy block (page: tour),
+// so the article is editable like the rest of the site: the live page passes
+// rendered HTML in `passages`, the editor passes a `renderSlot` that swaps
+// each passage for an ink-editor box. Structure (stats, bars, demo) is code.
+
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, animate, useInView } from "framer-motion";
@@ -7,7 +12,6 @@ import PageShell from "@/components/PageShell";
 
 /* ---------- little building blocks ---------- */
 
-// scroll-reveal wrapper
 function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   return (
     <motion.div
@@ -21,18 +25,13 @@ function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   );
 }
 
-// count-up number that animates when scrolled into view
 function CountUp({ to, suffix = "", decimals = 0 }: { to: number; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const [val, setVal] = useState(0);
   useEffect(() => {
     if (!inView) return;
-    const controls = animate(0, to, {
-      duration: 1.2,
-      ease: "easeOut",
-      onUpdate: (v) => setVal(v),
-    });
+    const controls = animate(0, to, { duration: 1.2, ease: "easeOut", onUpdate: setVal });
     return () => controls.stop();
   }, [inView, to]);
   return (
@@ -43,15 +42,14 @@ function CountUp({ to, suffix = "", decimals = 0 }: { to: number; suffix?: strin
   );
 }
 
-// animated horizontal bar (0..1) that fills when in view
 function MetricBar({ label, value, display }: { label: string; value: number; display: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   return (
     <div ref={ref} className="mb-3">
-      <div className="flex items-center justify-between font-body text-sm text-ink-soft">
+      <div className="flex items-center justify-between gap-3 font-body text-sm text-ink-soft">
         <span>{label}</span>
-        <span className="font-semibold text-ink">{display}</span>
+        <span className="shrink-0 font-semibold text-ink">{display}</span>
       </div>
       <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-white/60">
         <motion.div
@@ -71,9 +69,7 @@ function Concept({ children }: { children: React.ReactNode }) {
       <p className="mb-2 font-body text-xs font-bold uppercase tracking-wide text-[#6a5aa0]">
         💡 the concept
       </p>
-      <div className="space-y-2 font-body text-[15px] leading-relaxed text-ink-soft">
-        {children}
-      </div>
+      <div className="space-y-2 font-body text-[15px] leading-relaxed text-ink-soft">{children}</div>
     </div>
   );
 }
@@ -182,7 +178,23 @@ function SearchDemo() {
 
 /* ---------- the article ---------- */
 
-export default function UnderTheHoodArticle() {
+export default function UnderTheHoodArticle({
+  passages = {},
+  renderSlot,
+}: {
+  passages?: Record<string, string>;
+  renderSlot?: (id: string, className?: string) => React.ReactNode;
+}) {
+  const slot = (id: string, className = "") =>
+    renderSlot ? (
+      renderSlot(id, className)
+    ) : (
+      <span
+        className={`rich-passage block ${className}`}
+        dangerouslySetInnerHTML={{ __html: passages[id] ?? "" }}
+      />
+    );
+
   return (
     <PageShell vibe="aurora">
       <div className="mx-auto max-w-3xl">
@@ -201,11 +213,9 @@ export default function UnderTheHoodArticle() {
           <h1 className="mt-2 bg-gradient-to-r from-[#c77dba] via-[#8e7bd6] to-[#6aa6d6] bg-clip-text font-display text-4xl font-bold leading-tight text-transparent sm:text-5xl">
             The Data Science Hiding in My Portfolio
           </h1>
-          <p className="mx-auto mt-4 max-w-xl font-serif text-lg italic text-ink-soft">
-            This site isn&apos;t just a static page. Most of it is generated, organized, and answered
-            by models, and every piece ships with an eval. Here&apos;s the tour, with the concepts
-            explained.
-          </p>
+          <div className="mx-auto mt-4 max-w-xl">
+            {slot("tour.hero", "font-serif text-lg italic text-ink-soft")}
+          </div>
         </motion.div>
 
         {/* animated stat strip */}
@@ -229,206 +239,76 @@ export default function UnderTheHoodArticle() {
         </motion.div>
 
         <Reveal delay={0.1}>
-          <p className="mt-8 font-body text-base leading-relaxed text-ink">
-            The content on this site is not only displayed, a lot of it is generated, organized, and
-            answered by models. And because I care whether each piece actually works, almost every one
-            ships with a small <strong>evaluation</strong>, so quality is measured, not assumed. Here is
-            how each part works, with the concept behind it.
-          </p>
+          <div className="mt-8">{slot("tour.lead", "font-body text-base leading-relaxed text-ink")}</div>
         </Reveal>
 
         <Section id="embeddings" emoji="🧭" title="The one idea everything is built on: embeddings">
-          <Concept>
-            <p>
-              An <strong>embedding</strong> turns text (or an image) into a list of numbers, a{" "}
-              vector. A good model places similar meanings close together, even with
-              no shared words: &ldquo;make LLMs faster&rdquo; and &ldquo;reduce inference latency&rdquo;
-              land near each other.
-            </p>
-            <p>
-              To measure &ldquo;close&rdquo; I use <strong>cosine similarity</strong>: the cosine of the
-              angle between two vectors, from -1 (opposite) through 0 (unrelated) to 1 (identical). It
-              cares about direction, not length, so a short phrase and a long paragraph on the same topic
-              still match.
-            </p>
-          </Concept>
-          <p>
-            Once meaning becomes geometry, a lot gets simple: search is &ldquo;find the nearest
-            vectors,&rdquo; recommendations are &ldquo;find neighbors,&rdquo; classification is
-            &ldquo;which label is closest.&rdquo; Almost everything below is a variation on that move.
-          </p>
+          <Concept>{slot("tour.embed.concept")}</Concept>
+          {slot("tour.embed.body")}
         </Section>
 
         <Section id="rag" emoji="💬" title="Ask-my-portfolio chatbot (RAG)">
-          <Concept>
-            <p>
-              <strong>Retrieval-augmented generation</strong> fixes the fact that LLMs confidently make
-              things up. Instead of asking the model to recall facts, you retrieve the relevant
-              source text first (by embedding similarity), then ask it to answer using only that
-              text. It becomes a careful summarizer of real sources, not a fuzzy memory.
-            </p>
-          </Concept>
-          <p>
-            Grounded in my bio, experience, every project&apos;s GitHub README, and my Substack posts
-            (poems and photos are private and excluded). Answers stream token-by-token, cite sources,
-            and refuse when out of scope.
-          </p>
-          <p>
-            It also carries <strong>conversation memory</strong>: recent turns travel with each
-            question, both into retrieval (the last exchange is embedded alongside the new question)
-            and into the prompt, so a follow-up like &ldquo;can I see a demo of it?&rdquo; still knows
-            what &ldquo;it&rdquo; is. And every project card has an <strong>ask about this</strong>{" "}
-            button that opens the chat pre-loaded with that project, retrieval and grounding included.
-          </p>
+          <Concept>{slot("tour.rag.concept")}</Concept>
+          {slot("tour.rag.grounded")}
+          {slot("tour.rag.memory")}
           <div className="mt-4 rounded-2xl bg-white/50 p-5">
             <MetricBar label="Retrieval hit rate (right chunk in top-k)" value={1} display="100%" />
             <MetricBar label="Answer accuracy (contains the fact)" value={1} display="100%" />
             <MetricBar label="Refusal correctness (declines out-of-scope)" value={1} display="100%" />
           </div>
-          <p className="text-sm text-ink-soft">
-            The refusals (&ldquo;favorite poem?&rdquo;, &ldquo;phone number?&rdquo;, &ldquo;2024 Super
-            Bowl?&rdquo;) are out of scope on purpose: it declines all three with zero hallucination.
-          </p>
+          {slot("tour.rag.refusals", "text-sm text-ink-soft")}
         </Section>
 
         <Section id="search" emoji="🔍" title="Semantic search across my projects">
-          <Concept>
-            <p>
-              <strong>Semantic search</strong> ranks by meaning, not keyword overlap, so &ldquo;make LLMs
-              run faster&rdquo; finds &ldquo;KV-Cache Optimization&rdquo; despite zero shared words. Two
-              details matter: a <strong>threshold</strong> (drop weak matches, since unrelated text still
-              scores ~0.15, not 0), and rescaling the raw cosine into a friendlier percentage.
-            </p>
-          </Concept>
+          <Concept>{slot("tour.search.concept")}</Concept>
           <SearchDemo />
         </Section>
 
         <Section id="galaxy" emoji="🌌" title="The embeddings galaxy (PCA)">
-          <Concept>
-            <p>
-              Embeddings live in hundreds of dimensions, which you can&apos;t draw.{" "}
-              <strong>PCA</strong> finds the directions of greatest variation and projects everything onto
-              the top two, giving an x and y to plot while keeping as much real spread as possible. I
-              compute it by hand via the <strong>Gram matrix</strong> and power iteration, no library.
-            </p>
-          </Concept>
-          <p>
-            Similar projects drift near each other, so the model roughly rediscovers my technical areas
-            from text alone. An earlier version ran k-means and let an LLM name the clusters, but at
-            near-zero separation it mislabeled things (a car-price project once landed in a
-            &ldquo;Computer Vision&rdquo; cluster). So I color each dot by its real area instead.
-            The layout shows the structure; the colors stay honest.
-          </p>
-          <p>
-            The dots are interactive too: hover or tap one and a little card pops up with the
-            project&apos;s area, domains, and actions, open the code, ask the chatbot about it, or{" "}
-            <strong>find similar</strong>, which runs nearest-neighbors over the same cached vectors
-            and filters the project grid above.
-          </p>
+          <Concept>{slot("tour.galaxy.concept")}</Concept>
+          {slot("tour.galaxy.body")}
+          {slot("tour.galaxy.pop")}
         </Section>
 
         <Section id="tagging" emoji="🏷️" title="Auto-pulled blog with embedding zero-shot tagging">
-          <Concept>
-            <p>
-              <strong>Zero-shot classification</strong> labels things with no training examples:
-              describe each label in words, embed the descriptions and the post, and the closest label
-              wins. Two refinements make it robust. <strong>Multi-prototype labels</strong>: average a few
-              phrasings per category to cancel noise. And a <strong>confidence rule</strong> instead of
-              blind argmax: a domain is attached only when it clears a floor and clearly beats the
-              runner-up. When two are close, that&apos;s ambiguity, so it tags none. Precision over recall.
-            </p>
-          </Concept>
-          <p>
-            This replaced a brittle keyword system that once tagged an encryption post as
-            &ldquo;Food &amp; Nutrition&rdquo; because the intro mentioned my cat&apos;s empty food bowl. I
-            weight the <strong>title 2x</strong> in the embedded text, and this very post tagged itself.
-          </p>
-          <p>
-            The tags then earn their keep: the Technical Blogs page builds its{" "}
-            <strong>topic filter pills</strong> from whatever tags exist across posts, so publishing a
-            post on a new area grows a new filter on its own, no code change.
-          </p>
-          <p>
-            The Work grid has a cheaper cousin for terse GitHub repo descriptions: a deterministic
-            keyword classifier, now <strong>multi-label</strong>, so a project that is genuinely both
-            IoT and Computer Vision wears both tags instead of whichever rule fired first. Matching
-            the method to the input: embeddings for prose, rules for metadata.
-          </p>
+          <Concept>{slot("tour.tag.concept")}</Concept>
+          {slot("tour.tag.body")}
+          {slot("tour.tag.pills")}
+          {slot("tour.tag.rules")}
         </Section>
 
         <Section id="clustering" emoji="📸" title="Photo clustering (k-means + silhouette + CLIP)">
-          <Concept>
-            <p>
-              <strong>k-means</strong> groups without labels: place k centers, assign each point to its
-              nearest, move centers to the mean, repeat. The <strong>silhouette score</strong> (-1 to 1)
-              picks the best k by comparing in-cluster tightness to the nearest other cluster.{" "}
-              <strong>CLIP</strong> puts images and captions in a shared space, so a CLIP image embedding
-              captures visual content directly.
-            </p>
-          </Concept>
+          <Concept>{slot("tour.cluster.concept")}</Concept>
           <div className="mt-4 rounded-2xl bg-white/50 p-5">
             <MetricBar label="silhouette with caption-text embeddings" value={0.076 / 0.2} display="0.076" />
             <MetricBar label="silhouette with CLIP image embeddings" value={0.143 / 0.2} display="0.143" />
           </div>
-          <p className="text-sm text-ink-soft">
-            Switching from caption text to CLIP image embeddings roughly doubled the silhouette
-            and produced more meaningful groups. The pixels knew something the captions didn&apos;t.
-          </p>
+          {slot("tour.cluster.note", "text-sm text-ink-soft")}
         </Section>
 
         <Section id="llm" emoji="✨" title="The smaller LLM touches">
-          <Concept>
-            <p>
-              A few features use an LLM as a function, not a chatbot: a strict instruction,{" "}
-              <strong>temperature 0</strong> (minimum randomness, repeatable output), and structured{" "}
-              <strong>JSON</strong>. Constrained like that, it becomes a reliable little classifier or
-              rewriter.
-            </p>
-          </Concept>
+          <Concept>{slot("tour.llm.concept")}</Concept>
           <ul className="ml-5 list-disc space-y-2">
-            <li>
-              <strong>Poem mood classification</strong> into eight moods with a confidence score; average{" "}
-              <strong>0.894</strong> across 8 poems, reported on the page.
-            </li>
-            <li>
-              <strong>AI poem art</strong>: a model distills each poem into one evocative prompt, an image
-              model renders it, cached forever.
-            </li>
-            <li>
-              <strong>Auto-captioned photos</strong> via a vision model, low-detail to stay cheap.
-            </li>
-            <li>
-              <strong>ELI5 / expert toggle</strong> rewrites every blurb for a 10-year-old or a senior
-              engineer, under a strict &ldquo;keep every fact truthful&rdquo; rule.
-            </li>
+            <li>{slot("tour.llm.b1")}</li>
+            <li>{slot("tour.llm.b2")}</li>
+            <li>{slot("tour.llm.b3")}</li>
+            <li>{slot("tour.llm.b4")}</li>
           </ul>
         </Section>
 
         <Section id="engineering" emoji="🛠️" title="The engineering around it">
           <ul className="ml-5 list-disc space-y-2">
-            <li>
-              <strong>Caching + ISR.</strong> Embeddings, art, captions, and rewrites are computed once;
-              GitHub and Substack refresh hourly, so the site stays fresh without re-paying every request.
-            </li>
-            <li>
-              <strong>Batched calls.</strong> Labels and classifications go out in one batched call, not
-              one-per-item.
-            </li>
-            <li>
-              <strong>Graceful fallback.</strong> The live embedding classifier has a deterministic keyword
-              backup, so a flaky API degrades quality instead of breaking the page.
-            </li>
-            <li>
-              <strong>Evals as a habit.</strong> If I can&apos;t measure it, I try not to claim it.
-            </li>
+            <li>{slot("tour.eng.b1")}</li>
+            <li>{slot("tour.eng.b2")}</li>
+            <li>{slot("tour.eng.b3")}</li>
+            <li>{slot("tour.eng.b4")}</li>
           </ul>
         </Section>
 
         <Reveal>
-          <p className="my-12 text-center font-serif text-xl italic text-ink-soft">
-            That is the whole machine: it embeds, retrieves, clusters, classifies, and grades its own
-            homework. Thanks for reading the tour. 🌸
-          </p>
+          <div className="my-12 text-center">
+            {slot("tour.close", "font-serif text-xl italic text-ink-soft")}
+          </div>
         </Reveal>
       </div>
     </PageShell>

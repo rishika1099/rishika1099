@@ -11,6 +11,12 @@ export default async function BlogHub() {
   return (
     <BlogHubClient
       intro={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["blog.intro"]) }} />}
+      doorBlurbs={Object.fromEntries(
+        ["technical", "poems", "photography"].map((k) => [
+          k,
+          <span key={k} className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy[`blog.door.${k}`]) }} />,
+        ]),
+      )}
     />
   );
 }
