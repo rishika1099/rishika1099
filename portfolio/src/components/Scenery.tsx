@@ -30,8 +30,8 @@ const gradients: Record<Vibe, string> = {
   aurora: "from-mint via-sky/60 to-lavender",
   // deep navy night for the private stats room (distinct from the poems' twilight)
   midnight: "from-[#0b1020] via-[#101830] to-[#1a2440]",
-  // warm golden workshop light for the atelier (/edit)
-  honey: "from-gold/60 via-cream to-petal/40",
+  // deep amber workshop light for the atelier, noticeably warmer than peach
+  honey: "from-[#f3cd74] via-[#fbe9c8] to-[#f0b48a]",
 };
 
 function Cloud({
