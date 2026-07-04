@@ -15,6 +15,8 @@ import { AdminGate, adminApi } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 import type { Doc } from "@/lib/content";
 import type { RichPost } from "@/lib/richBlogs";
+import TagPicker from "@/components/TagPicker";
+import { categories as ALL_CATEGORIES, domains as ALL_DOMAINS, domainColor, type Domain } from "@/data/projects";
 
 const btn =
   "rounded-full px-4 py-1.5 font-body text-sm font-semibold transition disabled:opacity-50";
@@ -158,7 +160,7 @@ function AutoPostManager({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
   const api = adminApi(keyVal);
   const router = useRouter();
   const [open, setOpen] = useState<string | null>(null);
-  const [form, setForm] = useState<{ title: string; excerpt: string; tech: string; domains: string } | null>(null);
+  const [form, setForm] = useState<{ title: string; excerpt: string; tech: string[]; domains: string[] } | null>(null);
   const [msg, setMsg] = useState("");
   const auto = posts.filter((p) => p.external && pKey(p.external));
 
@@ -172,8 +174,8 @@ function AutoPostManager({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
           key,
           title: form.title,
           excerpt: form.excerpt,
-          tech: form.tech.split(",").map((s) => s.trim()),
-          domains: form.domains.split(",").map((s) => s.trim()),
+          tech: form.tech,
+          domains: form.domains,
         }),
       });
       setOpen(null);
@@ -215,8 +217,8 @@ function AutoPostManager({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
                       setForm({
                         title: p.title,
                         excerpt: p.excerpt,
-                        tech: (p.tech ?? []).join(", "),
-                        domains: (p.domains ?? []).join(", "),
+                        tech: [...(p.tech ?? [])],
+                        domains: [...(p.domains ?? [])],
                       });
                     }
                   }}
@@ -228,10 +230,10 @@ function AutoPostManager({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
                 <div className="mt-3 space-y-2 border-t border-ink/10 pt-3">
                   <input className={field} placeholder="title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
                   <textarea className={`${field} min-h-16`} placeholder="subtitle / excerpt" value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} />
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    <input className={field} placeholder="tech areas, comma-separated" value={form.tech} onChange={(e) => setForm({ ...form, tech: e.target.value })} />
-                    <input className={field} placeholder="domains, comma-separated" value={form.domains} onChange={(e) => setForm({ ...form, domains: e.target.value })} />
-                  </div>
+                  <p className="font-body text-[11px] font-semibold text-ink-soft">tech areas, tap what applies</p>
+                  <TagPicker options={ALL_CATEGORIES} value={form.tech} onChange={(v) => setForm({ ...form, tech: v })} />
+                  <p className="font-body text-[11px] font-semibold text-ink-soft">domains, tap what applies</p>
+                  <TagPicker options={ALL_DOMAINS} value={form.domains} onChange={(v) => setForm({ ...form, domains: v })} colorFor={(t) => domainColor[t as Domain]} />
                   <button className={btnDark} onClick={() => save(key)}>save</button>
                 </div>
               )}

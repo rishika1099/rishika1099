@@ -13,6 +13,8 @@ import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing
 import { copyDefaults } from "@/data/copy";
 import FileSwapPanel from "@/components/FileSwapPanel";
 import type { Entry } from "@/data/about";
+import TagPicker from "@/components/TagPicker";
+import { categories as ALL_CATEGORIES, domains as ALL_DOMAINS, domainColor, type Domain } from "@/data/projects";
 
 const isResearch = (e: Entry) => e.title.startsWith("Research Assistant");
 
@@ -64,25 +66,19 @@ function EntryEditor({
             onChange={(v) => onChange({ ...entry, details: v.split("\n") })}
             className="font-body text-sm text-ink-soft"
           />
-          <div className="flex flex-wrap gap-2 pt-1">
-            <EditableText
-              value={(entry.domains ?? []).join(", ")}
-              onChange={(v) =>
-                onChange({ ...entry, domains: v.split(",").map((s) => s.trim()) as Entry["domains"] })
-              }
-              className="!w-64 font-body text-[11px] font-semibold text-ink"
-            />
-            <EditableText
-              value={(entry.tech ?? []).join(", ")}
-              onChange={(v) =>
-                onChange({ ...entry, tech: v.split(",").map((s) => s.trim()) as Entry["tech"] })
-              }
-              className="!w-64 font-body text-[11px] font-semibold text-ink-soft"
-            />
-          </div>
-          <p className="font-body text-[11px] text-ink-soft/60">
-            ↑ domain chips (colored) and tech chips (mint), comma-separated
-          </p>
+          <p className="pt-1 font-body text-[11px] text-ink-soft/60">domain chips, tap what applies:</p>
+          <TagPicker
+            options={ALL_DOMAINS}
+            value={entry.domains ?? []}
+            onChange={(v) => onChange({ ...entry, domains: v as Entry["domains"] })}
+            colorFor={(t) => domainColor[t as Domain]}
+          />
+          <p className="pt-1 font-body text-[11px] text-ink-soft/60">tech chips, tap what applies:</p>
+          <TagPicker
+            options={ALL_CATEGORIES}
+            value={entry.tech ?? []}
+            onChange={(v) => onChange({ ...entry, tech: v as Entry["tech"] })}
+          />
         </div>
         <button
           type="button"

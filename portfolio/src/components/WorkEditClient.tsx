@@ -13,7 +13,8 @@ import WorkGallery from "@/components/WorkGallery";
 import ProjectGalaxy from "@/components/ProjectGalaxy";
 import { AdminGate, adminApi } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
-import type { Category, Domain, Project } from "@/data/projects";
+import TagPicker from "@/components/TagPicker";
+import { categories as ALL_CATEGORIES, domains as ALL_DOMAINS, domainColor, type Category, type Domain, type Project } from "@/data/projects";
 
 interface AdminProject {
   slug: string;
@@ -192,11 +193,17 @@ function ProjectManager({ keyVal }: { keyVal: string }) {
                     onChange={(e) => setForm({ ...form, blurb: e.target.value })}
                   />
                 </div>
-                {commaField("tech areas", form.categories, (v) => setForm({ ...form, categories: v }), "Generative AI, NLP, …")}
-                {commaField("domains", form.domains, (v) => setForm({ ...form, domains: v }), "Healthcare, Legal, …")}
+                <div>
+                  <p className="font-body text-[11px] font-semibold text-ink-soft">tech areas, tap what applies</p>
+                  <div className="mt-1"><TagPicker options={ALL_CATEGORIES} value={form.categories} onChange={(v) => setForm({ ...form, categories: v })} /></div>
+                </div>
+                <div>
+                  <p className="font-body text-[11px] font-semibold text-ink-soft">domains, tap what applies</p>
+                  <div className="mt-1"><TagPicker options={ALL_DOMAINS} value={form.domains} onChange={(v) => setForm({ ...form, domains: v })} colorFor={(t) => domainColor[t as Domain]} /></div>
+                </div>
                 {commaField("little tags", form.tags, (v) => setForm({ ...form, tags: v }), "RAG, Python, …")}
                 <p className="font-body text-[11px] text-ink-soft/70">
-                  clear a field and save to hand it back to the automatic pipeline ✦
+                  deselect everything (or clear a text field) and save to hand it back to the automatic pipeline ✦
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <button className={btnDark} onClick={saveForm}>
