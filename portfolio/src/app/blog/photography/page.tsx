@@ -3,12 +3,13 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import PhotoGallery from "@/components/PhotoGallery";
 import { getPhotoData } from "@/lib/photos";
+import { getCopy } from "@/lib/siteCopy";
 
 export const metadata = { title: "Photography" };
 export const dynamic = "force-dynamic";
 
 export default async function Photography() {
-  const { groups, silhouette } = await getPhotoData();
+  const [{ groups, silhouette }, copy] = await Promise.all([getPhotoData(), getCopy()]);
   const grouped = silhouette !== null && groups.length > 1;
   return (
     <PageShell vibe="sunset">
@@ -19,7 +20,7 @@ export default async function Photography() {
         </Link>
       </div>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        sunsets, sidewalks, and other things that caught my eye ✨
+        {copy["photography.intro"]}
       </p>
       {grouped && (
         <p className="mt-2 max-w-2xl font-body text-xs text-ink-soft/80">

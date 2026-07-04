@@ -14,6 +14,7 @@ export interface Doc {
   image?: string;
   // when set, the post lives off-site (e.g. Substack) and cards link out
   external?: string;
+  rich?: boolean; // written in the atelier's ink editor (HTML in Blobs)
   // same tag taxonomy as projects: a domain + technical-area tags
   domains?: Domain[];
   tech?: Category[];

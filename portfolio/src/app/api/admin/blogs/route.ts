@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
-import { deletePoem, listPoems, savePoem, slugify } from "@/lib/poems-store";
-import { sanitizeRichHtml } from "@/lib/richHtml";
+import { deleteRichPost, listRichPosts, saveRichPost } from "@/lib/richBlogs";
 
 export const runtime = "nodejs";
 
@@ -14,7 +13,7 @@ function guard(request: Request): NextResponse | null {
 export async function GET(request: Request) {
   const denied = guard(request);
   if (denied) return denied;
-  return NextResponse.json({ poems: await listPoems() });
+  return NextResponse.json({ posts: await listRichPosts() });
 }
 
 export async function POST(request: Request) {
@@ -26,23 +25,14 @@ export async function POST(request: Request) {
       title?: string;
       date?: string;
       excerpt?: string;
-      content?: string;
-      rich?: boolean;
+      html?: string;
     };
     const title = (body.title ?? "").trim();
-    const content = (body.content ?? "").trim();
-    if (!title || !content) {
-      return NextResponse.json({ error: "title and content are required" }, { status: 400 });
+    const html = (body.html ?? "").trim();
+    if (!title || !html) {
+      return NextResponse.json({ error: "title and body are required" }, { status: 400 });
     }
-    const slug = (body.slug ?? "").trim() || slugify(title);
-    await savePoem({
-      slug,
-      title,
-      date: (body.date ?? "").trim() || new Date().toISOString().slice(0, 10),
-      excerpt: (body.excerpt ?? "").trim(),
-      content: body.rich ? sanitizeRichHtml(content) : content,
-      rich: !!body.rich,
-    });
+    const slug = await saveRichPost({ ...body, title, html });
     return NextResponse.json({ ok: true, slug });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
@@ -55,7 +45,7 @@ export async function DELETE(request: Request) {
   try {
     const { slug } = (await request.json()) as { slug?: string };
     if (!slug) return NextResponse.json({ error: "slug required" }, { status: 400 });
-    await deletePoem(slug);
+    await deleteRichPost(slug);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });

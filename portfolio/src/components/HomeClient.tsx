@@ -12,7 +12,13 @@ const tabs = [
   { href: "/contact", icon: "💌", title: "Contact", blurb: "let's say hello" },
 ];
 
-export default function HomeClient({ greeting, intro }: { greeting: string; intro: string }) {
+export default function HomeClient({
+  greeting,
+  intro,
+}: {
+  greeting: React.ReactNode;
+  intro: React.ReactNode;
+}) {
   return (
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}

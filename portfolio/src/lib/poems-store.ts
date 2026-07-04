@@ -10,6 +10,7 @@ export interface Poem {
   excerpt: string;
   content: string;
   image?: string;
+  rich?: boolean; // content is ink-editor HTML instead of plain text
   mood?: string;
   moodConfidence?: number | null;
 }
@@ -37,6 +38,7 @@ function fromRaw(slug: string, raw: string): Poem {
     excerpt: (data.excerpt as string) ?? "",
     content: content.trim(),
     image: (data.image as string) ?? imageFor(slug),
+    rich: (data.rich as boolean) ?? false,
   };
 }
 
@@ -115,11 +117,13 @@ export async function savePoem(p: {
   date: string;
   excerpt: string;
   content: string;
+  rich?: boolean;
 }): Promise<void> {
   const raw = matter.stringify(`\n${p.content.trim()}\n`, {
     title: p.title,
     date: p.date,
     excerpt: p.excerpt,
+    ...(p.rich ? { rich: true } : {}),
   });
   if (blobsEnabled()) {
     const s = await store("poems");

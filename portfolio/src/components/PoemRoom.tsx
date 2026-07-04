@@ -160,9 +160,17 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
                   <MoodChip mood={active.mood} />
                 </div>
               )}
-              <div className="prose-poem mt-5 whitespace-pre-line font-serif text-lg leading-relaxed text-cream/90">
-                <ReactMarkdown>{active.content}</ReactMarkdown>
-              </div>
+              {active.rich ? (
+                <div
+                  className="prose-poem mt-5 font-serif text-lg leading-relaxed text-cream/90"
+                  // sanitized at save time in the atelier; only the key-holder writes it
+                  dangerouslySetInnerHTML={{ __html: active.content }}
+                />
+              ) : (
+                <div className="prose-poem mt-5 whitespace-pre-line font-serif text-lg leading-relaxed text-cream/90">
+                  <ReactMarkdown>{active.content}</ReactMarkdown>
+                </div>
+              )}
             </motion.article>
           </motion.div>
         )}

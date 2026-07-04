@@ -30,7 +30,7 @@ const doors = [
   },
 ];
 
-export default function BlogHubClient({ intro }: { intro: string }) {
+export default function BlogHubClient({ intro }: { intro: React.ReactNode }) {
   return (
     <PageShell vibe="peach">
       <PageTitle>the writing room 📖</PageTitle>

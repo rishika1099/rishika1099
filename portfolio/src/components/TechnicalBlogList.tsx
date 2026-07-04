@@ -115,7 +115,7 @@ export default function TechnicalBlogList({ posts }: { posts: Doc[] }) {
                     {inner}
                   </a>
                 ) : (
-                  <Link href={`/blog/technical/${p.slug}`} className={cardClass}>
+                  <Link href={p.rich ? `/blog/technical/p/${p.slug}` : `/blog/technical/${p.slug}`} className={cardClass}>
                     {inner}
                   </Link>
                 )}

@@ -7,6 +7,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import SkillGraph from "@/components/SkillGraph";
 import PageTitle from "@/components/PageTitle";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { copyDefaults } from "@/data/copy";
@@ -210,7 +211,26 @@ function Editor({ keyVal }: { keyVal: string }) {
         />
       </div>
 
+      <div className="mt-6 text-center">
+        <a
+          href="/Rishika_Resume.pdf"
+          className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105"
+        >
+          👀 peek at my resume
+        </a>
+        <p className="mt-1 font-body text-[11px] text-ink-soft/60">
+          (the resume PDF itself is swapped in the repo, not here)
+        </p>
+      </div>
+
       {section("where curiosity took me 🎓", null, education, setEducation)}
+
+      <h2 className="mt-12 font-body text-2xl font-bold text-ink">things I tinker with 🛠️</h2>
+      <p className="mt-1 font-body text-sm text-ink-soft">
+        little clusters of tools, all tangled together ✦ (this graph is tended in code)
+      </p>
+      <SkillGraph />
+
       {section("where curiosity paid the bills 💼", null, work, setWork)}
       {section(
         "where curiosity became research 🔬",

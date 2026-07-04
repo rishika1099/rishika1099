@@ -12,7 +12,7 @@ const links = [
   { icon: "📰", label: "Substack", value: "rishika1099.substack.com", href: "https://rishika1099.substack.com" },
 ];
 
-export default function ContactClient({ intro }: { intro: string }) {
+export default function ContactClient({ intro }: { intro: React.ReactNode }) {
   return (
     <PageShell vibe="rose" className="flex flex-col items-center text-center">
       <motion.span

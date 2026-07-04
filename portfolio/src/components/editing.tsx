@@ -4,9 +4,17 @@
 // and a textarea that dresses up as the page's own typography.
 
 import { useEffect, useRef, useState } from "react";
+import PageShell from "@/components/PageShell";
+import type { Vibe } from "@/components/Scenery";
 
 /** Key gate: renders children only once the admin key is known-good. */
-export function AdminGate({ children }: { children: (key: string) => React.ReactNode }) {
+export function AdminGate({
+  children,
+  vibe,
+}: {
+  children: (key: string) => React.ReactNode;
+  vibe?: Vibe;
+}) {
   const [key, setKey] = useState("");
   const [entered, setEntered] = useState(false);
   const [err, setErr] = useState("");
@@ -30,7 +38,7 @@ export function AdminGate({ children }: { children: (key: string) => React.React
   }
 
   if (entered) return <>{children(key)}</>;
-  return (
+  const gate = (
     <>
       <form
         className="mx-auto mt-8 flex max-w-md gap-2"
@@ -56,6 +64,8 @@ export function AdminGate({ children }: { children: (key: string) => React.React
       {err && <p className="mt-3 text-center font-body text-sm text-rose-500">{err}</p>}
     </>
   );
+  // pages that render their own shell only after unlock still get a backdrop
+  return vibe ? <PageShell vibe={vibe}>{gate}</PageShell> : gate;
 }
 
 /** Sticky bar with save / revert / view, shown while editing a page in place. */
@@ -73,7 +83,7 @@ export function SaveBar({
   viewHref: string;
 }) {
   return (
-    <div className="sticky top-20 z-40 mx-auto mb-6 flex w-fit flex-wrap items-center gap-2 rounded-full px-4 py-2 soft-card">
+    <div className="fixed left-1/2 top-20 z-50 flex w-max max-w-[92vw] -translate-x-1/2 flex-wrap items-center gap-2 rounded-full px-4 py-2 soft-card">
       <span className="font-body text-sm font-semibold text-ink-soft">✎ editing this page</span>
       <button
         type="button"

@@ -45,6 +45,11 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "technical blogs tagline",
     text: "ideas that refused to stay inside a notebook 💡",
   },
+  "photography.intro": {
+    page: "photography",
+    label: "photography tagline",
+    text: "sunsets, sidewalks, and other things that caught my eye ✨",
+  },
   "contact.intro": {
     page: "contact",
     label: "contact intro",

@@ -150,3 +150,9 @@ body {
   .animate-sway { animation: none !important; }
   html { scroll-behavior: auto; }
 }
+
+/* ink editor: show the placeholder when the surface is empty */
+.ink-editor-surface:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(111, 111, 134, 0.5);
+}

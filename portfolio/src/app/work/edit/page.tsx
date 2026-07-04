@@ -1,20 +1,10 @@
-"use client";
+import WorkEditClient from "@/components/WorkEditClient";
+import { getAllProjects } from "@/lib/github-projects";
+import { categories, domains } from "@/data/projects";
 
-import PassageEditPage from "@/components/PassageEditPage";
+export const dynamic = "force-dynamic";
 
-export default function WorkEdit() {
-  return (
-    <PassageEditPage
-      vibe="meadow"
-      title="my little meadow of projects 🌱"
-      viewHref="/work"
-      passages={[
-        {
-          id: "work.intro",
-          hint: "{count} becomes the live project count",
-          textClass: "font-body text-lg text-ink-soft",
-        },
-      ]}
-    />
-  );
+export default async function WorkEdit() {
+  const projects = await getAllProjects();
+  return <WorkEditClient projects={projects} categories={categories} domains={domains} />;
 }
