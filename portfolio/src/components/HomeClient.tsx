@@ -15,9 +15,15 @@ const tabs = [
 export default function HomeClient({
   greeting,
   intro,
+  resumeSlot,
+  portraitOverlay,
 }: {
   greeting: React.ReactNode;
   intro: React.ReactNode;
+  /** edit mode swaps the Resume button for an upload control */
+  resumeSlot?: React.ReactNode;
+  /** edit mode floats a replace-photo control over the portrait */
+  portraitOverlay?: React.ReactNode;
 }) {
   return (
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
@@ -34,20 +40,25 @@ export default function HomeClient({
         </motion.div>
 
         <div className="flex shrink-0 flex-col items-center gap-7">
-          <FlowerPortrait />
+          <div className="relative">
+            <FlowerPortrait />
+            {portraitOverlay}
+          </div>
           <div className="flex flex-col items-center gap-2.5">
-            <motion.a
-              href="/resume"
-              target="_blank"
-              rel="noreferrer"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              whileHover={{ scale: 1.05 }}
-              className="inline-flex items-center rounded-full bg-white/75 px-5 py-2 font-body text-base font-bold text-ink shadow-sm backdrop-blur transition hover:bg-white"
-            >
-              Resume
-            </motion.a>
+            {resumeSlot ?? (
+              <motion.a
+                href="/resume"
+                target="_blank"
+                rel="noreferrer"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+                className="inline-flex items-center rounded-full bg-white/75 px-5 py-2 font-body text-base font-bold text-ink shadow-sm backdrop-blur transition hover:bg-white"
+              >
+                Resume
+              </motion.a>
+            )}
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}

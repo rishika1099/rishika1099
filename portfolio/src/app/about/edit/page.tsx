@@ -11,7 +11,7 @@ import SkillGraph from "@/components/SkillGraph";
 import PageTitle from "@/components/PageTitle";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { copyDefaults } from "@/data/copy";
-import FileSwapPanel from "@/components/FileSwapPanel";
+import { useFileSwap } from "@/components/FileSwap";
 import type { Entry } from "@/data/about";
 import TagPicker from "@/components/TagPicker";
 import { categories as ALL_CATEGORIES, domains as ALL_DOMAINS, domainColor, type Domain } from "@/data/projects";
@@ -96,6 +96,7 @@ function EntryEditor({
 function Editor({ keyVal }: { keyVal: string }) {
   const api = adminApi(keyVal);
   const router = useRouter();
+  const files = useFileSwap(keyVal);
   const [bio, setBio] = useState<string | null>(null);
   const [education, setEducation] = useState<Entry[]>([]);
   const [work, setWork] = useState<Entry[]>([]);
@@ -195,7 +196,6 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <>
       <SaveBar saving={saving} msg={msg} onSave={save} onRevert={revert} viewHref="/about" />
-      <FileSwapPanel keyVal={keyVal} />
       <PageTitle>the human behind the models 🦦</PageTitle>
 
       <p className="mt-6 font-body text-xs text-ink-soft/70">
@@ -210,15 +210,28 @@ function Editor({ keyVal }: { keyVal: string }) {
       </div>
 
       <div className="mt-6 text-center">
-        <a
-          href="/resume"
-          className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105"
-        >
-          👀 peek at my resume
-        </a>
-        <p className="mt-1 font-body text-[11px] text-ink-soft/60">
-          (the resume PDF itself is swapped in the repo, not here)
-        </p>
+        <span className="inline-flex items-center gap-1.5">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105">
+            📄 Replace Resume
+            <input
+              type="file"
+              accept=".pdf"
+              className="hidden"
+              onChange={(e) => e.target.files?.[0] && files.upload("resume", e.target.files[0])}
+            />
+          </label>
+          {files.has.resume && (
+            <button
+              type="button"
+              title="back to the original resume"
+              onClick={() => files.reset("resume")}
+              className="rounded-full bg-white/75 px-3 py-3 font-body text-sm text-ink-soft shadow transition hover:bg-white"
+            >
+              ↺
+            </button>
+          )}
+        </span>
+        {files.msg && <p className="mt-1 font-body text-[11px] text-ink-soft/70">{files.msg}</p>}
       </div>
 
       {section("where curiosity took me 🎓", null, education, setEducation)}
