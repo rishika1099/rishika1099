@@ -1,0 +1,430 @@
+"use client";
+
+// The atelier: every editable thing in one room (passages, poems, photos),
+// color-coded to match each page's background. Writes go through key-gated
+// admin APIs into Netlify Blobs (or local files in dev), live with no rebuild.
+
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import PageShell from "@/components/PageShell";
+import PageTitle from "@/components/PageTitle";
+import type { Entry } from "@/data/about";
+
+interface Poem {
+  slug: string;
+  title: string;
+  date: string;
+  excerpt: string;
+  content: string;
+}
+interface Photo {
+  src: string;
+  caption: string;
+}
+
+const field =
+  "w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-2 font-body text-sm text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30";
+const btn =
+  "rounded-full px-4 py-1.5 font-body text-sm font-semibold transition disabled:opacity-50";
+const btnDark = `${btn} bg-ink text-cream hover:opacity-90`;
+const btnSoft = `${btn} bg-white/70 text-ink-soft hover:bg-white`;
+const btnDanger = `${btn} bg-rose/60 text-ink hover:bg-rose/80`;
+
+// each page's dominant background pastel, used to tint pills + passage cards
+const PAGE_TINT: Record<string, string> = {
+  home: "#ffd9c0", // dawn
+  about: "#e6d7f5", // lilac
+  work: "#cdeac0", // meadow
+  blog: "#ffe2ce", // peach
+  contact: "#f7b7c9", // rose
+};
+const tintOf = (page: string) => PAGE_TINT[page] ?? "#f6d99b";
+
+function useAdminApi(key: string) {
+  return async function api<T>(path: string, init?: RequestInit): Promise<T> {
+    const res = await fetch(path, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-key": key,
+        ...(init?.headers ?? {}),
+      },
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    return (await res.json()) as T;
+  };
+}
+
+/* ---------------- poems ---------------- */
+
+function PoemsTab({ keyVal }: { keyVal: string }) {
+  const api = useAdminApi(keyVal);
+  const [poems, setPoems] = useState<Poem[] | null>(null);
+  const [editing, setEditing] = useState<Poem | null>(null);
+  const [msg, setMsg] = useState("");
+
+  const refresh = () =>
+    api<{ poems: Poem[] }>("/api/admin/poems").then((d) => setPoems(d.poems)).catch(() => setMsg("couldn't load poems"));
+
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function save() {
+    if (!editing) return;
+    setMsg("saving…");
+    try {
+      await api("/api/admin/poems", { method: "POST", body: JSON.stringify(editing) });
+      setEditing(null);
+      setMsg("saved ✓ (art + mood generate on first view)");
+      refresh();
+    } catch {
+      setMsg("save failed, is the title + poem filled in?");
+    }
+  }
+
+  async function remove(slug: string) {
+    if (!confirm(`Delete "${slug}"? This can't be undone.`)) return;
+    await api("/api/admin/poems", { method: "DELETE", body: JSON.stringify({ slug }) });
+    setEditing(null);
+    refresh();
+  }
+
+  if (!poems) return <p className="mt-6 font-body text-sm text-ink-soft">opening the drawer… ✦</p>;
+
+  return (
+    <div className="mt-6">
+      {msg && <p className="mb-3 font-body text-sm text-ink-soft">{msg}</p>}
+      {!editing ? (
+        <>
+          <button
+            className={btnDark}
+            onClick={() =>
+              setEditing({ slug: "", title: "", date: new Date().toISOString().slice(0, 10), excerpt: "", content: "" })
+            }
+          >
+            ＋ new poem
+          </button>
+          <ul className="mt-4 space-y-2">
+            {poems.map((p) => (
+              <li key={p.slug} className="flex items-center justify-between gap-3 rounded-2xl p-4 soft-card">
+                <div>
+                  <p className="font-body text-sm font-bold text-ink">{p.title}</p>
+                  <p className="font-body text-xs italic text-ink-soft">{p.date}</p>
+                </div>
+                <button className={btnSoft} onClick={() => setEditing({ ...p })}>
+                  ✎ edit
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <div className="space-y-3 rounded-3xl p-5 soft-card">
+          <input className={field} placeholder="title" value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
+          <div className="flex gap-3">
+            <input className={field} placeholder="YYYY-MM-DD" value={editing.date} onChange={(e) => setEditing({ ...editing, date: e.target.value })} />
+            <input className={field} placeholder="one-line excerpt (shows on the card)" value={editing.excerpt} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} />
+          </div>
+          <textarea className={`${field} min-h-56 font-serif`} placeholder="the poem…" value={editing.content} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
+          <div className="flex flex-wrap gap-2">
+            <button className={btnDark} onClick={save}>save</button>
+            <button className={btnSoft} onClick={() => setEditing(null)}>cancel</button>
+            {editing.slug && (
+              <button className={btnDanger} onClick={() => remove(editing.slug)}>delete</button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- photos ---------------- */
+
+function PhotosTab({ keyVal }: { keyVal: string }) {
+  const api = useAdminApi(keyVal);
+  const [photos, setPhotos] = useState<Photo[] | null>(null);
+  const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const refresh = () =>
+    api<{ photos: Photo[] }>("/api/admin/photos").then((d) => setPhotos(d.photos)).catch(() => setMsg("couldn't load photos"));
+
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function upload(file: File) {
+    setBusy(true);
+    setMsg(`uploading ${file.name}…`);
+    try {
+      const b64 = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+      const d = await api<{ caption?: string }>("/api/admin/photos", {
+        method: "POST",
+        body: JSON.stringify({ name: file.name, dataBase64: b64 }),
+      });
+      setMsg(d.caption ? `uploaded ✓ captioned: "${d.caption}" (clusters refresh on next npm run media)` : "uploaded ✓");
+      refresh();
+    } catch {
+      setMsg("upload failed (jpg/png/webp, under 8MB)");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function remove(src: string) {
+    const name = src.split("/").pop()!;
+    if (!confirm(`Delete ${name}?`)) return;
+    await api("/api/admin/photos", { method: "DELETE", body: JSON.stringify({ name }) });
+    refresh();
+  }
+
+  if (!photos) return <p className="mt-6 font-body text-sm text-ink-soft">opening the album… ✦</p>;
+
+  return (
+    <div className="mt-6">
+      <label className={`${btnDark} inline-block cursor-pointer`}>
+        {busy ? "working…" : "⇪ upload a photo"}
+        <input
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp"
+          className="hidden"
+          disabled={busy}
+          onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
+        />
+      </label>
+      {msg && <p className="mt-3 font-body text-sm text-ink-soft">{msg}</p>}
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {photos.map((p) => (
+          <figure key={p.src} className="overflow-hidden rounded-2xl soft-card">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={p.src} alt={p.caption} className="aspect-square w-full object-cover" />
+            <figcaption className="flex items-center justify-between gap-2 p-2 font-body text-[11px] text-ink-soft">
+              <span className="truncate">{p.caption || "…"}</span>
+              <button className="shrink-0 font-semibold text-rose-500 hover:underline" onClick={() => remove(p.src)}>
+                ✕
+              </button>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- passages (site copy) ---------------- */
+
+interface CopyBlockRow {
+  id: string;
+  page: string;
+  label: string;
+  text: string;
+  isDefault: boolean;
+}
+
+function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: string | null }) {
+  const api = useAdminApi(keyVal);
+  const [blocks, setBlocks] = useState<CopyBlockRow[] | null>(null);
+  const [pageFilter, setPageFilter] = useState<string | null>(initialPage);
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    api<{ blocks: CopyBlockRow[] }>("/api/admin/copy")
+      .then((d) => setBlocks(d.blocks))
+      .catch(() => setMsg("couldn't load passages"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function save() {
+    if (!blocks) return;
+    setMsg("saving…");
+    try {
+      const texts = Object.fromEntries(blocks.map((b) => [b.id, b.text]));
+      await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
+      setMsg("saved ✓ live immediately");
+    } catch {
+      setMsg("save failed, try again?");
+    }
+  }
+
+  async function revert() {
+    if (!confirm("Revert every passage to the version written in the code?")) return;
+    await api("/api/admin/copy", { method: "DELETE" });
+    const d = await api<{ blocks: CopyBlockRow[] }>("/api/admin/copy");
+    setBlocks(d.blocks);
+    setMsg("reverted to repo defaults ✓");
+  }
+
+  if (!blocks) return <p className="mt-6 font-body text-sm text-ink-soft">opening the pages… ✦</p>;
+
+  const pages = [...new Set(blocks.map((b) => b.page))];
+  const shown = pageFilter ? blocks.filter((b) => b.page === pageFilter) : blocks;
+
+  return (
+    <div className="mt-4">
+      {msg && <p className="font-body text-sm text-ink-soft">{msg}</p>}
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <button className={btnDark} onClick={save}>save everything</button>
+        <button className={btnSoft} onClick={revert}>revert all to defaults</button>
+        <span className="ml-auto flex flex-wrap gap-1.5">
+          <button className={pageFilter === null ? btnDark : btnSoft} onClick={() => setPageFilter(null)}>
+            all pages
+          </button>
+          {pages.map((p) => (
+            <button
+              key={p}
+              onClick={() => setPageFilter(p)}
+              style={{ backgroundColor: pageFilter === p ? tintOf(p) : `${tintOf(p)}66` }}
+              className={`${btn} text-ink ${pageFilter === p ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
+            >
+              {p}
+            </button>
+          ))}
+        </span>
+      </div>
+      <div className="mt-4 space-y-4">
+        {shown.map((b) => (
+          <div key={b.id} className="rounded-3xl p-4 soft-card" style={{ backgroundColor: `${tintOf(b.page)}59` }}>
+            <p className="flex items-center gap-1.5 font-body text-sm font-bold text-ink">
+              <span aria-hidden className="h-3 w-3 rounded-full ring-1 ring-white/80" style={{ backgroundColor: tintOf(b.page) }} />
+              {b.page} · {b.label}
+              {!b.isDefault && <span className="ml-2 font-normal text-ink-soft">(edited)</span>}
+            </p>
+            <textarea
+              className={`${field} mt-2 min-h-24`}
+              value={b.text}
+              onChange={(e) =>
+                setBlocks(blocks.map((x) => (x.id === b.id ? { ...x, text: e.target.value, isDefault: false } : x)))
+              }
+            />
+          </div>
+        ))}
+      </div>
+      <div className="mt-4">
+        <button className={btnDark} onClick={save}>save everything</button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- shell ---------------- */
+
+function EditRoom() {
+  const sp = useSearchParams();
+  const initialTab = (sp.get("tab") ?? "passages") as "passages" | "poems" | "photos";
+  const initialPage = sp.get("page");
+  const [key, setKey] = useState("");
+  const [entered, setEntered] = useState(false);
+  const [err, setErr] = useState("");
+  const [tab, setTab] = useState<"passages" | "poems" | "photos">(initialTab);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("admin-key");
+    if (saved) {
+      setKey(saved);
+      setEntered(true);
+    }
+  }, []);
+
+  async function tryKey(k: string) {
+    setErr("");
+    const res = await fetch("/api/admin/poems", { headers: { "x-admin-key": k } });
+    if (res.status === 401) return setErr("that's not the key 🌙");
+    if (res.status === 503) return setErr("ADMIN_KEY isn't configured on this deploy yet.");
+    if (!res.ok) return setErr("something wobbled, try again?");
+    localStorage.setItem("admin-key", k);
+    setEntered(true);
+  }
+
+  return (
+    <PageShell vibe="honey">
+      <div className="text-center">
+        <PageTitle>the atelier 🗝️</PageTitle>
+        <p className="mt-3 font-body text-base text-ink-soft">
+          where little things get quietly rearranged ✦
+        </p>
+      </div>
+
+      {!entered ? (
+        <>
+          <form
+            className="mx-auto mt-8 flex max-w-md gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (key.trim()) tryKey(key.trim());
+            }}
+          >
+            <input
+              type="password"
+              value={key}
+              onChange={(e) => setKey(e.target.value)}
+              placeholder="the key"
+              className={field}
+            />
+            <button type="submit" className={btnDark}>
+              open
+            </button>
+          </form>
+          {err && <p className="mt-3 text-center font-body text-sm text-rose-500">{err}</p>}
+        </>
+      ) : (
+        <div className="mx-auto mt-8 max-w-3xl">
+          <div className="flex flex-wrap gap-2">
+            {(
+              [
+                ["passages", "✍️ passages", "#f6d99b"],
+                ["poems", "🕯️ poems", "#d9c2f0"],
+                ["photos", "📷 photos", "#ffc0a0"],
+              ] as const
+            ).map(([t, label, tint]) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                style={{ backgroundColor: tab === t ? tint : `${tint}66` }}
+                className={`${btn} text-ink ${tab === t ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
+              >
+                {label}
+              </button>
+            ))}
+            <a
+              href="/about/edit"
+              style={{ backgroundColor: "#e6d7f566" }}
+              className={`${btn} text-ink hover:ring-1 hover:ring-ink/15`}
+            >
+              🎓 journey →
+            </a>
+            <button
+              className={`${btnSoft} ml-auto`}
+              onClick={() => {
+                localStorage.removeItem("admin-key");
+                setEntered(false);
+                setKey("");
+              }}
+            >
+              lock up 🔒
+            </button>
+          </div>
+          {tab === "passages" && <PassagesTab keyVal={key} initialPage={initialPage} />}
+          {tab === "poems" && <PoemsTab keyVal={key} />}
+          {tab === "photos" && <PhotosTab keyVal={key} />}
+        </div>
+      )}
+    </PageShell>
+  );
+}
+
+export default function EditPage() {
+  return (
+    <Suspense fallback={null}>
+      <EditRoom />
+    </Suspense>
+  );
+}
