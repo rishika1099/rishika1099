@@ -13,7 +13,8 @@ export type Vibe =
   | "twilight"
   | "aurora"
   | "midnight"
-  | "honey";
+  | "honey"
+  | "rainbow";
 
 // A soft-pastel arc from sunrise blues through golden hour to a sunset rose,
 // one distinct gradient per page (twilight stays dark for the poem room).
@@ -30,8 +31,11 @@ const gradients: Record<Vibe, string> = {
   aurora: "from-mint via-sky/60 to-lavender",
   // deep navy night for the private stats room (distinct from the poems' twilight)
   midnight: "from-[#0b1020] via-[#101830] to-[#1a2440]",
-  // deep amber workshop light for the atelier, noticeably warmer than peach
+  // deep amber workshop light, noticeably warmer than peach
   honey: "from-[#f3cd74] via-[#fbe9c8] to-[#f0b48a]",
+  // the atelier edits every page, so it wears every page's color (inline below,
+  // a pastel rainbow needs more stops than from/via/to)
+  rainbow: "",
 };
 
 function Cloud({
@@ -89,7 +93,17 @@ export default function Scenery({ vibe }: { vibe: Vibe }) {
   const isNight = vibe === "twilight" || vibe === "midnight";
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden">
-      <div className={`absolute inset-0 bg-gradient-to-b ${gradients[vibe]}`} />
+      <div
+        className={`absolute inset-0 bg-gradient-to-b ${gradients[vibe]}`}
+        style={
+          vibe === "rainbow"
+            ? {
+                backgroundImage:
+                  "linear-gradient(to bottom, #f7b7c9, #f6d99b 22%, #fdf3cf 40%, #cdeac0 58%, #cfe8f3 78%, #e6d7f5)",
+              }
+            : undefined
+        }
+      />
 
       {/* soft sun / moon glow */}
       <motion.div

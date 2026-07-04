@@ -370,7 +370,7 @@ function EditRoom() {
   }
 
   return (
-    <PageShell vibe="honey">
+    <PageShell vibe="rainbow">
       <div className="text-center">
         <PageTitle>the atelier 🗝️</PageTitle>
         <p className="mt-3 font-body text-base text-ink-soft">
