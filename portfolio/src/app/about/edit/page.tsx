@@ -5,6 +5,7 @@
 // research live in their own sections, just like the real page.
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
@@ -96,6 +97,7 @@ function EntryEditor({
 
 function Editor({ keyVal }: { keyVal: string }) {
   const api = adminApi(keyVal);
+  const router = useRouter();
   const [bio, setBio] = useState<string | null>(null);
   const [education, setEducation] = useState<Entry[]>([]);
   const [work, setWork] = useState<Entry[]>([]);
@@ -132,7 +134,9 @@ function Editor({ keyVal }: { keyVal: string }) {
           body: JSON.stringify({ texts: { "about.bio": bio ?? "" } }),
         }),
       ]);
-      setMsg("saved ✓ live now");
+      router.push("/about");
+      router.refresh(); // skip the client router cache so the new words show immediately
+      return;
     } catch {
       setMsg("save failed, every card needs a title");
     } finally {

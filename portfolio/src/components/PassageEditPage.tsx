@@ -4,6 +4,7 @@
 // same vibe and title as the real page, with the passage(s) as editable boxes.
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
@@ -45,6 +46,7 @@ function Editor({
   passages: PassageSpec[];
 }) {
   const api = adminApi(keyVal);
+  const router = useRouter();
   const [texts, setTexts] = useState<Record<string, string> | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -66,7 +68,9 @@ function Editor({
     setMsg("");
     try {
       await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
-      setMsg("saved ✓ live now");
+      router.push(viewHref);
+      router.refresh(); // skip the client router cache so the new words show immediately
+      return;
     } catch {
       setMsg("save failed, try again?");
     } finally {
