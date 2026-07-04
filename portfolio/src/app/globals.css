@@ -156,3 +156,9 @@ body {
   content: attr(data-placeholder);
   color: rgba(111, 111, 134, 0.5);
 }
+
+/* editable passages written in the ink editor */
+.rich-passage p, .rich-passage div { margin: 0.55em 0; }
+.rich-passage p:first-child, .rich-passage div:first-child { margin-top: 0; }
+.rich-passage p:last-child, .rich-passage div:last-child { margin-bottom: 0; }
+.rich-passage b, .rich-passage strong { color: var(--color-ink); }

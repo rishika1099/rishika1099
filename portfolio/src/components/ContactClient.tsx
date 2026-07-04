@@ -5,14 +5,15 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import ContactForm from "@/components/ContactForm";
 
-const links = [
-  { icon: "📧", label: "Email", value: "rm4318@columbia.edu", href: "mailto:rm4318@columbia.edu" },
-  { icon: "💼", label: "LinkedIn", value: "in/rishika-mamidibathula", href: "https://linkedin.com/in/rishika-mamidibathula" },
-  { icon: "🐙", label: "GitHub", value: "github.com/rishika1099", href: "https://github.com/rishika1099" },
-  { icon: "📰", label: "Substack", value: "rishika1099.substack.com", href: "https://rishika1099.substack.com" },
-];
+import type { ContactLink } from "@/lib/contactLinks";
 
-export default function ContactClient({ intro }: { intro: React.ReactNode }) {
+export default function ContactClient({
+  intro,
+  links,
+}: {
+  intro: React.ReactNode;
+  links: ContactLink[];
+}) {
   return (
     <PageShell vibe="rose" className="flex flex-col items-center text-center">
       <motion.span

@@ -113,21 +113,21 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
 export default function AboutClient({
   education,
   timeline,
-  bio,
+  bioHtml,
 }: {
   education: Entry[];
   timeline: Entry[];
-  bio: string[];
+  bioHtml: string;
 }) {
   return (
     <PageShell vibe="lilac">
       <PageTitle>the human behind the models 🦦</PageTitle>
 
-      <div className="mt-6 max-w-4xl space-y-4 font-body text-lg text-ink-soft">
-        {bio.map((p) => (
-          <p key={p.slice(0, 24)}>{renderDetail(p)}</p>
-        ))}
-      </div>
+      <div
+        className="rich-passage mt-6 max-w-4xl font-body text-lg text-ink-soft"
+        // written in the atelier's ink editor; sanitized at save
+        dangerouslySetInnerHTML={{ __html: bioHtml }}
+      />
 
       <div className="mt-6 text-center">
         <a

@@ -59,6 +59,17 @@ function Gallery({ keyVal }: { keyVal: string }) {
     }
   }
 
+  async function saveCaption(src: string, caption: string) {
+    const name = src.split("/").pop()!;
+    setMsg("saving caption…");
+    try {
+      await api("/api/admin/photos", { method: "POST", body: JSON.stringify({ name, caption }) });
+      setMsg("caption saved ✓");
+    } catch {
+      setMsg("caption save failed");
+    }
+  }
+
   async function remove(src: string) {
     const name = src.split("/").pop()!;
     if (!confirm(`Delete ${name}?`)) return;
@@ -85,10 +96,16 @@ function Gallery({ keyVal }: { keyVal: string }) {
           <figure key={p.src} className="break-inside-avoid overflow-hidden rounded-2xl soft-card">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.src} alt={p.caption} className="w-full" />
-            <figcaption className="flex items-center justify-between gap-2 p-2 font-body text-[11px] text-ink-soft">
-              <span className="truncate">{p.caption || "…"}</span>
+            <figcaption className="flex items-center gap-1.5 p-2">
+              <input
+                defaultValue={p.caption}
+                placeholder="caption…"
+                onBlur={(e) => e.target.value !== p.caption && saveCaption(p.src, e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                className="w-full rounded-lg border border-dashed border-ink/15 bg-white/50 px-1.5 py-0.5 font-body text-[11px] text-ink-soft outline-none focus:border-blush"
+              />
               <button
-                className="shrink-0 font-semibold text-rose-500 hover:underline"
+                className="shrink-0 font-body text-xs font-semibold text-rose-500 hover:underline"
                 onClick={() => remove(p.src)}
                 aria-label="delete photo"
               >

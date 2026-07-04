@@ -152,6 +152,92 @@ function RichPostManager({ keyVal }: { keyVal: string }) {
   );
 }
 
+const pKey = (url?: string) => url?.match(/\/p\/([^/?#]+)/)?.[1] ?? "";
+
+function AutoPostManager({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
+  const api = adminApi(keyVal);
+  const router = useRouter();
+  const [open, setOpen] = useState<string | null>(null);
+  const [form, setForm] = useState<{ title: string; excerpt: string; tech: string; domains: string } | null>(null);
+  const [msg, setMsg] = useState("");
+  const auto = posts.filter((p) => p.external && pKey(p.external));
+
+  async function save(key: string) {
+    if (!form) return;
+    setMsg("saving…");
+    try {
+      await api("/api/admin/blog-overrides", {
+        method: "POST",
+        body: JSON.stringify({
+          key,
+          title: form.title,
+          excerpt: form.excerpt,
+          tech: form.tech.split(",").map((s) => s.trim()),
+          domains: form.domains.split(",").map((s) => s.trim()),
+        }),
+      });
+      setOpen(null);
+      setForm(null);
+      setMsg("saved ✓");
+      router.refresh();
+    } catch {
+      setMsg("save failed, try again?");
+    }
+  }
+
+  return (
+    <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
+      <h2 className="font-body text-lg font-bold text-ink">
+        🛰️ auto-pulled posts{" "}
+        <span className="font-normal text-ink-soft">(clear a field + save = back to automatic)</span>
+      </h2>
+      {msg && <p className="mt-2 font-body text-sm text-ink-soft">{msg}</p>}
+      <ul className="mt-3 space-y-1.5">
+        {auto.map((p) => {
+          const key = pKey(p.external);
+          return (
+            <li key={key} className="rounded-2xl bg-white/50 p-2.5">
+              <div className="flex items-center gap-2">
+                <span className="flex-1 truncate font-body text-sm font-semibold text-ink">{p.title}</span>
+                <button
+                  className={btnSoft}
+                  onClick={() => {
+                    if (open === key) {
+                      setOpen(null);
+                      setForm(null);
+                    } else {
+                      setOpen(key);
+                      setForm({
+                        title: p.title,
+                        excerpt: p.excerpt,
+                        tech: (p.tech ?? []).join(", "),
+                        domains: (p.domains ?? []).join(", "),
+                      });
+                    }
+                  }}
+                >
+                  {open === key ? "close" : "✎ edit"}
+                </button>
+              </div>
+              {open === key && form && (
+                <div className="mt-3 space-y-2 border-t border-ink/10 pt-3">
+                  <input className={field} placeholder="title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                  <textarea className={`${field} min-h-16`} placeholder="subtitle / excerpt" value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} />
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <input className={field} placeholder="tech areas, comma-separated" value={form.tech} onChange={(e) => setForm({ ...form, tech: e.target.value })} />
+                    <input className={field} placeholder="domains, comma-separated" value={form.domains} onChange={(e) => setForm({ ...form, domains: e.target.value })} />
+                  </div>
+                  <button className={btnDark} onClick={() => save(key)}>save</button>
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 function Editor({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
   const { ready, box, bar } = usePassageEditor(keyVal, ["blog.technical.intro"], "/blog/technical");
   if (!ready)
@@ -168,6 +254,7 @@ function Editor({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
       <div className="mt-3 max-w-2xl">{box("blog.technical.intro", "font-body text-lg text-ink-soft")}</div>
 
       <RichPostManager keyVal={keyVal} />
+      <AutoPostManager keyVal={keyVal} posts={posts} />
 
       <TechnicalBlogList posts={posts} />
     </PageShell>

@@ -41,11 +41,15 @@ export default function InkEditor({
   onChange,
   placeholder = "start writing…",
   minHeight = "16rem",
+  compact = false,
+  surfaceClassName = "font-body text-base leading-relaxed text-ink",
 }: {
   initialHtml: string;
   onChange: (html: string) => void;
   placeholder?: string;
   minHeight?: string;
+  compact?: boolean; // slimmer toolbar + surface for in-page passages
+  surfaceClassName?: string; // typography matching the page being edited
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -151,8 +155,8 @@ export default function InkEditor({
         suppressContentEditableWarning
         onInput={emit}
         data-placeholder={placeholder}
-        style={{ minHeight }}
-        className="ink-editor-surface rounded-b-3xl px-5 py-4 font-body text-base leading-relaxed text-ink outline-none"
+        style={{ minHeight: compact ? "3.5rem" : minHeight }}
+        className={`ink-editor-surface rounded-b-3xl outline-none ${compact ? "px-3 py-2" : "px-5 py-4"} ${surfaceClassName}`}
       />
     </div>
   );

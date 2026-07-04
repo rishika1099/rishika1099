@@ -4,6 +4,7 @@ import PageTitle from "@/components/PageTitle";
 import TechnicalBlogList from "@/components/TechnicalBlogList";
 import { getTechnicalPosts } from "@/lib/technicalPosts";
 import { getCopy } from "@/lib/siteCopy";
+import { copyToHtml } from "@/lib/copyRender";
 
 export const metadata = { title: "Technical Blogs" };
 // copy edits go live instantly; the Substack fetch keeps its own hourly cache
@@ -21,7 +22,7 @@ export default async function TechnicalIndex() {
         </Link>
       </div>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        {copy["blog.technical.intro"]}
+        <span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["blog.technical.intro"]) }} />
       </p>
 
       <TechnicalBlogList posts={posts} />

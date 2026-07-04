@@ -53,9 +53,19 @@ export async function POST(request: Request) {
   const denied = guard(request);
   if (denied) return denied;
   try {
-    const body = (await request.json()) as { name?: string; dataBase64?: string };
+    const body = (await request.json()) as {
+      name?: string;
+      dataBase64?: string;
+      caption?: string;
+    };
     const name = (body.name ?? "").trim().replace(/[^a-zA-Z0-9._-]/g, "_");
     const b64 = body.dataBase64 ?? "";
+    // caption-only edit (no new image data)
+    if (!b64 && typeof body.caption === "string") {
+      if (!name) return NextResponse.json({ error: "name required" }, { status: 400 });
+      await setCaption(name, body.caption.trim().slice(0, 200));
+      return NextResponse.json({ ok: true, name, caption: body.caption.trim() });
+    }
     if (!name || !EXT_RE.test(name)) {
       return NextResponse.json({ error: "name must end in .jpg/.png/.webp" }, { status: 400 });
     }

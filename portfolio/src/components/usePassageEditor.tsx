@@ -6,7 +6,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { EditableText, SaveBar, adminApi } from "@/components/editing";
+import { SaveBar, adminApi } from "@/components/editing";
+import InkEditor from "@/components/InkEditor";
 
 export function usePassageEditor(keyVal: string, ids: string[], viewHref: string) {
   const api = adminApi(keyVal);
@@ -44,10 +45,12 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
 
   const box = (id: string, className: string) =>
     texts === null ? null : (
-      <EditableText
-        value={texts[id]}
-        onChange={(v) => setTexts({ ...texts, [id]: v })}
-        className={className}
+      <InkEditor
+        initialHtml={texts[id]}
+        onChange={(v) => setTexts((t) => (t ? { ...t, [id]: v } : t))}
+        compact
+        surfaceClassName={className}
+        placeholder="write here…"
       />
     );
 

@@ -4,6 +4,7 @@ import PageTitle from "@/components/PageTitle";
 import PhotoGallery from "@/components/PhotoGallery";
 import { getPhotoData } from "@/lib/photos";
 import { getCopy } from "@/lib/siteCopy";
+import { copyToHtml } from "@/lib/copyRender";
 
 export const metadata = { title: "Photography" };
 export const dynamic = "force-dynamic";
@@ -20,7 +21,7 @@ export default async function Photography() {
         </Link>
       </div>
       <p className="mt-3 max-w-2xl font-body text-lg text-ink-soft">
-        {copy["photography.intro"]}
+        <span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["photography.intro"]) }} />
       </p>
       {grouped && (
         <p className="mt-2 max-w-2xl font-body text-xs text-ink-soft/80">

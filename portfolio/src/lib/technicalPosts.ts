@@ -4,6 +4,7 @@
 import { getBlogPosts } from "@/lib/content";
 import { getSubstackPosts } from "@/lib/substack";
 import { richPostDocs } from "@/lib/richBlogs";
+import { externalKey, readBlogOverrides } from "@/lib/blogOverrides";
 import type { Doc } from "@/lib/content";
 
 const postSlug = (url?: string) => url?.match(/\/p\/([^/?#]+)/)?.[1];
@@ -15,7 +16,20 @@ export async function getTechnicalPosts(): Promise<Doc[]> {
   const substack = (await getSubstackPosts()).filter(
     (s) => !localSlugs.has(postSlug(s.external)),
   );
-  return [...local, ...rich, ...substack].sort(
+  // her edits win over the automatic RSS values; empty = automatic
+  const overrides = await readBlogOverrides();
+  const withOverrides = [...local, ...rich, ...substack].map((p) => {
+    const o = overrides[externalKey(p.external)];
+    if (!o) return p;
+    return {
+      ...p,
+      title: o.title ?? p.title,
+      excerpt: o.excerpt ?? p.excerpt,
+      tech: o.tech?.length ? o.tech : p.tech,
+      domains: o.domains?.length ? o.domains : p.domains,
+    };
+  });
+  return withOverrides.sort(
     (a, b) => (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0),
   );
 }

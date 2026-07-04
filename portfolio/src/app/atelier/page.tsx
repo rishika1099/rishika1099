@@ -8,7 +8,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
-import type { Entry } from "@/data/about";
+import InkEditor from "@/components/InkEditor";
 
 interface Poem {
   slug: string;
@@ -188,6 +188,17 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
     refresh();
   }
 
+  async function saveCaption(src: string, caption: string) {
+    const name = src.split("/").pop()!;
+    setMsg("saving caption…");
+    try {
+      await api("/api/admin/photos", { method: "POST", body: JSON.stringify({ name, caption }) });
+      setMsg("caption saved ✓");
+    } catch {
+      setMsg("caption save failed");
+    }
+  }
+
   if (!photos) return <p className="mt-6 font-body text-sm text-ink-soft">opening the album… ✦</p>;
 
   return (
@@ -208,9 +219,15 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
           <figure key={p.src} className="overflow-hidden rounded-2xl soft-card">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.src} alt={p.caption} className="aspect-square w-full object-cover" />
-            <figcaption className="flex items-center justify-between gap-2 p-2 font-body text-[11px] text-ink-soft">
-              <span className="truncate">{p.caption || "…"}</span>
-              <button className="shrink-0 font-semibold text-rose-500 hover:underline" onClick={() => remove(p.src)}>
+            <figcaption className="flex items-center gap-1.5 p-2">
+              <input
+                defaultValue={p.caption}
+                placeholder="caption…"
+                onBlur={(e) => e.target.value !== p.caption && saveCaption(p.src, e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+                className="w-full rounded-lg border border-dashed border-ink/15 bg-white/50 px-1.5 py-0.5 font-body text-[11px] text-ink-soft outline-none focus:border-blush"
+              />
+              <button className="shrink-0 font-body text-xs font-semibold text-rose-500 hover:underline" onClick={() => remove(p.src)}>
                 ✕
               </button>
             </figcaption>
@@ -299,13 +316,18 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
               {b.page} · {b.label}
               {!b.isDefault && <span className="ml-2 font-normal text-ink-soft">(edited)</span>}
             </p>
-            <textarea
-              className={`${field} mt-2 min-h-24`}
-              value={b.text}
-              onChange={(e) =>
-                setBlocks(blocks.map((x) => (x.id === b.id ? { ...x, text: e.target.value, isDefault: false } : x)))
-              }
-            />
+            <div className="mt-2">
+              <InkEditor
+                initialHtml={b.text}
+                onChange={(v) =>
+                  setBlocks((bs) =>
+                    (bs ?? []).map((x) => (x.id === b.id ? { ...x, text: v, isDefault: false } : x)),
+                  )
+                }
+                compact
+                placeholder="write here…"
+              />
+            </div>
           </div>
         ))}
       </div>

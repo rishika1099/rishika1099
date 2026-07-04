@@ -1,4 +1,5 @@
 import { projects as curated, type Category, type Domain, type Project } from "@/data/projects";
+import { readProjectOverrides, repoSlug } from "@/lib/projectOverrides";
 
 const GH_USER = "rishika1099";
 
@@ -148,5 +149,22 @@ export async function getAllProjects(): Promise<Project[]> {
     };
   });
 
-  return [...mergedCurated, ...extra];
+  // Her edits from /work/edit win over everything automatic; any field she
+  // left empty falls back to the pipeline value above.
+  const overrides = await readProjectOverrides();
+  const applyOverride = (p: Project): Project => {
+    const o = overrides[repoSlug(p.repo)];
+    if (!o) return p;
+    return {
+      ...p,
+      name: o.name ?? p.name,
+      blurb: o.blurb ?? p.blurb,
+      featured: o.featured ?? p.featured,
+      categories: o.categories?.length ? o.categories : p.categories,
+      domains: o.domains?.length ? o.domains : p.domains,
+      tags: o.tags?.length ? o.tags : p.tags,
+    };
+  };
+
+  return [...mergedCurated, ...extra].map(applyOverride);
 }

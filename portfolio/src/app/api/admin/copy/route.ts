@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
 import { copyDefaults } from "@/data/copy";
 import { clearCopy, getCopy, saveCopy } from "@/lib/siteCopy";
+import { sanitizeRichHtml } from "@/lib/richHtml";
 
 export const runtime = "nodejs";
 
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
     // merge over the current state so a per-page save never wipes other pages
     const texts = await getCopy();
     for (const [k, v] of Object.entries(body.texts)) {
-      if (typeof v === "string" && k in copyDefaults) texts[k] = v.slice(0, 4000);
+      if (typeof v === "string" && k in copyDefaults) texts[k] = sanitizeRichHtml(v).slice(0, 8000);
     }
     await saveCopy(texts);
     return NextResponse.json({ ok: true });
