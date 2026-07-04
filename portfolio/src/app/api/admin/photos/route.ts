@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
-import { listPhotos, removePhoto, setCaption, writePhoto } from "@/lib/photos";
+import { listPhotos, removePhoto, setCaption, setFrame, writePhoto, type PhotoFrame } from "@/lib/photos";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -57,9 +57,16 @@ export async function POST(request: Request) {
       name?: string;
       dataBase64?: string;
       caption?: string;
+      frame?: PhotoFrame | null;
     };
     const name = (body.name ?? "").trim().replace(/[^a-zA-Z0-9._-]/g, "_");
     const b64 = body.dataBase64 ?? "";
+    // frame edit (which region the gallery window shows)
+    if (!b64 && body.frame !== undefined) {
+      if (!name) return NextResponse.json({ error: "name required" }, { status: 400 });
+      await setFrame(name, body.frame);
+      return NextResponse.json({ ok: true, name });
+    }
     // caption-only edit (no new image data)
     if (!b64 && typeof body.caption === "string") {
       if (!name) return NextResponse.json({ error: "name required" }, { status: 400 });

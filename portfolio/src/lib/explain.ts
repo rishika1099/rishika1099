@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { richToText } from "@/lib/richHtml";
 import { getAllProjects } from "@/lib/github-projects";
 
 export type Level = "eli5" | "expert";
@@ -19,7 +20,7 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
   if (hit) return hit;
 
   const openai = new OpenAI();
-  const list = projects.map((p) => ({ name: p.name, blurb: p.blurb }));
+  const list = projects.map((p) => ({ name: p.name, blurb: richToText(p.blurb) }));
 
   const res = await openai.chat.completions.create({
     model: "gpt-4o-mini",

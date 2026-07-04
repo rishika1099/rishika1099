@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import type { PhotoGroup } from "@/lib/photos";
+import type { PhotoFrame, PhotoGroup } from "@/lib/photos";
 
 // Soft placeholder frames shown until you drop real photos into /public/photos.
 const placeholders = [
@@ -22,13 +22,18 @@ function Frame({
   src,
   caption,
   i,
+  frame,
 }: {
   src?: string;
   caption: string;
   gradient?: string;
   i: number;
+  frame?: PhotoFrame;
 }) {
   const rotate = rotations[i % rotations.length];
+  const fx = frame?.x ?? 50;
+  const fy = frame?.y ?? 50;
+  const zoom = frame?.zoom ?? 1;
   return (
     <motion.figure
       initial={{ opacity: 0, y: 20, rotate }}
@@ -39,7 +44,19 @@ function Frame({
       className="w-52 rounded-sm bg-white p-3 pb-10 shadow-lg"
     >
       <div className="relative h-48 w-full overflow-hidden rounded-sm">
-        <Image src={src!} alt={caption || "a photo"} fill unoptimized className="object-cover" sizes="208px" />
+        <Image
+          src={src!}
+          alt={caption || "a photo"}
+          fill
+          unoptimized
+          className="object-cover"
+          sizes="208px"
+          style={{
+            objectPosition: `${fx}% ${fy}%`,
+            transform: zoom !== 1 ? `scale(${zoom})` : undefined,
+            transformOrigin: `${fx}% ${fy}%`,
+          }}
+        />
       </div>
       <figcaption className="mt-3 text-center font-hand text-xl text-ink-soft">
         {caption || "untitled ✦"}
@@ -83,7 +100,7 @@ export default function PhotoGallery({ groups }: { groups: PhotoGroup[] }) {
     return (
       <div className="mt-10 flex flex-wrap justify-center gap-6">
         {groups[0].photos.map((p, i) => (
-          <Frame key={p.src} src={p.src} caption={p.caption} i={i} />
+          <Frame key={p.src} src={p.src} caption={p.caption} i={i} frame={p.frame} />
         ))}
       </div>
     );
@@ -101,7 +118,7 @@ export default function PhotoGallery({ groups }: { groups: PhotoGroup[] }) {
           )}
           <div className="mt-5 flex flex-wrap justify-center gap-6 sm:justify-start">
             {g.photos.map((p, i) => (
-              <Frame key={p.src} src={p.src} caption={p.caption} i={i} />
+              <Frame key={p.src} src={p.src} caption={p.caption} i={i} frame={p.frame} />
             ))}
           </div>
         </section>

@@ -14,6 +14,7 @@ import ProjectGalaxy from "@/components/ProjectGalaxy";
 import { AdminGate, adminApi } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 import TagPicker from "@/components/TagPicker";
+import InkEditor from "@/components/InkEditor";
 import { categories as ALL_CATEGORIES, domains as ALL_DOMAINS, domainColor, type Category, type Domain, type Project } from "@/data/projects";
 
 interface AdminProject {
@@ -187,11 +188,15 @@ function ProjectManager({ keyVal }: { keyVal: string }) {
                 </div>
                 <div>
                   <p className="font-body text-[11px] font-semibold text-ink-soft">blurb</p>
-                  <textarea
-                    className={`${field} min-h-20`}
-                    value={form.blurb}
-                    onChange={(e) => setForm({ ...form, blurb: e.target.value })}
-                  />
+                  <div className="mt-1">
+                    <InkEditor
+                      initialHtml={form.blurb}
+                      onChange={(v) => setForm((f) => (f ? { ...f, blurb: v } : f))}
+                      compact
+                      surfaceClassName="font-body text-sm text-ink-soft"
+                      placeholder="what this project does…"
+                    />
+                  </div>
                 </div>
                 <div>
                   <p className="font-body text-[11px] font-semibold text-ink-soft">tech areas, tap what applies</p>

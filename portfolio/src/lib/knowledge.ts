@@ -1,6 +1,7 @@
 import { skillAreas, type Entry } from "@/data/about";
 import { getAboutEntries } from "@/lib/aboutData";
 import { getCopy } from "@/lib/siteCopy";
+import { richToText } from "@/lib/richHtml";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
 import { getSubstackChunks } from "@/lib/substack";
@@ -87,7 +88,7 @@ export async function buildKnowledge(): Promise<Chunk[]> {
   const readmes = await Promise.all(projects.map((p) => getReadmeSnippet(p.repo)));
   projects.forEach((p, idx) => {
     const bits = [
-      `${p.name}: ${p.blurb}`,
+      `${p.name}: ${richToText(p.blurb)}`,
       p.categories?.length ? `Areas: ${p.categories.join(", ")}.` : "",
       p.domains?.length ? `Domains: ${p.domains.join(", ")}.` : "",
       p.tags?.length ? `Tech: ${p.tags.join(", ")}.` : "",

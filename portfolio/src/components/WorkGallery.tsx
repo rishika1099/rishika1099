@@ -9,6 +9,19 @@ import {
   type Project,
 } from "@/data/projects";
 
+// blurbs written in the ink editor are HTML; older ones are plain text
+const isHtml = (s: string) => /<[a-z][\s\S]*>/i.test(s);
+function Blurb({ text }: { text: string }) {
+  return isHtml(text) ? (
+    <span
+      className="rich-passage mt-1 block font-body text-sm text-ink-soft"
+      dangerouslySetInnerHTML={{ __html: text }}
+    />
+  ) : (
+    <p className="mt-1 font-body text-sm text-ink-soft">{text}</p>
+  );
+}
+
 function Links({ p }: { p: Pick<Project, "repo" | "demo"> }) {
   return (
     <div className="mt-3 flex flex-wrap gap-2">
@@ -315,7 +328,7 @@ export default function WorkGallery({
                     <ScoreBadge score={p.score} />
                   </div>
                   <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-                  <p className="mt-1 font-body text-sm text-ink-soft">{p.blurb}</p>
+                  <Blurb text={p.blurb} />
                   <DomainChips domains={p.domains} />
                   <TechChips categories={p.categories} />
                   <Links p={p} />
@@ -359,7 +372,7 @@ export default function WorkGallery({
                 >
                   <span className="text-3xl">{p.emoji}</span>
                   <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-                  <p className="mt-1 font-body text-sm text-ink-soft">{blurbFor(p)}</p>
+                  <Blurb text={blurbFor(p)} />
                   <DomainChips domains={p.domains} />
                   <TechChips categories={p.categories} />
                   <Links p={p} />
@@ -414,7 +427,7 @@ export default function WorkGallery({
           >
             <span className="animate-float-med text-4xl">{p.emoji}</span>
             <h3 className="mt-2 font-body text-xl font-bold text-ink">{p.name}</h3>
-            <p className="mt-1.5 font-body text-sm text-ink-soft">{blurbFor(p)}</p>
+            <Blurb text={blurbFor(p)} />
                 <DomainChips domains={p.domains} />
                 <TechChips categories={p.categories} />
                 <Links p={p} />
@@ -477,7 +490,7 @@ export default function WorkGallery({
             >
               <span className="text-3xl">{p.emoji}</span>
               <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-              <p className="mt-1 font-body text-sm text-ink-soft">{blurbFor(p)}</p>
+              <Blurb text={blurbFor(p)} />
               <DomainChips domains={p.domains} />
               <TechChips categories={p.categories} />
               <Links p={p} />

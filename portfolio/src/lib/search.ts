@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
+import { richToText } from "@/lib/richHtml";
 import type { Project } from "@/data/projects";
 
 export interface SearchHit {
@@ -15,7 +16,7 @@ export interface SearchHit {
 }
 
 function projectText(p: Project, readme = ""): string {
-  return [p.name, p.blurb, ...(p.categories ?? []), ...(p.domains ?? []), ...(p.tags ?? []), readme]
+  return [p.name, richToText(p.blurb), ...(p.categories ?? []), ...(p.domains ?? []), ...(p.tags ?? []), readme]
     .filter(Boolean)
     .join(" . ");
 }

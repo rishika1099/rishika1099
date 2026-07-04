@@ -8,6 +8,7 @@ import {
   saveProjectOverride,
   type ProjectOverride,
 } from "@/lib/projectOverrides";
+import { sanitizeRichHtml } from "@/lib/richHtml";
 
 export const runtime = "nodejs";
 
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
     if (!slug) return NextResponse.json({ error: "slug required" }, { status: 400 });
     const o: ProjectOverride = {
       name: typeof body.name === "string" ? body.name : undefined,
-      blurb: typeof body.blurb === "string" ? body.blurb : undefined,
+      blurb: typeof body.blurb === "string" ? sanitizeRichHtml(body.blurb) : undefined,
       featured: typeof body.featured === "boolean" ? body.featured : undefined,
       categories: strArr(body.categories) as ProjectOverride["categories"],
       domains: strArr(body.domains) as ProjectOverride["domains"],
