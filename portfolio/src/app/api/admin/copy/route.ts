@@ -33,7 +33,8 @@ export async function POST(request: Request) {
     if (!body.texts || typeof body.texts !== "object") {
       return NextResponse.json({ error: "texts object required" }, { status: 400 });
     }
-    const texts: Record<string, string> = {};
+    // merge over the current state so a per-page save never wipes other pages
+    const texts = await getCopy();
     for (const [k, v] of Object.entries(body.texts)) {
       if (typeof v === "string" && k in copyDefaults) texts[k] = v.slice(0, 4000);
     }

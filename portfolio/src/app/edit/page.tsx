@@ -299,127 +299,16 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
   );
 }
 
-/* ---------------- journey (about entries) ---------------- */
-
-function EntryForm({ entry, onChange, onRemove }: { entry: Entry; onChange: (e: Entry) => void; onRemove: () => void }) {
-  return (
-    <div className="space-y-2 rounded-3xl p-4 soft-card">
-      <div className="flex gap-2">
-        <input className={`${field} !w-16 text-center`} placeholder="✨" value={entry.icon} onChange={(e) => onChange({ ...entry, icon: e.target.value })} />
-        <input className={field} placeholder="when (e.g. 2023 – 2025)" value={entry.when} onChange={(e) => onChange({ ...entry, when: e.target.value })} />
-      </div>
-      <input className={field} placeholder="title" value={entry.title} onChange={(e) => onChange({ ...entry, title: e.target.value })} />
-      <input className={field} placeholder="place" value={entry.place} onChange={(e) => onChange({ ...entry, place: e.target.value })} />
-      <textarea className={`${field} min-h-16`} placeholder="one-line note" value={entry.note} onChange={(e) => onChange({ ...entry, note: e.target.value })} />
-      <textarea
-        className={`${field} min-h-24`}
-        placeholder={"details, one per line (use **bold** for emphasis)"}
-        value={(entry.details ?? []).join("\n")}
-        onChange={(e) => onChange({ ...entry, details: e.target.value.split("\n") })}
-      />
-      <div className="flex gap-2">
-        <input
-          className={field}
-          placeholder="domains, comma-separated (Healthcare, Legal, …)"
-          value={(entry.domains ?? []).join(", ")}
-          onChange={(e) => onChange({ ...entry, domains: e.target.value.split(",").map((s) => s.trim()) as Entry["domains"] })}
-        />
-        <input
-          className={field}
-          placeholder="tech areas, comma-separated (NLP, Causal Inference, …)"
-          value={(entry.tech ?? []).join(", ")}
-          onChange={(e) => onChange({ ...entry, tech: e.target.value.split(",").map((s) => s.trim()) as Entry["tech"] })}
-        />
-      </div>
-      <button className={btnDanger} onClick={onRemove}>remove entry</button>
-    </div>
-  );
-}
-
-const BLANK: Entry = { icon: "✨", when: "", title: "", place: "", note: "" };
-
-function JourneyTab({ keyVal }: { keyVal: string }) {
-  const api = useAdminApi(keyVal);
-  const [education, setEducation] = useState<Entry[] | null>(null);
-  const [timeline, setTimeline] = useState<Entry[]>([]);
-  const [msg, setMsg] = useState("");
-
-  useEffect(() => {
-    api<{ education: Entry[]; timeline: Entry[] }>("/api/admin/about")
-      .then((d) => {
-        setEducation(d.education);
-        setTimeline(d.timeline);
-      })
-      .catch(() => setMsg("couldn't load entries"));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function save() {
-    setMsg("saving…");
-    try {
-      await api("/api/admin/about", { method: "POST", body: JSON.stringify({ education, timeline }) });
-      setMsg("saved ✓ live on About immediately (chatbot follows within a few minutes)");
-    } catch {
-      setMsg("save failed, every entry needs at least a title");
-    }
-  }
-
-  async function revert() {
-    if (!confirm("Revert to the versions written in the code? Your edits here will be lost.")) return;
-    await api("/api/admin/about", { method: "DELETE" });
-    const d = await api<{ education: Entry[]; timeline: Entry[] }>("/api/admin/about");
-    setEducation(d.education);
-    setTimeline(d.timeline);
-    setMsg("reverted to repo defaults ✓");
-  }
-
-  if (!education) return <p className="mt-6 font-body text-sm text-ink-soft">opening the journal… ✦</p>;
-
-  const section = (label: string, list: Entry[], set: (l: Entry[]) => void) => (
-    <div className="mt-6">
-      <div className="flex items-center justify-between">
-        <h2 className="font-body text-lg font-bold text-ink">{label}</h2>
-        <button className={btnSoft} onClick={() => set([BLANK, ...list])}>＋ add</button>
-      </div>
-      <div className="mt-3 space-y-3">
-        {list.map((e, i) => (
-          <EntryForm
-            key={i}
-            entry={e}
-            onChange={(ne) => set(list.map((x, j) => (j === i ? ne : x)))}
-            onRemove={() => set(list.filter((_, j) => j !== i))}
-          />
-        ))}
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="mt-4">
-      {msg && <p className="font-body text-sm text-ink-soft">{msg}</p>}
-      <div className="mt-2 flex flex-wrap gap-2">
-        <button className={btnDark} onClick={save}>save everything</button>
-        <button className={btnSoft} onClick={revert}>revert to repo defaults</button>
-      </div>
-      {section("🎓 education", education, setEducation)}
-      {section("💼 work & research", timeline, setTimeline)}
-      <div className="mt-6">
-        <button className={btnDark} onClick={save}>save everything</button>
-      </div>
-    </div>
-  );
-}
-
 /* ---------------- shell ---------------- */
 
 function EditRoom() {
   const sp = useSearchParams();
-  const initialTab = (sp.get("tab") ?? "passages") as "passages" | "poems" | "photos" | "journey";
+  const initialTab = (sp.get("tab") ?? "passages") as "passages" | "poems" | "photos";
   const initialPage = sp.get("page");
   const [key, setKey] = useState("");
   const [entered, setEntered] = useState(false);
   const [err, setErr] = useState("");
-  const [tab, setTab] = useState<"passages" | "poems" | "photos" | "journey">(initialTab);
+  const [tab, setTab] = useState<"passages" | "poems" | "photos">(initialTab);
 
   useEffect(() => {
     const saved = localStorage.getItem("admin-key");
@@ -440,7 +329,7 @@ function EditRoom() {
   }
 
   return (
-    <PageShell vibe="lilac">
+    <PageShell vibe="honey">
       <div className="text-center">
         <PageTitle>the atelier 🗝️</PageTitle>
         <p className="mt-3 font-body text-base text-ink-soft">
@@ -478,13 +367,15 @@ function EditRoom() {
                 ["passages", "✍️ passages"],
                 ["poems", "🕯️ poems"],
                 ["photos", "📷 photos"],
-                ["journey", "🎓 journey"],
               ] as const
             ).map(([t, label]) => (
               <button key={t} onClick={() => setTab(t)} className={tab === t ? btnDark : btnSoft}>
                 {label}
               </button>
             ))}
+            <a href="/about/edit" className={btnSoft}>
+              🎓 journey →
+            </a>
             <button
               className={`${btnSoft} ml-auto`}
               onClick={() => {
@@ -499,7 +390,6 @@ function EditRoom() {
           {tab === "passages" && <PassagesTab keyVal={key} initialPage={initialPage} />}
           {tab === "poems" && <PoemsTab keyVal={key} />}
           {tab === "photos" && <PhotosTab keyVal={key} />}
-          {tab === "journey" && <JourneyTab keyVal={key} />}
         </div>
       )}
     </PageShell>

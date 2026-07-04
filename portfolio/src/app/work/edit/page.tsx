@@ -1,6 +1,20 @@
-import { redirect } from "next/navigation";
+"use client";
 
-// /work/edit opens the atelier focused on this page's passages
-export default function EditRedirect() {
-  redirect("/edit?tab=passages&page=work");
+import PassageEditPage from "@/components/PassageEditPage";
+
+export default function WorkEdit() {
+  return (
+    <PassageEditPage
+      vibe="meadow"
+      title="my little meadow of projects 🌱"
+      viewHref="/work"
+      passages={[
+        {
+          id: "work.intro",
+          hint: "{count} becomes the live project count",
+          textClass: "font-body text-lg text-ink-soft",
+        },
+      ]}
+    />
+  );
 }

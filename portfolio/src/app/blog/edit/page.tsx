@@ -1,6 +1,16 @@
-import { redirect } from "next/navigation";
+"use client";
 
-// /blog/edit opens the atelier focused on this page's passages
-export default function EditRedirect() {
-  redirect("/edit?tab=passages&page=blog");
+import PassageEditPage from "@/components/PassageEditPage";
+
+export default function BlogEdit() {
+  return (
+    <PassageEditPage
+      vibe="peach"
+      title="the writing room 📖"
+      viewHref="/blog"
+      passages={[
+        { id: "blog.intro", textClass: "font-body text-lg text-ink-soft" },
+      ]}
+    />
+  );
 }

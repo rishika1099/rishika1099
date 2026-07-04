@@ -103,6 +103,7 @@ body {
 .vibe-twilight { --card-hover: rgba(232, 219, 248, 0.9); }
 .vibe-aurora { --card-hover: rgba(214, 235, 235, 0.92); }
 .vibe-midnight { --card-hover: rgba(205, 220, 245, 0.92); }
+.vibe-honey { --card-hover: rgba(250, 230, 200, 0.92); }
 
 .text-shadow-soft { text-shadow: 0 2px 14px rgba(255, 255, 255, 0.65); }
 
