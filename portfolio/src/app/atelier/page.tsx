@@ -1,14 +1,16 @@
 "use client";
 
-// The atelier: every editable thing in one room (passages, poems, photos),
-// color-coded to match each page's background. Writes go through key-gated
-// admin APIs into Netlify Blobs (or local files in dev), live with no rebuild.
+// The atelier: every editable thing in one room (passages, poems, photos,
+// projects, blog posts), color-coded to match each page's background. Writes go
+// through key-gated admin APIs into Netlify Blobs (or local files in dev).
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
+import ProjectManager from "@/components/ProjectManager";
+import { RichPostManager, AutoPostManager } from "@/components/BlogManagers";
 
 interface Poem {
   slug: string;
@@ -291,24 +293,27 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
   return (
     <div className="mt-4">
       {msg && <p className="font-body text-sm text-ink-soft">{msg}</p>}
-      <div className="mt-2 flex flex-wrap items-center gap-2">
+      <div className="mt-2 flex flex-wrap gap-2">
         <button className={btnDark} onClick={save}>save everything</button>
         <button className={btnSoft} onClick={revert}>revert all to defaults</button>
-        <span className="ml-auto flex flex-wrap gap-1.5">
-          <button className={pageFilter === null ? btnDark : btnSoft} onClick={() => setPageFilter(null)}>
-            all pages
-          </button>
-          {pages.map((p) => (
-            <button
-              key={p}
-              onClick={() => setPageFilter(p)}
-              style={{ backgroundColor: pageFilter === p ? tintOf(p) : `${tintOf(p)}66` }}
-              className={`${btn} text-ink ${pageFilter === p ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
-            >
-              {p}
-            </button>
-          ))}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        <span className="mr-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">
+          filter
         </span>
+        <button className={pageFilter === null ? btnDark : btnSoft} onClick={() => setPageFilter(null)}>
+          all pages
+        </button>
+        {pages.map((p) => (
+          <button
+            key={p}
+            onClick={() => setPageFilter(p)}
+            style={{ backgroundColor: pageFilter === p ? tintOf(p) : `${tintOf(p)}66` }}
+            className={`${btn} text-ink ${pageFilter === p ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
+          >
+            {p}
+          </button>
+        ))}
       </div>
       <div className="mt-4 space-y-4">
         {shown.map((b) => (
@@ -344,12 +349,17 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
 
 function EditRoom() {
   const sp = useSearchParams();
-  const initialTab = (sp.get("tab") ?? "passages") as "passages" | "poems" | "photos";
+  const initialTab = (sp.get("tab") ?? "passages") as
+    | "passages"
+    | "work"
+    | "blogs"
+    | "poems"
+    | "photos";
   const initialPage = sp.get("page");
   const [key, setKey] = useState("");
   const [entered, setEntered] = useState(false);
   const [err, setErr] = useState("");
-  const [tab, setTab] = useState<"passages" | "poems" | "photos">(initialTab);
+  const [tab, setTab] = useState<"passages" | "work" | "blogs" | "poems" | "photos">(initialTab);
 
   useEffect(() => {
     const saved = localStorage.getItem("admin-key");
@@ -402,32 +412,36 @@ function EditRoom() {
         </>
       ) : (
         <div className="mx-auto mt-8 max-w-3xl">
-          <div className="flex flex-wrap gap-2">
-            {(
-              [
-                ["passages", "✍️ passages", "#f6d99b"],
-                ["poems", "🕯️ poems", "#d9c2f0"],
-                ["photos", "📷 photos", "#ffc0a0"],
-              ] as const
-            ).map(([t, label, tint]) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                style={{ backgroundColor: tab === t ? tint : `${tint}66` }}
-                className={`${btn} text-ink ${tab === t ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  ["passages", "✍️ passages", "#f6d99b"],
+                  ["work", "🌱 projects", "#cdeac0"],
+                  ["blogs", "📓 blogs", "#bfe0f0"],
+                  ["poems", "🕯️ poems", "#d9c2f0"],
+                  ["photos", "📷 photos", "#ffc0a0"],
+                ] as const
+              ).map(([t, label, tint]) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  style={{ backgroundColor: tab === t ? tint : `${tint}66` }}
+                  className={`${btn} text-ink ${tab === t ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
+                >
+                  {label}
+                </button>
+              ))}
+              <a
+                href="/about/edit"
+                style={{ backgroundColor: "#e6d7f566" }}
+                className={`${btn} text-ink hover:ring-1 hover:ring-ink/15`}
               >
-                {label}
-              </button>
-            ))}
-            <a
-              href="/about/edit"
-              style={{ backgroundColor: "#e6d7f566" }}
-              className={`${btn} text-ink hover:ring-1 hover:ring-ink/15`}
-            >
-              🎓 journey →
-            </a>
+                🎓 journey →
+              </a>
+            </div>
             <button
-              className={`${btnSoft} ml-auto`}
+              className={`${btnSoft} shrink-0`}
               onClick={() => {
                 localStorage.removeItem("admin-key");
                 setEntered(false);
@@ -437,7 +451,19 @@ function EditRoom() {
               lock up 🔒
             </button>
           </div>
+
           {tab === "passages" && <PassagesTab keyVal={key} initialPage={initialPage} />}
+          {tab === "work" && (
+            <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
+              <ProjectManager keyVal={key} />
+            </div>
+          )}
+          {tab === "blogs" && (
+            <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
+              <RichPostManager keyVal={key} />
+              <AutoPostManager keyVal={key} />
+            </div>
+          )}
           {tab === "poems" && <PoemsTab keyVal={key} />}
           {tab === "photos" && <PhotosTab keyVal={key} />}
         </div>
