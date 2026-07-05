@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
 import { clearAboutEntries, getAboutEntries, saveAboutEntries } from "@/lib/aboutData";
+import { richToText, sanitizeRichHtml } from "@/lib/richHtml";
 import type { Entry } from "@/data/about";
 
 export const runtime = "nodejs";
@@ -14,21 +15,29 @@ function guard(request: Request): NextResponse | null {
 const str = (v: unknown) => (typeof v === "string" ? v : "");
 const strArr = (v: unknown) =>
   Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : undefined;
+// the passage fields (when/title/place/note/details) carry ink-editor HTML now
+const rich = (v: unknown, max = 4000) => sanitizeRichHtml(str(v)).slice(0, max);
 
 function cleanEntry(e: unknown): Entry | null {
   const o = e as Record<string, unknown>;
   if (!o || typeof o !== "object") return null;
-  const title = str(o.title).trim();
-  if (!title) return null;
+  const title = rich(o.title);
+  if (!richToText(title).trim()) return null; // must have real text after tags
   const entry: Entry = {
     icon: str(o.icon).trim() || "✨",
-    when: str(o.when).trim(),
+    when: rich(o.when),
     title,
-    place: str(o.place).trim(),
-    note: str(o.note).trim(),
+    place: rich(o.place),
+    note: rich(o.note),
   };
-  const details = strArr(o.details)?.map((d) => d.trim()).filter(Boolean);
-  if (details?.length) entry.details = details;
+  // details: a single rich-HTML block (new), or legacy one-string-per-bullet
+  if (typeof o.details === "string") {
+    const d = rich(o.details, 8000);
+    if (richToText(d).trim()) entry.details = d;
+  } else {
+    const details = strArr(o.details)?.map((d) => d.trim()).filter(Boolean);
+    if (details?.length) entry.details = details;
+  }
   const domains = strArr(o.domains)?.map((d) => d.trim()).filter(Boolean);
   if (domains?.length) entry.domains = domains as Entry["domains"];
   const tech = strArr(o.tech)?.map((t) => t.trim()).filter(Boolean);

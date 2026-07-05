@@ -6,8 +6,9 @@ export type Entry = {
   title: string;
   place: string;
   note: string;
-  // extra highlights revealed when the card is clicked, add as many as you like
-  details?: string[];
+  // extra highlights revealed when the card is clicked. Legacy entries store one
+  // string per bullet; the editor now writes a single rich-HTML block instead.
+  details?: string[] | string;
   // same chips as project cards: colored domain + mint tech area
   domains?: Domain[];
   tech?: Category[];

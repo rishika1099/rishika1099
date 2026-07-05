@@ -7,24 +7,12 @@ import PageTitle from "@/components/PageTitle";
 import SkillGraph from "@/components/SkillGraph";
 import type { Entry } from "@/data/about";
 import { domainColor } from "@/data/projects";
-
-
-// render a detail string, bolding any **wrapped** segment
-function renderDetail(d: string) {
-  return d.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith("**") && part.endsWith("**") ? (
-      <strong key={i} className="font-bold text-ink">
-        {part.slice(2, -2)}
-      </strong>
-    ) : (
-      part
-    ),
-  );
-}
+import { copyToHtml, detailsToHtml, hasDetails as entryHasDetails } from "@/lib/copyRender";
+import { richToText } from "@/lib/richHtml";
 
 function EntryCard({ entry, i }: { entry: Entry; i: number }) {
   const [open, setOpen] = useState(false);
-  const hasDetails = !!entry.details?.length;
+  const hasDetails = entryHasDetails(entry.details);
   return (
     <motion.div
       initial={{ opacity: 0, x: -16 }}
@@ -43,14 +31,22 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
       >
         <span className="animate-float-med text-3xl">{entry.icon}</span>
         <div className="flex-1">
-          <p className="font-body text-sm italic text-ink-soft">{entry.when}</p>
-          <h3 className="font-body text-lg font-bold text-ink">
-            {entry.title}
-          </h3>
-          <p className="font-body text-sm font-semibold text-ink-soft">
-            {entry.place}
-          </p>
-          <p className="mt-1 font-body text-sm text-ink-soft">{entry.note}</p>
+          <div
+            className="rich-passage font-body text-sm italic text-ink-soft"
+            dangerouslySetInnerHTML={{ __html: copyToHtml(entry.when) }}
+          />
+          <h3
+            className="rich-passage font-body text-lg font-bold text-ink"
+            dangerouslySetInnerHTML={{ __html: copyToHtml(entry.title) }}
+          />
+          <div
+            className="rich-passage font-body text-sm font-semibold text-ink-soft"
+            dangerouslySetInnerHTML={{ __html: copyToHtml(entry.place) }}
+          />
+          <div
+            className="rich-passage mt-1 font-body text-sm text-ink-soft"
+            dangerouslySetInnerHTML={{ __html: copyToHtml(entry.note) }}
+          />
           {Boolean(entry.domains?.length || entry.tech?.length) && (
             <div className="mt-2.5 flex flex-wrap gap-1.5">
               {entry.domains?.map((d) => (
@@ -87,23 +83,18 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
 
       <AnimatePresence initial={false}>
         {open && hasDetails && (
-          <motion.ul
+          <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="ml-[3.25rem] overflow-hidden"
+            className="ml-[3.25rem] mt-2 overflow-hidden"
           >
-            {entry.details!.map((d) => (
-              <li
-                key={d}
-                className="mt-2 flex gap-2 font-body text-sm text-ink-soft"
-              >
-                <span aria-hidden className="text-blush">✦</span>
-                <span>{renderDetail(d)}</span>
-              </li>
-            ))}
-          </motion.ul>
+            <div
+              className="rich-passage entry-details font-body text-sm text-ink-soft [&_li]:mt-2 [&_ul]:list-none"
+              dangerouslySetInnerHTML={{ __html: detailsToHtml(entry.details) }}
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </motion.div>
@@ -176,7 +167,7 @@ export default function AboutClient({
       </p>
       <div className="mt-5 space-y-4">
         {timeline
-          .filter((t) => !t.title.startsWith("Research Assistant"))
+          .filter((t) => !richToText(t.title).startsWith("Research Assistant"))
           .map((t, i) => (
             <EntryCard key={t.title} entry={t} i={i} />
           ))}
@@ -191,7 +182,7 @@ export default function AboutClient({
       </p>
       <div className="mt-5 space-y-4">
         {timeline
-          .filter((t) => t.title.startsWith("Research Assistant"))
+          .filter((t) => richToText(t.title).startsWith("Research Assistant"))
           .map((t, i) => (
             <EntryCard key={t.title} entry={t} i={i} />
           ))}

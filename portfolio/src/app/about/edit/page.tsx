@@ -10,14 +10,15 @@ import PageShell from "@/components/PageShell";
 import SkillGraph from "@/components/SkillGraph";
 import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
-import { copyToHtml } from "@/lib/copyRender";
+import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
+import { richToText } from "@/lib/richHtml";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
 import type { Entry } from "@/data/about";
 import TagPicker from "@/components/TagPicker";
 import { categories as ALL_CATEGORIES, domains as ALL_DOMAINS, domainColor, type Domain } from "@/data/projects";
 
-const isResearch = (e: Entry) => e.title.startsWith("Research Assistant");
+const isResearch = (e: Entry) => richToText(e.title).startsWith("Research Assistant");
 
 const BLANK: Entry = { icon: "✨", when: "", title: "", place: "", note: "" };
 
@@ -48,34 +49,49 @@ function EntryEditor({
           onChange={(v) => onChange({ ...entry, icon: v })}
           className="!w-14 shrink-0 text-center text-3xl"
         />
-        <div className="flex-1 space-y-1.5">
-          <EditableText
-            value={entry.when}
+        <div className="flex-1 space-y-2">
+          <InkEditor
+            initialHtml={copyToHtml(entry.when)}
             onChange={(v) => onChange({ ...entry, when: v })}
-            className="font-body text-sm italic text-ink-soft"
+            compact
+            toolbarOnFocus
+            surfaceClassName="font-body text-sm italic text-ink-soft"
+            placeholder="when (e.g. Jan 2026 – Present)"
           />
-          <EditableText
-            value={entry.title}
+          <InkEditor
+            initialHtml={copyToHtml(entry.title)}
             onChange={(v) => onChange({ ...entry, title: v })}
-            className="font-body text-lg font-bold text-ink"
+            compact
+            toolbarOnFocus
+            surfaceClassName="font-body text-lg font-bold text-ink"
+            placeholder="title"
           />
-          <EditableText
-            value={entry.place}
+          <InkEditor
+            initialHtml={copyToHtml(entry.place)}
             onChange={(v) => onChange({ ...entry, place: v })}
-            className="font-body text-sm font-semibold text-ink-soft"
+            compact
+            toolbarOnFocus
+            surfaceClassName="font-body text-sm font-semibold text-ink-soft"
+            placeholder="place"
           />
-          <EditableText
-            value={entry.note}
+          <InkEditor
+            initialHtml={copyToHtml(entry.note)}
             onChange={(v) => onChange({ ...entry, note: v })}
-            className="font-body text-sm text-ink-soft"
+            compact
+            toolbarOnFocus
+            surfaceClassName="font-body text-sm text-ink-soft"
+            placeholder="a one-line description"
           />
           <p className="pt-1 font-body text-[11px] text-ink-soft/60">
-            details, one per line (**text** = bold):
+            details (revealed when the card is tapped):
           </p>
-          <EditableText
-            value={(entry.details ?? []).join("\n")}
-            onChange={(v) => onChange({ ...entry, details: v.split("\n") })}
-            className="font-body text-sm text-ink-soft"
+          <InkEditor
+            initialHtml={detailsToHtml(entry.details)}
+            onChange={(v) => onChange({ ...entry, details: v })}
+            compact
+            toolbarOnFocus
+            surfaceClassName="font-body text-sm text-ink-soft"
+            placeholder="extra highlights, use the bullet-list button"
           />
           <p className="pt-1 font-body text-[11px] text-ink-soft/60">domain chips, tap what applies:</p>
           <TagPicker

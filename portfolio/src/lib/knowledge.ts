@@ -2,6 +2,7 @@ import { skillAreas, type Entry } from "@/data/about";
 import { getAboutEntries } from "@/lib/aboutData";
 import { getCopy } from "@/lib/siteCopy";
 import { richToText } from "@/lib/richHtml";
+import { detailsToHtml } from "@/lib/copyRender";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
 import { getSubstackChunks } from "@/lib/substack";
@@ -28,8 +29,9 @@ function clean(s: string): string {
 }
 
 function entryText(e: Entry): string {
-  const head = `${e.title} at ${e.place} (${e.when}). ${e.note}`;
-  const details = (e.details ?? []).map(clean).join(" ");
+  // fields may now hold ink-editor HTML; strip to plain text for the bot
+  const head = `${richToText(e.title)} at ${richToText(e.place)} (${richToText(e.when)}). ${richToText(e.note, 800)}`;
+  const details = richToText(detailsToHtml(e.details), 1500);
   return clean(`${head} ${details}`);
 }
 
@@ -62,9 +64,10 @@ export async function buildKnowledge(): Promise<Chunk[]> {
   const { education, timeline } = await getAboutEntries();
 
   for (const e of education) {
+    const title = richToText(e.title);
     chunks.push({
-      id: `edu:${e.title}`,
-      title: e.title,
+      id: `edu:${title}`,
+      title,
       kind: "education",
       text: entryText(e),
       href: "/about",
@@ -72,10 +75,11 @@ export async function buildKnowledge(): Promise<Chunk[]> {
   }
 
   for (const e of timeline) {
-    const isResearch = e.title.startsWith("Research Assistant");
+    const title = richToText(e.title);
+    const isResearch = title.startsWith("Research Assistant");
     chunks.push({
-      id: `exp:${e.title}`,
-      title: e.title,
+      id: `exp:${title}`,
+      title,
       kind: isResearch ? "research" : "experience",
       text: entryText(e),
       href: "/about",

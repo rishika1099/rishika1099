@@ -43,6 +43,7 @@ export default function InkEditor({
   minHeight = "16rem",
   compact = false,
   surfaceClassName = "font-body text-base leading-relaxed text-ink",
+  toolbarOnFocus = false,
 }: {
   initialHtml: string;
   onChange: (html: string) => void;
@@ -50,6 +51,7 @@ export default function InkEditor({
   minHeight?: string;
   compact?: boolean; // slimmer toolbar + surface for in-page passages
   surfaceClassName?: string; // typography matching the page being edited
+  toolbarOnFocus?: boolean; // hide the toolbar until focused (many editors on one screen)
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -102,10 +104,12 @@ export default function InkEditor({
   const keepSel = (e: React.MouseEvent) => e.preventDefault();
 
   return (
-    <div className="rounded-3xl border border-white/70 bg-white/70 shadow-sm backdrop-blur transition focus-within:border-blush focus-within:ring-2 focus-within:ring-blush/50">
+    <div className="group rounded-3xl border border-white/70 bg-white/70 shadow-sm backdrop-blur transition focus-within:border-blush focus-within:ring-2 focus-within:ring-blush/50">
       <div
         onMouseDown={keepSel}
-        className="flex flex-wrap items-center gap-1.5 rounded-t-3xl border-b border-ink/10 bg-white/60 px-3 py-2"
+        className={`${
+          toolbarOnFocus ? "hidden group-focus-within:flex" : "flex"
+        } flex-wrap items-center gap-1.5 rounded-t-3xl border-b border-ink/10 bg-white/60 px-3 py-2`}
       >
         <button type="button" title="undo" onClick={() => cmd("undo")} className={tbBtn}>
           ↺
