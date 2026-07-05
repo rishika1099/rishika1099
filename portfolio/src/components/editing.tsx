@@ -73,12 +73,15 @@ export function SaveBar({
   saving,
   msg,
   onSave,
+  onMakeDefault,
   onRevert,
   viewHref,
 }: {
   saving: boolean;
   msg: string;
   onSave: () => void;
+  /** pin the current edits as the new default ("revert" returns here) */
+  onMakeDefault?: () => void;
   onRevert?: () => void;
   viewHref: string;
 }) {
@@ -93,6 +96,17 @@ export function SaveBar({
       >
         {saving ? "saving…" : "save"}
       </button>
+      {onMakeDefault && (
+        <button
+          type="button"
+          onClick={onMakeDefault}
+          disabled={saving}
+          title="pin the current words as the default; revert will come back here"
+          className="rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft transition hover:bg-white disabled:opacity-50"
+        >
+          📌 make default
+        </button>
+      )}
       {onRevert && (
         <button
           type="button"

@@ -43,6 +43,45 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
     }
   }
 
+  // pin this page's current words as the new default, so "revert" returns here
+  async function makeDefault() {
+    if (!texts) return;
+    if (!confirm('Make this page\'s current words the default? "Revert" will come back here.')) return;
+    setSaving(true);
+    setMsg("");
+    try {
+      await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
+      await api("/api/admin/copy", {
+        method: "POST",
+        body: JSON.stringify({ promote: true, ids }),
+      });
+      setMsg("pinned as the default ✓");
+    } catch {
+      setMsg("couldn't pin, try again?");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // revert just this page's blocks to the default (pinned baseline, else code)
+  async function revert() {
+    if (!confirm("Revert this page to the default words?")) return;
+    setSaving(true);
+    setMsg("");
+    try {
+      await api(`/api/admin/copy?ids=${encodeURIComponent(ids.join(","))}`, { method: "DELETE" });
+      const d = await api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy");
+      const map: Record<string, string> = {};
+      for (const id of ids) map[id] = d.blocks.find((b) => b.id === id)?.text ?? "";
+      setTexts(map);
+      setMsg("reverted to the default ✓");
+    } catch {
+      setMsg("couldn't revert, try again?");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const box = (id: string, className: string) =>
     texts === null ? null : (
       <InkEditor
@@ -75,7 +114,16 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
       </div>
     );
 
-  const bar = <SaveBar saving={saving} msg={msg} onSave={save} viewHref={viewHref} />;
+  const bar = (
+    <SaveBar
+      saving={saving}
+      msg={msg}
+      onSave={save}
+      onMakeDefault={makeDefault}
+      onRevert={revert}
+      viewHref={viewHref}
+    />
+  );
 
   const setText = (id: string, v: string) => setTexts((t) => (t ? { ...t, [id]: v } : t));
 

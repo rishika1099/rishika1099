@@ -13,7 +13,16 @@ import { useFileSwap } from "@/components/FileSwap";
 function Editor({ keyVal }: { keyVal: string }) {
   const { ready, box, bar, field, preview } = usePassageEditor(
     keyVal,
-    ["home.name1", "home.name2", "home.greeting", "home.intro"],
+    [
+      "home.name1",
+      "home.name2",
+      "home.greeting",
+      "home.intro",
+      "home.tab.about",
+      "home.tab.work",
+      "home.tab.blog",
+      "home.tab.contact",
+    ],
     "/",
   );
   const files = useFileSwap(keyVal);
@@ -36,6 +45,12 @@ function Editor({ keyVal }: { keyVal: string }) {
         name2={preview("home.name2")}
         greeting={box("home.greeting", "font-serif text-lg italic text-ink-soft sm:text-xl")}
         intro={box("home.intro", "font-body text-base text-ink-soft sm:text-lg")}
+        tabBlurbs={{
+          about: preview("home.tab.about"),
+          work: preview("home.tab.work"),
+          blog: preview("home.tab.blog"),
+          contact: preview("home.tab.contact"),
+        }}
         resumeSlot={
           <span className="flex items-center gap-1.5">
             <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-5 py-2 font-body text-base font-bold text-ink shadow-sm backdrop-blur transition hover:bg-white">
@@ -83,6 +98,17 @@ function Editor({ keyVal }: { keyVal: string }) {
           </div>
         }
       />
+
+      <div className="mx-auto mt-10 max-w-xl rounded-3xl p-5 soft-card">
+        <p className="font-body text-sm font-bold text-ink">the four landing cards</p>
+        <p className="mb-2 font-body text-[11px] text-ink-soft/60">
+          each card&apos;s little blurb (the card links are fixed):
+        </p>
+        {field("home.tab.about", "🦦 About", "font-body text-sm text-ink-soft")}
+        {field("home.tab.work", "🌱 Work", "font-body text-sm text-ink-soft")}
+        {field("home.tab.blog", "🎐 Blog", "font-body text-sm text-ink-soft")}
+        {field("home.tab.contact", "💌 Contact", "font-body text-sm text-ink-soft")}
+      </div>
     </>
   );
 }

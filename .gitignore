@@ -62,6 +62,7 @@ portfolio/src/content/poems/*.json
 # about-page overrides edited via the secret /edit room (private, lives in Blobs on deploy)
 portfolio/src/content/about-overrides.json
 portfolio/src/content/copy-overrides.json
+portfolio/src/content/copy-baseline.json
 portfolio/src/content/blog-rich/
 portfolio/src/content/project-overrides.json
 portfolio/src/content/blog-overrides.json

@@ -110,6 +110,22 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "tour.eng.b3": { page: "tour", label: "engineering bullet: fallback", text: "<strong>Graceful fallback.</strong> The live embedding classifier has a deterministic keyword backup, so a flaky API degrades quality instead of breaking the page." },
   "tour.eng.b4": { page: "tour", label: "engineering bullet: evals", text: "<strong>Evals as a habit.</strong> If I can't measure it, I try not to claim it." },
   "tour.close": { page: "tour", label: "closing line", text: "That is the whole machine: it embeds, retrieves, clusters, classifies, and grades its own homework. Thanks for reading the tour. 🌸" },
+
+  // home tab cards (the four little doorways on the landing page)
+  "home.tab.about": { page: "home", label: "About card blurb", text: "the human behind the models" },
+  "home.tab.work": { page: "home", label: "Work card blurb", text: "projects, growing in a meadow" },
+  "home.tab.blog": { page: "home", label: "Blog card blurb", text: "essays, poems & photographs" },
+  "home.tab.contact": { page: "home", label: "Contact card blurb", text: "let's say hello" },
+
+  // now-page section headings
+  "now.head.working": { page: "now", label: "🌱 working-on heading", text: "working on" },
+  "now.head.learning": { page: "now", label: "📚 learning heading", text: "learning" },
+  "now.head.tinkering": { page: "now", label: "🛠️ tinkering heading", text: "tinkering" },
+  "now.head.offclock": { page: "now", label: "🍵 off-the-clock heading", text: "off the clock" },
+  "now.head.tools": { page: "now", label: "tools heading", text: "🧰 tools i reach for daily" },
+
+  // footer (the © line sets its own year automatically)
+  "footer.name": { page: "footer", label: "footer name / sign-off", text: "Rishika Mamidibathula" },
 };
 
 export type CopyMap = Record<string, string>;

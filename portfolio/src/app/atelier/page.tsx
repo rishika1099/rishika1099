@@ -255,12 +255,22 @@ interface CopyBlockRow {
 function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: string | null }) {
   const api = useAdminApi(keyVal);
   const [blocks, setBlocks] = useState<CopyBlockRow[] | null>(null);
+  const [pinned, setPinned] = useState(false);
   const [pageFilter, setPageFilter] = useState<string | null>(initialPage);
   const [msg, setMsg] = useState("");
 
+  const reload = async () => {
+    const d = await api<{ blocks: CopyBlockRow[]; hasBaseline: boolean }>("/api/admin/copy");
+    setBlocks(d.blocks);
+    setPinned(d.hasBaseline);
+  };
+
   useEffect(() => {
-    api<{ blocks: CopyBlockRow[] }>("/api/admin/copy")
-      .then((d) => setBlocks(d.blocks))
+    api<{ blocks: CopyBlockRow[]; hasBaseline: boolean }>("/api/admin/copy")
+      .then((d) => {
+        setBlocks(d.blocks);
+        setPinned(d.hasBaseline);
+      })
       .catch(() => setMsg("couldn't load passages"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -277,12 +287,35 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
     }
   }
 
+  // pin the current text as the new default (whole site, or the filtered page)
+  async function makeDefault() {
+    if (!blocks) return;
+    const scope = pageFilter ? `the ${pageFilter} page's` : "all";
+    if (!confirm(`Make ${scope} current words the default? "Revert" will come back here from now on.`))
+      return;
+    setMsg("pinning…");
+    // save the latest edits first so what you see is what gets pinned
+    const texts = Object.fromEntries(blocks.map((b) => [b.id, b.text]));
+    await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
+    const ids = pageFilter ? blocks.filter((b) => b.page === pageFilter).map((b) => b.id) : undefined;
+    await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ promote: true, ids }) });
+    await reload();
+    setMsg("pinned as the default ✓");
+  }
+
   async function revert() {
-    if (!confirm("Revert every passage to the version written in the code?")) return;
+    const target = pinned ? "your pinned default" : "the version written in the code";
+    if (!confirm(`Revert every passage to ${target}?`)) return;
     await api("/api/admin/copy", { method: "DELETE" });
-    const d = await api<{ blocks: CopyBlockRow[] }>("/api/admin/copy");
-    setBlocks(d.blocks);
-    setMsg("reverted to repo defaults ✓");
+    await reload();
+    setMsg(pinned ? "reverted to your default ✓" : "reverted to repo defaults ✓");
+  }
+
+  async function resetToCode() {
+    if (!confirm("Unpin your default too and go all the way back to the original code?")) return;
+    await api("/api/admin/copy?hard=1", { method: "DELETE" });
+    await reload();
+    setMsg("reset to the original code ✓");
   }
 
   if (!blocks) return <p className="mt-6 font-body text-sm text-ink-soft">opening the pages… ✦</p>;
@@ -295,7 +328,17 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
       {msg && <p className="font-body text-sm text-ink-soft">{msg}</p>}
       <div className="mt-2 flex flex-wrap gap-2">
         <button className={btnDark} onClick={save}>save everything</button>
-        <button className={btnSoft} onClick={revert}>revert all to defaults</button>
+        <button className={btnSoft} onClick={makeDefault}>
+          📌 make {pageFilter ? "this page" : "current"} the default
+        </button>
+        <button className={btnSoft} onClick={revert}>
+          revert to {pinned ? "my default" : "defaults"}
+        </button>
+        {pinned && (
+          <button className={btnSoft} onClick={resetToCode}>
+            reset to original code
+          </button>
+        )}
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
         <span className="mr-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">

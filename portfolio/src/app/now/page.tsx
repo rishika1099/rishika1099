@@ -40,7 +40,7 @@ export default async function NowPage() {
           <section key={s.id} className="rounded-3xl p-6 soft-card">
             <h2 className="font-body text-lg font-bold text-ink">
               <span className="mr-2">{s.emoji}</span>
-              {s.title}
+              <RichText html={copyToHtml(copy[s.id.replace("now.", "now.head.")])} />
             </h2>
             <div
               className="rich-passage mt-3 font-body text-sm text-ink-soft"
@@ -50,7 +50,9 @@ export default async function NowPage() {
         ))}
       </div>
 
-      <h2 className="mt-10 font-body text-lg font-bold text-ink">🧰 tools i reach for daily</h2>
+      <h2 className="mt-10 font-body text-lg font-bold text-ink">
+        <RichText html={copyToHtml(copy["now.head.tools"])} />
+      </h2>
       <div className="mt-3 flex flex-wrap gap-2">
         {tools.map((t) => (
           <span

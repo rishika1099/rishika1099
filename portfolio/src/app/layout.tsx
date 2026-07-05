@@ -3,6 +3,7 @@ import { Nunito, Caveat, Cormorant_Garamond } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import SiteFooter from "@/components/SiteFooter";
 import AskMe from "@/components/AskMe";
 import CursorCompanion from "@/components/CursorCompanion";
 import CommandPalette from "@/components/CommandPalette";
@@ -92,10 +93,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Nav />
         <main className="relative">{children}</main>
-        <footer className="relative px-5 py-8 text-center font-body text-xs text-ink-soft/70">
-          <span className="mr-1">©</span>
-          {new Date().getFullYear()} Rishika Mamidibathula
-        </footer>
+        <SiteFooter />
         <AskMe />
         <CursorCompanion />
         <CommandPalette />

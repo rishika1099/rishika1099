@@ -6,10 +6,10 @@ import PageShell from "@/components/PageShell";
 import FlowerPortrait from "@/components/FlowerPortrait";
 
 const tabs = [
-  { href: "/about", icon: "🦦", title: "About", blurb: "the human behind the models" },
-  { href: "/work", icon: "🌱", title: "Work", blurb: "projects, growing in a meadow" },
-  { href: "/blog", icon: "🎐", title: "Blog", blurb: "essays, poems & photographs" },
-  { href: "/contact", icon: "💌", title: "Contact", blurb: "let's say hello" },
+  { href: "/about", icon: "🦦", title: "About", key: "about" },
+  { href: "/work", icon: "🌱", title: "Work", key: "work" },
+  { href: "/blog", icon: "🎐", title: "Blog", key: "blog" },
+  { href: "/contact", icon: "💌", title: "Contact", key: "contact" },
 ];
 
 export default function HomeClient({
@@ -17,6 +17,7 @@ export default function HomeClient({
   name2,
   greeting,
   intro,
+  tabBlurbs,
   resumeSlot,
   portraitOverlay,
 }: {
@@ -24,6 +25,8 @@ export default function HomeClient({
   name2: React.ReactNode;
   greeting: React.ReactNode;
   intro: React.ReactNode;
+  /** the four landing-card blurbs, keyed about/work/blog/contact */
+  tabBlurbs: Record<string, React.ReactNode>;
   /** edit mode swaps the Resume button for an upload control */
   resumeSlot?: React.ReactNode;
   /** edit mode floats a replace-photo control over the portrait */
@@ -143,7 +146,7 @@ export default function HomeClient({
               <span className="mt-1 font-body text-xl font-bold text-ink">
                 {t.title}
               </span>
-              <span className="font-body text-sm text-ink-soft">{t.blurb}</span>
+              <span className="font-body text-sm text-ink-soft">{tabBlurbs[t.key]}</span>
             </Link>
           </motion.div>
         ))}

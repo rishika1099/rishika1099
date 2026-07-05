@@ -10,7 +10,6 @@ import PageShell from "@/components/PageShell";
 import SkillGraph from "@/components/SkillGraph";
 import PageTitle from "@/components/PageTitle";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
-import { copyDefaults } from "@/data/copy";
 import { useFileSwap } from "@/components/FileSwap";
 import type { Entry } from "@/data/about";
 import TagPicker from "@/components/TagPicker";
@@ -157,23 +156,45 @@ function Editor({ keyVal }: { keyVal: string }) {
     }
   }
 
+  const COPY_IDS = ["about.bio", ...ABOUT_COPY];
+
+  async function makeDefault() {
+    if (!confirm('Make this page\'s current words the default? "Revert" will come back here.')) return;
+    setSaving(true);
+    setMsg("");
+    try {
+      await api("/api/admin/copy", {
+        method: "POST",
+        body: JSON.stringify({ texts: { "about.bio": bio ?? "", ...copy } }),
+      });
+      await api("/api/admin/copy", {
+        method: "POST",
+        body: JSON.stringify({ promote: true, ids: COPY_IDS }),
+      });
+      setMsg("pinned as the default ✓");
+    } catch {
+      setMsg("couldn't pin, try again?");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   async function revert() {
-    if (!confirm("Revert this page to the versions written in the code?")) return;
+    if (!confirm("Revert this page to the default versions?")) return;
     await api("/api/admin/about", { method: "DELETE" });
-    const d = await api<{ education: Entry[]; timeline: Entry[] }>("/api/admin/about");
-    setEducation(d.education);
-    setWork(d.timeline.filter((e) => !isResearch(e)));
-    setResearch(d.timeline.filter(isResearch));
-    const defaultBio = copyDefaults["about.bio"].text;
-    setBio(defaultBio);
+    await api(`/api/admin/copy?ids=${encodeURIComponent(COPY_IDS.join(","))}`, { method: "DELETE" });
+    const [about, copyRes] = await Promise.all([
+      api<{ education: Entry[]; timeline: Entry[] }>("/api/admin/about"),
+      api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
+    ]);
+    setEducation(about.education);
+    setWork(about.timeline.filter((e) => !isResearch(e)));
+    setResearch(about.timeline.filter(isResearch));
+    setBio(copyRes.blocks.find((b) => b.id === "about.bio")?.text ?? "");
     const cm: Record<string, string> = {};
-    for (const id of ABOUT_COPY) cm[id] = copyDefaults[id].text;
+    for (const id of ABOUT_COPY) cm[id] = copyRes.blocks.find((b) => b.id === id)?.text ?? "";
     setCopy(cm);
-    await api("/api/admin/copy", {
-      method: "POST",
-      body: JSON.stringify({ texts: { "about.bio": defaultBio, ...cm } }),
-    });
-    setMsg("reverted ✓");
+    setMsg("reverted to the default ✓");
   }
 
   if (bio === null)
@@ -216,7 +237,14 @@ function Editor({ keyVal }: { keyVal: string }) {
 
   return (
     <>
-      <SaveBar saving={saving} msg={msg} onSave={save} onRevert={revert} viewHref="/about" />
+      <SaveBar
+        saving={saving}
+        msg={msg}
+        onSave={save}
+        onMakeDefault={makeDefault}
+        onRevert={revert}
+        viewHref="/about"
+      />
       <PageTitle>
         <span className="rich-passage" dangerouslySetInnerHTML={{ __html: copy["about.title"] ?? "" }} />
       </PageTitle>

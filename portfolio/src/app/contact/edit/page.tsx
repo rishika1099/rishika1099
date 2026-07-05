@@ -57,12 +57,41 @@ function Editor({ keyVal }: { keyVal: string }) {
     }
   }
 
+  const COPY_IDS = ["contact.intro", "contact.title"];
+
+  async function makeDefault() {
+    if (!confirm('Make this page\'s current words the default? "Revert" will come back here.')) return;
+    setSaving(true);
+    setMsg("");
+    try {
+      await api("/api/admin/copy", {
+        method: "POST",
+        body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title } }),
+      });
+      await api("/api/admin/copy", {
+        method: "POST",
+        body: JSON.stringify({ promote: true, ids: COPY_IDS }),
+      });
+      setMsg("pinned as the default ✓");
+    } catch {
+      setMsg("couldn't pin, try again?");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   async function revert() {
-    if (!confirm("Revert the contact cards to the versions written in the code?")) return;
+    if (!confirm("Revert the contact page to the default versions?")) return;
     await api("/api/admin/contact", { method: "DELETE" });
-    const d = await api<{ links: ContactLink[] }>("/api/admin/contact");
-    setLinks(d.links);
-    setMsg("cards reverted ✓");
+    await api(`/api/admin/copy?ids=${encodeURIComponent(COPY_IDS.join(","))}`, { method: "DELETE" });
+    const [contact, copyRes] = await Promise.all([
+      api<{ links: ContactLink[] }>("/api/admin/contact"),
+      api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
+    ]);
+    setLinks(contact.links);
+    setIntro(copyRes.blocks.find((b) => b.id === "contact.intro")?.text ?? "");
+    setTitle(copyRes.blocks.find((b) => b.id === "contact.title")?.text ?? "");
+    setMsg("reverted to the default ✓");
   }
 
   if (intro === null)
@@ -78,7 +107,14 @@ function Editor({ keyVal }: { keyVal: string }) {
 
   return (
     <>
-      <SaveBar saving={saving} msg={msg} onSave={save} onRevert={revert} viewHref="/contact" />
+      <SaveBar
+        saving={saving}
+        msg={msg}
+        onSave={save}
+        onMakeDefault={makeDefault}
+        onRevert={revert}
+        viewHref="/contact"
+      />
       <motion.span
         animate={{ y: [0, -10, 0] }}
         transition={{ repeat: Infinity, duration: 3 }}
