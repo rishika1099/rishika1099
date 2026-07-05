@@ -114,6 +114,20 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
       </div>
     );
 
+  // the page title itself, made editable in place: styled like <PageTitle>,
+  // with the toolbar hidden until you click in (so it still reads as a title)
+  const titleBox = (id: string, className = "text-ink") =>
+    texts === null ? null : (
+      <InkEditor
+        initialHtml={texts[id]}
+        onChange={(v) => setTexts((t) => (t ? { ...t, [id]: v } : t))}
+        compact
+        toolbarOnFocus
+        surfaceClassName={`title-font text-3xl font-normal leading-tight text-shadow-soft sm:text-4xl ${className}`}
+        placeholder="page title"
+      />
+    );
+
   const bar = (
     <SaveBar
       saving={saving}
@@ -127,5 +141,5 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
 
   const setText = (id: string, v: string) => setTexts((t) => (t ? { ...t, [id]: v } : t));
 
-  return { ready: texts !== null, box, bar, texts, setText, preview, field };
+  return { ready: texts !== null, box, bar, texts, setText, preview, field, titleBox };
 }

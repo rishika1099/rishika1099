@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
-import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
+import { copyToHtml } from "@/lib/copyRender";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import type { ContactLink } from "@/lib/contactLinks";
 
@@ -122,12 +122,15 @@ function Editor({ keyVal }: { keyVal: string }) {
       >
         📮
       </motion.span>
-      <PageTitle className="mt-3 text-ink">
-        <span className="rich-passage" dangerouslySetInnerHTML={{ __html: title }} />
-      </PageTitle>
-      <div className="mx-auto mt-3 w-full max-w-xl text-left">
-        <p className="mb-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">page title</p>
-        <EditableText value={title} onChange={setTitle} className="font-halimun text-2xl text-ink" />
+      <div className="mx-auto mt-3 w-full max-w-xl">
+        <InkEditor
+          initialHtml={copyToHtml(title)}
+          onChange={setTitle}
+          compact
+          toolbarOnFocus
+          surfaceClassName="title-font text-3xl font-normal leading-tight text-shadow-soft text-ink sm:text-4xl"
+          placeholder="page title"
+        />
       </div>
 
       <div className="mt-3 w-full max-w-xl text-left">

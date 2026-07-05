@@ -7,7 +7,6 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import PageShell from "@/components/PageShell";
-import PageTitle from "@/components/PageTitle";
 import { AdminGate, adminApi } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 
@@ -237,7 +236,7 @@ function Gallery({ keyVal }: { keyVal: string }) {
 }
 
 function Editor({ keyVal }: { keyVal: string }) {
-  const { ready, box, bar, field, preview } = usePassageEditor(
+  const { ready, box, bar, titleBox } = usePassageEditor(
     keyVal,
     ["photography.title", "photography.intro"],
     "/blog/photography",
@@ -247,8 +246,7 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <PageShell vibe="sunset">
       {bar}
-      <PageTitle className="text-ink">{preview("photography.title")}</PageTitle>
-      <div className="mt-3">{field("photography.title", "page title", "font-halimun text-3xl text-ink")}</div>
+      {titleBox("photography.title")}
       <div className="mt-3">
         <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
           ← back to the writing room

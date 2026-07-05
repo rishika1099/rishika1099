@@ -213,16 +213,15 @@ export default function UnderTheHoodArticle({
           className="mt-4 text-center"
         >
           <p className="font-body text-sm italic text-ink-soft">📌 pinned · a tour of the build</p>
-          <h1 className="mt-2 bg-gradient-to-r from-[#c77dba] via-[#8e7bd6] to-[#6aa6d6] bg-clip-text font-display text-4xl font-bold leading-tight text-transparent sm:text-5xl">
-            {titleNode ?? "The Data Science Hiding in My Portfolio"}
-          </h1>
-          {renderSlot && (
-            <div className="mx-auto mt-3 max-w-xl">
-              <p className="mb-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">
-                article title
-              </p>
-              {slot("tour.title", "font-display text-xl font-bold text-ink")}
+          {renderSlot ? (
+            // edit mode: the title itself is the editor, no duplicate box
+            <div className="mx-auto mt-2 max-w-2xl text-left">
+              {slot("tour.title", "font-display text-3xl font-bold text-ink sm:text-4xl")}
             </div>
+          ) : (
+            <h1 className="mt-2 bg-gradient-to-r from-[#c77dba] via-[#8e7bd6] to-[#6aa6d6] bg-clip-text font-display text-4xl font-bold leading-tight text-transparent sm:text-5xl">
+              {titleNode ?? "The Data Science Hiding in My Portfolio"}
+            </h1>
           )}
           <div className="mx-auto mt-4 max-w-xl">
             {slot("tour.hero", "font-serif text-lg italic text-ink-soft")}

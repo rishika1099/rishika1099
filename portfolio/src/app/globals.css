@@ -108,6 +108,11 @@ body {
 
 .text-shadow-soft { text-shadow: 0 2px 14px rgba(255, 255, 255, 0.65); }
 
+/* the cursive page-title font, for editable title boxes (matches PageTitle) */
+.title-font {
+  font-family: var(--font-halimun), cursive;
+}
+
 /* Prose for markdown (blogs/poems) */
 .prose-soft {
   line-height: 1.85;

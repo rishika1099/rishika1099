@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import SkillGraph from "@/components/SkillGraph";
-import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
@@ -263,13 +262,14 @@ function Editor({ keyVal }: { keyVal: string }) {
         onRevert={revert}
         viewHref="/about"
       />
-      <PageTitle>
-        <span className="rich-passage" dangerouslySetInnerHTML={{ __html: copy["about.title"] ?? "" }} />
-      </PageTitle>
-      <div className="mx-auto mt-3 max-w-xl">
-        <p className="mb-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">page title</p>
-        {cField("about.title", "font-halimun text-2xl text-ink")}
-      </div>
+      <InkEditor
+        initialHtml={copyToHtml(copy["about.title"] ?? "")}
+        onChange={(v) => setCopy((c) => ({ ...c, "about.title": v }))}
+        compact
+        toolbarOnFocus
+        surfaceClassName="title-font text-3xl font-normal leading-tight text-shadow-soft text-ink sm:text-4xl"
+        placeholder="page title"
+      />
 
       <p className="mt-6 font-body text-xs text-ink-soft/70">
         bio, use the toolbar for headings, bold, fonts and colors:

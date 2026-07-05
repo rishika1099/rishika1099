@@ -3,7 +3,6 @@
 // In-place editor for the /now page: same layout, every section editable.
 
 import PageShell from "@/components/PageShell";
-import PageTitle from "@/components/PageTitle";
 import { AdminGate } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 
@@ -15,7 +14,7 @@ const SECTIONS = [
 ];
 
 function Editor({ keyVal }: { keyVal: string }) {
-  const { ready, box, bar, field, preview } = usePassageEditor(
+  const { ready, box, bar, titleBox } = usePassageEditor(
     keyVal,
     [
       "now.title",
@@ -31,8 +30,7 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <PageShell vibe="dawn">
       {bar}
-      <PageTitle>{preview("now.title")}</PageTitle>
-      <div className="mt-3">{field("now.title", "page title", "font-halimun text-3xl text-ink")}</div>
+      {titleBox("now.title")}
       <div className="mt-3 max-w-2xl">{box("now.intro", "font-body text-lg text-ink-soft")}</div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
