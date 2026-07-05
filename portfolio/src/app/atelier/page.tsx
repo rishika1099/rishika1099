@@ -11,6 +11,7 @@ import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
 import ProjectManager from "@/components/ProjectManager";
 import { RichPostManager, AutoPostManager } from "@/components/BlogManagers";
+import { copyDefaults } from "@/data/copy";
 
 interface Poem {
   slug: string;
@@ -44,6 +45,21 @@ const PAGE_TINT: Record<string, string> = {
   contact: "#f7b7c9", // rose
 };
 const tintOf = (page: string) => PAGE_TINT[page] ?? "#f6d99b";
+
+// the pages that have editable passages, in the order they appear in copy.ts
+const COPY_PAGES = [...new Set(Object.values(copyDefaults).map((b) => b.page))];
+const PAGE_EMOJI: Record<string, string> = {
+  home: "🎀",
+  about: "🦦",
+  work: "🌱",
+  blog: "🎐",
+  photography: "📷",
+  contact: "💌",
+  now: "🧭",
+  poems: "🕯️",
+  tour: "🔬",
+  footer: "🐾",
+};
 
 function useAdminApi(key: string) {
   return async function api<T>(path: string, init?: RequestInit): Promise<T> {
@@ -252,11 +268,10 @@ interface CopyBlockRow {
   isDefault: boolean;
 }
 
-function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: string | null }) {
+function PassagesTab({ keyVal, lockedPage }: { keyVal: string; lockedPage: string }) {
   const api = useAdminApi(keyVal);
   const [blocks, setBlocks] = useState<CopyBlockRow[] | null>(null);
   const [pinned, setPinned] = useState(false);
-  const [pageFilter, setPageFilter] = useState<string | null>(initialPage);
   const [msg, setMsg] = useState("");
 
   const reload = async () => {
@@ -287,28 +302,30 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
     }
   }
 
-  // pin the current text as the new default (whole site, or the filtered page)
+  // pin this page's current words as the new default, so "revert" returns here
   async function makeDefault() {
     if (!blocks) return;
-    const scope = pageFilter ? `the ${pageFilter} page's` : "all";
-    if (!confirm(`Make ${scope} current words the default? "Revert" will come back here from now on.`))
+    if (!confirm(`Make the ${lockedPage} page's current words the default? "Revert" will come back here.`))
       return;
     setMsg("pinning…");
     // save the latest edits first so what you see is what gets pinned
     const texts = Object.fromEntries(blocks.map((b) => [b.id, b.text]));
     await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
-    const ids = pageFilter ? blocks.filter((b) => b.page === pageFilter).map((b) => b.id) : undefined;
+    const ids = blocks.filter((b) => b.page === lockedPage).map((b) => b.id);
     await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ promote: true, ids }) });
     await reload();
     setMsg("pinned as the default ✓");
   }
 
+  // revert just this page's passages to the default (pinned baseline, else code)
   async function revert() {
+    if (!blocks) return;
     const target = pinned ? "your pinned default" : "the version written in the code";
-    if (!confirm(`Revert every passage to ${target}?`)) return;
-    await api("/api/admin/copy", { method: "DELETE" });
+    if (!confirm(`Revert the ${lockedPage} page to ${target}?`)) return;
+    const ids = blocks.filter((b) => b.page === lockedPage).map((b) => b.id);
+    await api(`/api/admin/copy?ids=${encodeURIComponent(ids.join(","))}`, { method: "DELETE" });
     await reload();
-    setMsg(pinned ? "reverted to your default ✓" : "reverted to repo defaults ✓");
+    setMsg("reverted ✓");
   }
 
   async function resetToCode() {
@@ -320,8 +337,7 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
 
   if (!blocks) return <p className="mt-6 font-body text-sm text-ink-soft">opening the pages… ✦</p>;
 
-  const pages = [...new Set(blocks.map((b) => b.page))];
-  const shown = pageFilter ? blocks.filter((b) => b.page === pageFilter) : blocks;
+  const shown = blocks.filter((b) => b.page === lockedPage);
 
   return (
     <div className="mt-4">
@@ -329,35 +345,20 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
       <div className="mt-2 flex flex-wrap gap-2">
         <button className={btnDark} onClick={save}>save everything</button>
         <button className={btnSoft} onClick={makeDefault}>
-          📌 make {pageFilter ? "this page" : "current"} the default
+          📌 make this page the default
         </button>
         <button className={btnSoft} onClick={revert}>
-          revert to {pinned ? "my default" : "defaults"}
+          revert this page
         </button>
         {pinned && (
           <button className={btnSoft} onClick={resetToCode}>
-            reset to original code
+            reset all to original code
           </button>
         )}
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        <span className="mr-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">
-          filter
-        </span>
-        <button className={pageFilter === null ? btnDark : btnSoft} onClick={() => setPageFilter(null)}>
-          all pages
-        </button>
-        {pages.map((p) => (
-          <button
-            key={p}
-            onClick={() => setPageFilter(p)}
-            style={{ backgroundColor: pageFilter === p ? tintOf(p) : `${tintOf(p)}66` }}
-            className={`${btn} text-ink ${pageFilter === p ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
-          >
-            {p}
-          </button>
-        ))}
-      </div>
+      {shown.length === 0 && (
+        <p className="mt-4 font-body text-sm text-ink-soft">nothing to edit on this page yet ✦</p>
+      )}
       <div className="mt-4 space-y-4">
         {shown.map((b) => (
           <div key={b.id} className="rounded-3xl p-4 soft-card transition focus-within:ring-2 focus-within:ring-blush focus-within:shadow-lg" style={{ backgroundColor: `${tintOf(b.page)}59` }}>
@@ -392,17 +393,19 @@ function PassagesTab({ keyVal, initialPage }: { keyVal: string; initialPage: str
 
 function EditRoom() {
   const sp = useSearchParams();
-  const initialTab = (sp.get("tab") ?? "passages") as
-    | "passages"
-    | "work"
-    | "blogs"
-    | "poems"
-    | "photos";
+  const tabParam = sp.get("tab");
   const initialPage = sp.get("page");
+  // pages are now top-level tabs ("page:<name>"); the content managers keep
+  // their own tabs ("work" | "blogs" | "poems" | "photos") alongside
+  const TYPE_TABS = ["work", "blogs", "poems", "photos"];
+  const initialTab =
+    tabParam && TYPE_TABS.includes(tabParam)
+      ? tabParam
+      : `page:${initialPage && COPY_PAGES.includes(initialPage) ? initialPage : COPY_PAGES[0]}`;
   const [key, setKey] = useState("");
   const [entered, setEntered] = useState(false);
   const [err, setErr] = useState("");
-  const [tab, setTab] = useState<"passages" | "work" | "blogs" | "poems" | "photos">(initialTab);
+  const [tab, setTab] = useState<string>(initialTab);
 
   useEffect(() => {
     const saved = localStorage.getItem("admin-key");
@@ -457,13 +460,29 @@ function EditRoom() {
         <div className="mx-auto mt-8 max-w-3xl">
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-wrap gap-2">
+              {/* one tab per page: its words + title + headings live here */}
+              {COPY_PAGES.map((p) => {
+                const t = `page:${p}`;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => setTab(t)}
+                    style={{ backgroundColor: tab === t ? tintOf(p) : `${tintOf(p)}66` }}
+                    className={`${btn} text-ink ${tab === t ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
+                  >
+                    {PAGE_EMOJI[p] ? `${PAGE_EMOJI[p]} ` : ""}
+                    {p}
+                  </button>
+                );
+              })}
+              <span aria-hidden className="mx-1 h-6 w-px self-center bg-ink/15" />
+              {/* the content managers (the actual projects, posts, poems, photos) */}
               {(
                 [
-                  ["passages", "✍️ passages", "#f6d99b"],
                   ["work", "🌱 projects", "#cdeac0"],
-                  ["blogs", "📓 blogs", "#bfe0f0"],
-                  ["poems", "🕯️ poems", "#d9c2f0"],
-                  ["photos", "📷 photos", "#ffc0a0"],
+                  ["blogs", "📓 blog posts", "#bfe0f0"],
+                  ["poems", "🕯️ poem desk", "#d9c2f0"],
+                  ["photos", "📷 photo gallery", "#ffc0a0"],
                 ] as const
               ).map(([t, label, tint]) => (
                 <button
@@ -495,7 +514,7 @@ function EditRoom() {
             </button>
           </div>
 
-          {tab === "passages" && <PassagesTab keyVal={key} initialPage={initialPage} />}
+          {tab.startsWith("page:") && <PassagesTab keyVal={key} lockedPage={tab.slice(5)} />}
           {tab === "work" && (
             <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
               <ProjectManager keyVal={key} />
