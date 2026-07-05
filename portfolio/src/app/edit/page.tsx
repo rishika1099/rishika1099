@@ -31,10 +31,6 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <>
       {bar}
-      <div className="mx-auto mt-4 max-w-xl">
-        {field("home.name1", "name, line 1", "font-name text-3xl text-ink")}
-        {field("home.name2", "name, line 2", "font-name text-3xl text-ink")}
-      </div>
       {files.msg && (
         <p className="fixed left-1/2 top-32 z-50 -translate-x-1/2 rounded-full bg-white/90 px-4 py-1 font-body text-xs text-ink-soft shadow">
           {files.msg}
