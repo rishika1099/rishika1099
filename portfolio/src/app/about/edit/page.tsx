@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import SkillGraph from "@/components/SkillGraph";
 import PageTitle from "@/components/PageTitle";
+import InkEditor from "@/components/InkEditor";
+import { copyToHtml } from "@/lib/copyRender";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
 import type { Entry } from "@/data/about";
@@ -123,7 +125,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         setEducation(about.education);
         setWork(about.timeline.filter((e) => !isResearch(e)));
         setResearch(about.timeline.filter(isResearch));
-        setBio(copy.blocks.find((b) => b.id === "about.bio")?.text ?? "");
+        setBio(copyToHtml(copy.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
         const cm: Record<string, string> = {};
         for (const id of ABOUT_COPY) cm[id] = copy.blocks.find((b) => b.id === id)?.text ?? "";
         setCopy(cm);
@@ -190,7 +192,7 @@ function Editor({ keyVal }: { keyVal: string }) {
     setEducation(about.education);
     setWork(about.timeline.filter((e) => !isResearch(e)));
     setResearch(about.timeline.filter(isResearch));
-    setBio(copyRes.blocks.find((b) => b.id === "about.bio")?.text ?? "");
+    setBio(copyToHtml(copyRes.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
     const cm: Record<string, string> = {};
     for (const id of ABOUT_COPY) cm[id] = copyRes.blocks.find((b) => b.id === id)?.text ?? "";
     setCopy(cm);
@@ -254,13 +256,14 @@ function Editor({ keyVal }: { keyVal: string }) {
       </div>
 
       <p className="mt-6 font-body text-xs text-ink-soft/70">
-        bio, a blank line starts a new paragraph and **text** renders bold:
+        bio, use the toolbar for headings, bold, fonts and colors:
       </p>
       <div className="mt-2 max-w-4xl">
-        <EditableText
-          value={bio}
+        <InkEditor
+          initialHtml={bio}
           onChange={setBio}
-          className="font-body text-lg leading-relaxed text-ink-soft"
+          surfaceClassName="font-body text-lg leading-relaxed text-ink-soft"
+          placeholder="write your story…"
         />
       </div>
 
