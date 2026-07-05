@@ -33,9 +33,9 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
     setMsg("");
     try {
       await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
-      router.push(viewHref);
+      // stay in edit mode; just revalidate the live page in the background
       router.refresh();
-      return;
+      setMsg("saved ✓ live now");
     } catch {
       setMsg("save failed, try again?");
     } finally {

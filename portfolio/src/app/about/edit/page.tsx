@@ -163,9 +163,9 @@ function Editor({ keyVal }: { keyVal: string }) {
           body: JSON.stringify({ texts: { "about.bio": bio ?? "", ...copy } }),
         }),
       ]);
-      router.push("/about");
-      router.refresh(); // skip the client router cache so the new words show immediately
-      return;
+      // stay in edit mode; revalidate the live page in the background
+      router.refresh();
+      setMsg("saved ✓ live now");
     } catch {
       setMsg("save failed, every card needs a title");
     } finally {

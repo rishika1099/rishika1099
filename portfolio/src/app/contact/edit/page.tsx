@@ -47,9 +47,9 @@ function Editor({ keyVal }: { keyVal: string }) {
         }),
         api("/api/admin/contact", { method: "POST", body: JSON.stringify({ links }) }),
       ]);
-      router.push("/contact");
+      // stay in edit mode; revalidate the live page in the background
       router.refresh();
-      return;
+      setMsg("saved ✓ live now");
     } catch {
       setMsg("save failed, every card needs a label and a link");
     } finally {

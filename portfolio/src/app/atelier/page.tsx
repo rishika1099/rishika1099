@@ -397,11 +397,18 @@ function EditRoom() {
   const initialPage = sp.get("page");
   // pages are now top-level tabs ("page:<name>"); the content managers keep
   // their own tabs ("work" | "blogs" | "poems" | "photos") alongside
-  const TYPE_TABS = ["work", "blogs", "poems", "photos"];
-  const initialTab =
-    tabParam && TYPE_TABS.includes(tabParam)
-      ? tabParam
-      : `page:${initialPage && COPY_PAGES.includes(initialPage) ? initialPage : COPY_PAGES[0]}`;
+  // old ?tab=<type> links map onto the page that now hosts that content
+  const OLD_TYPE_TO_PAGE: Record<string, string> = {
+    work: "work",
+    blogs: "blog",
+    poems: "poems",
+    photos: "photography",
+  };
+  const startPage =
+    (initialPage && COPY_PAGES.includes(initialPage) && initialPage) ||
+    (tabParam && OLD_TYPE_TO_PAGE[tabParam]) ||
+    COPY_PAGES[0];
+  const initialTab = `page:${startPage}`;
   const [key, setKey] = useState("");
   const [entered, setEntered] = useState(false);
   const [err, setErr] = useState("");
@@ -475,25 +482,6 @@ function EditRoom() {
                   </button>
                 );
               })}
-              <span aria-hidden className="mx-1 h-6 w-px self-center bg-ink/15" />
-              {/* the content managers (the actual projects, posts, poems, photos) */}
-              {(
-                [
-                  ["work", "🌱 projects", "#cdeac0"],
-                  ["blogs", "📓 blog posts", "#bfe0f0"],
-                  ["poems", "🕯️ poem desk", "#d9c2f0"],
-                  ["photos", "📷 photo gallery", "#ffc0a0"],
-                ] as const
-              ).map(([t, label, tint]) => (
-                <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  style={{ backgroundColor: tab === t ? tint : `${tint}66` }}
-                  className={`${btn} text-ink ${tab === t ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
-                >
-                  {label}
-                </button>
-              ))}
               <a
                 href="/about/edit"
                 style={{ backgroundColor: "#e6d7f566" }}
@@ -514,20 +502,25 @@ function EditRoom() {
             </button>
           </div>
 
-          {tab.startsWith("page:") && <PassagesTab keyVal={key} lockedPage={tab.slice(5)} />}
-          {tab === "work" && (
-            <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
-              <ProjectManager keyVal={key} />
-            </div>
+          {tab.startsWith("page:") && (
+            <>
+              {/* the page's words, then whatever else that page can edit */}
+              <PassagesTab keyVal={key} lockedPage={tab.slice(5)} />
+              {tab === "page:work" && (
+                <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
+                  <ProjectManager keyVal={key} />
+                </div>
+              )}
+              {tab === "page:blog" && (
+                <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
+                  <RichPostManager keyVal={key} />
+                  <AutoPostManager keyVal={key} />
+                </div>
+              )}
+              {tab === "page:poems" && <PoemsTab keyVal={key} />}
+              {tab === "page:photography" && <PhotosTab keyVal={key} />}
+            </>
           )}
-          {tab === "blogs" && (
-            <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
-              <RichPostManager keyVal={key} />
-              <AutoPostManager keyVal={key} />
-            </div>
-          )}
-          {tab === "poems" && <PoemsTab keyVal={key} />}
-          {tab === "photos" && <PhotosTab keyVal={key} />}
         </div>
       )}
     </PageShell>
