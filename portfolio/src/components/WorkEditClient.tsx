@@ -23,13 +23,14 @@ function Editor({
   categories: Category[];
   domains: Domain[];
 }) {
-  const { ready, box, bar } = usePassageEditor(keyVal, ["work.intro"], "/work");
+  const { ready, box, bar, field, preview } = usePassageEditor(keyVal, ["work.title", "work.intro"], "/work");
   if (!ready)
     return <p className="mt-8 text-center font-body text-sm text-ink-soft">unlocking the page… ✦</p>;
   return (
     <PageShell vibe="meadow">
       {bar}
-      <PageTitle>my little meadow of projects 🌱</PageTitle>
+      <PageTitle>{preview("work.title")}</PageTitle>
+      <div className="mt-3">{field("work.title", "page title", "font-halimun text-3xl text-ink")}</div>
       <p className="mt-1 font-body text-[11px] text-ink-soft/60">
         {"{count}"} becomes the live project count ({projects.length} right now):
       </p>

@@ -19,5 +19,12 @@ export default async function UnderTheHoodPage() {
       .filter(([id]) => id.startsWith("tour."))
       .map(([id, text]) => [id, copyToHtml(text)]),
   );
-  return <UnderTheHoodArticle passages={passages} />;
+  return (
+    <UnderTheHoodArticle
+      passages={passages}
+      titleNode={
+        <span className="rich-passage" dangerouslySetInnerHTML={{ __html: passages["tour.title"] ?? "" }} />
+      }
+    />
+  );
 }

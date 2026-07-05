@@ -5,6 +5,7 @@ import PhotoGallery from "@/components/PhotoGallery";
 import { getPhotoData } from "@/lib/photos";
 import { getCopy } from "@/lib/siteCopy";
 import { copyToHtml } from "@/lib/copyRender";
+import RichText from "@/components/RichText";
 
 export const metadata = { title: "Photography" };
 export const dynamic = "force-dynamic";
@@ -14,7 +15,7 @@ export default async function Photography() {
   const grouped = silhouette !== null && groups.length > 1;
   return (
     <PageShell vibe="sunset">
-      <PageTitle className="text-ink">photography 📷</PageTitle>
+      <PageTitle className="text-ink"><RichText html={copyToHtml(copy["photography.title"])} /></PageTitle>
       <div className="mt-3">
         <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
           ← back to the writing room

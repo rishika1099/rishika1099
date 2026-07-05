@@ -17,6 +17,7 @@ function Editor({ keyVal }: { keyVal: string }) {
   const api = adminApi(keyVal);
   const router = useRouter();
   const [intro, setIntro] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
   const [links, setLinks] = useState<ContactLink[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -28,6 +29,7 @@ function Editor({ keyVal }: { keyVal: string }) {
     ])
       .then(([copy, contact]) => {
         setIntro(copy.blocks.find((b) => b.id === "contact.intro")?.text ?? "");
+        setTitle(copy.blocks.find((b) => b.id === "contact.title")?.text ?? "");
         setLinks(contact.links);
       })
       .catch(() => setMsg("couldn't load, refresh?"));
@@ -41,7 +43,7 @@ function Editor({ keyVal }: { keyVal: string }) {
       await Promise.all([
         api("/api/admin/copy", {
           method: "POST",
-          body: JSON.stringify({ texts: { "contact.intro": intro ?? "" } }),
+          body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title } }),
         }),
         api("/api/admin/contact", { method: "POST", body: JSON.stringify({ links }) }),
       ]);
@@ -84,7 +86,13 @@ function Editor({ keyVal }: { keyVal: string }) {
       >
         📮
       </motion.span>
-      <PageTitle className="mt-3 text-ink">let&apos;s say hello 💌</PageTitle>
+      <PageTitle className="mt-3 text-ink">
+        <span className="rich-passage" dangerouslySetInnerHTML={{ __html: title }} />
+      </PageTitle>
+      <div className="mx-auto mt-3 w-full max-w-xl text-left">
+        <p className="mb-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">page title</p>
+        <EditableText value={title} onChange={setTitle} className="font-halimun text-2xl text-ink" />
+      </div>
 
       <div className="mt-3 w-full max-w-xl text-left">
         <InkEditor

@@ -11,6 +11,7 @@ export default async function Contact() {
   const [copy, links] = await Promise.all([getCopy(), getContactLinks()]);
   return (
     <ContactClient
+      title={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["contact.title"]) }} />}
       intro={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["contact.intro"]) }} />}
       links={links}
     />

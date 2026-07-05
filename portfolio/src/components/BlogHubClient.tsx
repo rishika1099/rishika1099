@@ -12,15 +12,17 @@ const doors = [
 ];
 
 export default function BlogHubClient({
+  title,
   intro,
   doorBlurbs,
 }: {
+  title: React.ReactNode;
   intro: React.ReactNode;
   doorBlurbs: Record<string, React.ReactNode>;
 }) {
   return (
     <PageShell vibe="peach">
-      <PageTitle>the writing room 📖</PageTitle>
+      <PageTitle>{title}</PageTitle>
       <div className="mt-3 max-w-4xl font-body text-lg text-ink-soft">{intro}</div>
 
       <div className="mt-9 grid gap-5 sm:grid-cols-3">

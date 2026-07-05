@@ -13,11 +13,15 @@ const tabs = [
 ];
 
 export default function HomeClient({
+  name1,
+  name2,
   greeting,
   intro,
   resumeSlot,
   portraitOverlay,
 }: {
+  name1: React.ReactNode;
+  name2: React.ReactNode;
   greeting: React.ReactNode;
   intro: React.ReactNode;
   /** edit mode swaps the Resume button for an upload control */
@@ -96,14 +100,14 @@ export default function HomeClient({
               animate={{ y: [0, -8, 0], rotate: [-1.5, 1.5, -1.5] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
             >
-              Rishika
+              {name1}
             </motion.span>
             <motion.span
               className="block"
               animate={{ y: [0, -6, 0], rotate: [1.5, -1.5, 1.5] }}
               transition={{ repeat: Infinity, duration: 7.5, ease: "easeInOut", delay: 0.6 }}
             >
-              Mamidibathula
+              {name2}
             </motion.span>
           </motion.h1>
 

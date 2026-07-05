@@ -23,6 +23,9 @@ function Editor({ keyVal }: { keyVal: string }) {
     <>
       {bar}
       <UnderTheHoodArticle
+        titleNode={
+          <span className="rich-passage" dangerouslySetInnerHTML={{ __html: texts["tour.title"] ?? "" }} />
+        }
         renderSlot={(id, className) => (
           <InkEditor
             initialHtml={texts[id] ?? ""}

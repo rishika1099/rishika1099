@@ -237,9 +237,9 @@ function Gallery({ keyVal }: { keyVal: string }) {
 }
 
 function Editor({ keyVal }: { keyVal: string }) {
-  const { ready, box, bar } = usePassageEditor(
+  const { ready, box, bar, field, preview } = usePassageEditor(
     keyVal,
-    ["photography.intro"],
+    ["photography.title", "photography.intro"],
     "/blog/photography",
   );
   if (!ready)
@@ -247,7 +247,8 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <PageShell vibe="sunset">
       {bar}
-      <PageTitle className="text-ink">photography 📷</PageTitle>
+      <PageTitle className="text-ink">{preview("photography.title")}</PageTitle>
+      <div className="mt-3">{field("photography.title", "page title", "font-halimun text-3xl text-ink")}</div>
       <div className="mt-3">
         <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
           ← back to the writing room

@@ -169,8 +169,8 @@ function SearchDemo() {
         })}
       </div>
       <p className="mt-4 font-body text-xs italic text-ink-soft/70">
-        Illustrative cosine scores. Anything under {THRESHOLD} is treated as "no real match" and dropped,
-        which is why a vague word still returns only what's genuinely relevant.
+        Illustrative cosine scores. Anything under {THRESHOLD} is treated as &ldquo;no real match&rdquo; and
+        dropped, which is why a vague word still returns only what&apos;s genuinely relevant.
       </p>
     </div>
   );
@@ -181,9 +181,12 @@ function SearchDemo() {
 export default function UnderTheHoodArticle({
   passages = {},
   renderSlot,
+  titleNode,
 }: {
   passages?: Record<string, string>;
   renderSlot?: (id: string, className?: string) => React.ReactNode;
+  /** the article title, rendered inside the <h1> (an editor can't nest there) */
+  titleNode?: React.ReactNode;
 }) {
   const slot = (id: string, className = "") =>
     renderSlot ? (
@@ -211,8 +214,16 @@ export default function UnderTheHoodArticle({
         >
           <p className="font-body text-sm italic text-ink-soft">📌 pinned · a tour of the build</p>
           <h1 className="mt-2 bg-gradient-to-r from-[#c77dba] via-[#8e7bd6] to-[#6aa6d6] bg-clip-text font-display text-4xl font-bold leading-tight text-transparent sm:text-5xl">
-            The Data Science Hiding in My Portfolio
+            {titleNode ?? "The Data Science Hiding in My Portfolio"}
           </h1>
+          {renderSlot && (
+            <div className="mx-auto mt-3 max-w-xl">
+              <p className="mb-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">
+                article title
+              </p>
+              {slot("tour.title", "font-display text-xl font-bold text-ink")}
+            </div>
+          )}
           <div className="mx-auto mt-4 max-w-xl">
             {slot("tour.hero", "font-serif text-lg italic text-ink-soft")}
           </div>

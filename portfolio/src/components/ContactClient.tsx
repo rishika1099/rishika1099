@@ -8,9 +8,11 @@ import ContactForm from "@/components/ContactForm";
 import type { ContactLink } from "@/lib/contactLinks";
 
 export default function ContactClient({
+  title,
   intro,
   links,
 }: {
+  title: React.ReactNode;
   intro: React.ReactNode;
   links: ContactLink[];
 }) {
@@ -23,7 +25,7 @@ export default function ContactClient({
       >
         📮
       </motion.span>
-      <PageTitle className="mt-3 text-ink">let&apos;s say hello 💌</PageTitle>
+      <PageTitle className="mt-3 text-ink">{title}</PageTitle>
       <div className="mt-3 max-w-xl font-body text-lg text-ink-soft">{intro}</div>
 
       <div className="mt-9 grid w-full max-w-xl gap-4 sm:grid-cols-2">

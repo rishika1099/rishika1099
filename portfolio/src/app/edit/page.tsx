@@ -11,19 +11,29 @@ import { usePassageEditor } from "@/components/usePassageEditor";
 import { useFileSwap } from "@/components/FileSwap";
 
 function Editor({ keyVal }: { keyVal: string }) {
-  const { ready, box, bar } = usePassageEditor(keyVal, ["home.greeting", "home.intro"], "/");
+  const { ready, box, bar, field, preview } = usePassageEditor(
+    keyVal,
+    ["home.name1", "home.name2", "home.greeting", "home.intro"],
+    "/",
+  );
   const files = useFileSwap(keyVal);
   if (!ready)
     return <p className="mt-8 text-center font-body text-sm text-ink-soft">unlocking the page… ✦</p>;
   return (
     <>
       {bar}
+      <div className="mx-auto mt-4 max-w-xl">
+        {field("home.name1", "name, line 1", "font-name text-3xl text-ink")}
+        {field("home.name2", "name, line 2", "font-name text-3xl text-ink")}
+      </div>
       {files.msg && (
         <p className="fixed left-1/2 top-32 z-50 -translate-x-1/2 rounded-full bg-white/90 px-4 py-1 font-body text-xs text-ink-soft shadow">
           {files.msg}
         </p>
       )}
       <HomeClient
+        name1={preview("home.name1")}
+        name2={preview("home.name2")}
         greeting={box("home.greeting", "font-serif text-lg italic text-ink-soft sm:text-xl")}
         intro={box("home.intro", "font-body text-base text-ink-soft sm:text-lg")}
         resumeSlot={

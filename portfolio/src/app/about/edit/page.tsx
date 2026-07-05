@@ -20,6 +20,16 @@ const isResearch = (e: Entry) => e.title.startsWith("Research Assistant");
 
 const BLANK: Entry = { icon: "✨", when: "", title: "", place: "", note: "" };
 
+// editable copy on this page (title + section headings)
+const ABOUT_COPY = [
+  "about.title",
+  "about.heading.education",
+  "about.heading.skills",
+  "about.heading.skills.sub",
+  "about.heading.work",
+  "about.heading.research",
+] as const;
+
 function EntryEditor({
   entry,
   onChange,
@@ -98,6 +108,7 @@ function Editor({ keyVal }: { keyVal: string }) {
   const router = useRouter();
   const files = useFileSwap(keyVal);
   const [bio, setBio] = useState<string | null>(null);
+  const [copy, setCopy] = useState<Record<string, string>>({});
   const [education, setEducation] = useState<Entry[]>([]);
   const [work, setWork] = useState<Entry[]>([]);
   const [research, setResearch] = useState<Entry[]>([]);
@@ -114,6 +125,9 @@ function Editor({ keyVal }: { keyVal: string }) {
         setWork(about.timeline.filter((e) => !isResearch(e)));
         setResearch(about.timeline.filter(isResearch));
         setBio(copy.blocks.find((b) => b.id === "about.bio")?.text ?? "");
+        const cm: Record<string, string> = {};
+        for (const id of ABOUT_COPY) cm[id] = copy.blocks.find((b) => b.id === id)?.text ?? "";
+        setCopy(cm);
       })
       .catch(() => setMsg("couldn't load, refresh?"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -130,7 +144,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         }),
         api("/api/admin/copy", {
           method: "POST",
-          body: JSON.stringify({ texts: { "about.bio": bio ?? "" } }),
+          body: JSON.stringify({ texts: { "about.bio": bio ?? "", ...copy } }),
         }),
       ]);
       router.push("/about");
@@ -152,9 +166,12 @@ function Editor({ keyVal }: { keyVal: string }) {
     setResearch(d.timeline.filter(isResearch));
     const defaultBio = copyDefaults["about.bio"].text;
     setBio(defaultBio);
+    const cm: Record<string, string> = {};
+    for (const id of ABOUT_COPY) cm[id] = copyDefaults[id].text;
+    setCopy(cm);
     await api("/api/admin/copy", {
       method: "POST",
-      body: JSON.stringify({ texts: { "about.bio": defaultBio } }),
+      body: JSON.stringify({ texts: { "about.bio": defaultBio, ...cm } }),
     });
     setMsg("reverted ✓");
   }
@@ -162,15 +179,19 @@ function Editor({ keyVal }: { keyVal: string }) {
   if (bio === null)
     return <p className="mt-8 text-center font-body text-sm text-ink-soft">unlocking the page… ✦</p>;
 
+  const cField = (id: string, className: string) => (
+    <EditableText value={copy[id] ?? ""} onChange={(v) => setCopy((c) => ({ ...c, [id]: v }))} className={className} />
+  );
+
   const section = (
-    heading: string,
+    headingId: string,
     hint: string | null,
     list: Entry[],
     set: (l: Entry[]) => void,
   ) => (
     <>
       <div className="mt-12 flex items-center justify-between">
-        <h2 className="font-body text-2xl font-bold text-ink">{heading}</h2>
+        <div className="flex-1">{cField(headingId, "font-body text-2xl font-bold text-ink")}</div>
         <button
           type="button"
           onClick={() => set([BLANK, ...list])}
@@ -196,7 +217,13 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <>
       <SaveBar saving={saving} msg={msg} onSave={save} onRevert={revert} viewHref="/about" />
-      <PageTitle>the human behind the models 🦦</PageTitle>
+      <PageTitle>
+        <span className="rich-passage" dangerouslySetInnerHTML={{ __html: copy["about.title"] ?? "" }} />
+      </PageTitle>
+      <div className="mx-auto mt-3 max-w-xl">
+        <p className="mb-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">page title</p>
+        {cField("about.title", "font-halimun text-2xl text-ink")}
+      </div>
 
       <p className="mt-6 font-body text-xs text-ink-soft/70">
         bio, a blank line starts a new paragraph and **text** renders bold:
@@ -234,17 +261,16 @@ function Editor({ keyVal }: { keyVal: string }) {
         {files.msg && <p className="mt-1 font-body text-[11px] text-ink-soft/70">{files.msg}</p>}
       </div>
 
-      {section("where curiosity took me 🎓", null, education, setEducation)}
+      {section("about.heading.education", null, education, setEducation)}
 
-      <h2 className="mt-12 font-body text-2xl font-bold text-ink">things I tinker with 🛠️</h2>
-      <p className="mt-1 font-body text-sm text-ink-soft">
-        little clusters of tools, all tangled together ✦ (this graph is tended in code)
-      </p>
+      <div className="mt-12">{cField("about.heading.skills", "font-body text-2xl font-bold text-ink")}</div>
+      <div className="mt-1">{cField("about.heading.skills.sub", "font-body text-sm text-ink-soft")}</div>
+      <p className="mt-1 font-body text-xs text-ink-soft/60">(the graph itself is tended in code)</p>
       <SkillGraph />
 
-      {section("where curiosity paid the bills 💼", null, work, setWork)}
+      {section("about.heading.work", null, work, setWork)}
       {section(
-        "where curiosity became research 🔬",
+        "about.heading.research",
         'research cards keep a title starting with "Research Assistant" to stay in this section',
         research,
         setResearch,

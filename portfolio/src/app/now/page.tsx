@@ -4,6 +4,7 @@ import PageTitle from "@/components/PageTitle";
 import { getCopy } from "@/lib/siteCopy";
 import { copyToHtml } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
+import RichText from "@/components/RichText";
 
 export const metadata: Metadata = {
   title: "Now",
@@ -28,7 +29,7 @@ export default async function NowPage() {
     .filter(Boolean);
   return (
     <PageShell vibe="dawn">
-      <PageTitle>what i&apos;m up to, now 🧭</PageTitle>
+      <PageTitle><RichText html={copyToHtml(copy["now.title"])} /></PageTitle>
       <p
         className="rich-passage mt-3 max-w-2xl font-body text-lg text-ink-soft [&_a]:font-semibold [&_a]:text-[#c77dba] [&_a]:underline"
         dangerouslySetInnerHTML={{ __html: copyToHtml(copy["now.intro"]) }}

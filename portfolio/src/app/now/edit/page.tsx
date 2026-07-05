@@ -15,9 +15,9 @@ const SECTIONS = [
 ];
 
 function Editor({ keyVal }: { keyVal: string }) {
-  const { ready, box, bar } = usePassageEditor(
+  const { ready, box, bar, field, preview } = usePassageEditor(
     keyVal,
-    ["now.intro", ...SECTIONS.map((s) => s.id), "now.tools"],
+    ["now.title", "now.intro", ...SECTIONS.map((s) => s.id), "now.tools"],
     "/now",
   );
   if (!ready)
@@ -25,7 +25,8 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <PageShell vibe="dawn">
       {bar}
-      <PageTitle>what i&apos;m up to, now 🧭</PageTitle>
+      <PageTitle>{preview("now.title")}</PageTitle>
+      <div className="mt-3">{field("now.title", "page title", "font-halimun text-3xl text-ink")}</div>
       <div className="mt-3 max-w-2xl">{box("now.intro", "font-body text-lg text-ink-soft")}</div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">

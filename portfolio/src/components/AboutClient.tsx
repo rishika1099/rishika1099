@@ -114,14 +114,24 @@ export default function AboutClient({
   education,
   timeline,
   bioHtml,
+  title,
+  heads,
 }: {
   education: Entry[];
   timeline: Entry[];
   bioHtml: string;
+  title: React.ReactNode;
+  heads: {
+    education: React.ReactNode;
+    skills: React.ReactNode;
+    skillsSub: React.ReactNode;
+    work: React.ReactNode;
+    research: React.ReactNode;
+  };
 }) {
   return (
     <PageShell vibe="lilac">
-      <PageTitle>the human behind the models 🦦</PageTitle>
+      <PageTitle>{title}</PageTitle>
 
       <div
         className="rich-passage mt-6 max-w-4xl font-body text-lg text-ink-soft"
@@ -140,7 +150,7 @@ export default function AboutClient({
 
       {/* Education */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        where curiosity took me 🎓
+        {heads.education}
       </h2>
       <div className="mt-5 space-y-4">
         {education.map((e, i) => (
@@ -150,16 +160,16 @@ export default function AboutClient({
 
       {/* Skills */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        things I tinker with 🛠️
+        {heads.skills}
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
-        little clusters of tools, all tangled together ✦
+        {heads.skillsSub}
       </p>
       <SkillGraph />
 
       {/* Jobs */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        where curiosity paid the bills 💼
+        {heads.work}
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
         tap a card to unfold the details ✦
@@ -174,7 +184,7 @@ export default function AboutClient({
 
       {/* Research */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
-        where curiosity became research 🔬
+        {heads.research}
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
         tap a card to unfold the details ✦

@@ -54,9 +54,30 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
       />
     );
 
+  // a plain live-preview span, safe to drop inside an <h1>/<span> where the
+  // editor <div> can't go (div-in-heading would break hydration)
+  const preview = (id: string, className = "") =>
+    texts === null ? null : (
+      <span
+        className={`rich-passage ${className}`}
+        dangerouslySetInnerHTML={{ __html: texts[id] }}
+      />
+    );
+
+  // a labeled editor block to sit outside a heading, so titles stay editable
+  const field = (id: string, label: string, className: string) =>
+    texts === null ? null : (
+      <div className="mx-auto mb-2 max-w-xl">
+        <p className="mb-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">
+          {label}
+        </p>
+        {box(id, className)}
+      </div>
+    );
+
   const bar = <SaveBar saving={saving} msg={msg} onSave={save} viewHref={viewHref} />;
 
   const setText = (id: string, v: string) => setTexts((t) => (t ? { ...t, [id]: v } : t));
 
-  return { ready: texts !== null, box, bar, texts, setText };
+  return { ready: texts !== null, box, bar, texts, setText, preview, field };
 }

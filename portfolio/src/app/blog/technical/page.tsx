@@ -5,6 +5,7 @@ import TechnicalBlogList from "@/components/TechnicalBlogList";
 import { getTechnicalPosts } from "@/lib/technicalPosts";
 import { getCopy } from "@/lib/siteCopy";
 import { copyToHtml } from "@/lib/copyRender";
+import RichText from "@/components/RichText";
 
 export const metadata = { title: "Technical Blogs" };
 // copy edits go live instantly; the Substack fetch keeps its own hourly cache
@@ -15,7 +16,7 @@ export default async function TechnicalIndex() {
   const posts = await getTechnicalPosts();
   return (
     <PageShell vibe="azure">
-      <PageTitle className="text-ink">technical blogs 📓</PageTitle>
+      <PageTitle className="text-ink"><RichText html={copyToHtml(copy["blog.technical.title"])} /></PageTitle>
       <div className="mt-3">
         <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
           ← back to the writing room

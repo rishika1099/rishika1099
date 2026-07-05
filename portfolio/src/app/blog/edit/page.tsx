@@ -8,9 +8,9 @@ import { AdminGate } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 
 function Editor({ keyVal }: { keyVal: string }) {
-  const { ready, box, bar } = usePassageEditor(
+  const { ready, box, bar, field, preview } = usePassageEditor(
     keyVal,
-    ["blog.intro", "blog.door.technical", "blog.door.poems", "blog.door.photography"],
+    ["blog.title", "blog.intro", "blog.door.technical", "blog.door.poems", "blog.door.photography"],
     "/blog",
   );
   if (!ready)
@@ -18,7 +18,11 @@ function Editor({ keyVal }: { keyVal: string }) {
   return (
     <>
       {bar}
+      <div className="mx-auto mt-4 max-w-xl">
+        {field("blog.title", "writing room title", "font-halimun text-3xl text-ink")}
+      </div>
       <BlogHubClient
+        title={preview("blog.title")}
         intro={box("blog.intro", "font-body text-lg text-ink-soft")}
         doorBlurbs={{
           technical: box("blog.door.technical", "font-body text-sm text-ink-soft"),

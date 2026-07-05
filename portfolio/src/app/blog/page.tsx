@@ -10,6 +10,7 @@ export default async function BlogHub() {
   const copy = await getCopy();
   return (
     <BlogHubClient
+      title={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["blog.title"]) }} />}
       intro={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["blog.intro"]) }} />}
       doorBlurbs={Object.fromEntries(
         ["technical", "poems", "photography"].map((k) => [

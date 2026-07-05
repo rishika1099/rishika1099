@@ -13,13 +13,14 @@ import { usePassageEditor } from "@/components/usePassageEditor";
 import type { Doc } from "@/lib/content";
 
 function Editor({ keyVal, posts }: { keyVal: string; posts: Doc[] }) {
-  const { ready, box, bar } = usePassageEditor(keyVal, ["blog.technical.intro"], "/blog/technical");
+  const { ready, box, bar, field, preview } = usePassageEditor(keyVal, ["blog.technical.title", "blog.technical.intro"], "/blog/technical");
   if (!ready)
     return <p className="mt-8 text-center font-body text-sm text-ink-soft">unlocking the page… ✦</p>;
   return (
     <PageShell vibe="azure">
       {bar}
-      <PageTitle className="text-ink">technical blogs 📓</PageTitle>
+      <PageTitle className="text-ink">{preview("blog.technical.title")}</PageTitle>
+      <div className="mt-3">{field("blog.technical.title", "page title", "font-halimun text-3xl text-ink")}</div>
       <div className="mt-3">
         <Link href="/blog" className="font-body text-sm text-ink-soft hover:text-ink">
           ← back to the writing room

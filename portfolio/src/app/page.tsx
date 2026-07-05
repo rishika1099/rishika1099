@@ -9,6 +9,8 @@ export default async function Home() {
   const copy = await getCopy();
   return (
     <HomeClient
+      name1={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.name1"]) }} />}
+      name2={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.name2"]) }} />}
       greeting={<span dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.greeting"]) }} />}
       intro={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.intro"]) }} />}
     />

@@ -6,6 +6,7 @@ import { categories, domains } from "@/data/projects";
 import { getAllProjects } from "@/lib/github-projects";
 import { getCopy } from "@/lib/siteCopy";
 import { copyToHtml } from "@/lib/copyRender";
+import RichText from "@/components/RichText";
 
 export const metadata = { title: "Work" };
 
@@ -16,7 +17,7 @@ export default async function Work() {
 
   return (
     <PageShell vibe="meadow">
-      <PageTitle>my little meadow of projects 🌱</PageTitle>
+      <PageTitle><RichText html={copyToHtml(copy["work.title"])} /></PageTitle>
       <p className="mt-3 max-w-4xl font-body text-lg text-ink-soft">
         <span className="rich-passage" dangerouslySetInnerHTML={{ __html: intro }} />
       </p>
