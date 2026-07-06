@@ -12,6 +12,7 @@ import InkEditor from "@/components/InkEditor";
 import ProjectManager from "@/components/ProjectManager";
 import { RichPostManager, AutoPostManager } from "@/components/BlogManagers";
 import { copyDefaults } from "@/data/copy";
+import { setEditMode } from "@/lib/editMode";
 
 interface Poem {
   slug: string;
@@ -419,6 +420,7 @@ function EditRoom() {
     if (saved) {
       setKey(saved);
       setEntered(true);
+      setEditMode(true);
     }
   }, []);
 
@@ -430,6 +432,7 @@ function EditRoom() {
     if (!res.ok) return setErr("something wobbled, try again?");
     localStorage.setItem("admin-key", k);
     setEntered(true);
+    setEditMode(true);
   }
 
   return (
@@ -496,6 +499,7 @@ function EditRoom() {
                 localStorage.removeItem("admin-key");
                 setEntered(false);
                 setKey("");
+                setEditMode(false);
               }}
             >
               lock up 🔒
