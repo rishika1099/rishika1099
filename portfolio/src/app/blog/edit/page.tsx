@@ -1,14 +1,15 @@
 "use client";
 
-// In-place editor for the writing room: the full page (doors, featured card,
-// neighboring corner) renders as-is, with only the intro editable.
+// In-place editor for the writing room: the page renders as-is (the doors show
+// their current blurbs), and the three door blurbs are edited in one tidy
+// labeled section below, the same way the home landing cards work.
 
 import BlogHubClient from "@/components/BlogHubClient";
 import { AdminGate } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 
 function Editor({ keyVal }: { keyVal: string }) {
-  const { ready, box, bar, titleBox } = usePassageEditor(
+  const { ready, box, bar, titleBox, field, preview } = usePassageEditor(
     keyVal,
     ["blog.title", "blog.intro", "blog.door.technical", "blog.door.poems", "blog.door.photography"],
     "/blog",
@@ -22,11 +23,21 @@ function Editor({ keyVal }: { keyVal: string }) {
         title={titleBox("blog.title")}
         intro={box("blog.intro", "font-body text-lg text-ink-soft")}
         doorBlurbs={{
-          technical: box("blog.door.technical", "font-body text-sm text-ink-soft"),
-          poems: box("blog.door.poems", "font-body text-sm text-ink-soft"),
-          photography: box("blog.door.photography", "font-body text-sm text-ink-soft"),
+          technical: preview("blog.door.technical"),
+          poems: preview("blog.door.poems"),
+          photography: preview("blog.door.photography"),
         }}
       />
+
+      <div className="mx-auto mt-10 max-w-xl rounded-3xl p-5 soft-card">
+        <p className="font-body text-sm font-bold text-ink">the three doors</p>
+        <p className="mb-2 font-body text-[11px] text-ink-soft/60">
+          each door&apos;s little blurb (the doors themselves are fixed):
+        </p>
+        {field("blog.door.technical", "📓 Technical Blogs", "font-body text-sm text-ink-soft")}
+        {field("blog.door.poems", "🕯️ Poems", "font-body text-sm text-ink-soft")}
+        {field("blog.door.photography", "📷 Photography", "font-body text-sm text-ink-soft")}
+      </div>
     </>
   );
 }
