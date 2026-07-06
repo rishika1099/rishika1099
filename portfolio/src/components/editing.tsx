@@ -77,6 +77,7 @@ export function SaveBar({
   saving,
   msg,
   onSave,
+  onPublish,
   onMakeDefault,
   onRevert,
   viewHref,
@@ -84,6 +85,8 @@ export function SaveBar({
   saving: boolean;
   msg: string;
   onSave: () => void;
+  /** save and leave edit mode (the site stops opening pages in /edit) */
+  onPublish?: () => void;
   /** pin the current edits as the new default ("revert" returns here) */
   onMakeDefault?: () => void;
   onRevert?: () => void;
@@ -100,6 +103,17 @@ export function SaveBar({
       >
         {saving ? "saving…" : "save"}
       </button>
+      {onPublish && (
+        <button
+          type="button"
+          onClick={onPublish}
+          disabled={saving}
+          title="save and leave edit mode"
+          className="rounded-full bg-blush px-4 py-1.5 font-body text-sm font-semibold text-ink transition hover:opacity-90 disabled:opacity-50"
+        >
+          ✦ publish
+        </button>
+      )}
       {onMakeDefault && (
         <button
           type="button"

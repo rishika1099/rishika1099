@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SaveBar, adminApi } from "@/components/editing";
 import InkEditor from "@/components/InkEditor";
+import { setEditMode } from "@/lib/editMode";
 
 export function usePassageEditor(keyVal: string, ids: string[], viewHref: string) {
   const api = adminApi(keyVal);
@@ -36,6 +37,23 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
       // stay in edit mode; just revalidate the live page in the background
       router.refresh();
       setMsg("saved ✓ live now");
+    } catch {
+      setMsg("save failed, try again?");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // save, leave edit mode site-wide, and go see the live page
+  async function publish() {
+    if (!texts) return;
+    setSaving(true);
+    setMsg("");
+    try {
+      await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
+      setEditMode(false);
+      router.push(viewHref);
+      router.refresh();
     } catch {
       setMsg("save failed, try again?");
     } finally {
@@ -133,6 +151,7 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
       saving={saving}
       msg={msg}
       onSave={save}
+      onPublish={publish}
       onMakeDefault={makeDefault}
       onRevert={revert}
       viewHref={viewHref}

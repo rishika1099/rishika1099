@@ -11,6 +11,7 @@ import SkillGraph from "@/components/SkillGraph";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
+import { setEditMode } from "@/lib/editMode";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
 import type { Entry } from "@/data/about";
@@ -173,6 +174,30 @@ function Editor({ keyVal }: { keyVal: string }) {
     }
   }
 
+  async function publish() {
+    setSaving(true);
+    setMsg("");
+    try {
+      await Promise.all([
+        api("/api/admin/about", {
+          method: "POST",
+          body: JSON.stringify({ education, timeline: [...work, ...research] }),
+        }),
+        api("/api/admin/copy", {
+          method: "POST",
+          body: JSON.stringify({ texts: { "about.bio": bio ?? "", ...copy } }),
+        }),
+      ]);
+      setEditMode(false);
+      router.push("/about");
+      router.refresh();
+    } catch {
+      setMsg("save failed, every card needs a title");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const COPY_IDS = ["about.bio", ...ABOUT_COPY];
 
   async function makeDefault() {
@@ -258,6 +283,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         saving={saving}
         msg={msg}
         onSave={save}
+        onPublish={publish}
         onMakeDefault={makeDefault}
         onRevert={revert}
         viewHref="/about"

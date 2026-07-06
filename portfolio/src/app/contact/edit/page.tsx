@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml } from "@/lib/copyRender";
+import { setEditMode } from "@/lib/editMode";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import type { ContactLink } from "@/lib/contactLinks";
 
@@ -50,6 +51,27 @@ function Editor({ keyVal }: { keyVal: string }) {
       // stay in edit mode; revalidate the live page in the background
       router.refresh();
       setMsg("saved ✓ live now");
+    } catch {
+      setMsg("save failed, every card needs a label and a link");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function publish() {
+    setSaving(true);
+    setMsg("");
+    try {
+      await Promise.all([
+        api("/api/admin/copy", {
+          method: "POST",
+          body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title } }),
+        }),
+        api("/api/admin/contact", { method: "POST", body: JSON.stringify({ links }) }),
+      ]);
+      setEditMode(false);
+      router.push("/contact");
+      router.refresh();
     } catch {
       setMsg("save failed, every card needs a label and a link");
     } finally {
@@ -111,6 +133,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         saving={saving}
         msg={msg}
         onSave={save}
+        onPublish={publish}
         onMakeDefault={makeDefault}
         onRevert={revert}
         viewHref="/contact"

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { EDIT_ROUTE, setEditMode, useEditMode } from "@/lib/editMode";
+import { EDIT_ROUTE, useEditMode } from "@/lib/editMode";
 
 const links = [
   { href: "/", label: "Home", icon: "🎀" },
@@ -32,7 +32,7 @@ function pillTint(path: string): string {
 export default function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { on: editing, unlocked } = useEditMode();
+  const { on: editing } = useEditMode();
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -82,19 +82,6 @@ export default function Nav() {
         </ul>
 
         <div className="flex items-center gap-2">
-          {/* edit-mode toggle: only shows once you've unlocked an /edit page.
-              on = the nav keeps you in edit mode across pages */}
-          {unlocked && (
-            <button
-              onClick={() => setEditMode(!editing)}
-              title={editing ? "nav is keeping you in edit mode" : "make the nav open pages in edit mode"}
-              className={`hidden items-center gap-1 rounded-full px-3 py-1.5 font-body text-xs font-semibold transition md:inline-flex ${
-                editing ? "bg-ink text-cream" : "bg-white/70 text-ink-soft hover:bg-white"
-              }`}
-            >
-              ✎ edit {editing ? "on" : "off"}
-            </button>
-          )}
           {/* command palette hint */}
           <button
             onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
@@ -139,18 +126,6 @@ export default function Nav() {
               </Link>
             </li>
           ))}
-          {unlocked && (
-            <li>
-              <button
-                onClick={() => setEditMode(!editing)}
-                className={`flex w-full items-center gap-2 rounded-2xl px-4 py-2.5 font-body font-semibold ${
-                  editing ? "bg-ink text-cream" : "text-ink-soft"
-                }`}
-              >
-                ✎ edit mode {editing ? "on" : "off"}
-              </button>
-            </li>
-          )}
         </motion.ul>
       )}
     </header>
