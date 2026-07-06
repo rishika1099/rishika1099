@@ -47,7 +47,7 @@ function safeSlug(slug: string): string {
   return slug;
 }
 
-async function buildPrompt(title: string, body: string): Promise<string> {
+export async function buildPrompt(title: string, body: string): Promise<string> {
   const res = await openai().chat.completions.create({
     model: process.env.OPENAI_TEXT_MODEL || "gpt-4o-mini",
     temperature: 0.9,
@@ -59,7 +59,7 @@ async function buildPrompt(title: string, body: string): Promise<string> {
   return res.choices[0].message.content?.trim() ?? "";
 }
 
-async function renderImage(prompt: string): Promise<Buffer> {
+export async function renderImage(prompt: string): Promise<Buffer> {
   const model = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
   const params: Record<string, unknown> = {
     model,
@@ -73,6 +73,15 @@ async function renderImage(prompt: string): Promise<Buffer> {
   const b64 = res.data?.[0]?.b64_json;
   if (!b64) throw new Error("Image model returned no data");
   return Buffer.from(b64, "base64");
+}
+
+/** Freshly render a poem's art (no cache read/write); used by the art manager. */
+export async function generateArt(slugRaw: string): Promise<Buffer> {
+  const slug = safeSlug(slugRaw);
+  const poem = await getPoem(slug);
+  if (!poem) throw new Error("Poem not found");
+  const prompt = await buildPrompt(poem.title || slug, poem.content.trim());
+  return renderImage(prompt);
 }
 
 /**

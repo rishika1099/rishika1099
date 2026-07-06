@@ -19,7 +19,8 @@ export async function GET(
     return new Response(new Uint8Array(png), {
       headers: {
         "Content-Type": "image/png",
-        "Cache-Control": "public, max-age=31536000, immutable",
+        // short cache (not immutable) so re-generated / restored art shows soon
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=86400",
       },
     });
   } catch (err) {

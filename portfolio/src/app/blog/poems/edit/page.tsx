@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
+import PoemArtManager from "@/components/PoemArtManager";
 import { AdminGate, adminApi } from "@/components/editing";
 
 interface Poem {
@@ -144,6 +145,13 @@ function Desk({ keyVal }: { keyVal: string }) {
           <p className="font-body text-xs text-cream/60">
             tip: the cream swatch reads best in the poem room&apos;s dark light ✦
           </p>
+          {editing.slug ? (
+            <PoemArtManager slug={editing.slug} keyVal={keyVal} dark />
+          ) : (
+            <p className="font-body text-xs text-cream/50">
+              save the poem first, then its artwork controls appear here ✦
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             <button className={btnLight} onClick={save}>
               save

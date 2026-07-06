@@ -13,6 +13,7 @@ import ProjectManager from "@/components/ProjectManager";
 import { RichPostManager, AutoPostManager } from "@/components/BlogManagers";
 import AboutEntriesManager from "@/components/AboutEntriesManager";
 import ContactManager from "@/components/ContactManager";
+import PoemArtManager from "@/components/PoemArtManager";
 import { setEditMode } from "@/lib/editMode";
 
 interface Poem {
@@ -161,6 +162,7 @@ function PoemsTab({ keyVal }: { keyVal: string }) {
               <button className={btnDanger} onClick={() => remove(editing.slug)}>delete</button>
             )}
           </div>
+          {editing.slug && <PoemArtManager slug={editing.slug} keyVal={keyVal} />}
         </div>
       )}
     </div>
