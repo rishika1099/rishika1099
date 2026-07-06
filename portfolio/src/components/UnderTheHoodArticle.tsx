@@ -312,6 +312,8 @@ export default function UnderTheHoodArticle({
             <li>{slot("tour.eng.b2")}</li>
             <li>{slot("tour.eng.b3")}</li>
             <li>{slot("tour.eng.b4")}</li>
+            <li>{slot("tour.eng.b5")}</li>
+            <li>{slot("tour.eng.b6")}</li>
           </ul>
         </Section>
 
