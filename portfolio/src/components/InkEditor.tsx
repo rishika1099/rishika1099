@@ -14,6 +14,15 @@ const FONTS: [string, string][] = [
   ["whimsy", "var(--font-halimun)"],
 ];
 
+// a second sector of fonts in the font menu
+const FONTS_MORE: [string, string][] = [
+  ["elegant", "var(--font-playfair)"],
+  ["script", "var(--font-dancing)"],
+  ["retro", "var(--font-pacifico)"],
+  ["round", "var(--font-quicksand)"],
+  ["mono", "var(--font-space-mono)"],
+];
+
 const SIZES: [string, string][] = [
   ["S", "14px"],
   ["M", "18px"],
@@ -60,6 +69,11 @@ export default function InkEditor({
   const ref = useRef<HTMLDivElement>(null);
   // which toolbar dropdown (font/size/color/head/align) is open, if any
   const [menu, setMenu] = useState<string | null>(null);
+  // format-painter: styles captured from a selection, to paint onto the next one
+  const [painter, setPainter] = useState<Record<string, string> | null>(null);
+  // last non-collapsed selection inside the editor, so a native colour picker
+  // or input that steals focus can't lose the user's selection
+  const lastRange = useRef<Range | null>(null);
 
   // uncontrolled surface: set the initial HTML once, then the DOM is truth
   useEffect(() => {
@@ -69,10 +83,35 @@ export default function InkEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // remember the live selection whenever it's a real range inside the editor
+  useEffect(() => {
+    const onSel = () => {
+      const s = window.getSelection();
+      if (s && s.rangeCount && !s.isCollapsed && ref.current?.contains(s.anchorNode)) {
+        lastRange.current = s.getRangeAt(0).cloneRange();
+      }
+    };
+    document.addEventListener("selectionchange", onSel);
+    return () => document.removeEventListener("selectionchange", onSel);
+  }, []);
+
   const emit = () => onChange(ref.current?.innerHTML ?? "");
+
+  // make sure there's a usable selection (restore the remembered one if focus moved)
+  function ensureSelection(): boolean {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && !sel.isCollapsed && ref.current?.contains(sel.anchorNode)) return true;
+    if (sel && lastRange.current) {
+      sel.removeAllRanges();
+      sel.addRange(lastRange.current);
+      return true;
+    }
+    return false;
+  }
 
   // wrap the current selection in a styled element (works across most selections)
   function wrapSelection(styles: Record<string, string>, tag = "span") {
+    if (!ensureSelection()) return;
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
     if (!ref.current?.contains(sel.anchorNode)) return;
@@ -120,6 +159,58 @@ export default function InkEditor({
     emit();
   }
 
+  // nudge the selection's font size up/down a couple px
+  function bumpSize(delta: number) {
+    if (!ensureSelection()) return;
+    const node = window.getSelection()?.anchorNode ?? null;
+    const el = (node?.nodeType === 3 ? node.parentElement : (node as Element | null)) ?? null;
+    const cur = el ? parseFloat(getComputedStyle(el).fontSize) : 16;
+    const next = Math.max(8, Math.min(96, Math.round((cur || 16) + delta)));
+    wrapSelection({ "font-size": `${next}px` });
+  }
+
+  // format painter: capture the current look, then paint it onto the next selection
+  function capturePainter() {
+    if (painter) {
+      setPainter(null);
+      return;
+    }
+    if (!ensureSelection()) return;
+    const node = window.getSelection()?.anchorNode ?? null;
+    const el = (node?.nodeType === 3 ? node.parentElement : (node as Element | null)) ?? null;
+    if (!el) return;
+    const cs = getComputedStyle(el);
+    const styles: Record<string, string> = {
+      "font-family": cs.fontFamily,
+      "font-size": cs.fontSize,
+      color: cs.color,
+      "font-weight": cs.fontWeight,
+      "font-style": cs.fontStyle,
+    };
+    if (cs.backgroundColor && cs.backgroundColor !== "rgba(0, 0, 0, 0)")
+      styles["background-color"] = cs.backgroundColor;
+    if (cs.textDecorationLine && cs.textDecorationLine !== "none")
+      styles["text-decoration"] = cs.textDecorationLine;
+    setPainter(styles);
+  }
+
+  // once armed, paint the captured styles onto the next selection you make
+  useEffect(() => {
+    if (!painter) return;
+    const surface = ref.current;
+    if (!surface) return;
+    const onUp = () => {
+      const s = window.getSelection();
+      if (s && !s.isCollapsed && surface.contains(s.anchorNode)) {
+        wrapSelection(painter);
+        setPainter(null);
+      }
+    };
+    surface.addEventListener("mouseup", onUp);
+    return () => surface.removeEventListener("mouseup", onUp);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [painter]);
+
   // keep the selection alive while clicking toolbar buttons
   const keepSel = (e: React.MouseEvent) => e.preventDefault();
 
@@ -163,20 +254,37 @@ export default function InkEditor({
           "font",
           "font",
           "font",
-          FONTS.map(([label, family]) => (
-            <button
-              key={label}
-              type="button"
-              onClick={() => { wrapSelection({ "font-family": family }); setMenu(null); }}
-              className={menuItem}
-              style={{ fontFamily: family }}
-            >
-              {label}
-            </button>
-          )),
+          <>
+            {FONTS.map(([label, family]) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => { wrapSelection({ "font-family": family }); setMenu(null); }}
+                className={menuItem}
+                style={{ fontFamily: family }}
+              >
+                {label}
+              </button>
+            ))}
+            <div className={`my-1 w-full border-t ${dark ? "border-white/10" : "border-ink/10"}`} />
+            <p className={`w-full font-body text-[10px] font-bold uppercase tracking-wide ${dark ? "text-cream/60" : "text-ink-soft/70"}`}>
+              more
+            </p>
+            {FONTS_MORE.map(([label, family]) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => { wrapSelection({ "font-family": family }); setMenu(null); }}
+                className={menuItem}
+                style={{ fontFamily: family }}
+              >
+                {label}
+              </button>
+            ))}
+          </>,
         )}
 
-        {/* size */}
+        {/* size + fine adjust */}
         {drop(
           "size",
           "size",
@@ -187,6 +295,8 @@ export default function InkEditor({
             </button>
           )),
         )}
+        <button type="button" title="smaller" onClick={() => bumpSize(-2)} className={tbBtn}>A−</button>
+        <button type="button" title="bigger" onClick={() => bumpSize(2)} className={tbBtn}>A+</button>
 
         {/* color: text + highlight */}
         {drop(
@@ -206,6 +316,29 @@ export default function InkEditor({
                 <button key={`h${c}`} type="button" aria-label={`highlight ${c}`} onClick={() => { wrapSelection({ "background-color": c }); setMenu(null); }} className="h-5 w-5 rounded-md ring-1 ring-ink/20 transition hover:scale-110" style={{ backgroundColor: c }} />
               ))}
             </div>
+            <div className={`my-1 w-full border-t ${dark ? "border-white/10" : "border-ink/10"}`} />
+            <p className={`w-full font-body text-[10px] font-bold uppercase tracking-wide ${dark ? "text-cream/60" : "text-ink-soft/70"}`}>custom (hex / slider)</p>
+            <div className="flex w-full items-center gap-2">
+              <label className={`flex items-center gap-1 font-body text-[11px] ${dark ? "text-cream/80" : "text-ink-soft"}`}>
+                text
+                <input type="color" defaultValue="#4a4a5e" onMouseDown={(e) => e.stopPropagation()} onChange={(e) => wrapSelection({ color: e.target.value })} className="h-6 w-7 cursor-pointer rounded border-0 bg-transparent p-0" />
+              </label>
+              <label className={`flex items-center gap-1 font-body text-[11px] ${dark ? "text-cream/80" : "text-ink-soft"}`}>
+                bg
+                <input type="color" defaultValue="#fff3b0" onMouseDown={(e) => e.stopPropagation()} onChange={(e) => wrapSelection({ "background-color": e.target.value })} className="h-6 w-7 cursor-pointer rounded border-0 bg-transparent p-0" />
+              </label>
+            </div>
+            <input
+              type="text"
+              placeholder="#hex + enter"
+              onMouseDown={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return;
+                const raw = e.currentTarget.value.trim().replace(/^#/, "");
+                if (/^[0-9a-f]{3,8}$/i.test(raw)) wrapSelection({ color: `#${raw}` });
+              }}
+              className={`w-full rounded-lg px-2 py-1 font-body text-xs outline-none ${dark ? "bg-white/10 text-cream placeholder:text-cream/40" : "bg-white/70 text-ink placeholder:text-ink-soft/50"}`}
+            />
           </>,
         )}
         <span className={sep} />
@@ -247,6 +380,17 @@ export default function InkEditor({
             <button type="button" onClick={() => { cmd("justifyFull"); setMenu(null); }} className={menuItem}>≣ justify</button>
           </>,
         )}
+        <span className={sep} />
+
+        {/* format painter */}
+        <button
+          type="button"
+          title={painter ? "painting… select text to apply (click to cancel)" : "format painter: capture this style, then select text to paint it on"}
+          onClick={capturePainter}
+          className={`${tbBtn} ${painter ? "ring-2 ring-blush " + (dark ? "bg-blush/30" : "bg-blush/40") : ""}`}
+        >
+          🖌
+        </button>
         <span className={sep} />
 
         {/* code, link, clear */}

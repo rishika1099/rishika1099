@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
-import { Nunito, Caveat, Cormorant_Garamond } from "next/font/google";
+import {
+  Nunito,
+  Caveat,
+  Cormorant_Garamond,
+  Playfair_Display,
+  Dancing_Script,
+  Pacifico,
+  Quicksand,
+  Space_Mono,
+} from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
@@ -38,6 +47,12 @@ const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
 });
+// extra faces offered in the ink editor's font menu
+const playfair = Playfair_Display({ variable: "--font-playfair", subsets: ["latin"], weight: ["400", "600", "700"] });
+const dancing = Dancing_Script({ variable: "--font-dancing", subsets: ["latin"], weight: ["400", "600", "700"] });
+const pacifico = Pacifico({ variable: "--font-pacifico", subsets: ["latin"], weight: ["400"] });
+const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
+const spaceMono = Space_Mono({ variable: "--font-space-mono", subsets: ["latin"], weight: ["400", "700"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rishika-m.netlify.app"),
@@ -89,7 +104,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${nunito.variable} ${caveat.variable} ${cormorant.variable} ${cattalague.variable} ${halimun.variable}`}
+      className={`${nunito.variable} ${caveat.variable} ${cormorant.variable} ${cattalague.variable} ${halimun.variable} ${playfair.variable} ${dancing.variable} ${pacifico.variable} ${quicksand.variable} ${spaceMono.variable}`}
     >
       <body className="antialiased">
         <Nav />
