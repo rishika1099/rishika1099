@@ -303,6 +303,7 @@ function CopyTab({
   const api = useAdminApi(keyVal);
   const [blocks, setBlocks] = useState<CopyBlockRow[] | null>(null);
   const [pinned, setPinned] = useState(false);
+  const [pageFilter, setPageFilter] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
 
   const reload = async () => {
@@ -367,7 +368,9 @@ function CopyTab({
 
   if (!blocks) return <p className="mt-6 font-body text-sm text-ink-soft">opening the pages… ✦</p>;
 
-  const shown = blocks.filter((b) => copyKind(b.id) === kind);
+  const inKind = blocks.filter((b) => copyKind(b.id) === kind);
+  const pages = [...new Set(inKind.map((b) => b.page))];
+  const shown = pageFilter ? inKind.filter((b) => b.page === pageFilter) : inKind;
 
   return (
     <div className="mt-4">
@@ -386,6 +389,29 @@ function CopyTab({
         )}
         {msg && <span className="font-body text-xs text-ink-soft">{msg}</span>}
       </div>
+      {pages.length > 1 && (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          <span className="mr-1 font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">
+            page
+          </span>
+          <button
+            className={pageFilter === null ? btnDark : btnSoft}
+            onClick={() => setPageFilter(null)}
+          >
+            all
+          </button>
+          {pages.map((p) => (
+            <button
+              key={p}
+              onClick={() => setPageFilter(p)}
+              style={{ backgroundColor: pageFilter === p ? tintOf(p) : `${tintOf(p)}66` }}
+              className={`${btn} text-ink ${pageFilter === p ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      )}
       {shown.length === 0 && (
         <p className="mt-4 font-body text-sm text-ink-soft">nothing here yet ✦</p>
       )}
@@ -450,7 +476,7 @@ function EditRoom() {
   }
 
   return (
-    <PageShell vibe="rainbow">
+    <PageShell vibe="koi">
       <div className="text-center">
         <PageTitle>the atelier 🗝️</PageTitle>
         <p className="mt-3 font-body text-base text-ink-soft">

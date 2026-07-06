@@ -14,6 +14,7 @@ export type Vibe =
   | "aurora"
   | "midnight"
   | "honey"
+  | "koi"
   | "rainbow";
 
 // A soft-pastel arc from sunrise blues through golden hour to a sunset rose,
@@ -33,6 +34,8 @@ const gradients: Record<Vibe, string> = {
   midnight: "from-[#0b1020] via-[#101830] to-[#1a2440]",
   // deep amber workshop light, noticeably warmer than peach
   honey: "from-[#f3cd74] via-[#fbe9c8] to-[#f0b48a]",
+  // a calm koi pond seen from above: light shallows to deeper teal-green water
+  koi: "from-[#d7efe9] via-[#a9dcd4] to-[#77bcb2]",
   // the atelier edits every page, so it wears every page's color (inline below,
   // a pastel rainbow needs more stops than from/via/to)
   rainbow: "",
@@ -63,6 +66,37 @@ function Cloud({
       }}
     >
       ☁️
+    </div>
+  );
+}
+
+function Koi({
+  top,
+  start,
+  duration,
+  scale = 1,
+  flip = false,
+  emoji = "🐟",
+}: {
+  top: string;
+  start: number;
+  duration: number;
+  scale?: number;
+  flip?: boolean;
+  emoji?: string;
+}) {
+  return (
+    <div
+      className="pointer-events-none absolute left-0 text-4xl sm:text-5xl"
+      style={{
+        top,
+        opacity: 0.9,
+        transform: `scale(${scale}) scaleX(${flip ? -1 : 1})`,
+        animation: `drift ${duration}s linear infinite`,
+        animationDelay: `-${start}s`,
+      }}
+    >
+      {emoji}
     </div>
   );
 }
@@ -115,7 +149,7 @@ export default function Scenery({ vibe }: { vibe: Vibe }) {
         }`}
       />
 
-      {!isNight && (
+      {!isNight && vibe !== "koi" && (
         <>
           {/* same duration + evenly spaced starts (0, 15, 30, 45 of a 60s loop)
               keeps horizontal spacing even; heights are scrambled (not increasing
@@ -124,6 +158,20 @@ export default function Scenery({ vibe }: { vibe: Vibe }) {
           <Cloud top="14%" start={15} duration={60} scale={0.7} opacity={0.6} />
           <Cloud top="66%" start={30} duration={60} scale={1.2} opacity={0.62} />
           <Cloud top="28%" start={45} duration={60} scale={0.9} opacity={0.55} />
+        </>
+      )}
+
+      {/* a koi pond: lily pads floating, koi drifting slowly across the water */}
+      {vibe === "koi" && (
+        <>
+          <Koi top="24%" start={0} duration={46} scale={1} emoji="🐟" />
+          <Koi top="54%" start={16} duration={54} scale={1.25} emoji="🐠" />
+          <Koi top="72%" start={32} duration={62} scale={0.85} flip emoji="🐟" />
+          <Koi top="38%" start={40} duration={50} scale={0.7} flip emoji="🐠" />
+          <span className="pointer-events-none absolute text-5xl" style={{ left: "10%", top: "16%" }}>🪷</span>
+          <span className="pointer-events-none absolute text-4xl" style={{ right: "12%", top: "30%" }}>🪷</span>
+          <span className="pointer-events-none absolute text-6xl" style={{ left: "64%", top: "60%" }}>🪷</span>
+          <span className="pointer-events-none absolute text-3xl" style={{ left: "26%", top: "78%" }}>🍃</span>
         </>
       )}
 
