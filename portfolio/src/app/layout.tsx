@@ -8,6 +8,7 @@ import AskMe from "@/components/AskMe";
 import CursorCompanion from "@/components/CursorCompanion";
 import CommandPalette from "@/components/CommandPalette";
 import VisitPing from "@/components/VisitPing";
+import Metrics from "@/components/Metrics";
 
 const cattalague = localFont({
   src: "./fonts/Cattalague.ttf",
@@ -98,6 +99,7 @@ export default function RootLayout({
         <CursorCompanion />
         <CommandPalette />
         <VisitPing />
+        <Metrics />
       </body>
     </html>
   );

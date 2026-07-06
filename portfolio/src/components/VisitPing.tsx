@@ -3,12 +3,27 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-// Counts a visit per page view (aggregate-only analytics, no cookies/IDs).
+// Counts a page view (aggregate-only, no cookies/IDs). Once per session it also
+// reports the referrer and whether this browser is a new or returning visitor
+// (a plain localStorage flag, non-identifying).
 export default function VisitPing() {
   const pathname = usePathname();
   useEffect(() => {
     if (!pathname || pathname.startsWith("/stats")) return;
-    const payload = JSON.stringify({ path: pathname });
+
+    let extra: { visitor?: string; referrer?: string } = {};
+    try {
+      if (!sessionStorage.getItem("v_session")) {
+        sessionStorage.setItem("v_session", "1");
+        const returning = !!localStorage.getItem("v_seen");
+        localStorage.setItem("v_seen", "1");
+        extra = { visitor: returning ? "returning" : "new", referrer: document.referrer || undefined };
+      }
+    } catch {
+      // storage blocked: still count the page view
+    }
+
+    const payload = JSON.stringify({ path: pathname, ...extra });
     try {
       if (!navigator.sendBeacon?.("/api/visit", new Blob([payload], { type: "application/json" }))) {
         fetch("/api/visit", { method: "POST", body: payload, keepalive: true }).catch(() => {});

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { geoFromHeaders, recordVisit } from "@/lib/analytics";
+import { geoFromHeaders, parseUA, recordVisit, refHost } from "@/lib/analytics";
 
 export const runtime = "nodejs";
 
@@ -11,9 +11,13 @@ export async function POST(request: Request) {
     if (BOT_RE.test(ua)) return NextResponse.json({ ok: true });
 
     let path = "/";
+    let referrer: string | undefined;
+    let visitor: "new" | "returning" | undefined;
     try {
-      const body = (await request.json()) as { path?: string };
+      const body = (await request.json()) as { path?: string; referrer?: string; visitor?: string };
       path = (body.path ?? "/").slice(0, 200);
+      referrer = body.referrer;
+      if (body.visitor === "new" || body.visitor === "returning") visitor = body.visitor;
     } catch {
       // beacon without a body: count it against the root
     }
@@ -21,7 +25,9 @@ export async function POST(request: Request) {
     if (path.startsWith("/stats")) return NextResponse.json({ ok: true });
 
     const { country, city } = geoFromHeaders(request.headers);
-    await recordVisit({ path, country, city });
+    const { device, browser, os } = parseUA(ua);
+    const ref = refHost(referrer, new URL(request.url).hostname) ?? undefined;
+    await recordVisit({ path, country, city, referrer: ref, device, browser, os, visitor });
   } catch {
     // analytics must never break the site
   }
