@@ -109,7 +109,7 @@ async function suggestFollowups(
         {
           role: "system",
           content:
-            "Given a visitor's question about Rishika, the answer, and the context, propose 3 short, distinct follow-up questions the visitor would naturally ask next. Each under 8 words, answerable from a portfolio about her work, projects, research, or studies. Return JSON: {\"followups\": [\"...\", \"...\", \"...\"]}.",
+            "Propose up to 3 short follow-up questions for a portfolio chatbot. STRICT RULE: only suggest questions whose answer is explicitly and specifically present in the CONTEXT below, so the bot can actually answer them. Do NOT suggest questions about challenges, motivations, feelings, opinions, or any detail not stated in the context. Prefer concrete facts that appear in the context (a named project, tech, role, school, timeframe). Each under 8 words, distinct. If fewer than 3 are well-supported, return fewer. Return JSON: {\"followups\": [\"...\"]}.",
         },
         {
           role: "user",

@@ -94,6 +94,20 @@ export default function InkEditor({
     emit();
   }
 
+  // "make it plain": strip inline styles AND any list / heading / quote wrapper
+  // (removeFormat alone leaves bullets and headings in place)
+  function clearBlock() {
+    try {
+      document.execCommand("removeFormat");
+      if (document.queryCommandState("insertUnorderedList")) document.execCommand("insertUnorderedList");
+      if (document.queryCommandState("insertOrderedList")) document.execCommand("insertOrderedList");
+      document.execCommand("formatBlock", false, "P");
+    } catch {
+      // best effort
+    }
+    emit();
+  }
+
   function link() {
     const url = prompt("link to… (https://)");
     if (!url) return;
@@ -226,7 +240,7 @@ export default function InkEditor({
         <button type="button" title="inline code" onClick={() => wrapSelection({}, "code")} className={`${tbBtn} font-mono`}>{"<>"}</button>
         <button type="button" title="code block" onClick={() => cmd("formatBlock", "PRE")} className={`${tbBtn} font-mono`}>{"{ }"}</button>
         <button type="button" title="add a link" onClick={link} className={tbBtn}>🔗</button>
-        <button type="button" title="clear formatting" onClick={() => cmd("removeFormat")} className={tbBtn}>⌫</button>
+        <button type="button" title="clear formatting (removes bullets/headings too)" onClick={clearBlock} className={tbBtn}>⌫</button>
       </div>
       <div
         ref={ref}

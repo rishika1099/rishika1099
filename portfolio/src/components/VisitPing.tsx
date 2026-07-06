@@ -10,6 +10,17 @@ export default function VisitPing() {
   const pathname = usePathname();
   useEffect(() => {
     if (!pathname || pathname.startsWith("/stats")) return;
+    // don't count the owner's own device (or anyone who opted out)
+    try {
+      if (
+        localStorage.getItem("no-track") ||
+        localStorage.getItem("admin-key") ||
+        localStorage.getItem("stats-key")
+      )
+        return;
+    } catch {
+      // storage blocked: fall through and count normally
+    }
 
     let extra: { visitor?: string; referrer?: string } = {};
     try {

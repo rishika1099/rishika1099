@@ -59,20 +59,30 @@ export async function buildPrompt(title: string, body: string): Promise<string> 
   return res.choices[0].message.content?.trim() ?? "";
 }
 
-export async function renderImage(prompt: string): Promise<Buffer> {
-  const model = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
-  const params: Record<string, unknown> = {
-    model,
-    prompt,
-    size: "1024x1024",
-    n: 1,
-  };
+async function tryRender(model: string, prompt: string): Promise<Buffer> {
+  const params: Record<string, unknown> = { model, prompt, size: "1024x1024", n: 1 };
   if (model.startsWith("dall-e")) params.response_format = "b64_json";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const res = await openai().images.generate(params as any);
   const b64 = res.data?.[0]?.b64_json;
   if (!b64) throw new Error("Image model returned no data");
   return Buffer.from(b64, "base64");
+}
+
+export async function renderImage(prompt: string): Promise<Buffer> {
+  // gpt-image-1 needs OpenAI org verification; if it isn't available, fall back
+  // to the widely-available DALL·E models so art still generates.
+  const primary = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
+  const chain = [primary, "dall-e-3", "dall-e-2"].filter((m, i, a) => a.indexOf(m) === i);
+  let lastErr: unknown;
+  for (const model of chain) {
+    try {
+      return await tryRender(model, prompt);
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error("image generation failed");
 }
 
 /** Freshly render a poem's art (no cache read/write); used by the art manager. */

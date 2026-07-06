@@ -109,8 +109,6 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "tour.eng.b2": { page: "tour", label: "engineering bullet: batching", text: "<strong>Batched calls.</strong> Labels and classifications go out in one batched call, not one-per-item." },
   "tour.eng.b3": { page: "tour", label: "engineering bullet: fallback", text: "<strong>Graceful fallback.</strong> The live embedding classifier has a deterministic keyword backup, so a flaky API degrades quality instead of breaking the page." },
   "tour.eng.b4": { page: "tour", label: "engineering bullet: evals", text: "<strong>Evals as a habit.</strong> If I can't measure it, I try not to claim it." },
-  "tour.eng.b5": { page: "tour", label: "engineering bullet: analytics", text: "<strong>Self-hosted analytics.</strong> A tiny cookie-free tracker keeps only aggregate, non-identifying counts, visitors, referrers, devices, outbound clicks, and Core Web Vitals, in a private dashboard. No third party, no consent banner." },
-  "tour.eng.b6": { page: "tour", label: "engineering bullet: atelier", text: "<strong>A secret edit-anything room.</strong> Every word, title, project, poem, and photo is editable in place behind a key. Edits save as sparse overrides that win at render time and go live with no rebuild, with a \"make this the default\" baseline and a publish switch." },
   "tour.close": { page: "tour", label: "closing line", text: "That is the whole machine: it embeds, retrieves, clusters, classifies, and grades its own homework. Thanks for reading the tour. 🌸" },
 
   // home tab cards (the four little doorways on the landing page)

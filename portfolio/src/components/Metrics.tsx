@@ -32,6 +32,18 @@ function classify(href: string): string | null {
 
 export default function Metrics() {
   useEffect(() => {
+    // don't record the owner's own device (or anyone who opted out)
+    try {
+      if (
+        localStorage.getItem("no-track") ||
+        localStorage.getItem("admin-key") ||
+        localStorage.getItem("stats-key")
+      )
+        return;
+    } catch {
+      // storage blocked: fall through
+    }
+
     const onClick = (e: MouseEvent) => {
       const a = (e.target as HTMLElement | null)?.closest?.("a");
       if (!a) return;

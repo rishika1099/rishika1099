@@ -125,6 +125,11 @@ export async function recordVital(name: string, value: number) {
   await writeJson("visits", stats);
 }
 
+/** Wipe all analytics (visits + question log) back to zero. */
+export async function clearStats() {
+  await Promise.all([writeJson("visits", structuredClone(EMPTY)), writeJson("questions", [])]);
+}
+
 export async function recordQuestion(q: string) {
   const list = await readJson<LoggedQuestion[]>("questions", []);
   list.push({ q: q.slice(0, 300), at: new Date().toISOString() });

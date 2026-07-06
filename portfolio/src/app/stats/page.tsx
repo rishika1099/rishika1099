@@ -242,10 +242,22 @@ export default function StatsPage() {
             </ul>
           </div>
 
-          <p className="mt-6 font-body text-xs text-cream/50">
-            updated {v.updatedAt ? new Date(v.updatedAt).toLocaleString() : "never"} · aggregate-only, no
-            IPs or identifiers stored, no consent banner needed
-          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
+            <p className="font-body text-xs text-cream/50">
+              updated {v.updatedAt ? new Date(v.updatedAt).toLocaleString() : "never"} · aggregate-only,
+              no IPs or identifiers, no consent banner needed · your own device isn&apos;t counted
+            </p>
+            <button
+              onClick={async () => {
+                if (!confirm("Reset all analytics counters to zero?")) return;
+                await fetch(`/api/stats?key=${encodeURIComponent(key)}`, { method: "DELETE" });
+                load(key);
+              }}
+              className="rounded-full bg-white/10 px-4 py-1.5 font-body text-xs font-semibold text-cream/80 transition hover:bg-white/20"
+            >
+              reset stats
+            </button>
+          </div>
         </>
       )}
     </PageShell>

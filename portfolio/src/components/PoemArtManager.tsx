@@ -50,15 +50,18 @@ export default function PoemArtManager({
     setBusy(label || action);
     setMsg("");
     try {
-      const r = await api<{ ok?: boolean; error?: string }>(base, {
+      // direct fetch so we can surface the real server error (e.g. from OpenAI)
+      const res = await fetch(base, {
         method: "POST",
+        headers: { "x-admin-key": keyVal, "content-type": "application/json" },
         body: JSON.stringify({ action, ...extra }),
       });
-      if (r.error) setMsg(r.error);
+      const r = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || r.error) setMsg(r.error || "something wobbled, try again?");
       setBust(Date.now());
       await load();
     } catch {
-      setMsg(action === "regenerate" ? "generation failed (is the OpenAI key set?)" : "something wobbled");
+      setMsg("something wobbled, try again?");
     } finally {
       setBusy("");
     }
