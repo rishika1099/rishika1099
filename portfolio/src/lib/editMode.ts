@@ -13,6 +13,7 @@ export const EDIT_ROUTE: Record<string, string> = {
   "/work": "/work/edit",
   "/blog": "/blog/edit",
   "/contact": "/contact/edit",
+  "/now": "/now/edit",
 };
 
 const KEY = "edit-mode";

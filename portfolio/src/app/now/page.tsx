@@ -28,7 +28,7 @@ export default async function NowPage() {
     .map((t) => t.trim())
     .filter(Boolean);
   return (
-    <PageShell vibe="dawn">
+    <PageShell vibe="honey">
       <PageTitle><RichText html={copyToHtml(copy["now.title"])} /></PageTitle>
       <p
         className="rich-passage mt-3 max-w-2xl font-body text-lg text-ink-soft [&_a]:font-semibold [&_a]:text-[#c77dba] [&_a]:underline"

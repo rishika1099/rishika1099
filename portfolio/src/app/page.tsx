@@ -19,6 +19,12 @@ export default async function Home() {
           <span key={k} className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy[`home.tab.${k}`]) }} />,
         ]),
       )}
+      tabIcons={Object.fromEntries(
+        ["about", "work", "blog", "contact"].map((k) => [
+          k,
+          <span key={k} dangerouslySetInnerHTML={{ __html: copyToHtml(copy[`home.tab.${k}.icon`]) }} />,
+        ]),
+      )}
     />
   );
 }

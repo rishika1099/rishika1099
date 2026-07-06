@@ -116,6 +116,10 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "home.tab.work": { page: "home", label: "Work card blurb", text: "projects, growing in a meadow" },
   "home.tab.blog": { page: "home", label: "Blog card blurb", text: "essays, poems & photographs" },
   "home.tab.contact": { page: "home", label: "Contact card blurb", text: "let's say hello" },
+  "home.tab.about.icon": { page: "home", label: "About card emoji", text: "🦦" },
+  "home.tab.work.icon": { page: "home", label: "Work card emoji", text: "🌱" },
+  "home.tab.blog.icon": { page: "home", label: "Blog card emoji", text: "🎐" },
+  "home.tab.contact.icon": { page: "home", label: "Contact card emoji", text: "💌" },
 
   // now-page section headings
   "now.head.working": { page: "now", label: "🌱 working-on heading", text: "working on" },

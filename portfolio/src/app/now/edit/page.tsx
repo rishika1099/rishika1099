@@ -28,7 +28,7 @@ function Editor({ keyVal }: { keyVal: string }) {
   if (!ready)
     return <p className="mt-8 text-center font-body text-sm text-ink-soft">unlocking the page… ✦</p>;
   return (
-    <PageShell vibe="dawn">
+    <PageShell vibe="honey">
       {bar}
       {titleBox("now.title")}
       <div className="mt-3 max-w-2xl">{box("now.intro", "font-body text-lg text-ink-soft")}</div>
@@ -53,5 +53,5 @@ function Editor({ keyVal }: { keyVal: string }) {
 }
 
 export default function NowEdit() {
-  return <AdminGate vibe="dawn">{(key) => <Editor keyVal={key} />}</AdminGate>;
+  return <AdminGate vibe="honey">{(key) => <Editor keyVal={key} />}</AdminGate>;
 }

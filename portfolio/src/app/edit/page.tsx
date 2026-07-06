@@ -11,7 +11,7 @@ import { usePassageEditor } from "@/components/usePassageEditor";
 import { useFileSwap } from "@/components/FileSwap";
 
 function Editor({ keyVal }: { keyVal: string }) {
-  const { ready, box, bar, field, preview } = usePassageEditor(
+  const { ready, box, bar, preview, texts, setText } = usePassageEditor(
     keyVal,
     [
       "home.name1",
@@ -22,6 +22,10 @@ function Editor({ keyVal }: { keyVal: string }) {
       "home.tab.work",
       "home.tab.blog",
       "home.tab.contact",
+      "home.tab.about.icon",
+      "home.tab.work.icon",
+      "home.tab.blog.icon",
+      "home.tab.contact.icon",
     ],
     "/",
   );
@@ -46,6 +50,12 @@ function Editor({ keyVal }: { keyVal: string }) {
           work: preview("home.tab.work"),
           blog: preview("home.tab.blog"),
           contact: preview("home.tab.contact"),
+        }}
+        tabIcons={{
+          about: preview("home.tab.about.icon"),
+          work: preview("home.tab.work.icon"),
+          blog: preview("home.tab.blog.icon"),
+          contact: preview("home.tab.contact.icon"),
         }}
         resumeSlot={
           <span className="flex items-center gap-1.5">
@@ -97,13 +107,30 @@ function Editor({ keyVal }: { keyVal: string }) {
 
       <div className="mx-auto mt-10 max-w-xl rounded-3xl p-5 soft-card">
         <p className="font-body text-sm font-bold text-ink">the four landing cards</p>
-        <p className="mb-2 font-body text-[11px] text-ink-soft/60">
-          each card&apos;s little blurb (the card links are fixed):
+        <p className="mb-3 font-body text-[11px] text-ink-soft/60">
+          each card&apos;s emoji + little blurb (the card links are fixed):
         </p>
-        {field("home.tab.about", "🦦 About", "font-body text-sm text-ink-soft")}
-        {field("home.tab.work", "🌱 Work", "font-body text-sm text-ink-soft")}
-        {field("home.tab.blog", "🎐 Blog", "font-body text-sm text-ink-soft")}
-        {field("home.tab.contact", "💌 Contact", "font-body text-sm text-ink-soft")}
+        {[
+          ["about", "About"],
+          ["work", "Work"],
+          ["blog", "Blog"],
+          ["contact", "Contact"],
+        ].map(([k, label]) => (
+          <div key={k} className="mb-3">
+            <div className="mb-1 flex items-center gap-2">
+              <input
+                value={texts?.[`home.tab.${k}.icon`] ?? ""}
+                onChange={(e) => setText(`home.tab.${k}.icon`, e.target.value)}
+                aria-label={`${label} emoji`}
+                className="w-14 rounded-xl border border-dashed border-ink/20 bg-white/40 px-2 py-1 text-center text-xl outline-none transition focus:border-blush focus:bg-white/70"
+              />
+              <span className="font-body text-[11px] font-semibold uppercase tracking-wide text-ink-soft/70">
+                {label}
+              </span>
+            </div>
+            {box(`home.tab.${k}`, "font-body text-sm text-ink-soft")}
+          </div>
+        ))}
       </div>
     </>
   );

@@ -4,12 +4,13 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import FlowerPortrait from "@/components/FlowerPortrait";
+import { EDIT_ROUTE, useEditMode } from "@/lib/editMode";
 
 const tabs = [
-  { href: "/about", icon: "🦦", title: "About", key: "about" },
-  { href: "/work", icon: "🌱", title: "Work", key: "work" },
-  { href: "/blog", icon: "🎐", title: "Blog", key: "blog" },
-  { href: "/contact", icon: "💌", title: "Contact", key: "contact" },
+  { href: "/about", title: "About", key: "about" },
+  { href: "/work", title: "Work", key: "work" },
+  { href: "/blog", title: "Blog", key: "blog" },
+  { href: "/contact", title: "Contact", key: "contact" },
 ];
 
 export default function HomeClient({
@@ -18,6 +19,7 @@ export default function HomeClient({
   greeting,
   intro,
   tabBlurbs,
+  tabIcons,
   resumeSlot,
   portraitOverlay,
 }: {
@@ -27,11 +29,16 @@ export default function HomeClient({
   intro: React.ReactNode;
   /** the four landing-card blurbs, keyed about/work/blog/contact */
   tabBlurbs: Record<string, React.ReactNode>;
+  /** the four landing-card emojis, keyed about/work/blog/contact */
+  tabIcons: Record<string, React.ReactNode>;
   /** edit mode swaps the Resume button for an upload control */
   resumeSlot?: React.ReactNode;
   /** edit mode floats a replace-photo control over the portrait */
   portraitOverlay?: React.ReactNode;
 }) {
+  const { on: editing } = useEditMode();
+  // in edit mode the landing cards open their /edit rooms, so you stay editing
+  const to = (href: string) => (editing && EDIT_ROUTE[href]) || href;
   return (
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}
@@ -139,10 +146,10 @@ export default function HomeClient({
             transition={{ type: "spring", stiffness: 300 }}
           >
             <Link
-              href={t.href}
+              href={to(t.href)}
               className="flex h-full flex-col items-center gap-1 rounded-3xl p-5 text-center soft-card"
             >
-              <span className="animate-float-med text-4xl">{t.icon}</span>
+              <span className="animate-float-med text-4xl">{tabIcons[t.key]}</span>
               <span className="mt-1 font-body text-xl font-bold text-ink">
                 {t.title}
               </span>
@@ -150,6 +157,21 @@ export default function HomeClient({
             </Link>
           </motion.div>
         ))}
+      </motion.div>
+
+      {/* a peek at the living /now page */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.95 }}
+        className="mt-6 text-center"
+      >
+        <Link
+          href={to("/now")}
+          className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow-sm backdrop-blur transition hover:bg-white hover:text-ink"
+        >
+          🧭 check what i&apos;m working on now →
+        </Link>
       </motion.div>
     </PageShell>
   );
