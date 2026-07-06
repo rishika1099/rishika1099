@@ -11,7 +11,8 @@ import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
 import ProjectManager from "@/components/ProjectManager";
 import { RichPostManager, AutoPostManager } from "@/components/BlogManagers";
-import { copyDefaults } from "@/data/copy";
+import AboutEntriesManager from "@/components/AboutEntriesManager";
+import ContactManager from "@/components/ContactManager";
 import { setEditMode } from "@/lib/editMode";
 
 interface Poem {
@@ -47,20 +48,23 @@ const PAGE_TINT: Record<string, string> = {
 };
 const tintOf = (page: string) => PAGE_TINT[page] ?? "#f6d99b";
 
-// the pages that have editable passages, in the order they appear in copy.ts
-const COPY_PAGES = [...new Set(Object.values(copyDefaults).map((b) => b.page))];
-const PAGE_EMOJI: Record<string, string> = {
-  home: "🎀",
-  about: "🦦",
-  work: "🌱",
-  blog: "🎐",
-  photography: "📷",
-  contact: "💌",
-  now: "🧭",
-  poems: "🕯️",
-  tour: "🔬",
-  footer: "🐾",
-};
+// the atelier is organised by what you're editing, not by page. Each cluster is
+// [id, label, tint]; content is wired up in the shell below.
+const CLUSTERS = [
+  ["titles", "🔤 titles", "#f6d99b"],
+  ["passages", "✍️ passages", "#f6d99b"],
+  ["buttons", "🔘 buttons", "#ffd9c0"],
+  ["projects", "🌱 projects", "#cdeac0"],
+  ["blogs", "📓 blogs", "#bfe0f0"],
+  ["poems", "🕯️ poems", "#d9c2f0"],
+  ["photos", "📷 photos", "#ffc0a0"],
+  ["work", "💼 work", "#cdeac0"],
+  ["education", "🎓 education", "#e6d7f5"],
+  ["research", "🔬 research", "#c5e8d5"],
+  ["contact", "💌 contact", "#f7b7c9"],
+] as const;
+type ClusterId = (typeof CLUSTERS)[number][0];
+const CLUSTER_IDS = CLUSTERS.map((c) => c[0]) as ClusterId[];
 
 function useAdminApi(key: string) {
   return async function api<T>(path: string, init?: RequestInit): Promise<T> {
@@ -269,7 +273,31 @@ interface CopyBlockRow {
   isDefault: boolean;
 }
 
-function PassagesTab({ keyVal, lockedPage }: { keyVal: string; lockedPage: string }) {
+// which cluster a copy block belongs to, by its id
+type CopyKind = "title" | "button" | "tour" | "passage";
+function copyKind(id: string): CopyKind {
+  if (id.startsWith("tour.")) return "tour";
+  if (id.startsWith("home.tab.") || id.startsWith("blog.door.")) return "button";
+  if (
+    id.endsWith(".title") ||
+    id === "home.name1" ||
+    id === "home.name2" ||
+    id.includes(".heading.") ||
+    id.includes(".head.")
+  )
+    return "title";
+  return "passage";
+}
+
+function CopyTab({
+  keyVal,
+  kind,
+  scopeLabel,
+}: {
+  keyVal: string;
+  kind: CopyKind;
+  scopeLabel: string;
+}) {
   const api = useAdminApi(keyVal);
   const [blocks, setBlocks] = useState<CopyBlockRow[] | null>(null);
   const [pinned, setPinned] = useState(false);
@@ -303,27 +331,26 @@ function PassagesTab({ keyVal, lockedPage }: { keyVal: string; lockedPage: strin
     }
   }
 
-  // pin this page's current words as the new default, so "revert" returns here
+  // pin this cluster's current words as the new default, so "revert" returns here
   async function makeDefault() {
     if (!blocks) return;
-    if (!confirm(`Make the ${lockedPage} page's current words the default? "Revert" will come back here.`))
-      return;
+    if (!confirm(`Make the current ${scopeLabel} the default? "Revert" will come back here.`)) return;
     setMsg("pinning…");
     // save the latest edits first so what you see is what gets pinned
     const texts = Object.fromEntries(blocks.map((b) => [b.id, b.text]));
     await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
-    const ids = blocks.filter((b) => b.page === lockedPage).map((b) => b.id);
+    const ids = blocks.filter((b) => copyKind(b.id) === kind).map((b) => b.id);
     await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ promote: true, ids }) });
     await reload();
     setMsg("pinned as the default ✓");
   }
 
-  // revert just this page's passages to the default (pinned baseline, else code)
+  // revert just this cluster to the default (pinned baseline, else code)
   async function revert() {
     if (!blocks) return;
     const target = pinned ? "your pinned default" : "the version written in the code";
-    if (!confirm(`Revert the ${lockedPage} page to ${target}?`)) return;
-    const ids = blocks.filter((b) => b.page === lockedPage).map((b) => b.id);
+    if (!confirm(`Revert the ${scopeLabel} to ${target}?`)) return;
+    const ids = blocks.filter((b) => copyKind(b.id) === kind).map((b) => b.id);
     await api(`/api/admin/copy?ids=${encodeURIComponent(ids.join(","))}`, { method: "DELETE" });
     await reload();
     setMsg("reverted ✓");
@@ -338,7 +365,7 @@ function PassagesTab({ keyVal, lockedPage }: { keyVal: string; lockedPage: strin
 
   if (!blocks) return <p className="mt-6 font-body text-sm text-ink-soft">opening the pages… ✦</p>;
 
-  const shown = blocks.filter((b) => b.page === lockedPage);
+  const shown = blocks.filter((b) => copyKind(b.id) === kind);
 
   return (
     <div className="mt-4">
@@ -346,10 +373,10 @@ function PassagesTab({ keyVal, lockedPage }: { keyVal: string; lockedPage: strin
       <div className="mt-2 flex flex-wrap gap-2">
         <button className={btnDark} onClick={save}>save everything</button>
         <button className={btnSoft} onClick={makeDefault}>
-          📌 make this page the default
+          📌 make these the default
         </button>
         <button className={btnSoft} onClick={revert}>
-          revert this page
+          revert these
         </button>
         {pinned && (
           <button className={btnSoft} onClick={resetToCode}>
@@ -358,7 +385,7 @@ function PassagesTab({ keyVal, lockedPage }: { keyVal: string; lockedPage: strin
         )}
       </div>
       {shown.length === 0 && (
-        <p className="mt-4 font-body text-sm text-ink-soft">nothing to edit on this page yet ✦</p>
+        <p className="mt-4 font-body text-sm text-ink-soft">nothing here yet ✦</p>
       )}
       <div className="mt-4 space-y-4">
         {shown.map((b) => (
@@ -395,25 +422,13 @@ function PassagesTab({ keyVal, lockedPage }: { keyVal: string; lockedPage: strin
 function EditRoom() {
   const sp = useSearchParams();
   const tabParam = sp.get("tab");
-  const initialPage = sp.get("page");
-  // pages are now top-level tabs ("page:<name>"); the content managers keep
-  // their own tabs ("work" | "blogs" | "poems" | "photos") alongside
-  // old ?tab=<type> links map onto the page that now hosts that content
-  const OLD_TYPE_TO_PAGE: Record<string, string> = {
-    work: "work",
-    blogs: "blog",
-    poems: "poems",
-    photos: "photography",
-  };
-  const startPage =
-    (initialPage && COPY_PAGES.includes(initialPage) && initialPage) ||
-    (tabParam && OLD_TYPE_TO_PAGE[tabParam]) ||
-    COPY_PAGES[0];
-  const initialTab = `page:${startPage}`;
+  const initialTab = (tabParam && CLUSTER_IDS.includes(tabParam as ClusterId)
+    ? tabParam
+    : "titles") as ClusterId;
   const [key, setKey] = useState("");
   const [entered, setEntered] = useState(false);
   const [err, setErr] = useState("");
-  const [tab, setTab] = useState<string>(initialTab);
+  const [tab, setTab] = useState<ClusterId>(initialTab);
 
   useEffect(() => {
     const saved = localStorage.getItem("admin-key");
@@ -470,28 +485,17 @@ function EditRoom() {
         <div className="mx-auto mt-8 max-w-3xl">
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-wrap gap-2">
-              {/* one tab per page: its words + title + headings live here */}
-              {COPY_PAGES.map((p) => {
-                const t = `page:${p}`;
-                return (
-                  <button
-                    key={t}
-                    onClick={() => setTab(t)}
-                    style={{ backgroundColor: tab === t ? tintOf(p) : `${tintOf(p)}66` }}
-                    className={`${btn} text-ink ${tab === t ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
-                  >
-                    {PAGE_EMOJI[p] ? `${PAGE_EMOJI[p]} ` : ""}
-                    {p}
-                  </button>
-                );
-              })}
-              <a
-                href="/about/edit"
-                style={{ backgroundColor: "#e6d7f566" }}
-                className={`${btn} text-ink hover:ring-1 hover:ring-ink/15`}
-              >
-                🎓 journey →
-              </a>
+              {/* one tab per kind of thing you can edit */}
+              {CLUSTERS.map(([id, label, tint]) => (
+                <button
+                  key={id}
+                  onClick={() => setTab(id)}
+                  style={{ backgroundColor: tab === id ? tint : `${tint}66` }}
+                  className={`${btn} text-ink ${tab === id ? "ring-2 ring-ink/25" : "hover:ring-1 hover:ring-ink/15"}`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
             <button
               className={`${btnSoft} shrink-0`}
@@ -506,25 +510,30 @@ function EditRoom() {
             </button>
           </div>
 
-          {tab.startsWith("page:") && (
+          {tab === "titles" && <CopyTab keyVal={key} kind="title" scopeLabel="titles & headings" />}
+          {tab === "passages" && <CopyTab keyVal={key} kind="passage" scopeLabel="passages" />}
+          {tab === "buttons" && <CopyTab keyVal={key} kind="button" scopeLabel="button labels" />}
+          {tab === "projects" && (
+            <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
+              <ProjectManager keyVal={key} />
+            </div>
+          )}
+          {tab === "blogs" && (
             <>
-              {/* the page's words, then whatever else that page can edit */}
-              <PassagesTab keyVal={key} lockedPage={tab.slice(5)} />
-              {tab === "page:work" && (
-                <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
-                  <ProjectManager keyVal={key} />
-                </div>
-              )}
-              {tab === "page:blog" && (
-                <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
-                  <RichPostManager keyVal={key} />
-                  <AutoPostManager keyVal={key} />
-                </div>
-              )}
-              {tab === "page:poems" && <PoemsTab keyVal={key} />}
-              {tab === "page:photography" && <PhotosTab keyVal={key} />}
+              <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
+                <RichPostManager keyVal={key} />
+                <AutoPostManager keyVal={key} />
+              </div>
+              <p className="mt-8 font-body text-sm font-bold text-ink">✦ the feature-tour article</p>
+              <CopyTab keyVal={key} kind="tour" scopeLabel="tour article" />
             </>
           )}
+          {tab === "poems" && <PoemsTab keyVal={key} />}
+          {tab === "photos" && <PhotosTab keyVal={key} />}
+          {tab === "work" && <AboutEntriesManager keyVal={key} section="work" />}
+          {tab === "education" && <AboutEntriesManager keyVal={key} section="education" />}
+          {tab === "research" && <AboutEntriesManager keyVal={key} section="research" />}
+          {tab === "contact" && <ContactManager keyVal={key} />}
         </div>
       )}
     </PageShell>
