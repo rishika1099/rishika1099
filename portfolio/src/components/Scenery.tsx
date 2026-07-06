@@ -75,29 +75,55 @@ function Koi({
   start,
   duration,
   scale = 1,
-  flip = false,
   emoji = "🐟",
 }: {
   top: string;
   start: number;
   duration: number;
   scale?: number;
-  flip?: boolean;
   emoji?: string;
 }) {
+  // outer element drifts left->right; the inner span flips the (left-facing)
+  // fish so it faces its direction of travel. keeping them separate stops the
+  // drift animation's transform from clobbering the flip.
   return (
     <div
-      className="pointer-events-none absolute left-0 text-4xl sm:text-5xl"
-      style={{
-        top,
-        opacity: 0.9,
-        transform: `scale(${scale}) scaleX(${flip ? -1 : 1})`,
-        animation: `drift ${duration}s linear infinite`,
-        animationDelay: `-${start}s`,
-      }}
+      className="pointer-events-none absolute left-0"
+      style={{ top, animation: `drift ${duration}s linear infinite`, animationDelay: `-${start}s` }}
     >
-      {emoji}
+      <span
+        className="block text-4xl sm:text-5xl"
+        style={{ opacity: 0.9, transform: `scaleX(-1) scale(${scale})` }}
+      >
+        {emoji}
+      </span>
     </div>
+  );
+}
+
+function Bubble({
+  left,
+  size,
+  duration,
+  delay,
+}: {
+  left: string;
+  size: number;
+  duration: number;
+  delay: number;
+}) {
+  return (
+    <span
+      className="pointer-events-none absolute rounded-full bg-white/50 ring-1 ring-white/70"
+      style={{
+        left,
+        bottom: "-24px",
+        width: size,
+        height: size,
+        animation: `bubble ${duration}s ease-in infinite`,
+        animationDelay: `-${delay}s`,
+      }}
+    />
   );
 }
 
@@ -161,17 +187,23 @@ export default function Scenery({ vibe }: { vibe: Vibe }) {
         </>
       )}
 
-      {/* a koi pond: lily pads floating, koi drifting slowly across the water */}
+      {/* a koi pond: lily pads floating, koi drifting across, bubbles rising */}
       {vibe === "koi" && (
         <>
           <Koi top="24%" start={0} duration={46} scale={1} emoji="🐟" />
           <Koi top="54%" start={16} duration={54} scale={1.25} emoji="🐠" />
-          <Koi top="72%" start={32} duration={62} scale={0.85} flip emoji="🐟" />
-          <Koi top="38%" start={40} duration={50} scale={0.7} flip emoji="🐠" />
+          <Koi top="72%" start={32} duration={62} scale={0.85} emoji="🐟" />
+          <Koi top="38%" start={40} duration={50} scale={0.7} emoji="🐠" />
           <span className="pointer-events-none absolute text-5xl" style={{ left: "10%", top: "16%" }}>🪷</span>
           <span className="pointer-events-none absolute text-4xl" style={{ right: "12%", top: "30%" }}>🪷</span>
           <span className="pointer-events-none absolute text-6xl" style={{ left: "64%", top: "60%" }}>🪷</span>
           <span className="pointer-events-none absolute text-3xl" style={{ left: "26%", top: "78%" }}>🍃</span>
+          <Bubble left="18%" size={9} duration={9} delay={0} />
+          <Bubble left="34%" size={6} duration={11} delay={3} />
+          <Bubble left="52%" size={12} duration={8} delay={5} />
+          <Bubble left="71%" size={7} duration={10} delay={1.5} />
+          <Bubble left="85%" size={9} duration={12} delay={6} />
+          <Bubble left="45%" size={5} duration={13} delay={8} />
         </>
       )}
 
