@@ -154,7 +154,6 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
       onPublish={publish}
       onMakeDefault={makeDefault}
       onRevert={revert}
-      viewHref={viewHref}
     />
   );
 

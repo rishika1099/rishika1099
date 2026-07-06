@@ -286,7 +286,6 @@ function Editor({ keyVal }: { keyVal: string }) {
         onPublish={publish}
         onMakeDefault={makeDefault}
         onRevert={revert}
-        viewHref="/about"
       />
       <InkEditor
         initialHtml={copyToHtml(copy["about.title"] ?? "")}

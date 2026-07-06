@@ -136,7 +136,6 @@ function Editor({ keyVal }: { keyVal: string }) {
         onPublish={publish}
         onMakeDefault={makeDefault}
         onRevert={revert}
-        viewHref="/contact"
       />
       <motion.span
         animate={{ y: [0, -10, 0] }}

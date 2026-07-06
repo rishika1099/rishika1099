@@ -80,7 +80,6 @@ export function SaveBar({
   onPublish,
   onMakeDefault,
   onRevert,
-  viewHref,
 }: {
   saving: boolean;
   msg: string;
@@ -90,7 +89,6 @@ export function SaveBar({
   /** pin the current edits as the new default ("revert" returns here) */
   onMakeDefault?: () => void;
   onRevert?: () => void;
-  viewHref: string;
 }) {
   return (
     <div className="sticky top-20 z-40 mx-auto mb-4 flex w-max max-w-[92vw] flex-wrap items-center justify-center gap-2 rounded-full px-4 py-2 soft-card">
@@ -134,12 +132,6 @@ export function SaveBar({
           revert
         </button>
       )}
-      <a
-        href={viewHref}
-        className="rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft transition hover:bg-white"
-      >
-        view page →
-      </a>
       {msg && <span className="font-body text-xs text-ink-soft">{msg}</span>}
     </div>
   );
