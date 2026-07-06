@@ -141,9 +141,11 @@ function Desk({ keyVal }: { keyVal: string }) {
             onChange={(html) => setEditing((p) => (p ? { ...p, content: html } : p))}
             placeholder="midnight thoughts go here…"
             minHeight="20rem"
+            dark
+            surfaceClassName="prose-poem font-serif text-lg leading-relaxed text-cream"
           />
           <p className="font-body text-xs text-cream/60">
-            tip: the cream swatch reads best in the poem room&apos;s dark light ✦
+            this writes just like the poem room, no need to set a font or colour ✦
           </p>
           {editing.slug ? (
             <PoemArtManager slug={editing.slug} keyVal={keyVal} dark />

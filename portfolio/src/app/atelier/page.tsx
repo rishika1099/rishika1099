@@ -22,7 +22,14 @@ interface Poem {
   date: string;
   excerpt: string;
   content: string;
+  rich?: boolean;
 }
+// open a poem in the ink editor: rich poems are already HTML, older plain ones
+// become escaped lines so their line breaks survive
+const poemToHtml = (p: Poem) =>
+  p.rich
+    ? p.content
+    : p.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
 interface Photo {
   src: string;
   caption: string;
@@ -102,7 +109,7 @@ function PoemsTab({ keyVal }: { keyVal: string }) {
     if (!editing) return;
     setMsg("saving…");
     try {
-      await api("/api/admin/poems", { method: "POST", body: JSON.stringify(editing) });
+      await api("/api/admin/poems", { method: "POST", body: JSON.stringify({ ...editing, rich: true }) });
       setEditing(null);
       setMsg("saved ✓ (art + mood generate on first view)");
       refresh();
@@ -140,7 +147,7 @@ function PoemsTab({ keyVal }: { keyVal: string }) {
                   <p className="font-body text-sm font-bold text-ink">{p.title}</p>
                   <p className="font-body text-xs italic text-ink-soft">{p.date}</p>
                 </div>
-                <button className={btnSoft} onClick={() => setEditing({ ...p })}>
+                <button className={btnSoft} onClick={() => setEditing({ ...p, content: poemToHtml(p) })}>
                   ✎ edit
                 </button>
               </li>
@@ -154,7 +161,14 @@ function PoemsTab({ keyVal }: { keyVal: string }) {
             <input className={field} placeholder="YYYY-MM-DD" value={editing.date} onChange={(e) => setEditing({ ...editing, date: e.target.value })} />
             <input className={field} placeholder="one-line excerpt (shows on the card)" value={editing.excerpt} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} />
           </div>
-          <textarea className={`${field} min-h-56 font-serif`} placeholder="the poem…" value={editing.content} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
+          <InkEditor
+            initialHtml={editing.content}
+            onChange={(html) => setEditing({ ...editing, content: html })}
+            placeholder="the poem…"
+            minHeight="16rem"
+            dark
+            surfaceClassName="prose-poem font-serif text-lg leading-relaxed text-cream"
+          />
           <div className="flex flex-wrap gap-2">
             <button className={btnDark} onClick={save}>save</button>
             <button className={btnSoft} onClick={() => setEditing(null)}>cancel</button>

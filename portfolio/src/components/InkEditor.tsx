@@ -33,9 +33,6 @@ const COLORS = [
   "#fff8f0", // cream (for the dark poem room)
 ];
 
-const tbBtn =
-  "rounded-full bg-white/80 px-2.5 py-1 font-body text-xs font-semibold text-ink transition hover:bg-white";
-
 export default function InkEditor({
   initialHtml,
   onChange,
@@ -44,6 +41,7 @@ export default function InkEditor({
   compact = false,
   surfaceClassName = "font-body text-base leading-relaxed text-ink",
   toolbarOnFocus = false,
+  dark = false,
 }: {
   initialHtml: string;
   onChange: (html: string) => void;
@@ -52,7 +50,13 @@ export default function InkEditor({
   compact?: boolean; // slimmer toolbar + surface for in-page passages
   surfaceClassName?: string; // typography matching the page being edited
   toolbarOnFocus?: boolean; // hide the toolbar until focused (many editors on one screen)
+  dark?: boolean; // dark surface (the poem room) so writing is WYSIWYG
 }) {
+  // themed toolbar so a dark editor (poems) reads correctly on its own bg
+  const tbBtn = dark
+    ? "rounded-full bg-white/15 px-2.5 py-1 font-body text-xs font-semibold text-cream transition hover:bg-white/25"
+    : "rounded-full bg-white/80 px-2.5 py-1 font-body text-xs font-semibold text-ink transition hover:bg-white";
+  const sep = dark ? "mx-0.5 h-4 w-px bg-white/20" : "mx-0.5 h-4 w-px bg-ink/15";
   const ref = useRef<HTMLDivElement>(null);
   // which toolbar dropdown (font/size/color/head/align) is open, if any
   const [menu, setMenu] = useState<string | null>(null);
@@ -120,9 +124,12 @@ export default function InkEditor({
   const keepSel = (e: React.MouseEvent) => e.preventDefault();
 
   // small dropdown helpers so the toolbar stays compact (font/size/color/…)
-  const menuWrap =
-    "absolute left-0 top-full z-20 mt-1 flex max-w-[15rem] flex-wrap gap-1 rounded-2xl border border-ink/10 bg-white p-2 shadow-lg";
-  const menuItem = "w-full rounded-lg px-2 py-1 text-left font-body text-xs text-ink hover:bg-blush/20";
+  const menuWrap = `absolute left-0 top-full z-20 mt-1 flex max-w-[15rem] flex-wrap gap-1 rounded-2xl border p-2 shadow-lg ${
+    dark ? "border-white/10 bg-[#2a2a34]" : "border-ink/10 bg-white"
+  }`;
+  const menuItem = `w-full rounded-lg px-2 py-1 text-left font-body text-xs ${
+    dark ? "text-cream hover:bg-white/10" : "text-ink hover:bg-blush/20"
+  }`;
   const toggle = (m: string) => setMenu((cur) => (cur === m ? null : m));
   const drop = (id: string, label: React.ReactNode, title: string, body: React.ReactNode) => (
     <div className="relative">
@@ -134,16 +141,22 @@ export default function InkEditor({
   );
 
   return (
-    <div className="group rounded-3xl border border-white/70 bg-white/70 shadow-sm backdrop-blur transition focus-within:border-blush focus-within:ring-2 focus-within:ring-blush/50">
+    <div
+      className={`group rounded-3xl border shadow-sm backdrop-blur transition focus-within:border-blush focus-within:ring-2 focus-within:ring-blush/50 ${
+        dark ? "border-white/15 bg-[#1c1c24]/95" : "border-white/70 bg-white/70"
+      }`}
+    >
       <div
         onMouseDown={keepSel}
         className={`${
           toolbarOnFocus ? "hidden group-focus-within:flex" : "flex"
-        } flex-wrap items-center gap-1.5 rounded-t-3xl border-b border-ink/10 bg-white/60 px-3 py-2`}
+        } flex-wrap items-center gap-1.5 rounded-t-3xl border-b px-3 py-2 ${
+          dark ? "border-white/10 bg-white/5" : "border-ink/10 bg-white/60"
+        }`}
       >
         <button type="button" title="undo (⌘Z)" onClick={() => cmd("undo")} className={tbBtn}>↺</button>
         <button type="button" title="redo (⌘⇧Z)" onClick={() => cmd("redo")} className={tbBtn}>↻</button>
-        <span className="mx-0.5 h-4 w-px bg-ink/15" />
+        <span className={sep} />
 
         {/* font */}
         {drop(
@@ -181,13 +194,13 @@ export default function InkEditor({
           "🎨",
           "text & highlight colour",
           <>
-            <p className="w-full font-body text-[10px] font-bold uppercase tracking-wide text-ink-soft/70">text</p>
+            <p className={`w-full font-body text-[10px] font-bold uppercase tracking-wide ${dark ? "text-cream/60" : "text-ink-soft/70"}`}>text</p>
             <div className="flex w-full flex-wrap gap-1.5">
               {COLORS.map((c) => (
                 <button key={`t${c}`} type="button" aria-label={`text ${c}`} onClick={() => { wrapSelection({ color: c }); setMenu(null); }} className="h-5 w-5 rounded-full ring-1 ring-ink/20 transition hover:scale-110" style={{ backgroundColor: c }} />
               ))}
             </div>
-            <p className="mt-1 w-full font-body text-[10px] font-bold uppercase tracking-wide text-ink-soft/70">highlight</p>
+            <p className={`mt-1 w-full font-body text-[10px] font-bold uppercase tracking-wide ${dark ? "text-cream/60" : "text-ink-soft/70"}`}>highlight</p>
             <div className="flex w-full flex-wrap gap-1.5">
               {COLORS.map((c) => (
                 <button key={`h${c}`} type="button" aria-label={`highlight ${c}`} onClick={() => { wrapSelection({ "background-color": c }); setMenu(null); }} className="h-5 w-5 rounded-md ring-1 ring-ink/20 transition hover:scale-110" style={{ backgroundColor: c }} />
@@ -195,14 +208,14 @@ export default function InkEditor({
             </div>
           </>,
         )}
-        <span className="mx-0.5 h-4 w-px bg-ink/15" />
+        <span className={sep} />
 
         {/* inline emphasis */}
         <button type="button" title="bold (⌘B)" onClick={() => cmd("bold")} className={`${tbBtn} font-extrabold`}>B</button>
         <button type="button" title="italic (⌘I)" onClick={() => cmd("italic")} className={`${tbBtn} italic`}>I</button>
         <button type="button" title="underline (⌘U)" onClick={() => cmd("underline")} className={`${tbBtn} underline`}>U</button>
         <button type="button" title="strikethrough" onClick={() => cmd("strikeThrough")} className={`${tbBtn} line-through`}>S</button>
-        <span className="mx-0.5 h-4 w-px bg-ink/15" />
+        <span className={sep} />
 
         {/* headings / block style */}
         {drop(
@@ -234,7 +247,7 @@ export default function InkEditor({
             <button type="button" onClick={() => { cmd("justifyFull"); setMenu(null); }} className={menuItem}>≣ justify</button>
           </>,
         )}
-        <span className="mx-0.5 h-4 w-px bg-ink/15" />
+        <span className={sep} />
 
         {/* code, link, clear */}
         <button type="button" title="inline code" onClick={() => wrapSelection({}, "code")} className={`${tbBtn} font-mono`}>{"<>"}</button>
