@@ -369,8 +369,7 @@ function CopyTab({
 
   return (
     <div className="mt-4">
-      {msg && <p className="font-body text-sm text-ink-soft">{msg}</p>}
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className="sticky top-20 z-30 -mx-1 flex flex-wrap items-center gap-2 rounded-2xl bg-white/80 px-3 py-2 shadow-sm backdrop-blur">
         <button className={btnDark} onClick={save}>save everything</button>
         <button className={btnSoft} onClick={makeDefault}>
           📌 make these the default
@@ -383,6 +382,7 @@ function CopyTab({
             reset all to original code
           </button>
         )}
+        {msg && <span className="font-body text-xs text-ink-soft">{msg}</span>}
       </div>
       {shown.length === 0 && (
         <p className="mt-4 font-body text-sm text-ink-soft">nothing here yet ✦</p>
@@ -409,9 +409,6 @@ function CopyTab({
             </div>
           </div>
         ))}
-      </div>
-      <div className="mt-4">
-        <button className={btnDark} onClick={save}>save everything</button>
       </div>
     </div>
   );

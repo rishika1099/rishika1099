@@ -178,8 +178,7 @@ export default function AboutEntriesManager({
 
   return (
     <div className="mt-4">
-      {msg && <p className="font-body text-sm text-ink-soft">{msg}</p>}
-      <div className="mt-2 flex flex-wrap items-center gap-2">
+      <div className="sticky top-20 z-30 -mx-1 flex flex-wrap items-center gap-2 rounded-2xl bg-white/80 px-3 py-2 shadow-sm backdrop-blur">
         <button className={btnDark} onClick={save} disabled={saving}>
           {saving ? "saving…" : "save"}
         </button>
@@ -187,6 +186,7 @@ export default function AboutEntriesManager({
           ＋ add
         </button>
         <button className={btnSoft} onClick={revert}>revert to code</button>
+        {msg && <span className="font-body text-xs text-ink-soft">{msg}</span>}
       </div>
       {section === "research" && (
         <p className="mt-2 font-body text-xs text-ink-soft/70">
