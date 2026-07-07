@@ -71,6 +71,8 @@ export default function InkEditor({
   const [menu, setMenu] = useState<string | null>(null);
   // format-painter: styles captured from a selection, to paint onto the next one
   const [painter, setPainter] = useState<Record<string, string> | null>(null);
+  // the selected text's current font size in px (shown in the size stepper)
+  const [curSize, setCurSize] = useState<number | null>(null);
   // last non-collapsed selection inside the editor, so a native colour picker
   // or input that steals focus can't lose the user's selection
   const lastRange = useRef<Range | null>(null);
@@ -83,12 +85,16 @@ export default function InkEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // remember the live selection whenever it's a real range inside the editor
+  // remember the live selection + track the selected text's font size (for the
+  // size stepper) whenever the selection is a real range inside the editor
   useEffect(() => {
     const onSel = () => {
       const s = window.getSelection();
       if (s && s.rangeCount && !s.isCollapsed && ref.current?.contains(s.anchorNode)) {
         lastRange.current = s.getRangeAt(0).cloneRange();
+        const node = s.anchorNode;
+        const el = (node?.nodeType === 3 ? node.parentElement : (node as Element | null)) ?? null;
+        if (el) setCurSize(Math.round(parseFloat(getComputedStyle(el).fontSize)) || null);
       }
     };
     document.addEventListener("selectionchange", onSel);
@@ -233,9 +239,9 @@ export default function InkEditor({
 
   return (
     <div
-      className={`group rounded-3xl border shadow-sm backdrop-blur transition focus-within:border-blush focus-within:ring-2 focus-within:ring-blush/50 ${
-        dark ? "border-white/15 bg-[#1c1c24]/95" : "border-white/70 bg-white/70"
-      }`}
+      className={`group relative rounded-3xl border shadow-sm backdrop-blur transition focus-within:border-blush focus-within:ring-2 focus-within:ring-blush/50 ${
+        menu ? "z-30" : ""
+      } ${dark ? "border-white/15 bg-[#1c1c24]/95" : "border-white/70 bg-white/70"}`}
     >
       <div
         onMouseDown={keepSel}
@@ -295,8 +301,27 @@ export default function InkEditor({
             </button>
           )),
         )}
-        <button type="button" title="smaller" onClick={() => bumpSize(-2)} className={tbBtn}>A−</button>
-        <button type="button" title="bigger" onClick={() => bumpSize(2)} className={tbBtn}>A+</button>
+        {/* size stepper: − [px] + */}
+        <span className="inline-flex items-center gap-0.5">
+          <button type="button" title="smaller" onClick={() => bumpSize(-1)} className={tbBtn}>−</button>
+          <input
+            type="number"
+            min={6}
+            max={200}
+            value={curSize ?? ""}
+            placeholder="px"
+            onMouseDown={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              const n = parseInt(e.target.value, 10);
+              setCurSize(Number.isNaN(n) ? null : n);
+              if (n >= 6 && n <= 200) wrapSelection({ "font-size": `${n}px` });
+            }}
+            className={`w-10 rounded-lg px-1 py-0.5 text-center font-body text-xs outline-none ${
+              dark ? "bg-white/10 text-cream" : "bg-white/80 text-ink"
+            }`}
+          />
+          <button type="button" title="bigger" onClick={() => bumpSize(1)} className={tbBtn}>+</button>
+        </span>
 
         {/* color: text + highlight */}
         {drop(
