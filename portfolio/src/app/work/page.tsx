@@ -2,6 +2,7 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import WorkGallery from "@/components/WorkGallery";
 import ProjectGalaxy from "@/components/ProjectGalaxy";
+import ProjectMatch from "@/components/ProjectMatch";
 import { categories, domains } from "@/data/projects";
 import { getAllProjects } from "@/lib/github-projects";
 import { getCopy } from "@/lib/siteCopy";
@@ -23,6 +24,7 @@ export default async function Work() {
       </p>
 
       <WorkGallery projects={projects} categories={categories} domains={domains} />
+      <ProjectMatch />
       <ProjectGalaxy />
     </PageShell>
   );
