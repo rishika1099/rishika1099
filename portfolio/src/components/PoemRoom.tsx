@@ -6,6 +6,8 @@ import ReactMarkdown from "react-markdown";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Poem } from "@/lib/poems-store";
 import { moodColor } from "@/lib/moods";
+import ReactionBar from "@/components/ReactionBar";
+import AmbientSound from "@/components/AmbientSound";
 
 function CardArt({ poem }: { poem: Poem }) {
   const [broken, setBroken] = useState(false);
@@ -66,6 +68,7 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
 
   return (
     <>
+      <AmbientSound />
       {moods.length > 1 && (
         <div className="mt-6 flex flex-wrap gap-2">
           <button
@@ -171,6 +174,9 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
                   <ReactMarkdown>{active.content}</ReactMarkdown>
                 </div>
               )}
+              <div className="mt-7 border-t border-white/10 pt-5">
+                <ReactionBar id={`poem:${active.slug}`} dark />
+              </div>
             </motion.article>
           </motion.div>
         )}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { clearStats, readStats } from "@/lib/analytics";
+import { getAllReactions } from "@/lib/reactions";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,8 @@ function denyIfBadKey(request: Request): NextResponse | null {
 export async function GET(request: Request) {
   const denied = denyIfBadKey(request);
   if (denied) return denied;
-  return NextResponse.json(await readStats());
+  const [stats, reactions] = await Promise.all([readStats(), getAllReactions()]);
+  return NextResponse.json({ ...stats, reactions });
 }
 
 // Reset every counter (e.g. to clear your own test visits).

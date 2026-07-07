@@ -9,7 +9,8 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import type { LoggedQuestion, VisitStats } from "@/lib/analytics";
 
-type Stats = { visits: VisitStats; questions: LoggedQuestion[] };
+type Reactions = Record<string, { heart: number; sparkle: number }>;
+type Stats = { visits: VisitStats; questions: LoggedQuestion[]; reactions?: Reactions };
 
 function Board({
   title,
@@ -218,6 +219,32 @@ export default function StatsPage() {
               </div>
             </div>
           </div>
+
+          {/* reactions on poems + posts */}
+          {stats.reactions && Object.keys(stats.reactions).length > 0 && (
+            <div className="mt-6 rounded-3xl p-5 soft-card">
+              <h2 className="font-body text-base font-bold text-ink">💗 reactions</h2>
+              <div className="mt-3 space-y-2">
+                {Object.entries(stats.reactions)
+                  .sort((a, b) => b[1].heart + b[1].sparkle - (a[1].heart + a[1].sparkle))
+                  .slice(0, 20)
+                  .map(([id, r]) => {
+                    const [kind, ...rest] = id.split(":");
+                    const name = rest.join(":").replace(/-/g, " ");
+                    return (
+                      <div key={id} className="flex items-center justify-between gap-3 font-body text-sm">
+                        <span className="truncate text-ink">
+                          <span className="text-ink-soft/60">{kind === "poem" ? "🕯️" : "📓"}</span> {name}
+                        </span>
+                        <span className="shrink-0 font-semibold text-ink-soft">
+                          💗 {r.heart} · ✨ {r.sparkle}
+                        </span>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
 
           {/* performance */}
           <div className="mt-6">

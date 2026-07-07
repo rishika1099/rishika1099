@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import PageShell from "@/components/PageShell";
 import { getBlogPost, getBlogPosts } from "@/lib/content";
 import ViewCount from "@/components/ViewCount";
+import ReactionBar from "@/components/ReactionBar";
 
 // one friendly date style (matches the technical index)
 const fmtDate = (raw: string) => {
@@ -62,6 +63,9 @@ export default async function BlogPost({
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {post.content}
           </ReactMarkdown>
+        </div>
+        <div className="mt-8 border-t border-ink/10 pt-6">
+          <ReactionBar id={`post:${post.slug}`} />
         </div>
       </article>
     </PageShell>
