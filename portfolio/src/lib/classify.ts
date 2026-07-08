@@ -55,6 +55,8 @@ const CATEGORY_PROTOS: Record<Category, string[]> = {
     "deep neural networks and backpropagation",
     "CNNs, RNNs, LSTMs and transformers",
     "training deep learning architectures",
+    "transfer learning and fine-tuning pretrained models like VGG or ResNet",
+    "convolutional networks for image classification",
   ],
   "Computer Vision": [
     "computer vision and image analysis",
@@ -83,6 +85,8 @@ const DOMAIN_PROTOS: Record<Domain, string[]> = {
     "medicine and clinical care",
     "cancer trials, patients, and disease diagnosis",
     "hospitals, doctors, and medical treatment",
+    "medical imaging, CT scans, MRI, and radiology",
+    "clinical notes, diagnosis, and patient data",
   ],
   Education: [
     "teaching and classroom learning",
