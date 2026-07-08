@@ -29,7 +29,19 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const post = getBlogPost(slug);
-  return { title: post ? post.title : "Post not found" };
+  if (!post) return { title: "Post not found" };
+  const og = `/api/og?title=${encodeURIComponent(post.title)}&label=technical%20blog`;
+  return {
+    title: post.title,
+    description: post.excerpt || undefined,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || undefined,
+      type: "article",
+      images: [{ url: og, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", images: [og] },
+  };
 }
 
 export default async function BlogPost({

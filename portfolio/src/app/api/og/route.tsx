@@ -25,7 +25,15 @@ export async function GET(request: Request) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#4a4a5e", fontSize: 30, fontWeight: 700 }}>
-          <span>✿</span>
+          <span
+            style={{
+              display: "flex",
+              width: 22,
+              height: 22,
+              borderRadius: 999,
+              background: "#c77dba",
+            }}
+          />
           <span>Rishika Mamidibathula</span>
         </div>
 
