@@ -67,7 +67,10 @@ export default function Guestbook() {
   return (
     <section className="mt-12 w-full max-w-xl text-left">
       <h2 className="font-display text-xl font-bold text-ink">📖 sign the guestbook</h2>
-      <p className="mt-1 font-body text-sm text-ink-soft">
+      <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-lavender/40 px-3 py-1 font-body text-xs font-semibold text-ink">
+        🌸 public wall · everyone who visits sees this
+      </p>
+      <p className="mt-2 font-body text-sm text-ink-soft">
         leave a little note, it gets a mood ✦ (a model reads the vibe, not you)
       </p>
 
@@ -107,30 +110,50 @@ export default function Guestbook() {
         </div>
       </form>
 
-      <div className="mt-6 space-y-3">
+      {/* the wall: notes pinned up like sticky notes, tinted by their mood */}
+      <div className="mt-6">
         {entries === null && <p className="font-body text-sm text-ink-soft">opening the book… ✦</p>}
         {entries?.length === 0 && (
-          <p className="font-body text-sm text-ink-soft">be the first to sign ✦</p>
+          <p className="rounded-2xl border-2 border-dashed border-ink/15 p-6 text-center font-body text-sm text-ink-soft">
+            no notes yet, be the first to pin one up ✦
+          </p>
         )}
-        {entries?.map((e) => {
-          const m = e.mood ? MOOD[e.mood] : null;
-          return (
-            <div key={e.id} className="rounded-2xl p-4 soft-card">
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-body text-sm font-bold text-ink">{e.name}</p>
-                {m && (
-                  <span
-                    className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
-                    style={{ backgroundColor: m.tint }}
-                  >
-                    {m.emoji} {e.mood}
-                  </span>
-                )}
-              </div>
-              <p className="mt-1 whitespace-pre-line font-body text-sm text-ink-soft">{e.message}</p>
-            </div>
-          );
-        })}
+        {!!entries?.length && (
+          <div className="gap-3 [column-fill:balance] sm:columns-2">
+            {entries.map((e, i) => {
+              const m = e.mood ? MOOD[e.mood] : null;
+              const tilt = i % 2 ? "rotate-[1.2deg]" : "-rotate-[1.2deg]";
+              return (
+                <div
+                  key={e.id}
+                  className={`mb-3 inline-block w-full break-inside-avoid rounded-2xl p-4 shadow-sm ring-1 ring-white/60 transition-transform hover:rotate-0 ${tilt}`}
+                  style={{ backgroundColor: m ? `${m.tint}5c` : "rgba(255,255,255,0.6)" }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl leading-none" aria-hidden>
+                      {m?.emoji ?? "✦"}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="truncate font-body text-sm font-bold text-ink">
+                          {e.name || "someone"}
+                        </p>
+                        {m && (
+                          <span className="shrink-0 font-body text-[11px] font-semibold text-ink-soft">
+                            {e.mood}
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 whitespace-pre-line font-body text-sm text-ink">
+                        {e.message}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

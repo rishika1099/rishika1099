@@ -67,6 +67,9 @@ export default function ContactForm() {
       <h2 className="text-center font-body text-xl font-bold text-ink">
         send me a message 💌
       </h2>
+      <p className="mt-1 text-center font-body text-sm text-ink-soft">
+        📮 just between us · goes straight to my inbox, never shown here
+      </p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <input
