@@ -537,17 +537,39 @@ function EditRoom() {
                 </button>
               ))}
             </div>
-            <button
-              className={`${btnSoft} shrink-0`}
-              onClick={() => {
-                localStorage.removeItem("admin-key");
-                setEntered(false);
-                setKey("");
-                setEditMode(false);
-              }}
-            >
-              lock up 🔒
-            </button>
+            <div className="flex shrink-0 gap-2">
+              <button
+                className={btnSoft}
+                title="download a JSON backup of everything editable"
+                onClick={async () => {
+                  try {
+                    const res = await fetch("/api/admin/export", { headers: { "x-admin-key": key } });
+                    const blob = await res.blob();
+                    const href = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = href;
+                    a.download = `portfolio-backup-${new Date().toISOString().slice(0, 10)}.json`;
+                    a.click();
+                    URL.revokeObjectURL(href);
+                  } catch {
+                    // ignore
+                  }
+                }}
+              >
+                ⬇ backup
+              </button>
+              <button
+                className={btnSoft}
+                onClick={() => {
+                  localStorage.removeItem("admin-key");
+                  setEntered(false);
+                  setKey("");
+                  setEditMode(false);
+                }}
+              >
+                lock up 🔒
+              </button>
+            </div>
           </div>
 
           {tab === "titles" && <CopyTab keyVal={key} kind="title" scopeLabel="titles & headings" />}
