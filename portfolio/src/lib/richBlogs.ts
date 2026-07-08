@@ -10,12 +10,26 @@ import { slugify } from "@/lib/poems-store";
 import { categorize, detectDomains } from "@/lib/github-projects";
 import type { Doc } from "@/lib/content";
 
+// "published" shows now, "draft" never shows publicly, "scheduled" shows once
+// publishAt has passed. Posts saved before this field existed have no status,
+// which we treat as published (see isLive).
+export type PostStatus = "published" | "draft" | "scheduled";
+
 export interface RichPost {
   slug: string;
   title: string;
   date: string; // YYYY-MM-DD
   excerpt: string;
   html: string;
+  status?: PostStatus;
+  publishAt?: string; // ISO datetime, only meaningful when status === "scheduled"
+}
+
+/** Whether a post should be visible to the public right now. */
+export function isLive(p: Pick<RichPost, "status" | "publishAt">): boolean {
+  if (p.status === "draft") return false;
+  if (p.status === "scheduled") return !!p.publishAt && new Date(p.publishAt).getTime() <= Date.now();
+  return true; // "published" or legacy posts with no status
 }
 
 const LOCAL_DIR = path.join(process.cwd(), "src/content/blog-rich");
@@ -59,15 +73,21 @@ export async function saveRichPost(p: {
   date?: string;
   excerpt?: string;
   html: string;
+  status?: PostStatus;
+  publishAt?: string;
 }): Promise<string> {
   const slug = (p.slug ?? "").trim() || slugify(p.title);
   const html = sanitizeRichHtml(p.html);
+  const status: PostStatus = p.status ?? "published";
+  const publishAt = (p.publishAt ?? "").trim();
   const post: RichPost = {
     slug,
     title: p.title.trim(),
     date: (p.date ?? "").trim() || new Date().toISOString().slice(0, 10),
     excerpt: (p.excerpt ?? "").trim() || richToText(html, 160),
     html,
+    status,
+    ...(status === "scheduled" && publishAt ? { publishAt } : {}),
   };
   if (blobsEnabled()) {
     const s = await store("blogs");
@@ -91,7 +111,7 @@ export async function deleteRichPost(slug: string): Promise<void> {
 
 /** Rich posts shaped as blog Docs for the Technical Blogs list. */
 export async function richPostDocs(): Promise<Doc[]> {
-  const posts = await listRichPosts();
+  const posts = (await listRichPosts()).filter(isLive);
   return posts.map((p) => {
     const tagText = `${p.title}. ${richToText(p.html, 400)}`;
     return {

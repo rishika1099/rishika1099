@@ -25,6 +25,39 @@ const btnDanger = `${btn} bg-rose/60 text-ink hover:bg-rose/80`;
 const field =
   "w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-2 font-body text-sm text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30";
 
+// ISO datetime <-> value for <input type="datetime-local"> (which is local, no tz)
+function toLocalInput(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function fromLocalInput(v: string): string {
+  if (!v) return "";
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? "" : d.toISOString();
+}
+
+function StatusBadge({ post }: { post: RichPost }) {
+  if (post.status === "draft")
+    return (
+      <span className="rounded-full bg-white/70 px-2 py-0.5 font-body text-[10px] font-semibold text-ink-soft">
+        draft
+      </span>
+    );
+  if (post.status === "scheduled") {
+    const due = post.publishAt ? new Date(post.publishAt) : null;
+    const live = !!due && due.getTime() <= Date.now();
+    return (
+      <span className="rounded-full bg-lavender/60 px-2 py-0.5 font-body text-[10px] font-semibold text-ink">
+        {live ? "🌿 live" : `🕰 ${due ? due.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "scheduled"}`}
+      </span>
+    );
+  }
+  return null;
+}
+
 export function RichPostManager({ keyVal }: { keyVal: string }) {
   const api = adminApi(keyVal);
   const router = useRouter();
@@ -47,8 +80,14 @@ export function RichPostManager({ keyVal }: { keyVal: string }) {
     setMsg("saving…");
     try {
       await api("/api/admin/blogs", { method: "POST", body: JSON.stringify(editing) });
+      const done =
+        editing.status === "draft"
+          ? "saved as draft ✓"
+          : editing.status === "scheduled"
+            ? "scheduled ✓"
+            : "published ✓";
       setEditing(null);
-      setMsg("published ✓");
+      setMsg(done);
       refresh();
       router.refresh();
     } catch {
@@ -99,7 +138,10 @@ export function RichPostManager({ keyVal }: { keyVal: string }) {
               className="flex items-center justify-between gap-3 rounded-2xl bg-white/50 p-3"
             >
               <div>
-                <p className="font-body text-sm font-bold text-ink">{p.title}</p>
+                <p className="flex items-center gap-2 font-body text-sm font-bold text-ink">
+                  {p.title}
+                  <StatusBadge post={p} />
+                </p>
                 <p className="font-body text-xs italic text-ink-soft">{p.date}</p>
               </div>
               <button className={btnSoft} onClick={() => setEditing({ ...p })}>
@@ -135,9 +177,39 @@ export function RichPostManager({ keyVal }: { keyVal: string }) {
             onChange={(html) => setEditing((e) => (e ? { ...e, html } : e))}
             placeholder="write like nobody's compiling…"
           />
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-white/50 p-3">
+            <span className="font-body text-xs font-semibold text-ink-soft">visibility</span>
+            {(["published", "draft", "scheduled"] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => setEditing((e) => (e ? { ...e, status: s } : e))}
+                className={`rounded-full px-3 py-1 font-body text-xs transition ${
+                  (editing.status ?? "published") === s
+                    ? "bg-ink text-cream"
+                    : "bg-white/70 text-ink-soft hover:text-ink"
+                }`}
+              >
+                {s === "published" ? "🌿 live" : s === "draft" ? "✎ draft" : "🕰 schedule"}
+              </button>
+            ))}
+            {editing.status === "scheduled" && (
+              <input
+                type="datetime-local"
+                className={`${field} sm:!w-56`}
+                value={toLocalInput(editing.publishAt)}
+                onChange={(e) =>
+                  setEditing((ed) => (ed ? { ...ed, publishAt: fromLocalInput(e.target.value) } : ed))
+                }
+              />
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             <button className={btnDark} onClick={save}>
-              publish
+              {editing.status === "draft"
+                ? "save draft"
+                : editing.status === "scheduled"
+                  ? "schedule"
+                  : "publish"}
             </button>
             <button className={btnSoft} onClick={() => setEditing(null)}>
               cancel

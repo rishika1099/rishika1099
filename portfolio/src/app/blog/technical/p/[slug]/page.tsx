@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
-import { getRichPost } from "@/lib/richBlogs";
+import { getRichPost, isLive } from "@/lib/richBlogs";
 
 // posts written in the atelier live in Blobs, so always render fresh
 export const dynamic = "force-dynamic";
@@ -20,7 +20,8 @@ export default async function RichPostPage({
 }) {
   const { slug } = await params;
   const post = await getRichPost(slug);
-  if (!post) notFound();
+  // drafts and not-yet-due scheduled posts are hidden from the public
+  if (!post || !isLive(post)) notFound();
 
   return (
     <PageShell vibe="azure">

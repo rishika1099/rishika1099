@@ -26,6 +26,8 @@ export async function POST(request: Request) {
       date?: string;
       excerpt?: string;
       html?: string;
+      status?: "published" | "draft" | "scheduled";
+      publishAt?: string;
     };
     const title = (body.title ?? "").trim();
     const html = (body.html ?? "").trim();
