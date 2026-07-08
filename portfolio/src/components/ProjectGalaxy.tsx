@@ -13,9 +13,18 @@ interface Point {
   x: number;
   y: number;
 }
+interface You {
+  x: number;
+  y: number;
+  query: string;
+  nearest: string;
+  nearestEmoji: string;
+  score: number;
+}
 interface GalaxyData {
   points: Point[];
   areas: string[];
+  you?: You;
 }
 
 // soft pastel color per technical area (matches the Work filter areas)
@@ -35,10 +44,24 @@ const AREA_COLOR: Record<string, string> = {
 };
 const colorFor = (area: string) => AREA_COLOR[area] ?? "#cdeac0";
 
+const EXAMPLES = [
+  "making LLMs run faster",
+  "computer vision on medical images",
+  "fairness in high-stakes decisions",
+  "causal inference",
+  "something with agents",
+];
+
 export default function ProjectGalaxy() {
   const [data, setData] = useState<GalaxyData | null>(null);
   const [status, setStatus] = useState<"loading" | "done" | "off" | "error">("loading");
   const [active, setActive] = useState<string | null>(null);
+
+  // matchmaking: drop a typed interest into the map as a "you are here" star
+  const [q, setQ] = useState("");
+  const [you, setYou] = useState<You | null>(null);
+  const [qBusy, setQBusy] = useState(false);
+  const [qErr, setQErr] = useState("");
 
   useEffect(() => {
     fetch("/api/project-map")
@@ -58,9 +81,45 @@ export default function ProjectGalaxy() {
       .catch(() => setStatus("error"));
   }, []);
 
+  async function drop(query: string) {
+    const s = query.trim();
+    if (s.length < 2) return;
+    setQBusy(true);
+    setQErr("");
+    try {
+      const r = await fetch(`/api/project-map?q=${encodeURIComponent(s)}`);
+      if (!r.ok) throw new Error(String(r.status));
+      const d = (await r.json()) as GalaxyData;
+      if (d.you) {
+        setYou(d.you);
+        setActive(d.you.nearest); // pop the closest project open
+      } else {
+        setYou(null);
+        setQErr("nothing landed close enough, try another phrasing ✦");
+      }
+    } catch {
+      setQErr("the stars wandered off, try again in a moment?");
+    } finally {
+      setQBusy(false);
+    }
+  }
+
+  function clearYou() {
+    setYou(null);
+    setQ("");
+    setQErr("");
+    setActive(null);
+  }
+
+  const nearPoint = you && data ? data.points.find((p) => p.name === you.nearest) : undefined;
+
   return (
     <section className="mt-14">
       <h2 className="font-body text-2xl font-bold text-ink">🌌 the embeddings galaxy</h2>
+      <p className="mt-1 max-w-2xl font-body text-sm text-ink-soft">
+        every project embedded and projected to 2D, so similar work sits close together. drop in
+        something you care about and see where <em>you</em> land.
+      </p>
 
       {status === "off" && (
         <p className="mt-4 font-body text-ink-soft">the galaxy isn&apos;t configured on this deploy yet. ✦</p>
@@ -68,13 +127,59 @@ export default function ProjectGalaxy() {
       {status === "error" && (
         <p className="mt-4 font-body text-ink-soft">the stars wandered off. try again in a moment? ✦</p>
       )}
-      {status === "loading" && (
-        <p className="mt-4 font-body text-ink-soft">mapping the galaxy… 🌌</p>
-      )}
+      {status === "loading" && <p className="mt-4 font-body text-ink-soft">mapping the galaxy… 🌌</p>}
 
       {status === "done" && data && (
         <>
-          <div className="relative mt-5 aspect-[16/10] w-full overflow-hidden rounded-3xl soft-card">
+          {/* matchmaking input: drop an interest into the same embedding space */}
+          <form
+            className="mt-4 flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              drop(q);
+            }}
+          >
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="e.g. real-time ML on tiny devices"
+              className="w-full rounded-full border border-white/70 bg-white/80 px-5 py-2.5 font-body text-sm text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
+            />
+            <button
+              type="submit"
+              disabled={qBusy}
+              className="shrink-0 rounded-full bg-ink px-5 py-2.5 font-body text-sm font-semibold text-cream transition hover:opacity-90 disabled:opacity-50"
+            >
+              {qBusy ? "…" : "drop me in"}
+            </button>
+            {you && (
+              <button
+                type="button"
+                onClick={clearYou}
+                className="shrink-0 rounded-full bg-white/70 px-4 py-2.5 font-body text-sm font-semibold text-ink-soft transition hover:text-ink"
+              >
+                clear
+              </button>
+            )}
+          </form>
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {EXAMPLES.map((ex) => (
+              <button
+                key={ex}
+                type="button"
+                onClick={() => {
+                  setQ(ex);
+                  drop(ex);
+                }}
+                className="rounded-full bg-white/60 px-3 py-1 font-body text-xs font-semibold text-ink-soft transition hover:bg-white"
+              >
+                {ex}
+              </button>
+            ))}
+          </div>
+          {qErr && <p className="mt-3 font-body text-sm text-rose-500">{qErr}</p>}
+
+          <div className="relative mt-4 aspect-[16/10] w-full overflow-hidden rounded-3xl soft-card">
             {/* subtle xy grid so it reads like a coordinate space */}
             <div
               aria-hidden
@@ -113,8 +218,32 @@ export default function ProjectGalaxy() {
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-ink/10" />
             <div aria-hidden className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-ink/10" />
 
+            {/* dashed line from the "you are here" star to its nearest project */}
+            {you && nearPoint && (
+              <svg
+                aria-hidden
+                className="pointer-events-none absolute inset-0 h-full w-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+              >
+                <line
+                  x1={you.x * 100}
+                  y1={you.y * 100}
+                  x2={nearPoint.x * 100}
+                  y2={nearPoint.y * 100}
+                  stroke="#c77dba"
+                  strokeWidth={1.2}
+                  strokeDasharray="3 3"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                  opacity={0.55}
+                />
+              </svg>
+            )}
+
             {data.points.map((p, i) => {
               const isActive = active === p.name;
+              const isNear = you?.nearest === p.name;
               // flip the popover for dots near the plot edges so it stays inside
               const popBelow = p.y < 0.55;
               const popLeft = p.x > 0.75;
@@ -122,11 +251,11 @@ export default function ProjectGalaxy() {
                 <motion.div
                   key={p.name}
                   initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  animate={{ opacity: you && !isNear ? 0.4 : 1, scale: 1 }}
                   transition={{ delay: i * 0.02, type: "spring", stiffness: 200, damping: 18 }}
                   onMouseEnter={() => setActive(p.name)}
                   onMouseLeave={() => setActive((a) => (a === p.name ? null : a))}
-                  style={{ left: `${p.x * 100}%`, top: `${p.y * 100}%`, zIndex: isActive ? 20 : 1 }}
+                  style={{ left: `${p.x * 100}%`, top: `${p.y * 100}%`, zIndex: isActive ? 20 : isNear ? 10 : 1 }}
                   className="absolute -translate-x-1/2 -translate-y-1/2"
                 >
                   <button
@@ -134,9 +263,9 @@ export default function ProjectGalaxy() {
                     onClick={() => setActive((a) => (a === p.name ? null : p.name))}
                     onFocus={() => setActive(p.name)}
                     aria-label={`${p.name}, ${p.category}`}
-                    className={`flex h-7 w-7 items-center justify-center rounded-full text-sm shadow-sm ring-2 ring-white/80 transition-transform ${
-                      isActive ? "scale-[1.6]" : "hover:scale-[1.6]"
-                    }`}
+                    className={`flex h-7 w-7 items-center justify-center rounded-full text-sm shadow-sm transition-transform ${
+                      isNear ? "ring-4 ring-blush" : "ring-2 ring-white/80"
+                    } ${isActive || isNear ? "scale-[1.6]" : "hover:scale-[1.6]"}`}
                     style={{ backgroundColor: colorFor(p.category) }}
                   >
                     {p.emoji}
@@ -166,9 +295,7 @@ export default function ProjectGalaxy() {
                         <button
                           type="button"
                           onClick={() =>
-                            window.dispatchEvent(
-                              new CustomEvent("find-similar", { detail: p.name }),
-                            )
+                            window.dispatchEvent(new CustomEvent("find-similar", { detail: p.name }))
                           }
                           className="font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
                         >
@@ -193,7 +320,48 @@ export default function ProjectGalaxy() {
                 </motion.div>
               );
             })}
+
+            {/* the "you are here" star */}
+            {you && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", stiffness: 220, damping: 16 }}
+                style={{ left: `${you.x * 100}%`, top: `${you.y * 100}%`, zIndex: 25 }}
+                className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+              >
+                <span className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-blush/50" />
+                <span className="relative flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm shadow-md ring-2 ring-blush">
+                  ✦
+                </span>
+                <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-2 py-0.5 font-body text-[10px] font-semibold text-cream">
+                  you
+                </span>
+              </motion.div>
+            )}
           </div>
+
+          {/* nearest-match callout */}
+          {you && (
+            <p className="mt-3 font-body text-sm text-ink">
+              <span className="text-ink-soft">&ldquo;{you.query}&rdquo; lands closest to</span>{" "}
+              <span className="font-bold">
+                {you.nearestEmoji} {you.nearest}
+              </span>{" "}
+              <span className="text-ink-soft">({Math.round(you.score * 100)}% by meaning)</span>
+              <button
+                type="button"
+                onClick={() =>
+                  window.dispatchEvent(
+                    new CustomEvent("ask-question", { detail: `Tell me about ${you.nearest}.` }),
+                  )
+                }
+                className="ml-2 rounded-full bg-lavender/50 px-3 py-0.5 font-body text-[11px] font-semibold text-ink transition hover:bg-lavender/70"
+              >
+                ask about it →
+              </button>
+            </p>
+          )}
 
           {/* area legend */}
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5">
@@ -209,7 +377,8 @@ export default function ProjectGalaxy() {
           </div>
 
           <p className="mt-3 font-body text-xs text-ink-soft/80">
-            Embedded with OpenAI, projected to 2D with PCA, colored by technical area.
+            Embedded with OpenAI, projected to 2D with PCA, colored by technical area. Your star is
+            the same query embedding projected into the very same axes.
           </p>
         </>
       )}

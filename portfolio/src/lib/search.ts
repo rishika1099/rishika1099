@@ -106,18 +106,35 @@ export interface GalaxyPoint {
   y: number; // 0..1
 }
 
+export interface GalaxyYou {
+  x: number; // 0..1, in the same frame as the project points
+  y: number;
+  query: string;
+  nearest: string; // name of the closest project by cosine
+  nearestEmoji: string;
+  score: number; // cosine similarity to the nearest project, 0..1
+}
+
 export interface GalaxyData {
   points: GalaxyPoint[];
   areas: string[]; // distinct technical areas present, for the legend
+  you?: GalaxyYou; // present only when the map was queried with an interest
+}
+
+interface PcaModel {
+  coords: [number, number][];
+  // Place a brand-new vector into the same normalized 2D frame as the training
+  // points, so a query star lands where it truly belongs. null when degenerate.
+  place: ((q: number[]) => [number, number]) | null;
 }
 
 // Classical PCA via the small n×n Gram matrix (n projects, d=1536 dims).
-// Returns each point's first two principal coordinates. Deterministic init so
-// the layout is stable across requests.
-export function pca2d(vectors: number[][]): [number, number][] {
+// Deterministic init so the layout is stable across requests. Also exposes a
+// `place()` to project an out-of-sample query into the same axes.
+function pcaModel(vectors: number[][]): PcaModel {
   const n = vectors.length;
   const d = vectors[0]?.length ?? 0;
-  if (n === 0) return [];
+  if (n < 2) return { coords: vectors.map(() => [0.5, 0.5] as [number, number]), place: null };
 
   const mean = new Array(d).fill(0);
   for (const v of vectors) for (let j = 0; j < d; j++) mean[j] += v[j];
@@ -160,26 +177,57 @@ export function pca2d(vectors: number[][]): [number, number][] {
 
   const sx = Math.sqrt(Math.max(e1.val, 0));
   const sy = Math.sqrt(Math.max(e2.val, 0));
-  const raw: [number, number][] = e1.vec.map((vi, i) => [vi * sx, e2.vec[i] * sy]);
+  // raw PC scores for the training points: score_i = u_k[i] * sqrt(lambda_k)
+  const rawX = e1.vec.map((vi) => vi * sx);
+  const rawY = e2.vec.map((vi) => vi * sy);
 
   // min-max normalize each axis into [0.06, 0.94] for a padded, well-filled plot
-  const norm = (vals: number[]) => {
+  const makeAxis = (vals: number[]) => {
     const lo = Math.min(...vals);
     const hi = Math.max(...vals);
     const span = hi - lo || 1;
-    return vals.map((x) => 0.06 + ((x - lo) / span) * 0.88);
+    return (x: number) => 0.06 + ((x - lo) / span) * 0.88;
   };
-  const xs = norm(raw.map((r) => r[0]));
-  const ys = norm(raw.map((r) => r[1]));
-  return raw.map((_, i) => [xs[i], ys[i]]);
+  const normX = makeAxis(rawX);
+  const normY = makeAxis(rawY);
+  const coords: [number, number][] = rawX.map((_, i) => [normX(rawX[i]), normY(rawY[i])]);
+
+  // Out-of-sample projection. For query q, its PC-k score is
+  //   s_k = (u_k · c) / sqrt(lambda_k),  where c_i = X[i] · (q - mean).
+  // (For a training point this reduces exactly to its coord above.)
+  const place = (q: number[]): [number, number] => {
+    const qc = q.map((x, j) => x - mean[j]);
+    const c = X.map((row) => {
+      let s = 0;
+      for (let j = 0; j < d; j++) s += row[j] * qc[j];
+      return s;
+    });
+    const scoreAlong = (u: number[], lambda: number) => {
+      if (lambda <= 0) return 0;
+      let s = 0;
+      for (let i = 0; i < n; i++) s += u[i] * c[i];
+      return s / Math.sqrt(lambda);
+    };
+    const clamp = (v: number) => Math.max(0.02, Math.min(0.98, v));
+    return [clamp(normX(scoreAlong(e1.vec, e1.val))), clamp(normY(scoreAlong(e2.vec, e2.val)))];
+  };
+
+  return { coords, place };
+}
+
+export function pca2d(vectors: number[][]): [number, number][] {
+  return pcaModel(vectors).coords;
 }
 
 // 2D map of every project from its embedding (PCA), colored by its real
-// technical area so nothing is mislabeled by fuzzy clustering.
-export async function projectMap(): Promise<GalaxyData> {
+// technical area so nothing is mislabeled by fuzzy clustering. When `query` is
+// given, its embedding is projected into the same frame as a "you are here"
+// star, with the single nearest project (by cosine) called out.
+export async function projectMap(query?: string): Promise<GalaxyData> {
   const openai = new OpenAI();
   const { projects, vectors } = await ensureCache(openai);
-  const coords = pca2d(vectors);
+  const model = pcaModel(vectors);
+  const coords = model.coords;
 
   const points: GalaxyPoint[] = projects.map((p, i) => ({
     name: p.name,
@@ -193,5 +241,34 @@ export async function projectMap(): Promise<GalaxyData> {
   }));
 
   const areas = Array.from(new Set(points.map((p) => p.category)));
-  return { points, areas };
+  const data: GalaxyData = { points, areas };
+
+  const q = query?.trim();
+  if (q && q.length >= 2 && model.place) {
+    const emb = await openai.embeddings.create({ model: "text-embedding-3-small", input: q });
+    const qv = normalize(emb.data[0].embedding); // PCA ran on normalized vectors
+    const [x, y] = model.place(qv);
+    // nearest project by cosine, so the callout matches the visual proximity
+    let best = -1;
+    let bi = -1;
+    for (let i = 0; i < vectors.length; i++) {
+      const s = dot(qv, vectors[i]);
+      if (s > best) {
+        best = s;
+        bi = i;
+      }
+    }
+    if (bi >= 0) {
+      data.you = {
+        x,
+        y,
+        query: q,
+        nearest: projects[bi].name,
+        nearestEmoji: projects[bi].emoji,
+        score: Number(best.toFixed(3)),
+      };
+    }
+  }
+
+  return data;
 }
