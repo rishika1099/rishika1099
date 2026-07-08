@@ -278,6 +278,7 @@ export default function UnderTheHoodArticle({
           <Concept>{slot("tour.galaxy.concept")}</Concept>
           {slot("tour.galaxy.body")}
           {slot("tour.galaxy.pop")}
+          {slot("tour.galaxy.you")}
         </Section>
 
         <Section id="tagging" emoji="🏷️" title="Auto-pulled blog with embedding zero-shot tagging">
@@ -303,6 +304,7 @@ export default function UnderTheHoodArticle({
             <li>{slot("tour.llm.b2")}</li>
             <li>{slot("tour.llm.b3")}</li>
             <li>{slot("tour.llm.b4")}</li>
+            <li>{slot("tour.llm.b5")}</li>
           </ul>
         </Section>
 

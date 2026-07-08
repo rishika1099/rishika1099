@@ -28,6 +28,26 @@
 
 ---
 
+## 🌸 The Portfolio Is Itself a Project
+
+That site isn't a static page. Most of its content is *generated, organized, and answered by models*, and because I care whether each piece actually works, almost every one ships with a small **evaluation**, so quality is measured, not assumed.
+
+- 💬 **Ask-my-portfolio chatbot (RAG):** grounded in my bio, experience, every project's README, and my Substack posts. It streams answers, cites sources, carries conversation memory, and refuses out-of-scope questions (100% retrieval / answer / refusal accuracy on the eval set, zero hallucinations).
+- 🔍 **Semantic search:** ranks projects by *meaning*, not keywords, with a threshold so vague queries still return only what's genuinely relevant.
+- 🌌 **The embeddings galaxy:** every project embedded and projected to 2D with PCA (hand-rolled via the Gram matrix + power iteration, no library), colored by its real technical area. Type an interest and it's projected onto the *same* axes as a "you are here" star (a true out-of-sample projection), with a line to the nearest project.
+- 🏷️ **Zero-shot blog tagging:** multi-prototype label embeddings plus a confidence rule (precision over recall) auto-tag posts; the topic filter pills grow on their own as new areas appear.
+- 📸 **Photo clustering:** k-means with silhouette selection over CLIP image embeddings (which roughly doubled the silhouette vs caption text).
+- ✨ **LLM-as-a-function touches:** poem mood classification (avg 0.894 confidence), AI-generated poem art, auto-captioned photos, an ELI5 / expert rewrite toggle, and a guestbook that sorts each note into one of six moods.
+- 🛠️ **The engineering around it:** caching plus ISR, batched calls, graceful keyword fallbacks, an RSS feed, and an installable PWA.
+
+<p align="center">
+  <a href="https://rishika-m.netlify.app/blog/technical/under-the-hood">
+    <img src="https://img.shields.io/badge/Read_the_full_tour-D9BED1?style=for-the-badge&logo=readme&logoColor=white" alt="Under the hood tour" />
+  </a>
+</p>
+
+---
+
 ## 💼 About Me
 
 ```javascript
