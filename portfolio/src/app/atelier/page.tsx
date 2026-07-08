@@ -13,6 +13,7 @@ import ProjectManager from "@/components/ProjectManager";
 import { RichPostManager, AutoPostManager } from "@/components/BlogManagers";
 import AboutEntriesManager from "@/components/AboutEntriesManager";
 import ContactManager from "@/components/ContactManager";
+import GuestbookManager from "@/components/GuestbookManager";
 import PoemArtManager from "@/components/PoemArtManager";
 import { setEditMode } from "@/lib/editMode";
 
@@ -572,7 +573,12 @@ function EditRoom() {
           {tab === "work" && <AboutEntriesManager keyVal={key} section="work" />}
           {tab === "education" && <AboutEntriesManager keyVal={key} section="education" />}
           {tab === "research" && <AboutEntriesManager keyVal={key} section="research" />}
-          {tab === "contact" && <ContactManager keyVal={key} />}
+          {tab === "contact" && (
+            <>
+              <ContactManager keyVal={key} />
+              <GuestbookManager keyVal={key} />
+            </>
+          )}
         </div>
       )}
     </PageShell>

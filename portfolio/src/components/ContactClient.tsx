@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import ContactForm from "@/components/ContactForm";
+import Guestbook from "@/components/Guestbook";
 
 import type { ContactLink } from "@/lib/contactLinks";
 
@@ -53,6 +54,7 @@ export default function ContactClient({
       </div>
 
       <ContactForm />
+      <Guestbook />
     </PageShell>
   );
 }
