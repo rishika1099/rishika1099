@@ -73,6 +73,9 @@ export const metadata: Metadata = {
     "portfolio",
   ],
   authors: [{ name: "Rishika Mamidibathula" }],
+  alternates: {
+    types: { "application/rss+xml": "/feed.xml" },
+  },
   openGraph: {
     type: "website",
     siteName: "Rishika Mamidibathula",
@@ -107,6 +110,25 @@ export default function RootLayout({
       className={`${nunito.variable} ${caveat.variable} ${cormorant.variable} ${cattalague.variable} ${halimun.variable} ${playfair.variable} ${dancing.variable} ${pacifico.variable} ${quicksand.variable} ${spaceMono.variable}`}
     >
       <body className="antialiased">
+        <script
+          type="application/ld+json"
+          // Person structured data so search engines understand who this is
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Rishika Mamidibathula",
+              url: "https://rishika-m.netlify.app",
+              jobTitle: "Data Scientist & ML Engineer",
+              alumniOf: "Columbia University",
+              sameAs: [
+                "https://github.com/rishika1099",
+                "https://linkedin.com/in/rishika-mamidibathula",
+                "https://rishika1099.substack.com",
+              ],
+            }),
+          }}
+        />
         <Nav />
         <main className="relative">{children}</main>
         <SiteFooter />

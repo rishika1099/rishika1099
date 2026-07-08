@@ -42,8 +42,22 @@ export default async function BlogPost({
   const post = getBlogPost(slug);
   if (!post) notFound();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt || undefined,
+    datePublished: post.date || undefined,
+    url: `https://rishika-m.netlify.app/blog/technical/${post.slug}`,
+    author: { "@type": "Person", name: "Rishika Mamidibathula" },
+  };
+
   return (
     <PageShell vibe="azure">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link
         href="/blog/technical"
         className="font-body text-sm text-ink-soft hover:text-ink"
