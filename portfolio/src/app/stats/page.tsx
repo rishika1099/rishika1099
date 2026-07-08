@@ -10,7 +10,15 @@ import PageTitle from "@/components/PageTitle";
 import type { LoggedQuestion, VisitStats } from "@/lib/analytics";
 
 type Reactions = Record<string, { heart: number; sparkle: number }>;
-type Stats = { visits: VisitStats; questions: LoggedQuestion[]; reactions?: Reactions };
+type Journey = { id: string; city?: string; country?: string; pages: string[]; start: string; last: string };
+type Stats = {
+  visits: VisitStats;
+  questions: LoggedQuestion[];
+  reactions?: Reactions;
+  journeys?: Journey[];
+};
+
+const pageLabel = (p: string) => (p === "/" ? "home" : p.replace(/^\//, ""));
 
 function Board({
   title,
@@ -242,6 +250,43 @@ export default function StatsPage() {
                       </div>
                     );
                   })}
+              </div>
+            </div>
+          )}
+
+          {/* anonymous session journeys */}
+          {stats.journeys && stats.journeys.length > 0 && (
+            <div className="mt-6 rounded-3xl p-5 soft-card">
+              <h2 className="font-body text-base font-bold text-ink">🧭 recent journeys</h2>
+              <p className="mt-1 font-body text-xs text-ink-soft/70">
+                the path each visit took, tagged by city, anonymous session tokens, no identities.
+              </p>
+              <div className="mt-3 space-y-3">
+                {stats.journeys.slice(0, 30).map((j) => (
+                  <div key={j.id} className="rounded-2xl bg-white/50 p-3">
+                    <div className="flex items-center justify-between gap-2 font-body text-xs">
+                      <span className="font-semibold text-ink">📍 {j.city || j.country || "unknown"}</span>
+                      <span className="text-ink-soft/60">
+                        {new Date(j.last).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                      {j.pages.map((p, i) => (
+                        <span key={i} className="flex items-center gap-1">
+                          {i > 0 && <span className="text-ink-soft/40">→</span>}
+                          <span className="rounded-full bg-white/70 px-2 py-0.5 font-body text-[11px] text-ink-soft">
+                            {pageLabel(p)}
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

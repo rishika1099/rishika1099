@@ -22,13 +22,22 @@ export default function VisitPing() {
       // storage blocked: fall through and count normally
     }
 
-    let extra: { visitor?: string; referrer?: string } = {};
+    let extra: { visitor?: string; referrer?: string; sid?: string } = {};
     try {
+      // a throwaway session token (cleared when the tab closes) so pages within
+      // one visit can be linked into a journey, never tied to identity
+      let sid = sessionStorage.getItem("v_sid");
+      if (!sid) {
+        sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+        sessionStorage.setItem("v_sid", sid);
+      }
+      extra.sid = sid;
       if (!sessionStorage.getItem("v_session")) {
         sessionStorage.setItem("v_session", "1");
         const returning = !!localStorage.getItem("v_seen");
         localStorage.setItem("v_seen", "1");
-        extra = { visitor: returning ? "returning" : "new", referrer: document.referrer || undefined };
+        extra.visitor = returning ? "returning" : "new";
+        extra.referrer = document.referrer || undefined;
       }
     } catch {
       // storage blocked: still count the page view

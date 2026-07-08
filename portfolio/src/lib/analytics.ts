@@ -48,14 +48,27 @@ function normalize(s: Partial<VisitStats> | null): VisitStats {
   return { ...structuredClone(EMPTY), ...(s ?? {}) };
 }
 
-// Dev fallback: keep counts in memory so localhost works without Blobs.
-const mem: { visits: VisitStats; questions: LoggedQuestion[] } = {
+// An anonymous, ephemeral session journey: the ordered pages one visit touched,
+// tagged with the (already-collected) city. The id is a throwaway session token,
+// not a persistent identifier, so this stays pseudonymous and cookie-free.
+export interface Journey {
+  id: string;
+  city?: string;
+  country?: string;
+  pages: string[];
+  start: string;
+  last: string;
+}
+
+// Dev fallback: keep data in memory so localhost works without Blobs.
+const mem: Record<string, unknown> = {
   visits: structuredClone(EMPTY),
   questions: [],
+  journeys: [],
 };
 
 async function readJson<T>(key: string, fallback: T): Promise<T> {
-  if (!blobsEnabled()) return key === "visits" ? (mem.visits as T) : (mem.questions as T);
+  if (!blobsEnabled()) return (mem[key] as T) ?? fallback;
   try {
     const s = await store("analytics");
     const raw = await s.get(key, { type: "json" });
@@ -67,8 +80,7 @@ async function readJson<T>(key: string, fallback: T): Promise<T> {
 
 async function writeJson(key: string, value: unknown): Promise<void> {
   if (!blobsEnabled()) {
-    if (key === "visits") mem.visits = value as VisitStats;
-    else mem.questions = value as LoggedQuestion[];
+    mem[key] = value;
     return;
   }
   const s = await store("analytics");
@@ -125,9 +137,51 @@ export async function recordVital(name: string, value: number) {
   await writeJson("visits", stats);
 }
 
-/** Wipe all analytics (visits + question log) back to zero. */
+/** Wipe all analytics (visits + question log + journeys) back to zero. */
 export async function clearStats() {
-  await Promise.all([writeJson("visits", structuredClone(EMPTY)), writeJson("questions", [])]);
+  await Promise.all([
+    writeJson("visits", structuredClone(EMPTY)),
+    writeJson("questions", []),
+    writeJson("journeys", []),
+  ]);
+}
+
+const JOURNEY_STALE_MS = 6 * 60 * 60 * 1000; // a session id older than this is "new"
+const MAX_JOURNEYS = 200;
+
+/** Append a page to an anonymous session's journey (creates it if new). */
+export async function recordJourney(
+  sid: string,
+  path: string,
+  geo: { city?: string; country?: string },
+) {
+  if (!sid) return;
+  const list = await readJson<Journey[]>("journeys", []);
+  const now = Date.now();
+  const j = list.find((x) => x.id === sid && now - new Date(x.last).getTime() < JOURNEY_STALE_MS);
+  if (j) {
+    if (j.pages[j.pages.length - 1] !== path) j.pages.push(path);
+    j.pages = j.pages.slice(-40);
+    if (!j.city && geo.city) j.city = geo.city;
+    if (!j.country && geo.country) j.country = geo.country;
+    j.last = new Date(now).toISOString();
+  } else {
+    list.push({
+      id: sid.slice(0, 40),
+      city: geo.city,
+      country: geo.country,
+      pages: [path],
+      start: new Date(now).toISOString(),
+      last: new Date(now).toISOString(),
+    });
+  }
+  await writeJson("journeys", list.slice(-MAX_JOURNEYS));
+}
+
+/** Recent session journeys, most-recently-active first. */
+export async function readJourneys(): Promise<Journey[]> {
+  const list = await readJson<Journey[]>("journeys", []);
+  return list.slice().sort((a, b) => (a.last < b.last ? 1 : -1));
 }
 
 export async function recordQuestion(q: string) {
