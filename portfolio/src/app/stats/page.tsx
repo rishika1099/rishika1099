@@ -100,11 +100,33 @@ function Vitals({ vitals }: { vitals: VisitStats["vitals"] }) {
   );
 }
 
+interface LinkResult {
+  url: string;
+  source: string;
+  state: "ok" | "broken" | "unverified";
+  status: number | string;
+}
+
 export default function StatsPage() {
   const [key, setKey] = useState("");
   const [stats, setStats] = useState<Stats | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const [links, setLinks] = useState<LinkResult[] | null>(null);
+  const [linksBusy, setLinksBusy] = useState(false);
+
+  async function checkLinks(k: string) {
+    setLinksBusy(true);
+    try {
+      const res = await fetch(`/api/link-check?key=${encodeURIComponent(k)}`);
+      const d = await res.json();
+      setLinks(d.results ?? []);
+    } catch {
+      setLinks([]);
+    } finally {
+      setLinksBusy(false);
+    }
+  }
 
   useEffect(() => {
     const saved = localStorage.getItem("stats-key");
@@ -294,6 +316,60 @@ export default function StatsPage() {
           {/* performance */}
           <div className="mt-6">
             <Vitals vitals={v.vitals} />
+          </div>
+
+          {/* broken-link checker */}
+          <div className="mt-6 rounded-3xl p-5 soft-card">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-body text-base font-bold text-ink">🔗 link check</h2>
+              <button
+                onClick={() => checkLinks(key)}
+                disabled={linksBusy}
+                className="rounded-full bg-ink px-4 py-1.5 font-body text-xs font-semibold text-cream transition hover:opacity-90 disabled:opacity-50"
+              >
+                {linksBusy ? "checking…" : "check links"}
+              </button>
+            </div>
+            {links && (() => {
+              const broken = links.filter((l) => l.state === "broken");
+              const unverified = links.filter((l) => l.state === "unverified");
+              return (
+                <div className="mt-3">
+                  <p className="font-body text-sm text-ink-soft">
+                    {broken.length === 0
+                      ? `all ${links.length} links look healthy ✓`
+                      : `${broken.length} of ${links.length} look broken:`}
+                  </p>
+                  {broken.length > 0 && (
+                    <div className="mt-2 space-y-1.5">
+                      {broken.map((l) => (
+                        <div key={l.url} className="font-body text-sm">
+                          <span className="font-semibold text-rose-500">{l.status}</span>{" "}
+                          <span className="text-ink-soft">{l.source}</span>{" "}
+                          <span className="break-all text-ink-soft/70">{l.url}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {unverified.length > 0 && (
+                    <details className="mt-3">
+                      <summary className="cursor-pointer font-body text-xs text-ink-soft/70">
+                        {unverified.length} couldn&apos;t be checked (host blocks bots or demo asleep)
+                      </summary>
+                      <div className="mt-2 space-y-1.5">
+                        {unverified.map((l) => (
+                          <div key={l.url} className="font-body text-sm">
+                            <span className="font-semibold text-amber-500">{l.status}</span>{" "}
+                            <span className="text-ink-soft">{l.source}</span>{" "}
+                            <span className="break-all text-ink-soft/70">{l.url}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
+                </div>
+              );
+            })()}
           </div>
 
           {/* chatbot log */}
