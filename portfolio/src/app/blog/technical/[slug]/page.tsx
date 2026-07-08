@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import PostBody from "@/components/PostBody";
 import PageShell from "@/components/PageShell";
 import { getBlogPost, getBlogPosts } from "@/lib/content";
 import ViewCount from "@/components/ViewCount";
@@ -74,9 +73,7 @@ export default async function BlogPost({
           {post.title}
         </h1>
         <div className="prose-soft mt-6 font-body text-ink">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {post.content}
-          </ReactMarkdown>
+          <PostBody content={post.content} />
         </div>
         <div className="mt-8 border-t border-ink/10 pt-6">
           <ReactionBar id={`post:${post.slug}`} />
