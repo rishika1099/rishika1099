@@ -130,12 +130,18 @@ export default function AboutClient({
         dangerouslySetInnerHTML={{ __html: bioHtml }}
       />
 
-      <div className="mt-6 text-center">
+      <div className="mt-6 flex flex-col items-center gap-2">
         <a
           href="/resume"
           className="inline-flex items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105"
         >
           👀 peek at my resume
+        </a>
+        <a
+          href="/resume/print"
+          className="font-body text-sm text-ink-soft underline decoration-blush/60 underline-offset-4 hover:text-ink"
+        >
+          or read it as a page
         </a>
       </div>
 

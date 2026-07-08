@@ -24,6 +24,7 @@ const PAGES: Item[] = [
   { label: "Feature tour", hint: "page", href: "/blog/technical/under-the-hood" },
   { label: "Now", hint: "page", href: "/now" },
   { label: "Resume (PDF)", hint: "resume", href: "/resume", external: true },
+  { label: "Resume (page)", hint: "resume", href: "/resume/print" },
 ];
 
 const PROJECT_ITEMS: Item[] = projects.map((p) => ({
