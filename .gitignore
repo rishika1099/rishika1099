@@ -70,3 +70,5 @@ portfolio/src/content/contact-links.json
 portfolio/src/content/reactions.json
 portfolio/src/content/guestbook.json
 portfolio/src/content/files/
+# entry attachments (certificate images / diploma PDFs) uploaded via /edit
+portfolio/src/content/attachments/

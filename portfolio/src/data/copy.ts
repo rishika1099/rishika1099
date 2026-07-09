@@ -91,6 +91,7 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "about.heading.skills.sub": { page: "about", label: "skills subtitle", text: "little clusters of tools, all tangled together ✦" },
   "about.heading.work": { page: "about", label: "work heading", text: "where curiosity paid the bills 💼" },
   "about.heading.research": { page: "about", label: "research heading", text: "where curiosity became research 🔬" },
+  "about.heading.certifications": { page: "about", label: "certifications heading", text: "where curiosity earned its stripes 📜" },
   "resume.subtitle": { page: "about", label: "printable resume subtitle line", text: "Data Scientist & ML Engineer · New York City" },
   "work.title": { page: "work", label: "page title", text: "my little meadow of projects 🌱" },
   "blog.title": { page: "blog", label: "writing room title", text: "the writing room 📖" },

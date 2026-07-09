@@ -14,7 +14,7 @@ import { richToText } from "@/lib/richHtml";
 import { setEditMode } from "@/lib/editMode";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
-import type { Entry } from "@/data/about";
+import type { Attachment, Entry } from "@/data/about";
 import TagPicker from "@/components/TagPicker";
 import { categories as ALL_CATEGORIES, domains as ALL_DOMAINS, domainColor, type Domain } from "@/data/projects";
 
@@ -30,17 +30,46 @@ const ABOUT_COPY = [
   "about.heading.skills.sub",
   "about.heading.work",
   "about.heading.research",
+  "about.heading.certifications",
 ] as const;
+
+const fileToBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
 
 function EntryEditor({
   entry,
   onChange,
   onRemove,
+  onUpload,
 }: {
   entry: Entry;
   onChange: (e: Entry) => void;
   onRemove: () => void;
+  onUpload: (file: File) => Promise<Attachment | null>;
 }) {
+  const [attMsg, setAttMsg] = useState("");
+  const attachments = entry.attachments ?? [];
+
+  async function addFile(file: File) {
+    setAttMsg(`uploading ${file.name}…`);
+    const meta = await onUpload(file);
+    if (meta) {
+      onChange({ ...entry, attachments: [...attachments, meta] });
+      setAttMsg("");
+    } else {
+      setAttMsg("upload failed (images or pdf, under 8MB)");
+    }
+  }
+
+  function removeFile(id: string) {
+    onChange({ ...entry, attachments: attachments.filter((a) => a.id !== id) });
+  }
+
   return (
     <div className="rounded-3xl p-5 soft-card">
       <div className="flex gap-4">
@@ -106,6 +135,49 @@ function EntryEditor({
             value={entry.tech ?? []}
             onChange={(v) => onChange({ ...entry, tech: v as Entry["tech"] })}
           />
+          <p className="pt-1 font-body text-[11px] text-ink-soft/60">files (a certificate picture, a diploma PDF):</p>
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {attachments.map((a) => (
+                <span key={a.id} className="relative inline-flex">
+                  {a.kind === "image" ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={`/api/attachment/${a.id}`}
+                      alt={a.name}
+                      className="h-16 w-16 rounded-lg object-cover ring-1 ring-white/70"
+                    />
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/70 px-3 py-2 font-body text-xs font-semibold text-ink-soft ring-1 ring-white/70">
+                      📄 {a.name}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeFile(a.id)}
+                    aria-label={`remove ${a.name}`}
+                    className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-rose/80 font-body text-[10px] font-bold text-ink shadow transition hover:bg-rose"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
+            📎 attach a file
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) addFile(f);
+                e.target.value = "";
+              }}
+            />
+          </label>
+          {attMsg && <p className="font-body text-[11px] text-ink-soft/70">{attMsg}</p>}
         </div>
         <button
           type="button"
@@ -129,18 +201,33 @@ function Editor({ keyVal }: { keyVal: string }) {
   const [education, setEducation] = useState<Entry[]>([]);
   const [work, setWork] = useState<Entry[]>([]);
   const [research, setResearch] = useState<Entry[]>([]);
+  const [certifications, setCertifications] = useState<Entry[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
+  // upload a picture/pdf, returns the attachment meta to pin on an entry
+  async function uploadAttachment(file: File): Promise<Attachment | null> {
+    try {
+      const dataBase64 = await fileToBase64(file);
+      return await api<Attachment>("/api/admin/attachments", {
+        method: "POST",
+        body: JSON.stringify({ name: file.name, mime: file.type, dataBase64 }),
+      });
+    } catch {
+      return null;
+    }
+  }
+
   useEffect(() => {
     Promise.all([
-      api<{ education: Entry[]; timeline: Entry[] }>("/api/admin/about"),
+      api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about"),
       api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
     ])
       .then(([about, copy]) => {
         setEducation(about.education);
         setWork(about.timeline.filter((e) => !isResearch(e)));
         setResearch(about.timeline.filter(isResearch));
+        setCertifications(about.certifications ?? []);
         setBio(copyToHtml(copy.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
         const cm: Record<string, string> = {};
         for (const id of ABOUT_COPY) cm[id] = copy.blocks.find((b) => b.id === id)?.text ?? "";
@@ -157,7 +244,7 @@ function Editor({ keyVal }: { keyVal: string }) {
       await Promise.all([
         api("/api/admin/about", {
           method: "POST",
-          body: JSON.stringify({ education, timeline: [...work, ...research] }),
+          body: JSON.stringify({ education, timeline: [...work, ...research], certifications }),
         }),
         api("/api/admin/copy", {
           method: "POST",
@@ -181,7 +268,7 @@ function Editor({ keyVal }: { keyVal: string }) {
       await Promise.all([
         api("/api/admin/about", {
           method: "POST",
-          body: JSON.stringify({ education, timeline: [...work, ...research] }),
+          body: JSON.stringify({ education, timeline: [...work, ...research], certifications }),
         }),
         api("/api/admin/copy", {
           method: "POST",
@@ -226,12 +313,13 @@ function Editor({ keyVal }: { keyVal: string }) {
     await api("/api/admin/about", { method: "DELETE" });
     await api(`/api/admin/copy?ids=${encodeURIComponent(COPY_IDS.join(","))}`, { method: "DELETE" });
     const [about, copyRes] = await Promise.all([
-      api<{ education: Entry[]; timeline: Entry[] }>("/api/admin/about"),
+      api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about"),
       api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
     ]);
     setEducation(about.education);
     setWork(about.timeline.filter((e) => !isResearch(e)));
     setResearch(about.timeline.filter(isResearch));
+    setCertifications(about.certifications ?? []);
     setBio(copyToHtml(copyRes.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
     const cm: Record<string, string> = {};
     for (const id of ABOUT_COPY) cm[id] = copyRes.blocks.find((b) => b.id === id)?.text ?? "";
@@ -271,6 +359,7 @@ function Editor({ keyVal }: { keyVal: string }) {
             entry={e}
             onChange={(ne) => set(list.map((x, j) => (j === i ? ne : x)))}
             onRemove={() => set(list.filter((_, j) => j !== i))}
+            onUpload={uploadAttachment}
           />
         ))}
       </div>
@@ -334,6 +423,12 @@ function Editor({ keyVal }: { keyVal: string }) {
       </div>
 
       {section("about.heading.education", null, education, setEducation)}
+      {section(
+        "about.heading.certifications",
+        "short courses, nanodegrees, certifications, attach the certificate as a picture or PDF",
+        certifications,
+        setCertifications,
+      )}
 
       <div className="mt-12">{cField("about.heading.skills", "font-body text-2xl font-bold text-ink")}</div>
       <div className="mt-1">{cField("about.heading.skills.sub", "font-body text-sm text-ink-soft")}</div>

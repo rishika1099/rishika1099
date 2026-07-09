@@ -6,17 +6,27 @@
 import fs from "node:fs";
 import path from "node:path";
 import { blobsEnabled, store } from "@/lib/blobs";
-import { education as repoEducation, timeline as repoTimeline, type Entry } from "@/data/about";
+import {
+  certifications as repoCertifications,
+  education as repoEducation,
+  timeline as repoTimeline,
+  type Entry,
+} from "@/data/about";
 
 export interface AboutEntries {
   education: Entry[];
   timeline: Entry[];
+  // short courses / nanodegrees / certifications (added later; older overrides
+  // won't have it, so it's normalized to [] on read)
+  certifications: Entry[];
 }
 
 const KEY = "overrides";
 const LOCAL_FILE = path.join(process.cwd(), "src/content/about-overrides.json");
 
-function sane(v: unknown): v is AboutEntries {
+// only education + timeline are required; certifications is optional for
+// backward compatibility with overrides saved before it existed
+function sane(v: unknown): v is { education: Entry[]; timeline: Entry[]; certifications?: Entry[] } {
   const o = v as AboutEntries;
   return !!o && Array.isArray(o.education) && Array.isArray(o.timeline);
 }
@@ -32,12 +42,18 @@ export async function getAboutEntries(): Promise<AboutEntries> {
     }
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (sane(parsed)) return parsed;
+      if (sane(parsed)) {
+        return {
+          education: parsed.education,
+          timeline: parsed.timeline,
+          certifications: Array.isArray(parsed.certifications) ? parsed.certifications : [],
+        };
+      }
     }
   } catch {
     // fall through to repo defaults
   }
-  return { education: repoEducation, timeline: repoTimeline };
+  return { education: repoEducation, timeline: repoTimeline, certifications: repoCertifications };
 }
 
 export async function saveAboutEntries(data: AboutEntries): Promise<void> {

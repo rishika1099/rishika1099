@@ -1,5 +1,13 @@
 import type { Category, Domain } from "@/data/projects";
 
+// a file pinned to an entry (a certificate image, a diploma PDF, etc.).
+// Bytes live in the "attachments" blob store; the URL is /api/attachment/<id>.
+export type Attachment = {
+  id: string;
+  name: string;
+  kind: "image" | "pdf";
+};
+
 export type Entry = {
   icon: string;
   when: string;
@@ -12,6 +20,8 @@ export type Entry = {
   // same chips as project cards: colored domain + mint tech area
   domains?: Domain[];
   tech?: Category[];
+  // uploaded pictures / PDFs shown on the card
+  attachments?: Attachment[];
 };
 
 // The bio now lives in src/data/copy.ts (editable in the atelier).
@@ -105,6 +115,10 @@ export const timeline: Entry[] = [
     ],
   },
 ];
+
+// Short courses, nanodegrees, and certifications. Starts empty; filled in from
+// the /about/edit room.
+export const certifications: Entry[] = [];
 
 export const education: Entry[] = [
   {

@@ -10,11 +10,12 @@ export const metadata = { title: "About" };
 export const dynamic = "force-dynamic";
 
 export default async function About() {
-  const [{ education, timeline }, copy] = await Promise.all([getAboutEntries(), getCopy()]);
+  const [{ education, timeline, certifications }, copy] = await Promise.all([getAboutEntries(), getCopy()]);
   return (
     <AboutClient
       education={education}
       timeline={timeline}
+      certifications={certifications}
       bioHtml={copyToHtml(copy["about.bio"])}
       title={<RichText html={copyToHtml(copy["about.title"])} />}
       heads={{
@@ -23,6 +24,7 @@ export default async function About() {
         skillsSub: <RichText html={copyToHtml(copy["about.heading.skills.sub"])} />,
         work: <RichText html={copyToHtml(copy["about.heading.work"])} />,
         research: <RichText html={copyToHtml(copy["about.heading.research"])} />,
+        certifications: <RichText html={copyToHtml(copy["about.heading.certifications"])} />,
       }}
     />
   );

@@ -10,6 +10,37 @@ import { domainColor } from "@/data/projects";
 import { copyToHtml, detailsToHtml, hasDetails as entryHasDetails } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
 
+function Attachments({ entry }: { entry: Entry }) {
+  if (!entry.attachments?.length) return null;
+  return (
+    <div className="ml-[3.25rem] mt-3 flex flex-wrap gap-2">
+      {entry.attachments.map((a) => {
+        const url = `/api/attachment/${a.id}`;
+        return a.kind === "image" ? (
+          <a key={a.id} href={url} target="_blank" rel="noreferrer" title={a.name}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={url}
+              alt={a.name}
+              className="h-20 w-20 rounded-xl object-cover shadow-sm ring-1 ring-white/70 transition hover:scale-105"
+            />
+          </a>
+        ) : (
+          <a
+            key={a.id}
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 font-body text-xs font-semibold text-ink-soft shadow-sm ring-1 ring-white/70 transition hover:text-ink"
+          >
+            📄 {a.name}
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
 function EntryCard({ entry, i }: { entry: Entry; i: number }) {
   const [open, setOpen] = useState(false);
   const hasDetails = entryHasDetails(entry.details);
@@ -81,6 +112,8 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
         )}
       </button>
 
+      <Attachments entry={entry} />
+
       <AnimatePresence initial={false}>
         {open && hasDetails && (
           <motion.div
@@ -104,12 +137,14 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
 export default function AboutClient({
   education,
   timeline,
+  certifications = [],
   bioHtml,
   title,
   heads,
 }: {
   education: Entry[];
   timeline: Entry[];
+  certifications?: Entry[];
   bioHtml: string;
   title: React.ReactNode;
   heads: {
@@ -118,6 +153,7 @@ export default function AboutClient({
     skillsSub: React.ReactNode;
     work: React.ReactNode;
     research: React.ReactNode;
+    certifications: React.ReactNode;
   };
 }) {
   return (
@@ -154,6 +190,18 @@ export default function AboutClient({
           <EntryCard key={e.title} entry={e} i={i} />
         ))}
       </div>
+
+      {/* Certifications & short courses (only when there are any) */}
+      {certifications.length > 0 && (
+        <>
+          <h2 className="mt-12 font-body text-2xl font-bold text-ink">{heads.certifications}</h2>
+          <div className="mt-5 space-y-4">
+            {certifications.map((e, i) => (
+              <EntryCard key={e.title} entry={e} i={i} />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Skills */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">

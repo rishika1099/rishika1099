@@ -42,6 +42,15 @@ function cleanEntry(e: unknown): Entry | null {
   if (domains?.length) entry.domains = domains as Entry["domains"];
   const tech = strArr(o.tech)?.map((t) => t.trim()).filter(Boolean);
   if (tech?.length) entry.tech = tech as Entry["tech"];
+  // attachments: pinned image/pdf uploads, referenced by id
+  if (Array.isArray(o.attachments)) {
+    const atts = o.attachments
+      .map((a) => a as Record<string, unknown>)
+      .filter((a) => a && /^[a-z0-9]+$/i.test(str(a.id)) && (a.kind === "image" || a.kind === "pdf"))
+      .slice(0, 12)
+      .map((a) => ({ id: str(a.id), name: str(a.name).slice(0, 120) || "file", kind: a.kind as "image" | "pdf" }));
+    if (atts.length) entry.attachments = atts;
+  }
   return entry;
 }
 
@@ -55,16 +64,23 @@ export async function POST(request: Request) {
   const denied = guard(request);
   if (denied) return denied;
   try {
-    const body = (await request.json()) as { education?: unknown[]; timeline?: unknown[] };
+    const body = (await request.json()) as {
+      education?: unknown[];
+      timeline?: unknown[];
+      certifications?: unknown[];
+    };
     if (!Array.isArray(body.education) || !Array.isArray(body.timeline)) {
       return NextResponse.json({ error: "education and timeline arrays required" }, { status: 400 });
     }
     const education = body.education.map(cleanEntry).filter((e): e is Entry => e !== null);
     const timeline = body.timeline.map(cleanEntry).filter((e): e is Entry => e !== null);
+    const certifications = Array.isArray(body.certifications)
+      ? body.certifications.map(cleanEntry).filter((e): e is Entry => e !== null)
+      : [];
     if (!education.length || !timeline.length) {
       return NextResponse.json({ error: "entries need at least a title" }, { status: 400 });
     }
-    await saveAboutEntries({ education, timeline });
+    await saveAboutEntries({ education, timeline, certifications });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
