@@ -70,7 +70,9 @@ export default async function ResumePrintPage() {
         {/* header */}
         <header className="border-b border-ink/20 pb-4">
           <h1 className="font-display text-3xl font-bold text-ink">{name}</h1>
-          <p className="mt-1 font-body text-sm text-ink-soft">Data Scientist & ML Engineer · New York City</p>
+          <p className="mt-1 font-body text-sm text-ink-soft">
+            {copy["resume.subtitle"] || "Data Scientist & ML Engineer · New York City"}
+          </p>
           <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-body text-xs text-ink-soft">
             {contact.map((c) => (
               <a key={c.href} href={c.href} className="hover:text-ink">

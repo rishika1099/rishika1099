@@ -11,7 +11,16 @@ const encode = (data: Record<string, string>) =>
 const inputClass =
   "rounded-2xl border border-white/70 bg-white/80 px-4 py-2.5 font-body text-ink outline-none transition focus:border-blush focus:ring-2 focus:ring-blush/40";
 
-export default function ContactForm() {
+const FORM_DEFAULTS = {
+  "contact.form.title": "send me a message 💌",
+  "contact.form.private": "📮 just between us · goes straight to my inbox, never shown here",
+  "contact.form.placeholder.message": "say hi, share an idea, or a poem you loved…",
+  "contact.form.send": "send ✦",
+  "contact.form.sent": "thank you, your note is on its way ✦",
+} as const;
+
+export default function ContactForm({ copy }: { copy?: Record<string, string> }) {
+  const t = (k: keyof typeof FORM_DEFAULTS) => copy?.[k]?.trim() || FORM_DEFAULTS[k];
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
@@ -38,9 +47,7 @@ export default function ContactForm() {
         className="mt-10 w-full max-w-xl rounded-3xl p-7 text-center soft-card"
       >
         <div className="text-4xl">💌</div>
-        <p className="mt-2 font-body text-lg font-semibold text-ink">
-          thank you, your note is on its way ✦
-        </p>
+        <p className="mt-2 font-body text-lg font-semibold text-ink">{t("contact.form.sent")}</p>
         <p className="mt-1 font-body text-sm text-ink-soft">
           I&apos;ll get back to you soon.
         </p>
@@ -64,12 +71,8 @@ export default function ContactForm() {
         </label>
       </p>
 
-      <h2 className="text-center font-body text-xl font-bold text-ink">
-        send me a message 💌
-      </h2>
-      <p className="mt-1 text-center font-body text-sm text-ink-soft">
-        📮 just between us · goes straight to my inbox, never shown here
-      </p>
+      <h2 className="text-center font-body text-xl font-bold text-ink">{t("contact.form.title")}</h2>
+      <p className="mt-1 text-center font-body text-sm text-ink-soft">{t("contact.form.private")}</p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <input
@@ -95,7 +98,7 @@ export default function ContactForm() {
         name="message"
         required
         rows={4}
-        placeholder="say hi, share an idea, or a poem you loved…"
+        placeholder={t("contact.form.placeholder.message")}
         value={form.message}
         onChange={(e) => setForm({ ...form, message: e.target.value })}
         className={`${inputClass} mt-3 w-full resize-none leading-relaxed`}
@@ -107,7 +110,7 @@ export default function ContactForm() {
           disabled={status === "sending"}
           className="rounded-full bg-blush px-7 py-3 font-body font-semibold text-ink transition hover:scale-105 disabled:opacity-50"
         >
-          {status === "sending" ? "sending…" : "send ✦"}
+          {status === "sending" ? "sending…" : t("contact.form.send")}
         </button>
         {status === "error" && (
           <p className="mt-2 font-body text-sm text-[#c0506b]">

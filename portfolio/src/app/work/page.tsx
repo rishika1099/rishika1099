@@ -23,7 +23,7 @@ export default async function Work() {
       </p>
 
       <WorkGallery projects={projects} categories={categories} domains={domains} />
-      <ProjectGalaxy />
+      <ProjectGalaxy copy={copy} />
     </PageShell>
   );
 }

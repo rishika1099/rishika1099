@@ -44,15 +44,23 @@ const AREA_COLOR: Record<string, string> = {
 };
 const colorFor = (area: string) => AREA_COLOR[area] ?? "#cdeac0";
 
-const EXAMPLES = [
-  "making LLMs run faster",
-  "computer vision on medical images",
-  "fairness in high-stakes decisions",
-  "causal inference",
-  "something with agents",
-];
+// fallbacks, used when the editable copy hasn't been threaded in (e.g. the
+// edit-mode preview); the live Work page passes the real copy map.
+const DEFAULTS = {
+  "work.galaxy.title": "🌌 the embeddings galaxy",
+  "work.galaxy.intro":
+    "every project embedded and projected to 2D, so similar work sits close together. drop in something you care about and see where <em>you</em> land.",
+  "work.galaxy.placeholder": "e.g. real-time ML on tiny devices",
+  "work.galaxy.cta": "drop me in",
+  "work.galaxy.examples":
+    "making LLMs run faster, computer vision on medical images, fairness in high-stakes decisions, causal inference, something with agents",
+  "work.galaxy.hint":
+    "Embedded with OpenAI, projected to 2D with PCA, colored by technical area. Your star is the same query embedding projected into the very same axes.",
+} as const;
 
-export default function ProjectGalaxy() {
+export default function ProjectGalaxy({ copy }: { copy?: Record<string, string> }) {
+  const t = (k: keyof typeof DEFAULTS) => copy?.[k]?.trim() || DEFAULTS[k];
+  const examples = t("work.galaxy.examples").split(",").map((s) => s.trim()).filter(Boolean);
   const [data, setData] = useState<GalaxyData | null>(null);
   const [status, setStatus] = useState<"loading" | "done" | "off" | "error">("loading");
   const [active, setActive] = useState<string | null>(null);
@@ -115,11 +123,11 @@ export default function ProjectGalaxy() {
 
   return (
     <section className="mt-14">
-      <h2 className="font-body text-2xl font-bold text-ink">🌌 the embeddings galaxy</h2>
-      <p className="mt-1 max-w-2xl font-body text-sm text-ink-soft">
-        every project embedded and projected to 2D, so similar work sits close together. drop in
-        something you care about and see where <em>you</em> land.
-      </p>
+      <h2 className="font-body text-2xl font-bold text-ink">{t("work.galaxy.title")}</h2>
+      <p
+        className="mt-1 max-w-2xl font-body text-sm text-ink-soft"
+        dangerouslySetInnerHTML={{ __html: t("work.galaxy.intro") }}
+      />
 
       {status === "off" && (
         <p className="mt-4 font-body text-ink-soft">the galaxy isn&apos;t configured on this deploy yet. ✦</p>
@@ -142,7 +150,7 @@ export default function ProjectGalaxy() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="e.g. real-time ML on tiny devices"
+              placeholder={t("work.galaxy.placeholder")}
               className="w-full rounded-full border border-white/70 bg-white/80 px-5 py-2.5 font-body text-sm text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
             />
             <button
@@ -150,7 +158,7 @@ export default function ProjectGalaxy() {
               disabled={qBusy}
               className="shrink-0 rounded-full bg-ink px-5 py-2.5 font-body text-sm font-semibold text-cream transition hover:opacity-90 disabled:opacity-50"
             >
-              {qBusy ? "…" : "drop me in"}
+              {qBusy ? "…" : t("work.galaxy.cta")}
             </button>
             {you && (
               <button
@@ -163,7 +171,7 @@ export default function ProjectGalaxy() {
             )}
           </form>
           <div className="mt-2.5 flex flex-wrap gap-1.5">
-            {EXAMPLES.map((ex) => (
+            {examples.map((ex) => (
               <button
                 key={ex}
                 type="button"
@@ -376,10 +384,7 @@ export default function ProjectGalaxy() {
             ))}
           </div>
 
-          <p className="mt-3 font-body text-xs text-ink-soft/80">
-            Embedded with OpenAI, projected to 2D with PCA, colored by technical area. Your star is
-            the same query embedding projected into the very same axes.
-          </p>
+          <p className="mt-3 font-body text-xs text-ink-soft/80">{t("work.galaxy.hint")}</p>
         </>
       )}
     </section>

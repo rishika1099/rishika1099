@@ -22,7 +22,17 @@ const MOOD: Record<string, { emoji: string; tint: string }> = {
   proud: { emoji: "🌟", tint: "#ffc6a8" },
 };
 
-export default function Guestbook() {
+const GB_DEFAULTS = {
+  "contact.guestbook.title": "📖 sign the guestbook",
+  "contact.guestbook.public": "🌸 public wall · everyone who visits sees this",
+  "contact.guestbook.hint": "leave a little note, it gets a mood ✦ (a model reads the vibe, not you)",
+  "contact.guestbook.placeholder.name": "your name (optional)",
+  "contact.guestbook.placeholder.note": "say hi…",
+  "contact.guestbook.empty": "no notes yet, be the first to pin one up ✦",
+} as const;
+
+export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
+  const t = (k: keyof typeof GB_DEFAULTS) => copy?.[k]?.trim() || GB_DEFAULTS[k];
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
@@ -66,26 +76,24 @@ export default function Guestbook() {
 
   return (
     <section className="mt-12 w-full max-w-xl text-left">
-      <h2 className="font-display text-xl font-bold text-ink">📖 sign the guestbook</h2>
+      <h2 className="font-display text-xl font-bold text-ink">{t("contact.guestbook.title")}</h2>
       <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-lavender/40 px-3 py-1 font-body text-xs font-semibold text-ink">
-        🌸 public wall · everyone who visits sees this
+        {t("contact.guestbook.public")}
       </p>
-      <p className="mt-2 font-body text-sm text-ink-soft">
-        leave a little note, it gets a mood ✦ (a model reads the vibe, not you)
-      </p>
+      <p className="mt-2 font-body text-sm text-ink-soft">{t("contact.guestbook.hint")}</p>
 
       <form onSubmit={submit} className="mt-4 space-y-2">
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="your name (optional)"
+          placeholder={t("contact.guestbook.placeholder.name")}
           maxLength={40}
           className="w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-2 font-body text-sm text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
         />
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="say hi…"
+          placeholder={t("contact.guestbook.placeholder.note")}
           maxLength={500}
           className="min-h-20 w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-2 font-body text-sm text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
         />
@@ -115,7 +123,7 @@ export default function Guestbook() {
         {entries === null && <p className="font-body text-sm text-ink-soft">opening the book… ✦</p>}
         {entries?.length === 0 && (
           <p className="rounded-2xl border-2 border-dashed border-ink/15 p-6 text-center font-body text-sm text-ink-soft">
-            no notes yet, be the first to pin one up ✦
+            {t("contact.guestbook.empty")}
           </p>
         )}
         {!!entries?.length && (

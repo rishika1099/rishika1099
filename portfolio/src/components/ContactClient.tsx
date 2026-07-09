@@ -12,10 +12,12 @@ export default function ContactClient({
   title,
   intro,
   links,
+  copy,
 }: {
   title: React.ReactNode;
   intro: React.ReactNode;
   links: ContactLink[];
+  copy?: Record<string, string>;
 }) {
   return (
     <PageShell vibe="rose" className="flex flex-col items-center text-center">
@@ -53,8 +55,8 @@ export default function ContactClient({
         ))}
       </div>
 
-      <ContactForm />
-      <Guestbook />
+      <ContactForm copy={copy} />
+      <Guestbook copy={copy} />
     </PageShell>
   );
 }

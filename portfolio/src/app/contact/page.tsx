@@ -14,6 +14,7 @@ export default async function Contact() {
       title={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["contact.title"]) }} />}
       intro={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["contact.intro"]) }} />}
       links={links}
+      copy={copy}
     />
   );
 }
