@@ -200,20 +200,30 @@ export default function InkEditor({
     setPainter(styles);
   }
 
-  // once armed, paint the captured styles onto the next selection you make
+  // once armed, paint the captured styles onto the next selection you make.
+  // Deferring the read lets double-click / keyboard selections settle first
+  // (they aren't set yet when mouseup fires), and keyup covers shift+arrow.
   useEffect(() => {
     if (!painter) return;
     const surface = ref.current;
     if (!surface) return;
-    const onUp = () => {
+    let done = false;
+    const apply = () => {
+      if (done) return;
       const s = window.getSelection();
-      if (s && !s.isCollapsed && surface.contains(s.anchorNode)) {
+      if (s && s.rangeCount && !s.isCollapsed && surface.contains(s.anchorNode)) {
+        done = true;
         wrapSelection(painter);
         setPainter(null);
       }
     };
-    surface.addEventListener("mouseup", onUp);
-    return () => surface.removeEventListener("mouseup", onUp);
+    const onEnd = () => setTimeout(apply, 0);
+    surface.addEventListener("mouseup", onEnd);
+    surface.addEventListener("keyup", onEnd);
+    return () => {
+      surface.removeEventListener("mouseup", onEnd);
+      surface.removeEventListener("keyup", onEnd);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [painter]);
 
