@@ -39,10 +39,8 @@ export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
   const [website, setWebsite] = useState(""); // honeypot
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
-  // only the owner (holding the admin key) can prune the wall, inline
-  const [adminKey] = useState<string | null>(() =>
-    typeof window !== "undefined" ? localStorage.getItem("admin-key") : null,
-  );
+  // note: guest notes are moderated from the atelier (GuestbookManager),
+  // never from this public wall
 
   useEffect(() => {
     fetch("/api/guestbook")
@@ -50,20 +48,6 @@ export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
       .then((d) => setEntries(d.entries ?? []))
       .catch(() => setEntries([]));
   }, []);
-
-  async function removeEntry(id: string) {
-    if (!adminKey || !confirm("Remove this note from the wall?")) return;
-    setEntries((cur) => (cur ?? []).filter((e) => e.id !== id)); // optimistic
-    try {
-      await fetch("/api/admin/guestbook", {
-        method: "POST",
-        headers: { "content-type": "application/json", "x-admin-key": adminKey },
-        body: JSON.stringify({ action: "delete", id }),
-      });
-    } catch {
-      // if it fails the next load restores it
-    }
-  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -152,20 +136,9 @@ export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
               return (
                 <div
                   key={e.id}
-                  className={`relative mb-3 inline-block w-full break-inside-avoid rounded-2xl p-4 shadow-sm ring-1 ring-white/60 transition-transform hover:rotate-0 ${tilt}`}
+                  className={`mb-3 inline-block w-full break-inside-avoid rounded-2xl p-4 shadow-sm ring-1 ring-white/60 transition-transform hover:rotate-0 ${tilt}`}
                   style={{ backgroundColor: m ? `${m.tint}5c` : "rgba(255,255,255,0.6)" }}
                 >
-                  {adminKey && (
-                    <button
-                      type="button"
-                      onClick={() => removeEntry(e.id)}
-                      aria-label="remove this note"
-                      title="remove this note"
-                      className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-rose/80 font-body text-[10px] font-bold text-ink shadow transition hover:bg-rose"
-                    >
-                      ✕
-                    </button>
-                  )}
                   <div className="flex items-start gap-3">
                     <span className="text-2xl leading-none" aria-hidden>
                       {m?.emoji ?? "✦"}
