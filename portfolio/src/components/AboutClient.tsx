@@ -172,14 +172,25 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
           )}
         </div>
         {hasDetails && (
-          <motion.span
-            animate={{ rotate: open ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-            className="mt-1 select-none font-body text-lg leading-none text-ink-soft"
-            aria-hidden
-          >
-            ⌄
-          </motion.span>
+          <span className="relative mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center" aria-hidden>
+            {/* soft sonar pulse in the page's lilac tone, hints "tap to expand"
+                (only while collapsed) */}
+            {!open && (
+              <motion.span
+                className="absolute inset-0 rounded-full bg-lavender"
+                initial={{ opacity: 0.5, scale: 0.85 }}
+                animate={{ opacity: [0.5, 0, 0.5], scale: [0.85, 1.6, 0.85] }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+              />
+            )}
+            <motion.span
+              animate={{ rotate: open ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-base leading-none text-ink"
+            >
+              ⌄
+            </motion.span>
+          </span>
         )}
       </button>
 
