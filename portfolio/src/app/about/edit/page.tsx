@@ -22,6 +22,15 @@ const isResearch = (e: Entry) => richToText(e.title).startsWith("Research Assist
 
 const BLANK: Entry = { icon: "✨", when: "", title: "", place: "", note: "" };
 
+// The card editors (InkEditor) are uncontrolled: they read initialHtml once, on
+// mount. Keying rows by index meant prepending a new blank reused an existing
+// editor (showing the old entry). A stable per-row key fixes that: a new blank
+// gets a fresh key, so React mounts a truly empty editor for it. The key rides
+// on the object (preserved across edits via spread) and is stripped server-side.
+type KEntry = Entry & { _k?: number };
+let KSEQ = 1;
+const keyed = (e: Entry): KEntry => ({ ...e, _k: KSEQ++ });
+
 // editable copy on this page (title + section headings)
 const ABOUT_COPY = [
   "about.title",
@@ -153,12 +162,13 @@ function EntryEditor({
                       target="_blank"
                       rel="noreferrer"
                       title={a.name}
-                      className="block h-24 w-20 overflow-hidden rounded-lg bg-white ring-1 ring-white/70"
+                      className="block h-20 w-20 overflow-hidden rounded-lg bg-white ring-1 ring-white/70"
                     >
                       <iframe
                         title={a.name}
                         src={`/api/attachment/${a.id}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                        className="pointer-events-none h-40 w-32 origin-top-left scale-[0.625] border-0"
+                        className="pointer-events-none border-0"
+                        style={{ width: 264, height: 264, transform: "scale(0.303)", transformOrigin: "top left" }}
                         tabIndex={-1}
                       />
                     </a>
@@ -209,10 +219,10 @@ function Editor({ keyVal }: { keyVal: string }) {
   const files = useFileSwap(keyVal);
   const [bio, setBio] = useState<string | null>(null);
   const [copy, setCopy] = useState<Record<string, string>>({});
-  const [education, setEducation] = useState<Entry[]>([]);
-  const [work, setWork] = useState<Entry[]>([]);
-  const [research, setResearch] = useState<Entry[]>([]);
-  const [certifications, setCertifications] = useState<Entry[]>([]);
+  const [education, setEducation] = useState<KEntry[]>([]);
+  const [work, setWork] = useState<KEntry[]>([]);
+  const [research, setResearch] = useState<KEntry[]>([]);
+  const [certifications, setCertifications] = useState<KEntry[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -235,10 +245,10 @@ function Editor({ keyVal }: { keyVal: string }) {
       api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
     ])
       .then(([about, copy]) => {
-        setEducation(about.education);
-        setWork(about.timeline.filter((e) => !isResearch(e)));
-        setResearch(about.timeline.filter(isResearch));
-        setCertifications(about.certifications ?? []);
+        setEducation(about.education.map(keyed));
+        setWork(about.timeline.filter((e) => !isResearch(e)).map(keyed));
+        setResearch(about.timeline.filter(isResearch).map(keyed));
+        setCertifications((about.certifications ?? []).map(keyed));
         setBio(copyToHtml(copy.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
         const cm: Record<string, string> = {};
         for (const id of ABOUT_COPY) cm[id] = copy.blocks.find((b) => b.id === id)?.text ?? "";
@@ -327,10 +337,10 @@ function Editor({ keyVal }: { keyVal: string }) {
       api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about"),
       api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
     ]);
-    setEducation(about.education);
-    setWork(about.timeline.filter((e) => !isResearch(e)));
-    setResearch(about.timeline.filter(isResearch));
-    setCertifications(about.certifications ?? []);
+    setEducation(about.education.map(keyed));
+    setWork(about.timeline.filter((e) => !isResearch(e)).map(keyed));
+    setResearch(about.timeline.filter(isResearch).map(keyed));
+    setCertifications((about.certifications ?? []).map(keyed));
     setBio(copyToHtml(copyRes.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
     const cm: Record<string, string> = {};
     for (const id of ABOUT_COPY) cm[id] = copyRes.blocks.find((b) => b.id === id)?.text ?? "";
@@ -348,15 +358,15 @@ function Editor({ keyVal }: { keyVal: string }) {
   const section = (
     headingId: string,
     hint: string | null,
-    list: Entry[],
-    set: (l: Entry[]) => void,
+    list: KEntry[],
+    set: (l: KEntry[]) => void,
   ) => (
     <>
       <div className="mt-12 flex items-center justify-between">
         <div className="flex-1">{cField(headingId, "font-body text-2xl font-bold text-ink")}</div>
         <button
           type="button"
-          onClick={() => set([BLANK, ...list])}
+          onClick={() => set([keyed(BLANK), ...list])}
           className="rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft transition hover:bg-white"
         >
           ＋ add
@@ -366,9 +376,9 @@ function Editor({ keyVal }: { keyVal: string }) {
       <div className="mt-5 space-y-4">
         {list.map((e, i) => (
           <EntryEditor
-            key={i}
+            key={e._k}
             entry={e}
-            onChange={(ne) => set(list.map((x, j) => (j === i ? ne : x)))}
+            onChange={(ne) => set(list.map((x, j) => (j === i ? (ne as KEntry) : x)))}
             onRemove={() => set(list.filter((_, j) => j !== i))}
             onUpload={uploadAttachment}
           />

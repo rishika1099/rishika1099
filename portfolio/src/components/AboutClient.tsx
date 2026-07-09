@@ -83,39 +83,27 @@ function Attachments({ entry }: { entry: Entry }) {
               </button>
             );
           }
-          // PDF: an actual inline page preview (viewer chrome hidden), with a
-          // footer to enlarge or open in a new tab
+          // PDF: same-size thumbnail as the images (a clipped page preview);
+          // click opens the full lightbox (which has its own open ↗)
           return (
-            <div
+            <button
               key={a.id}
-              className="w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-white/70"
+              type="button"
+              onClick={() => setOpen(a)}
+              title={a.name}
+              className="relative block h-24 w-24 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-white/70 transition hover:scale-105"
             >
               <iframe
                 title={a.name}
+                tabIndex={-1}
                 src={`${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                className="h-72 w-full border-0"
+                className="pointer-events-none border-0"
+                style={{ width: 320, height: 320, transform: "scale(0.3)", transformOrigin: "top left" }}
               />
-              <div className="flex items-center justify-between gap-2 border-t border-ink/10 bg-white/80 px-3 py-1.5">
-                <span className="truncate font-body text-xs font-semibold text-ink-soft">📄 {a.name}</span>
-                <span className="flex shrink-0 items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setOpen(a)}
-                    className="font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
-                  >
-                    ⤢ enlarge
-                  </button>
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
-                  >
-                    open ↗
-                  </a>
-                </span>
-              </div>
-            </div>
+              <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-ink/60 px-1.5 py-0.5 text-left font-body text-[9px] font-semibold text-cream">
+                📄 {a.name}
+              </span>
+            </button>
           );
         })}
       </div>
