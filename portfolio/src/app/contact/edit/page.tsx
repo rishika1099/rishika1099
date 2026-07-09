@@ -15,11 +15,21 @@ import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing
 import GuestbookManager from "@/components/GuestbookManager";
 import type { ContactLink } from "@/lib/contactLinks";
 
+// the "send me a message" form's wording, edited in place here
+const FORM_FIELDS: [id: string, label: string][] = [
+  ["contact.form.title", "form heading"],
+  ["contact.form.private", "privacy note"],
+  ["contact.form.placeholder.message", "message box placeholder"],
+  ["contact.form.send", "send button"],
+  ["contact.form.sent", "sent confirmation"],
+];
+
 function Editor({ keyVal }: { keyVal: string }) {
   const api = adminApi(keyVal);
   const router = useRouter();
   const [intro, setIntro] = useState<string | null>(null);
   const [title, setTitle] = useState("");
+  const [form, setForm] = useState<Record<string, string>>({});
   const [links, setLinks] = useState<ContactLink[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -32,6 +42,9 @@ function Editor({ keyVal }: { keyVal: string }) {
       .then(([copy, contact]) => {
         setIntro(copy.blocks.find((b) => b.id === "contact.intro")?.text ?? "");
         setTitle(copy.blocks.find((b) => b.id === "contact.title")?.text ?? "");
+        const fm: Record<string, string> = {};
+        for (const [id] of FORM_FIELDS) fm[id] = copy.blocks.find((b) => b.id === id)?.text ?? "";
+        setForm(fm);
         setLinks(contact.links);
       })
       .catch(() => setMsg("couldn't load, refresh?"));
@@ -45,7 +58,7 @@ function Editor({ keyVal }: { keyVal: string }) {
       await Promise.all([
         api("/api/admin/copy", {
           method: "POST",
-          body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title } }),
+          body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title, ...form } }),
         }),
         api("/api/admin/contact", { method: "POST", body: JSON.stringify({ links }) }),
       ]);
@@ -66,7 +79,7 @@ function Editor({ keyVal }: { keyVal: string }) {
       await Promise.all([
         api("/api/admin/copy", {
           method: "POST",
-          body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title } }),
+          body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title, ...form } }),
         }),
         api("/api/admin/contact", { method: "POST", body: JSON.stringify({ links }) }),
       ]);
@@ -80,7 +93,7 @@ function Editor({ keyVal }: { keyVal: string }) {
     }
   }
 
-  const COPY_IDS = ["contact.intro", "contact.title"];
+  const COPY_IDS = ["contact.intro", "contact.title", ...FORM_FIELDS.map(([id]) => id)];
 
   async function makeDefault() {
     if (!confirm('Make this page\'s current words the default? "Revert" will come back here.')) return;
@@ -89,7 +102,7 @@ function Editor({ keyVal }: { keyVal: string }) {
     try {
       await api("/api/admin/copy", {
         method: "POST",
-        body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title } }),
+        body: JSON.stringify({ texts: { "contact.intro": intro ?? "", "contact.title": title, ...form } }),
       });
       await api("/api/admin/copy", {
         method: "POST",
@@ -114,6 +127,9 @@ function Editor({ keyVal }: { keyVal: string }) {
     setLinks(contact.links);
     setIntro(copyRes.blocks.find((b) => b.id === "contact.intro")?.text ?? "");
     setTitle(copyRes.blocks.find((b) => b.id === "contact.title")?.text ?? "");
+    const fm: Record<string, string> = {};
+    for (const [id] of FORM_FIELDS) fm[id] = copyRes.blocks.find((b) => b.id === id)?.text ?? "";
+    setForm(fm);
     setMsg("reverted to the default ✓");
   }
 
@@ -194,9 +210,26 @@ function Editor({ keyVal }: { keyVal: string }) {
         </button>
       </div>
 
-      <p className="mt-8 font-body text-xs text-ink-soft/70">
-        the message form below stays as-is (it posts to Netlify forms) ✦
-      </p>
+      {/* the "send me a message" form: fields are fixed (it posts to Netlify
+          forms), but every bit of its wording is editable here */}
+      <div className="mt-10 w-full max-w-xl text-left">
+        <h2 className="font-body text-lg font-bold text-ink">✉️ the message form</h2>
+        <p className="mt-0.5 font-body text-xs text-ink-soft/70">
+          the fields stay as-is (it posts to Netlify forms), but you can reword everything:
+        </p>
+        <div className="mt-3 space-y-3">
+          {FORM_FIELDS.map(([id, label]) => (
+            <div key={id} className="rounded-2xl bg-white/50 p-3">
+              <p className="mb-1 font-body text-[11px] font-semibold text-ink-soft/70">{label}</p>
+              <EditableText
+                value={form[id] ?? ""}
+                onChange={(v) => setForm((f) => ({ ...f, [id]: v }))}
+                className="font-body text-sm text-ink"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* guestbook moderation, right here in the contact edit room */}
       <div className="mt-10 w-full max-w-xl text-left">
