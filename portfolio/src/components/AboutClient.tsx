@@ -1,43 +1,126 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import SkillGraph from "@/components/SkillGraph";
-import type { Entry } from "@/data/about";
+import type { Attachment, Entry } from "@/data/about";
 import { domainColor } from "@/data/projects";
 import { copyToHtml, detailsToHtml, hasDetails as entryHasDetails } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
 
+// full-screen viewer for an attachment (Esc or backdrop to close)
+function Lightbox({ attachment, onClose }: { attachment: Attachment; onClose: () => void }) {
+  const url = `/api/attachment/${attachment.id}`;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  if (typeof document === "undefined") return null;
+  // portal to <body> so a transformed ancestor (the framer-motion card) can't
+  // clip the fixed overlay
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div className="relative w-full max-w-4xl" onClick={(e) => e.stopPropagation()}>
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <span className="truncate font-body text-sm font-semibold text-cream">
+            {attachment.kind === "image" ? "🖼️" : "📄"} {attachment.name}
+          </span>
+          <span className="flex shrink-0 items-center gap-2">
+            <a
+              href={url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full bg-white/20 px-3 py-1 font-body text-xs font-semibold text-cream transition hover:bg-white/30"
+            >
+              open ↗
+            </a>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="close"
+              className="rounded-full bg-white/20 px-3 py-1 font-body text-xs font-semibold text-cream transition hover:bg-white/30"
+            >
+              ✕ close
+            </button>
+          </span>
+        </div>
+        {attachment.kind === "image" ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={url} alt={attachment.name} className="mx-auto max-h-[85vh] w-auto rounded-2xl shadow-2xl" />
+        ) : (
+          <iframe title={attachment.name} src={url} className="h-[85vh] w-full rounded-2xl bg-white shadow-2xl" />
+        )}
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 function Attachments({ entry }: { entry: Entry }) {
+  const [open, setOpen] = useState<Attachment | null>(null);
   if (!entry.attachments?.length) return null;
   return (
-    <div className="ml-[3.25rem] mt-3 flex flex-wrap gap-2">
-      {entry.attachments.map((a) => {
-        const url = `/api/attachment/${a.id}`;
-        return a.kind === "image" ? (
-          <a key={a.id} href={url} target="_blank" rel="noreferrer" title={a.name}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={url}
-              alt={a.name}
-              className="h-20 w-20 rounded-xl object-cover shadow-sm ring-1 ring-white/70 transition hover:scale-105"
-            />
-          </a>
-        ) : (
-          <a
-            key={a.id}
-            href={url}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 font-body text-xs font-semibold text-ink-soft shadow-sm ring-1 ring-white/70 transition hover:text-ink"
-          >
-            📄 {a.name}
-          </a>
-        );
-      })}
-    </div>
+    <>
+      <div className="ml-[3.25rem] mt-3 flex flex-wrap gap-3">
+        {entry.attachments.map((a) => {
+          const url = `/api/attachment/${a.id}`;
+          if (a.kind === "image") {
+            return (
+              <button key={a.id} type="button" onClick={() => setOpen(a)} title={a.name} className="block">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt={a.name}
+                  className="h-24 w-24 rounded-xl object-cover shadow-sm ring-1 ring-white/70 transition hover:scale-105"
+                />
+              </button>
+            );
+          }
+          // PDF: an actual inline page preview (viewer chrome hidden), with a
+          // footer to enlarge or open in a new tab
+          return (
+            <div
+              key={a.id}
+              className="w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-white/70"
+            >
+              <iframe
+                title={a.name}
+                src={`${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                className="h-72 w-full border-0"
+              />
+              <div className="flex items-center justify-between gap-2 border-t border-ink/10 bg-white/80 px-3 py-1.5">
+                <span className="truncate font-body text-xs font-semibold text-ink-soft">📄 {a.name}</span>
+                <span className="flex shrink-0 items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(a)}
+                    className="font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
+                  >
+                    ⤢ enlarge
+                  </button>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
+                  >
+                    open ↗
+                  </a>
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {open && <Lightbox attachment={open} onClose={() => setOpen(null)} />}
+    </>
   );
 }
 

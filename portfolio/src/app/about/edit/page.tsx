@@ -145,12 +145,23 @@ function EntryEditor({
                     <img
                       src={`/api/attachment/${a.id}`}
                       alt={a.name}
-                      className="h-16 w-16 rounded-lg object-cover ring-1 ring-white/70"
+                      className="h-20 w-20 rounded-lg object-cover ring-1 ring-white/70"
                     />
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/70 px-3 py-2 font-body text-xs font-semibold text-ink-soft ring-1 ring-white/70">
-                      📄 {a.name}
-                    </span>
+                    <a
+                      href={`/api/attachment/${a.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={a.name}
+                      className="block h-24 w-20 overflow-hidden rounded-lg bg-white ring-1 ring-white/70"
+                    >
+                      <iframe
+                        title={a.name}
+                        src={`/api/attachment/${a.id}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                        className="pointer-events-none h-40 w-32 origin-top-left scale-[0.625] border-0"
+                        tabIndex={-1}
+                      />
+                    </a>
                   )}
                   <button
                     type="button"
