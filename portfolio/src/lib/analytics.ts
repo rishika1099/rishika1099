@@ -71,7 +71,9 @@ async function readJson<T>(key: string, fallback: T): Promise<T> {
   if (!blobsEnabled()) return (mem[key] as T) ?? fallback;
   try {
     const s = await store("analytics");
-    const raw = await s.get(key, { type: "json" });
+    // strong consistency: these are read-modify-write counters, so a stale read
+    // would clobber another request's update (lost city / visit counts)
+    const raw = await s.get(key, { type: "json", consistency: "strong" });
     return (raw as T) ?? fallback;
   } catch {
     return fallback;
