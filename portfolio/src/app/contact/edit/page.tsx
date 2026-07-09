@@ -231,10 +231,10 @@ function Editor({ keyVal }: { keyVal: string }) {
         </div>
       </div>
 
-      {/* guestbook moderation, right here in the contact edit room */}
+      {/* guestbook moderation, right here in the contact edit room
+          (GuestbookManager renders its own "guestbook (N)" heading) */}
       <div className="mt-10 w-full max-w-xl text-left">
-        <h2 className="font-body text-lg font-bold text-ink">📖 guestbook</h2>
-        <p className="mt-0.5 font-body text-xs text-ink-soft/70">
+        <p className="font-body text-xs text-ink-soft/70">
           hide or remove notes from the public wall. visitors only ever see the notes, never these controls.
         </p>
         <GuestbookManager keyVal={keyVal} />
