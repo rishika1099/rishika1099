@@ -70,6 +70,7 @@ const CLUSTERS = [
   ["work", "💼 work", "#cdeac0"],
   ["education", "🎓 education", "#e6d7f5"],
   ["research", "🔬 research", "#c5e8d5"],
+  ["certifications", "📜 certifications", "#efd9b0"],
   ["contact", "💌 contact", "#f7b7c9"],
 ] as const;
 type ClusterId = (typeof CLUSTERS)[number][0];
@@ -595,6 +596,7 @@ function EditRoom() {
           {tab === "work" && <AboutEntriesManager keyVal={key} section="work" />}
           {tab === "education" && <AboutEntriesManager keyVal={key} section="education" />}
           {tab === "research" && <AboutEntriesManager keyVal={key} section="research" />}
+          {tab === "certifications" && <AboutEntriesManager keyVal={key} section="certifications" />}
           {tab === "contact" && (
             <>
               <ContactManager keyVal={key} />

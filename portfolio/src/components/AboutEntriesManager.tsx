@@ -12,7 +12,7 @@ import TagPicker from "@/components/TagPicker";
 import { EditableText, adminApi } from "@/components/editing";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
-import type { Entry } from "@/data/about";
+import type { Attachment, Entry } from "@/data/about";
 import {
   categories as ALL_CATEGORIES,
   domains as ALL_DOMAINS,
@@ -23,6 +23,19 @@ import {
 const isResearch = (e: Entry) => richToText(e.title).startsWith("Research Assistant");
 const BLANK: Entry = { icon: "✨", when: "", title: "", place: "", note: "" };
 
+// stable per-row key so prepending a blank doesn't reuse an existing editor
+type KEntry = Entry & { _k?: number };
+let KSEQ = 1;
+const keyed = (e: Entry): KEntry => ({ ...e, _k: KSEQ++ });
+
+const fileToBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+
 const btn =
   "rounded-full px-4 py-1.5 font-body text-sm font-semibold transition disabled:opacity-50";
 const btnDark = `${btn} bg-ink text-cream hover:opacity-90`;
@@ -32,11 +45,23 @@ function EntryEditor({
   entry,
   onChange,
   onRemove,
+  onUpload,
 }: {
   entry: Entry;
   onChange: (e: Entry) => void;
   onRemove: () => void;
+  onUpload: (file: File) => Promise<Attachment | null>;
 }) {
+  const [attMsg, setAttMsg] = useState("");
+  const attachments = entry.attachments ?? [];
+  async function addFile(file: File) {
+    setAttMsg(`uploading ${file.name}…`);
+    const meta = await onUpload(file);
+    if (meta) {
+      onChange({ ...entry, attachments: [...attachments, meta] });
+      setAttMsg("");
+    } else setAttMsg("upload failed (images or pdf, under 8MB)");
+  }
   return (
     <div className="rounded-3xl p-5 soft-card">
       <div className="flex gap-4">
@@ -102,6 +127,57 @@ function EntryEditor({
             value={entry.tech ?? []}
             onChange={(v) => onChange({ ...entry, tech: v as Entry["tech"] })}
           />
+          <p className="pt-1 font-body text-[11px] text-ink-soft/60">files (a certificate picture, a diploma PDF):</p>
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {attachments.map((a) => (
+                <span key={a.id} className="relative inline-flex">
+                  {a.kind === "image" ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={`/api/attachment/${a.id}`} alt={a.name} className="h-20 w-20 rounded-lg object-cover ring-1 ring-white/70" />
+                  ) : (
+                    <a
+                      href={`/api/attachment/${a.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      title={a.name}
+                      className="block h-20 w-20 overflow-hidden rounded-lg bg-white ring-1 ring-white/70"
+                    >
+                      <iframe
+                        title={a.name}
+                        src={`/api/attachment/${a.id}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                        className="pointer-events-none border-0"
+                        style={{ width: 264, height: 264, transform: "scale(0.303)", transformOrigin: "top left" }}
+                        tabIndex={-1}
+                      />
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => onChange({ ...entry, attachments: attachments.filter((x) => x.id !== a.id) })}
+                    aria-label={`remove ${a.name}`}
+                    className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-rose/80 font-body text-[10px] font-bold text-ink shadow transition hover:bg-rose"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
+            📎 attach a file
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) addFile(f);
+                e.target.value = "";
+              }}
+            />
+          </label>
+          {attMsg && <p className="font-body text-[11px] text-ink-soft/70">{attMsg}</p>}
         </div>
         <button
           type="button"
@@ -121,38 +197,67 @@ export default function AboutEntriesManager({
   section,
 }: {
   keyVal: string;
-  section: "education" | "work" | "research";
+  section: "education" | "work" | "research" | "certifications";
 }) {
   const api = adminApi(keyVal);
   const router = useRouter();
-  const [education, setEducation] = useState<Entry[] | null>(null);
-  const [work, setWork] = useState<Entry[]>([]);
-  const [research, setResearch] = useState<Entry[]>([]);
+  const [education, setEducation] = useState<KEntry[] | null>(null);
+  const [work, setWork] = useState<KEntry[]>([]);
+  const [research, setResearch] = useState<KEntry[]>([]);
+  const [certifications, setCertifications] = useState<KEntry[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
+  async function uploadAttachment(file: File): Promise<Attachment | null> {
+    try {
+      const dataBase64 = await fileToBase64(file);
+      return await api<Attachment>("/api/admin/attachments", {
+        method: "POST",
+        body: JSON.stringify({ name: file.name, mime: file.type, dataBase64 }),
+      });
+    } catch {
+      return null;
+    }
+  }
+
   useEffect(() => {
-    api<{ education: Entry[]; timeline: Entry[] }>("/api/admin/about")
+    api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about")
       .then((d) => {
-        setEducation(d.education);
-        setWork(d.timeline.filter((e) => !isResearch(e)));
-        setResearch(d.timeline.filter(isResearch));
+        setEducation(d.education.map(keyed));
+        setWork(d.timeline.filter((e) => !isResearch(e)).map(keyed));
+        setResearch(d.timeline.filter(isResearch).map(keyed));
+        setCertifications((d.certifications ?? []).map(keyed));
       })
       .catch(() => setMsg("couldn't load, refresh?"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const list = section === "education" ? education ?? [] : section === "work" ? work : research;
-  const setList = section === "education" ? setEducation : section === "work" ? setWork : setResearch;
+  const list =
+    section === "education"
+      ? education ?? []
+      : section === "work"
+        ? work
+        : section === "research"
+          ? research
+          : certifications;
+  const setList =
+    section === "education"
+      ? setEducation
+      : section === "work"
+        ? setWork
+        : section === "research"
+          ? setResearch
+          : setCertifications;
 
   async function save() {
     if (education === null) return;
     setSaving(true);
     setMsg("");
     try {
+      // always send every section so none gets wiped
       await api("/api/admin/about", {
         method: "POST",
-        body: JSON.stringify({ education, timeline: [...work, ...research] }),
+        body: JSON.stringify({ education, timeline: [...work, ...research], certifications }),
       });
       router.refresh();
       setMsg("saved ✓ live now");
@@ -166,10 +271,11 @@ export default function AboutEntriesManager({
   async function revert() {
     if (!confirm(`Revert the About ${section} entries to the versions written in the code?`)) return;
     await api("/api/admin/about", { method: "DELETE" });
-    const d = await api<{ education: Entry[]; timeline: Entry[] }>("/api/admin/about");
-    setEducation(d.education);
-    setWork(d.timeline.filter((e) => !isResearch(e)));
-    setResearch(d.timeline.filter(isResearch));
+    const d = await api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about");
+    setEducation(d.education.map(keyed));
+    setWork(d.timeline.filter((e) => !isResearch(e)).map(keyed));
+    setResearch(d.timeline.filter(isResearch).map(keyed));
+    setCertifications((d.certifications ?? []).map(keyed));
     setMsg("reverted ✓");
   }
 
@@ -182,7 +288,7 @@ export default function AboutEntriesManager({
         <button className={btnDark} onClick={save} disabled={saving}>
           {saving ? "saving…" : "save"}
         </button>
-        <button className={btnSoft} onClick={() => (setList as (l: Entry[]) => void)([BLANK, ...list])}>
+        <button className={btnSoft} onClick={() => (setList as (l: KEntry[]) => void)([keyed(BLANK), ...list])}>
           ＋ add
         </button>
         <button className={btnSoft} onClick={revert}>revert to code</button>
@@ -199,10 +305,11 @@ export default function AboutEntriesManager({
         )}
         {list.map((e, i) => (
           <EntryEditor
-            key={i}
+            key={e._k}
             entry={e}
-            onChange={(ne) => (setList as (l: Entry[]) => void)(list.map((x, j) => (j === i ? ne : x)))}
-            onRemove={() => (setList as (l: Entry[]) => void)(list.filter((_, j) => j !== i))}
+            onChange={(ne) => (setList as (l: KEntry[]) => void)(list.map((x, j) => (j === i ? (ne as KEntry) : x)))}
+            onRemove={() => (setList as (l: KEntry[]) => void)(list.filter((_, j) => j !== i))}
+            onUpload={uploadAttachment}
           />
         ))}
       </div>
