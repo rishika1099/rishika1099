@@ -12,6 +12,7 @@ import InkEditor from "@/components/InkEditor";
 import { copyToHtml } from "@/lib/copyRender";
 import { setEditMode } from "@/lib/editMode";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
+import GuestbookManager from "@/components/GuestbookManager";
 import type { ContactLink } from "@/lib/contactLinks";
 
 function Editor({ keyVal }: { keyVal: string }) {
@@ -196,6 +197,15 @@ function Editor({ keyVal }: { keyVal: string }) {
       <p className="mt-8 font-body text-xs text-ink-soft/70">
         the message form below stays as-is (it posts to Netlify forms) ✦
       </p>
+
+      {/* guestbook moderation, right here in the contact edit room */}
+      <div className="mt-10 w-full max-w-xl text-left">
+        <h2 className="font-body text-lg font-bold text-ink">📖 guestbook</h2>
+        <p className="mt-0.5 font-body text-xs text-ink-soft/70">
+          hide or remove notes from the public wall. visitors only ever see the notes, never these controls.
+        </p>
+        <GuestbookManager keyVal={keyVal} />
+      </div>
     </>
   );
 }
