@@ -444,12 +444,6 @@ function Editor({ keyVal }: { keyVal: string }) {
       </div>
 
       {section("about.heading.education", null, education, setEducation)}
-      {section(
-        "about.heading.certifications",
-        "short courses, nanodegrees, certifications, attach the certificate as a picture or PDF",
-        certifications,
-        setCertifications,
-      )}
 
       <div className="mt-12">{cField("about.heading.skills", "font-body text-2xl font-bold text-ink")}</div>
       <div className="mt-1">{cField("about.heading.skills.sub", "font-body text-sm text-ink-soft")}</div>
@@ -462,6 +456,12 @@ function Editor({ keyVal }: { keyVal: string }) {
         'research cards keep a title starting with "Research Assistant" to stay in this section',
         research,
         setResearch,
+      )}
+      {section(
+        "about.heading.certifications",
+        "short courses, nanodegrees, certifications, attach the certificate as a picture or PDF",
+        certifications,
+        setCertifications,
       )}
     </>
   );

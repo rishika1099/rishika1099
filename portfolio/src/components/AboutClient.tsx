@@ -262,18 +262,6 @@ export default function AboutClient({
         ))}
       </div>
 
-      {/* Certifications & short courses (only when there are any) */}
-      {certifications.length > 0 && (
-        <>
-          <h2 className="mt-12 font-body text-2xl font-bold text-ink">{heads.certifications}</h2>
-          <div className="mt-5 space-y-4">
-            {certifications.map((e, i) => (
-              <EntryCard key={e.title} entry={e} i={i} />
-            ))}
-          </div>
-        </>
-      )}
-
       {/* Skills */}
       <h2 className="mt-12 font-body text-2xl font-bold text-ink">
         {heads.skills}
@@ -312,6 +300,18 @@ export default function AboutClient({
             <EntryCard key={t.title} entry={t} i={i} />
           ))}
       </div>
+
+      {/* Certifications & short courses (only when there are any) */}
+      {certifications.length > 0 && (
+        <>
+          <h2 className="mt-12 font-body text-2xl font-bold text-ink">{heads.certifications}</h2>
+          <div className="mt-5 space-y-4">
+            {certifications.map((e, i) => (
+              <EntryCard key={e.title} entry={e} i={i} />
+            ))}
+          </div>
+        </>
+      )}
     </PageShell>
   );
 }
