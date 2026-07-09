@@ -16,7 +16,13 @@ interface Entry {
 
 const btn = "rounded-full px-3 py-1 font-body text-xs font-semibold transition";
 
-export default function GuestbookManager({ keyVal }: { keyVal: string }) {
+export default function GuestbookManager({
+  keyVal,
+  showHeading = true,
+}: {
+  keyVal: string;
+  showHeading?: boolean;
+}) {
   const api = adminApi(keyVal);
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [msg, setMsg] = useState("");
@@ -41,7 +47,11 @@ export default function GuestbookManager({ keyVal }: { keyVal: string }) {
 
   return (
     <div className="mt-8">
-      <p className="font-body text-sm font-bold text-ink">📖 guestbook ({entries.length})</p>
+      {showHeading ? (
+        <p className="font-body text-sm font-bold text-ink">📖 guestbook ({entries.length})</p>
+      ) : (
+        <p className="font-body text-xs font-semibold text-ink-soft/70">{entries.length} note{entries.length === 1 ? "" : "s"}</p>
+      )}
       {msg && <p className="mt-1 font-body text-sm text-ink-soft">{msg}</p>}
       {entries.length === 0 && <p className="mt-2 font-body text-sm text-ink-soft">no notes yet ✦</p>}
       <div className="mt-3 space-y-2">

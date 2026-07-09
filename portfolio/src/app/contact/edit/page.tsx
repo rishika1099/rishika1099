@@ -24,6 +24,19 @@ const FORM_FIELDS: [id: string, label: string][] = [
   ["contact.form.sent", "sent confirmation"],
 ];
 
+// the guestbook's wording (the notes themselves are moderated below)
+const GUESTBOOK_FIELDS: [id: string, label: string][] = [
+  ["contact.guestbook.title", "guestbook heading"],
+  ["contact.guestbook.public", "public-wall badge"],
+  ["contact.guestbook.hint", "sub-note"],
+  ["contact.guestbook.placeholder.name", "name placeholder"],
+  ["contact.guestbook.placeholder.note", "note placeholder"],
+  ["contact.guestbook.empty", "empty-state text"],
+];
+
+// every editable copy field on this page beyond the title/intro
+const COPY_FIELDS = [...FORM_FIELDS, ...GUESTBOOK_FIELDS];
+
 function Editor({ keyVal }: { keyVal: string }) {
   const api = adminApi(keyVal);
   const router = useRouter();
@@ -43,7 +56,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         setIntro(copy.blocks.find((b) => b.id === "contact.intro")?.text ?? "");
         setTitle(copy.blocks.find((b) => b.id === "contact.title")?.text ?? "");
         const fm: Record<string, string> = {};
-        for (const [id] of FORM_FIELDS) fm[id] = copy.blocks.find((b) => b.id === id)?.text ?? "";
+        for (const [id] of COPY_FIELDS) fm[id] = copy.blocks.find((b) => b.id === id)?.text ?? "";
         setForm(fm);
         setLinks(contact.links);
       })
@@ -93,7 +106,7 @@ function Editor({ keyVal }: { keyVal: string }) {
     }
   }
 
-  const COPY_IDS = ["contact.intro", "contact.title", ...FORM_FIELDS.map(([id]) => id)];
+  const COPY_IDS = ["contact.intro", "contact.title", ...COPY_FIELDS.map(([id]) => id)];
 
   async function makeDefault() {
     if (!confirm('Make this page\'s current words the default? "Revert" will come back here.')) return;
@@ -128,7 +141,7 @@ function Editor({ keyVal }: { keyVal: string }) {
     setIntro(copyRes.blocks.find((b) => b.id === "contact.intro")?.text ?? "");
     setTitle(copyRes.blocks.find((b) => b.id === "contact.title")?.text ?? "");
     const fm: Record<string, string> = {};
-    for (const [id] of FORM_FIELDS) fm[id] = copyRes.blocks.find((b) => b.id === id)?.text ?? "";
+    for (const [id] of COPY_FIELDS) fm[id] = copyRes.blocks.find((b) => b.id === id)?.text ?? "";
     setForm(fm);
     setMsg("reverted to the default ✓");
   }
@@ -231,13 +244,25 @@ function Editor({ keyVal }: { keyVal: string }) {
         </div>
       </div>
 
-      {/* guestbook moderation, right here in the contact edit room
-          (GuestbookManager renders its own "guestbook (N)" heading) */}
+      {/* the guestbook: reword it, then moderate the notes */}
       <div className="mt-10 w-full max-w-xl text-left">
-        <p className="font-body text-xs text-ink-soft/70">
-          hide or remove notes from the public wall. visitors only ever see the notes, never these controls.
+        <h2 className="font-body text-lg font-bold text-ink">📖 the guestbook</h2>
+        <p className="mt-0.5 font-body text-xs text-ink-soft/70">
+          reword the guestbook, then hide/remove notes below. visitors only ever see the notes, never these controls.
         </p>
-        <GuestbookManager keyVal={keyVal} />
+        <div className="mt-3 space-y-3">
+          {GUESTBOOK_FIELDS.map(([id, label]) => (
+            <div key={id} className="rounded-2xl bg-white/50 p-3">
+              <p className="mb-1 font-body text-[11px] font-semibold text-ink-soft/70">{label}</p>
+              <EditableText
+                value={form[id] ?? ""}
+                onChange={(v) => setForm((f) => ({ ...f, [id]: v }))}
+                className="font-body text-sm text-ink"
+              />
+            </div>
+          ))}
+        </div>
+        <GuestbookManager keyVal={keyVal} showHeading={false} />
       </div>
     </>
   );
