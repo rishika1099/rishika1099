@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { SITE_HOST } from "@/lib/siteUrl";
 
 export const runtime = "nodejs";
 
@@ -7,7 +8,7 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const title = (url.searchParams.get("title") ?? "Rishika Mamidibathula").slice(0, 140);
-  const label = (url.searchParams.get("label") ?? "rishika-m.netlify.app").slice(0, 60);
+  const label = (url.searchParams.get("label") ?? SITE_HOST).slice(0, 60);
 
   return new ImageResponse(
     (

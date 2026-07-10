@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { SITE_HOST } from "@/lib/siteUrl";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
 import { getCopy } from "@/lib/siteCopy";
 import { listPoems } from "@/lib/poems-store";
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
 
   const snapshot = {
     exportedAt: new Date().toISOString(),
-    site: "rishika-m.netlify.app",
+    site: SITE_HOST,
     copy,
     poems,
     about,

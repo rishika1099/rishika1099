@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SITE_URL } from "@/lib/siteUrl";
 import { notFound } from "next/navigation";
 import PostBody from "@/components/PostBody";
 import PageShell from "@/components/PageShell";
@@ -59,7 +60,7 @@ export default async function BlogPost({
     headline: post.title,
     description: post.excerpt || undefined,
     datePublished: post.date || undefined,
-    url: `https://rishika-m.netlify.app/blog/technical/${post.slug}`,
+    url: `${SITE_URL}/blog/technical/${post.slug}`,
     author: { "@type": "Person", name: "Rishika Mamidibathula" },
   };
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/siteUrl";
 import {
   Nunito,
   Caveat,
@@ -55,7 +56,7 @@ const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], 
 const spaceMono = Space_Mono({ variable: "--font-space-mono", subsets: ["latin"], weight: ["400", "700"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://rishika-m.netlify.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Rishika Mamidibathula",
     template: "%s · Rishika Mamidibathula",
@@ -79,7 +80,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Rishika Mamidibathula",
-    url: "https://rishika-m.netlify.app",
+    url: SITE_URL,
     title: "Rishika Mamidibathula",
     description:
       "Data scientist & ML engineer in NYC. Projects, writing, poems, and photography.",
@@ -118,7 +119,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Rishika Mamidibathula",
-              url: "https://rishika-m.netlify.app",
+              url: SITE_URL,
               jobTitle: "Data Scientist & ML Engineer",
               alumniOf: "Columbia University",
               sameAs: [

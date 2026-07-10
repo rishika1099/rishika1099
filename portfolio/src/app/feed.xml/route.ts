@@ -1,9 +1,10 @@
 import { getBlogPosts } from "@/lib/content";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export const runtime = "nodejs";
 export const revalidate = 3600; // rebuild the feed at most hourly
 
-const SITE = "https://rishika-m.netlify.app";
+const SITE = SITE_URL;
 
 const esc = (s: string) =>
   s
