@@ -5,3 +5,11 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Send the old netlify.app address to the real domain, so rishika-m.com is the
+# one website (only matches the exact subdomain, not deploy-preview URLs).
+[[redirects]]
+  from = "https://rishika-m.netlify.app/*"
+  to = "https://rishika-m.com/:splat"
+  status = 301
+  force = true
