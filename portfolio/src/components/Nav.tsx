@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { EDIT_ROUTE, useEditMode } from "@/lib/editMode";
+import { EDIT_ROUTE, setEditMode, useEditMode } from "@/lib/editMode";
 
 const links = [
   { href: "/", label: "Home", icon: "🎀" },
@@ -82,6 +82,19 @@ export default function Nav() {
         </ul>
 
         <div className="flex items-center gap-2">
+          {/* edit-mode indicator + one-click exit (so you're never stuck in it) */}
+          {editing && (
+            <button
+              onClick={() => setEditMode(false)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-blush px-3 py-1.5 font-body text-xs font-semibold text-ink shadow-sm transition hover:opacity-90"
+              title="you're in edit mode — click to exit"
+            >
+              <span aria-hidden>✏️</span>
+              <span className="hidden sm:inline">editing</span>
+              <span aria-hidden>✕</span>
+            </button>
+          )}
+
           {/* command palette hint */}
           <button
             onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
