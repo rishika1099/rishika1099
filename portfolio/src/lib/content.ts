@@ -15,6 +15,8 @@ export interface Doc {
   // when set, the post lives off-site (e.g. Substack) and cards link out
   external?: string;
   rich?: boolean; // written in the atelier's ink editor (HTML in Blobs)
+  pinned?: boolean; // floats to the top of its list
+  order?: number; // hand-dragged position among the atelier-written posts
   // same tag taxonomy as projects: a domain + technical-area tags
   domains?: Domain[];
   tech?: Category[];

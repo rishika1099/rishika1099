@@ -15,6 +15,7 @@ import AboutEntriesManager from "@/components/AboutEntriesManager";
 import ContactManager from "@/components/ContactManager";
 import GuestbookManager from "@/components/GuestbookManager";
 import PoemArtManager from "@/components/PoemArtManager";
+import PoemOrderList from "@/components/PoemOrderList";
 import { setEditMode } from "@/lib/editMode";
 
 interface Poem {
@@ -24,6 +25,7 @@ interface Poem {
   excerpt: string;
   content: string;
   rich?: boolean;
+  pinned?: boolean;
 }
 // open a poem in the ink editor: rich poems are already HTML, older plain ones
 // become escaped lines so their line breaks survive
@@ -142,19 +144,16 @@ function PoemsTab({ keyVal }: { keyVal: string }) {
           >
             ＋ new poem
           </button>
-          <ul className="mt-4 space-y-2">
-            {poems.map((p) => (
-              <li key={p.slug} className="flex items-center justify-between gap-3 rounded-2xl p-4 soft-card">
-                <div>
-                  <p className="font-body text-sm font-bold text-ink">{p.title}</p>
-                  <p className="font-body text-xs italic text-ink-soft">{p.date}</p>
-                </div>
-                <button className={btnSoft} onClick={() => setEditing({ ...p, content: poemToHtml(p) })}>
-                  ✎ edit
-                </button>
-              </li>
-            ))}
-          </ul>
+          <PoemOrderList
+            poems={poems}
+            setPoems={setPoems}
+            persist={(order, pinned) =>
+              api("/api/admin/poems", { method: "POST", body: JSON.stringify({ reorder: { order, pinned } }) })
+                .then(() => setMsg("order saved ✓"))
+                .catch(() => setMsg("couldn't save the order, try again?"))
+            }
+            onEdit={(p) => setEditing({ ...p, content: poemToHtml(p) })}
+          />
         </>
       ) : (
         <div className="space-y-3 rounded-3xl p-5 soft-card">

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
-import { deletePoem, listPoems, savePoem, slugify } from "@/lib/poems-store";
+import { deletePoem, listPoems, savePoem, savePoemOrder, slugify, type PoemOrder } from "@/lib/poems-store";
 import { sanitizeRichHtml } from "@/lib/richHtml";
 
 export const runtime = "nodejs";
@@ -28,7 +28,13 @@ export async function POST(request: Request) {
       excerpt?: string;
       content?: string;
       rich?: boolean;
+      reorder?: PoemOrder;
     };
+    // drag-and-drop ordering + pins from the editors
+    if (body.reorder) {
+      await savePoemOrder(body.reorder);
+      return NextResponse.json({ ok: true });
+    }
     const title = (body.title ?? "").trim();
     const content = (body.content ?? "").trim();
     if (!title || !content) {

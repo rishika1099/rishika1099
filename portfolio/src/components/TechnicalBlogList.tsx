@@ -70,7 +70,17 @@ export default function TechnicalBlogList({ posts }: { posts: Doc[] }) {
               "block rounded-3xl p-6 soft-card transition hover:-translate-y-1";
             const inner = (
               <>
-                <p className="font-body text-sm italic text-ink-soft">{fmtDate(p.date)}</p>
+                <p className="flex items-center gap-2 font-body text-sm italic text-ink-soft">
+                  {fmtDate(p.date)}
+                  {p.pinned && (
+                    <span
+                      className="rounded-full bg-gold/40 px-2 py-0.5 font-body text-[10px] font-semibold not-italic text-ink"
+                      title="pinned"
+                    >
+                      📌 pinned
+                    </span>
+                  )}
+                </p>
                 <h2 className="font-display text-xl font-semibold text-ink">{p.title}</h2>
                 <p className="mt-1 font-body text-sm text-ink-soft">{p.excerpt}</p>
                 {Boolean(p.domains?.length || p.tech?.length) && (

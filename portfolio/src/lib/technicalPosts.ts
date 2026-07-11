@@ -29,7 +29,15 @@ export async function getTechnicalPosts(): Promise<Doc[]> {
       domains: o.domains?.length ? o.domains : p.domains,
     };
   });
-  return withOverrides.sort(
-    (a, b) => (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0),
-  );
+  // pinned posts float to the top (kept in their hand-dragged order),
+  // everything else stays newest-first
+  return withOverrides.sort((a, b) => {
+    if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+    if (a.pinned && b.pinned) {
+      const oa = a.order ?? Number.MAX_SAFE_INTEGER;
+      const ob = b.order ?? Number.MAX_SAFE_INTEGER;
+      if (oa !== ob) return oa - ob;
+    }
+    return (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0);
+  });
 }

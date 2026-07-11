@@ -4,8 +4,9 @@
 //  - RichPostManager: write/edit your own Medium-style posts (ink editor)
 //  - AutoPostManager: override the title/subtitle/tags of auto-pulled posts
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Reorder } from "framer-motion";
 import InkEditor from "@/components/InkEditor";
 import TagPicker from "@/components/TagPicker";
 import { adminApi } from "@/components/editing";
@@ -39,6 +40,9 @@ function fromLocalInput(v: string): string {
   return isNaN(d.getTime()) ? "" : d.toISOString();
 }
 
+// module-load timestamp: plenty precise for a "has the schedule passed" badge
+const mountedAt = Date.now();
+
 function StatusBadge({ post }: { post: RichPost }) {
   if (post.status === "draft")
     return (
@@ -48,7 +52,8 @@ function StatusBadge({ post }: { post: RichPost }) {
     );
   if (post.status === "scheduled") {
     const due = post.publishAt ? new Date(post.publishAt) : null;
-    const live = !!due && due.getTime() <= Date.now();
+    // snapshot once at mount; the badge doesn't need to tick live
+    const live = !!due && due.getTime() <= mountedAt;
     return (
       <span className="rounded-full bg-lavender/60 px-2 py-0.5 font-body text-[10px] font-semibold text-ink">
         {live ? "🌿 live" : `🕰 ${due ? due.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "scheduled"}`}
@@ -65,6 +70,12 @@ export function RichPostManager({ keyVal }: { keyVal: string }) {
   const [editing, setEditing] = useState<RichPost | null>(null);
   const [msg, setMsg] = useState("");
 
+  // ref mirror so drag-end can persist the freshest order
+  const postsRef = useRef<RichPost[] | null>(null);
+  useEffect(() => {
+    postsRef.current = posts;
+  }, [posts]);
+
   const refresh = () =>
     api<{ posts: RichPost[] }>("/api/admin/blogs")
       .then((d) => setPosts(d.posts))
@@ -74,6 +85,37 @@ export function RichPostManager({ keyVal }: { keyVal: string }) {
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // persist the drag-and-drop order once a drag settles
+  async function saveOrder() {
+    const cur = postsRef.current;
+    if (!cur) return;
+    try {
+      await api("/api/admin/blogs", {
+        method: "POST",
+        body: JSON.stringify({ reorder: cur.map((p) => p.slug) }),
+      });
+      setMsg("order saved ✓");
+      router.refresh();
+    } catch {
+      setMsg("couldn't save the order, try again?");
+    }
+  }
+
+  async function togglePin(p: RichPost) {
+    setMsg(p.pinned ? "unpinning…" : "pinning…");
+    try {
+      await api("/api/admin/blogs", {
+        method: "POST",
+        body: JSON.stringify({ ...p, pinned: !p.pinned }),
+      });
+      setMsg(p.pinned ? "unpinned ✓" : "pinned to the top ✓");
+      await refresh();
+      router.refresh();
+    } catch {
+      setMsg("couldn't update the pin, try again?");
+    }
+  }
 
   async function save() {
     if (!editing) return;
@@ -127,29 +169,58 @@ export function RichPostManager({ keyVal }: { keyVal: string }) {
       {msg && <p className="mt-2 font-body text-sm text-ink-soft">{msg}</p>}
 
       {!editing ? (
-        <ul className="mt-3 space-y-2">
-          {posts === null && <p className="font-body text-sm text-ink-soft">opening the desk… ✦</p>}
+        <>
+          {posts === null && <p className="mt-3 font-body text-sm text-ink-soft">opening the desk… ✦</p>}
           {posts?.length === 0 && (
-            <p className="font-body text-sm text-ink-soft">nothing here yet, write your first one ✦</p>
+            <p className="mt-3 font-body text-sm text-ink-soft">nothing here yet, write your first one ✦</p>
           )}
-          {posts?.map((p) => (
-            <li
-              key={p.slug}
-              className="flex items-center justify-between gap-3 rounded-2xl bg-white/50 p-3"
-            >
-              <div>
-                <p className="flex items-center gap-2 font-body text-sm font-bold text-ink">
-                  {p.title}
-                  <StatusBadge post={p} />
-                </p>
-                <p className="font-body text-xs italic text-ink-soft">{p.date}</p>
-              </div>
-              <button className={btnSoft} onClick={() => setEditing({ ...p })}>
-                ✎ edit
-              </button>
-            </li>
-          ))}
-        </ul>
+          {!!posts?.length && (
+            <>
+              <p className="mt-3 font-body text-xs text-ink-soft/70">
+                drag to reorder, 📌 to pin to the top of the blogs page ✦
+              </p>
+              <Reorder.Group axis="y" values={posts} onReorder={setPosts} as="ul" className="mt-2 space-y-2">
+                {posts.map((p) => (
+                  <Reorder.Item
+                    key={p.slug}
+                    value={p}
+                    as="li"
+                    onDragEnd={saveOrder}
+                    className={`flex cursor-grab items-center justify-between gap-3 rounded-2xl p-3 active:cursor-grabbing ${
+                      p.pinned ? "bg-gold/30 ring-1 ring-gold/60" : "bg-white/50"
+                    }`}
+                  >
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span aria-hidden className="select-none text-ink-soft/50" title="drag to reorder">
+                        ⠿
+                      </span>
+                      <div className="min-w-0">
+                        <p className="flex items-center gap-2 font-body text-sm font-bold text-ink">
+                          <span className="truncate">{p.title}</span>
+                          {p.pinned && <span aria-hidden>📌</span>}
+                          <StatusBadge post={p} />
+                        </p>
+                        <p className="font-body text-xs italic text-ink-soft">{p.date}</p>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1.5">
+                      <button
+                        className={btnSoft}
+                        title={p.pinned ? "unpin from the top" : "pin to the top"}
+                        onClick={() => togglePin(p)}
+                      >
+                        {p.pinned ? "📌 unpin" : "📌 pin"}
+                      </button>
+                      <button className={btnSoft} onClick={() => setEditing({ ...p })}>
+                        ✎ edit
+                      </button>
+                    </div>
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
+            </>
+          )}
+        </>
       ) : (
         <div className="mt-3 space-y-3">
           <input

@@ -111,6 +111,14 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
             >
               <div className="relative aspect-square w-full overflow-hidden">
                 <CardArt poem={poem} />
+                {poem.pinned && (
+                  <span
+                    className="absolute right-2 top-2 rounded-full bg-ink/60 px-2 py-0.5 font-body text-[10px] font-semibold text-cream backdrop-blur-sm"
+                    title="pinned"
+                  >
+                    📌
+                  </span>
+                )}
               </div>
               <div className="p-4">
                 <h2 className="font-display text-base font-semibold leading-snug text-cream sm:text-lg">

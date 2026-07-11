@@ -13,10 +13,19 @@ export interface Poem {
   rich?: boolean; // content is ink-editor HTML instead of plain text
   mood?: string;
   moodConfidence?: number | null;
+  pinned?: boolean; // floats to the top of the poem room
 }
 
 const MOODS_KEY = "__moods__";
 type MoodMap = Record<string, { mood: string; confidence: number | null }>;
+
+// Hand-arranged ordering + pins, kept in a sidecar (like moods) so the poem
+// files never need rewriting. Set by drag-and-drop in the editors.
+const ORDER_KEY = "__order__";
+export interface PoemOrder {
+  order: string[]; // slugs, in display order
+  pinned: string[]; // slugs pinned to the top
+}
 
 /**
  * Poems live as `.md` files in this local folder (gitignored, off the public
@@ -59,6 +68,36 @@ async function readMoods(): Promise<MoodMap> {
   }
 }
 
+export async function readPoemOrder(): Promise<PoemOrder> {
+  let raw: string | null = null;
+  if (blobsEnabled()) {
+    const s = await store("poems");
+    raw = (await s.get(ORDER_KEY, { type: "text" })) ?? null;
+  } else {
+    const f = path.join(POEMS_DIR, "order.json");
+    if (fs.existsSync(f)) raw = fs.readFileSync(f, "utf8");
+  }
+  if (!raw) return { order: [], pinned: [] };
+  try {
+    const o = JSON.parse(raw) as PoemOrder;
+    return { order: Array.isArray(o.order) ? o.order : [], pinned: Array.isArray(o.pinned) ? o.pinned : [] };
+  } catch {
+    return { order: [], pinned: [] };
+  }
+}
+
+export async function savePoemOrder(o: PoemOrder): Promise<void> {
+  const strs = (a: unknown) => (Array.isArray(a) ? a.filter((x): x is string => typeof x === "string") : []);
+  const clean: PoemOrder = { order: strs(o.order).slice(0, 500), pinned: strs(o.pinned).slice(0, 100) };
+  if (blobsEnabled()) {
+    const s = await store("poems");
+    await s.set(ORDER_KEY, JSON.stringify(clean));
+  } else {
+    fs.mkdirSync(POEMS_DIR, { recursive: true });
+    fs.writeFileSync(path.join(POEMS_DIR, "order.json"), JSON.stringify(clean, null, 2));
+  }
+}
+
 export async function listPoems(): Promise<Poem[]> {
   let poems: Poem[];
   if (blobsEnabled()) {
@@ -87,7 +126,20 @@ export async function listPoems(): Promise<Poem[]> {
       p.moodConfidence = m.confidence;
     }
   }
-  return poems.sort((a, b) => (a.date < b.date ? 1 : -1));
+
+  // pinned first, then the hand-dragged order; poems not yet in the order
+  // (newly written) lead their section, newest first
+  const ord = await readPoemOrder();
+  const pos = new Map(ord.order.map((s, i) => [s, i]));
+  const pinnedSet = new Set(ord.pinned);
+  for (const p of poems) if (pinnedSet.has(p.slug)) p.pinned = true;
+  return poems.sort((a, b) => {
+    if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+    const pa = pos.get(a.slug) ?? -1;
+    const pb = pos.get(b.slug) ?? -1;
+    if (pa !== pb) return pa === -1 ? -1 : pb === -1 ? 1 : pa - pb;
+    return a.date < b.date ? 1 : -1;
+  });
 }
 
 export async function getPoem(slug: string): Promise<Poem | null> {

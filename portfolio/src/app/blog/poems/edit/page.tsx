@@ -9,6 +9,7 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
 import PoemArtManager from "@/components/PoemArtManager";
+import PoemOrderList from "@/components/PoemOrderList";
 import { AdminGate, adminApi } from "@/components/editing";
 
 interface Poem {
@@ -18,6 +19,7 @@ interface Poem {
   excerpt: string;
   content: string;
   rich?: boolean;
+  pinned?: boolean;
 }
 
 const btn =
@@ -97,22 +99,17 @@ function Desk({ keyVal }: { keyVal: string }) {
           >
             ＋ new poem
           </button>
-          <ul className="mt-5 space-y-2">
-            {poems.map((p) => (
-              <li
-                key={p.slug}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
-              >
-                <div>
-                  <p className="font-body text-sm font-bold text-cream">{p.title}</p>
-                  <p className="font-body text-xs italic text-cream/60">{p.date}</p>
-                </div>
-                <button className={btnGhost} onClick={() => setEditing({ ...p, content: toHtml(p) })}>
-                  ✎ edit
-                </button>
-              </li>
-            ))}
-          </ul>
+          <PoemOrderList
+            dark
+            poems={poems}
+            setPoems={setPoems}
+            persist={(order, pinned) =>
+              api("/api/admin/poems", { method: "POST", body: JSON.stringify({ reorder: { order, pinned } }) })
+                .then(() => setMsg("order saved ✓"))
+                .catch(() => setMsg("couldn't save the order, try again?"))
+            }
+            onEdit={(p) => setEditing({ ...p, content: toHtml(p) })}
+          />
         </>
       ) : (
         <div className="space-y-3">

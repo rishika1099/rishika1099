@@ -23,6 +23,8 @@ export interface RichPost {
   html: string;
   status?: PostStatus;
   publishAt?: string; // ISO datetime, only meaningful when status === "scheduled"
+  pinned?: boolean; // floats to the top of the technical blogs list
+  order?: number; // hand-dragged position (lower = earlier)
 }
 
 /** Whether a post should be visible to the public right now. */
@@ -42,16 +44,49 @@ export async function listRichPosts(): Promise<RichPost[]> {
       const posts = await Promise.all(
         blobs.map(async (b) => (await s.get(b.key, { type: "json" })) as RichPost | null),
       );
-      return posts.filter((p): p is RichPost => !!p?.slug);
+      return sortPosts(posts.filter((p): p is RichPost => !!p?.slug));
     }
     if (!fs.existsSync(LOCAL_DIR)) return [];
-    return fs
-      .readdirSync(LOCAL_DIR)
-      .filter((f) => f.endsWith(".json"))
-      .map((f) => JSON.parse(fs.readFileSync(path.join(LOCAL_DIR, f), "utf8")) as RichPost);
+    return sortPosts(
+      fs
+        .readdirSync(LOCAL_DIR)
+        .filter((f) => f.endsWith(".json"))
+        .map((f) => JSON.parse(fs.readFileSync(path.join(LOCAL_DIR, f), "utf8")) as RichPost),
+    );
   } catch {
     return [];
   }
+}
+
+// pinned first, then the hand-dragged order, then newest first
+function sortPosts(posts: RichPost[]): RichPost[] {
+  return posts.sort((a, b) => {
+    if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+    const oa = a.order ?? Number.MAX_SAFE_INTEGER;
+    const ob = b.order ?? Number.MAX_SAFE_INTEGER;
+    if (oa !== ob) return oa - ob;
+    return a.date < b.date ? 1 : -1;
+  });
+}
+
+/** Persist a drag-and-drop ordering: writes the position onto each post. */
+export async function reorderRichPosts(slugs: string[]): Promise<void> {
+  const posts = await listRichPosts();
+  const bySlug = new Map(posts.map((p) => [p.slug, p]));
+  await Promise.all(
+    slugs.map(async (slug, i) => {
+      const p = bySlug.get(slug);
+      if (!p || p.order === i) return;
+      const next = { ...p, order: i };
+      if (blobsEnabled()) {
+        const s = await store("blogs");
+        await s.setJSON(slug, next);
+      } else {
+        fs.mkdirSync(LOCAL_DIR, { recursive: true });
+        fs.writeFileSync(path.join(LOCAL_DIR, `${slug}.json`), JSON.stringify(next, null, 2));
+      }
+    }),
+  );
 }
 
 export async function getRichPost(slug: string): Promise<RichPost | null> {
@@ -75,6 +110,8 @@ export async function saveRichPost(p: {
   html: string;
   status?: PostStatus;
   publishAt?: string;
+  pinned?: boolean;
+  order?: number;
 }): Promise<string> {
   const slug = (p.slug ?? "").trim() || slugify(p.title);
   const html = sanitizeRichHtml(p.html);
@@ -88,6 +125,8 @@ export async function saveRichPost(p: {
     html,
     status,
     ...(status === "scheduled" && publishAt ? { publishAt } : {}),
+    ...(p.pinned ? { pinned: true } : {}),
+    ...(typeof p.order === "number" ? { order: p.order } : {}),
   };
   if (blobsEnabled()) {
     const s = await store("blogs");
@@ -121,6 +160,8 @@ export async function richPostDocs(): Promise<Doc[]> {
       excerpt: p.excerpt,
       content: "",
       rich: true,
+      pinned: p.pinned,
+      order: p.order,
       domains: detectDomains(`${p.title}. ${p.excerpt}`),
       tech: [categorize(tagText)],
     } as Doc;

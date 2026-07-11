@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
-import { deleteRichPost, listRichPosts, saveRichPost } from "@/lib/richBlogs";
+import { deleteRichPost, listRichPosts, reorderRichPosts, saveRichPost } from "@/lib/richBlogs";
 
 export const runtime = "nodejs";
 
@@ -28,7 +28,14 @@ export async function POST(request: Request) {
       html?: string;
       status?: "published" | "draft" | "scheduled";
       publishAt?: string;
+      pinned?: boolean;
+      reorder?: string[];
     };
+    // drag-and-drop ordering from the manager
+    if (Array.isArray(body.reorder)) {
+      await reorderRichPosts(body.reorder.filter((s): s is string => typeof s === "string"));
+      return NextResponse.json({ ok: true });
+    }
     const title = (body.title ?? "").trim();
     const html = (body.html ?? "").trim();
     if (!title || !html) {
