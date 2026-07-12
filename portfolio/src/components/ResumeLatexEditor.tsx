@@ -208,14 +208,23 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
           </span>
         )}
         {pdfUrl && (
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="font-body text-xs font-semibold text-ink-soft underline decoration-dotted hover:text-ink"
-          >
-            open ↗
-          </a>
+          <>
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="font-body text-xs font-semibold text-ink-soft underline decoration-dotted hover:text-ink"
+            >
+              open ↗
+            </a>
+            <a
+              href={pdfUrl}
+              download="Rishika_Mamidibathula_Resume.pdf"
+              className="rounded-full bg-white/70 px-3 py-1 font-body text-xs font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
+            >
+              ⬇ download
+            </a>
+          </>
         )}
         {dirty && status === "ready" && (
           <span className="font-body text-xs italic text-ink-soft/70">edited, recompile to update</span>
