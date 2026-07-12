@@ -5,6 +5,7 @@
 // color from the palette. Output is HTML, sanitized again on the server.
 
 import { useEffect, useRef, useState } from "react";
+import RephrasePanel from "@/components/RephrasePanel";
 
 const FONTS: [string, string][] = [
   ["body", "var(--font-nunito)"],
@@ -71,6 +72,8 @@ export default function InkEditor({
   const [menu, setMenu] = useState<string | null>(null);
   // format-painter: styles captured from a selection, to paint onto the next one
   const [painter, setPainter] = useState<Record<string, string> | null>(null);
+  // ✨ rephrase: the selected text handed to the private assistant panel
+  const [rephraseText, setRephraseText] = useState("");
   // the selected text's current font size in px (shown in the size stepper)
   const [curSize, setCurSize] = useState<number | null>(null);
   // last non-collapsed selection inside the editor, so a native colour picker
@@ -426,6 +429,45 @@ export default function InkEditor({
         >
           🖌
         </button>
+        <span className={sep} />
+
+        {/* ✨ rephrase: her private writing assistant */}
+        <div className="relative">
+          <button
+            type="button"
+            title="rephrase the selected text (select something first)"
+            onClick={() => {
+              if (menu === "rephrase") return setMenu(null);
+              if (!ensureSelection()) return;
+              const t = window.getSelection()?.toString().trim() ?? "";
+              if (!t) return;
+              setRephraseText(t);
+              setMenu("rephrase");
+            }}
+            className={tbBtn}
+          >
+            ✨
+          </button>
+          {menu === "rephrase" && (
+            <div
+              className={`absolute left-0 top-full z-20 mt-1 rounded-2xl border p-2.5 shadow-lg ${
+                dark ? "border-white/10 bg-[#2a2a34]" : "border-ink/10 bg-white"
+              }`}
+            >
+              <RephrasePanel
+                dark={dark}
+                text={rephraseText}
+                onPick={(t) => {
+                  if (ensureSelection()) {
+                    document.execCommand("insertText", false, t);
+                    emit();
+                  }
+                  setMenu(null);
+                }}
+              />
+            </div>
+          )}
+        </div>
         <span className={sep} />
 
         {/* code, link, clear */}

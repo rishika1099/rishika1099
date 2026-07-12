@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { adminApi } from "@/components/editing";
+import RephrasePanel from "@/components/RephrasePanel";
 
 type Status = "loading" | "ready" | "compiling" | "error";
 
@@ -55,6 +56,9 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
   const [showLog, setShowLog] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
   const [dirty, setDirty] = useState(false);
+  // ✨ rephrase: the textarea selection handed to the private assistant
+  const taRef = useRef<HTMLTextAreaElement>(null);
+  const [rephrase, setRephrase] = useState<{ text: string; start: number; end: number } | null>(null);
 
   useEffect(() => {
     texRef.current = tex;
@@ -229,6 +233,41 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
         {dirty && status === "ready" && (
           <span className="font-body text-xs italic text-ink-soft/70">edited, recompile to update</span>
         )}
+        {/* ✨ rephrase: her private writing assistant, works on the selection */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => {
+              if (rephrase) return setRephrase(null);
+              const ta = taRef.current;
+              if (!ta) return;
+              const text = ta.value.slice(ta.selectionStart, ta.selectionEnd).trim();
+              if (!text) return setSaveMsg("select some text in the editor first ✦");
+              setSaveMsg("");
+              setRephrase({ text, start: ta.selectionStart, end: ta.selectionEnd });
+            }}
+            className="rounded-full bg-lavender/60 px-4 py-2 font-body text-sm font-semibold text-ink transition hover:bg-lavender/80"
+          >
+            ✨ rephrase
+          </button>
+          {rephrase && (
+            <div className="absolute left-0 top-full z-30 mt-1 rounded-2xl border border-ink/10 bg-white p-2.5 shadow-lg">
+              <RephrasePanel
+                latex
+                text={rephrase.text}
+                onPick={(t) => {
+                  const ta = taRef.current;
+                  if (ta) {
+                    ta.setRangeText(t, rephrase.start, rephrase.end, "select");
+                    setTex(ta.value);
+                    setDirty(true);
+                  }
+                  setRephrase(null);
+                }}
+              />
+            </div>
+          )}
+        </div>
         {saveMsg && <span className="font-body text-xs text-ink-soft">{saveMsg}</span>}
         {log && (
           <button
@@ -243,6 +282,7 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
       {/* split pane */}
       <div className="mt-3 grid gap-3 lg:grid-cols-2">
         <textarea
+          ref={taRef}
           value={tex}
           onChange={(e) => {
             setTex(e.target.value);
