@@ -11,7 +11,6 @@ import SkillGraph from "@/components/SkillGraph";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
-import { setEditMode } from "@/lib/editMode";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
 import type { Attachment, Entry } from "@/data/about";
@@ -296,7 +295,6 @@ function Editor({ keyVal }: { keyVal: string }) {
           body: JSON.stringify({ texts: { "about.bio": bio ?? "", ...copy } }),
         }),
       ]);
-      setEditMode(false);
       router.push("/about");
       router.refresh();
     } catch {

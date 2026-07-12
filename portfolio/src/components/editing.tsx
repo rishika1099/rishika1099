@@ -5,7 +5,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import PageShell from "@/components/PageShell";
-import { setEditMode } from "@/lib/editMode";
 import type { Vibe } from "@/components/Scenery";
 
 /** Key gate: renders children only once the admin key is known-good. */
@@ -25,8 +24,6 @@ export function AdminGate({
     if (saved) {
       setKey(saved);
       setEntered(true);
-      // landing on an edit page means you're editing: keep the nav in edit mode
-      setEditMode(true);
     }
   }, []);
 
@@ -38,7 +35,6 @@ export function AdminGate({
     if (!res.ok) return setErr("something wobbled, try again?");
     localStorage.setItem("admin-key", k);
     setEntered(true);
-    setEditMode(true);
   }
 
   if (entered) return <>{children(key)}</>;

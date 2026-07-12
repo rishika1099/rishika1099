@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
-import { useEditMode } from "@/lib/editMode";
 
 const doors = [
   { href: "/blog/technical", key: "technical", icon: "📓", title: "Technical Blogs", tint: "bg-mint/50" },
@@ -21,12 +20,6 @@ export default function BlogHubClient({
   intro: React.ReactNode;
   doorBlurbs: Record<string, React.ReactNode>;
 }) {
-  // edit links only for the unlocked owner (flag AND key)
-  const { on, unlocked } = useEditMode();
-  const editing = on && unlocked;
-  // in edit mode, the doors (and featured tour) open their /edit rooms so you
-  // stay editing instead of dropping onto the live sub-pages
-  const to = (href: string) => (editing ? `${href}/edit` : href);
   return (
     <PageShell vibe="peach">
       <PageTitle>{title}</PageTitle>
@@ -42,7 +35,7 @@ export default function BlogHubClient({
             whileHover={{ y: -8, rotate: i === 1 ? 0 : i ? 1.5 : -1.5 }}
           >
             <Link
-              href={to(d.href)}
+              href={d.href}
               className={`flex h-full flex-col items-center gap-2 rounded-[2rem] p-8 text-center soft-card ${d.tint}`}
             >
               <span className="animate-float-med text-5xl">{d.icon}</span>
@@ -64,7 +57,7 @@ export default function BlogHubClient({
         className="mt-8"
       >
         <Link
-          href={to("/blog/technical/under-the-hood")}
+          href="/blog/technical/under-the-hood"
           className="block overflow-hidden rounded-[2rem] border border-lavender/40 bg-gradient-to-br from-mint/30 via-lavender/25 to-blush/25 p-7 soft-card transition hover:-translate-y-1"
         >
           <p className="font-body text-sm italic text-ink-soft">📌 featured</p>

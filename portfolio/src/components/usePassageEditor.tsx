@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SaveBar, adminApi } from "@/components/editing";
 import InkEditor from "@/components/InkEditor";
-import { setEditMode } from "@/lib/editMode";
 
 export function usePassageEditor(keyVal: string, ids: string[], viewHref: string) {
   const api = adminApi(keyVal);
@@ -51,7 +50,6 @@ export function usePassageEditor(keyVal: string, ids: string[], viewHref: string
     setMsg("");
     try {
       await api("/api/admin/copy", { method: "POST", body: JSON.stringify({ texts }) });
-      setEditMode(false);
       router.push(viewHref);
       router.refresh();
     } catch {

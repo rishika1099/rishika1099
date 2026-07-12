@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import FlowerPortrait from "@/components/FlowerPortrait";
-import { EDIT_ROUTE, useEditMode } from "@/lib/editMode";
 
 const tabs = [
   { href: "/about", title: "About", key: "about" },
@@ -36,11 +35,6 @@ export default function HomeClient({
   /** edit mode floats a replace-photo control over the portrait */
   portraitOverlay?: React.ReactNode;
 }) {
-  // edit links only for the unlocked owner (flag AND key)
-  const { on, unlocked } = useEditMode();
-  const editing = on && unlocked;
-  // in edit mode the landing cards open their /edit rooms, so you stay editing
-  const to = (href: string) => (editing && EDIT_ROUTE[href]) || href;
   return (
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}
@@ -148,7 +142,7 @@ export default function HomeClient({
             transition={{ type: "spring", stiffness: 300 }}
           >
             <Link
-              href={to(t.href)}
+              href={t.href}
               className="flex h-full flex-col items-center gap-1 rounded-3xl p-5 text-center soft-card"
             >
               <span className="animate-float-med text-4xl">{tabIcons[t.key]}</span>
@@ -169,7 +163,7 @@ export default function HomeClient({
         className="mt-6 text-center"
       >
         <Link
-          href={to("/now")}
+          href="/now"
           className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow-sm backdrop-blur transition hover:bg-white hover:text-ink"
         >
           🧭 check what i&apos;m working on now →

@@ -10,7 +10,6 @@ import { motion } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml } from "@/lib/copyRender";
-import { setEditMode } from "@/lib/editMode";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import GuestbookManager from "@/components/GuestbookManager";
 import type { ContactLink } from "@/lib/contactLinks";
@@ -96,7 +95,6 @@ function Editor({ keyVal }: { keyVal: string }) {
         }),
         api("/api/admin/contact", { method: "POST", body: JSON.stringify({ links }) }),
       ]);
-      setEditMode(false);
       router.push("/contact");
       router.refresh();
     } catch {

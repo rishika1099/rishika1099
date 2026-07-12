@@ -16,7 +16,6 @@ import ContactManager from "@/components/ContactManager";
 import GuestbookManager from "@/components/GuestbookManager";
 import PoemArtManager from "@/components/PoemArtManager";
 import PoemOrderList from "@/components/PoemOrderList";
-import { setEditMode } from "@/lib/editMode";
 
 interface Poem {
   slug: string;
@@ -475,7 +474,6 @@ function EditRoom() {
     if (saved) {
       setKey(saved);
       setEntered(true);
-      setEditMode(true);
     }
   }, []);
 
@@ -487,7 +485,6 @@ function EditRoom() {
     if (!res.ok) return setErr("something wobbled, try again?");
     localStorage.setItem("admin-key", k);
     setEntered(true);
-    setEditMode(true);
   }
 
   return (
@@ -564,7 +561,6 @@ function EditRoom() {
                   localStorage.removeItem("admin-key");
                   setEntered(false);
                   setKey("");
-                  setEditMode(false);
                 }}
               >
                 lock up 🔒

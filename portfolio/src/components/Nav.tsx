@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { EDIT_ROUTE, setEditMode, useEditMode } from "@/lib/editMode";
 
 const links = [
   { href: "/", label: "Home", icon: "🎀" },
@@ -32,16 +31,9 @@ function pillTint(path: string): string {
 export default function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  // secret: edit chrome only exists for the unlocked owner (flag AND key),
-  // so a hand-set localStorage flag alone shows nothing
-  const { on, unlocked } = useEditMode();
-  const editing = on && unlocked;
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
-
-  // in edit mode, the nav keeps you editing as you hop across pages
-  const hrefFor = (href: string) => (editing && EDIT_ROUTE[href]) || href;
 
   return (
     <header className="sticky top-0 z-50">
@@ -62,7 +54,7 @@ export default function Nav() {
           {links.map((l) => (
             <li key={l.href}>
               <Link
-                href={hrefFor(l.href)}
+                href={l.href}
                 className={`group relative flex items-center gap-1.5 rounded-full px-3 py-1.5 font-body text-sm font-semibold transition-colors ${
                   isActive(l.href)
                     ? "text-ink"
@@ -85,19 +77,6 @@ export default function Nav() {
         </ul>
 
         <div className="flex items-center gap-2">
-          {/* edit-mode indicator + one-click exit (so you're never stuck in it) */}
-          {editing && (
-            <button
-              onClick={() => setEditMode(false)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-blush px-3 py-1.5 font-body text-xs font-semibold text-ink shadow-sm transition hover:opacity-90"
-              title="you're in edit mode — click to exit"
-            >
-              <span aria-hidden>✏️</span>
-              <span className="hidden sm:inline">editing</span>
-              <span aria-hidden>✕</span>
-            </button>
-          )}
-
           {/* command palette hint */}
           <button
             onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
@@ -130,7 +109,7 @@ export default function Nav() {
           {links.map((l) => (
             <li key={l.href}>
               <Link
-                href={hrefFor(l.href)}
+                href={l.href}
                 onClick={() => setOpen(false)}
                 style={isActive(l.href) ? { backgroundColor: pillTint(pathname) } : undefined}
                 className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 font-body font-semibold ${
