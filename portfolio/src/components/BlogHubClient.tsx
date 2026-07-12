@@ -21,7 +21,9 @@ export default function BlogHubClient({
   intro: React.ReactNode;
   doorBlurbs: Record<string, React.ReactNode>;
 }) {
-  const { on: editing } = useEditMode();
+  // edit links only for the unlocked owner (flag AND key)
+  const { on, unlocked } = useEditMode();
+  const editing = on && unlocked;
   // in edit mode, the doors (and featured tour) open their /edit rooms so you
   // stay editing instead of dropping onto the live sub-pages
   const to = (href: string) => (editing ? `${href}/edit` : href);

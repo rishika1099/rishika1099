@@ -32,7 +32,10 @@ function pillTint(path: string): string {
 export default function Nav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const { on: editing } = useEditMode();
+  // secret: edit chrome only exists for the unlocked owner (flag AND key),
+  // so a hand-set localStorage flag alone shows nothing
+  const { on, unlocked } = useEditMode();
+  const editing = on && unlocked;
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);

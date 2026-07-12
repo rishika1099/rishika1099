@@ -36,7 +36,9 @@ export default function HomeClient({
   /** edit mode floats a replace-photo control over the portrait */
   portraitOverlay?: React.ReactNode;
 }) {
-  const { on: editing } = useEditMode();
+  // edit links only for the unlocked owner (flag AND key)
+  const { on, unlocked } = useEditMode();
+  const editing = on && unlocked;
   // in edit mode the landing cards open their /edit rooms, so you stay editing
   const to = (href: string) => (editing && EDIT_ROUTE[href]) || href;
   return (
