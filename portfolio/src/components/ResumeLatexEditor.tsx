@@ -19,14 +19,37 @@ function b64ToBytes(b64: string): Uint8Array {
   return out;
 }
 
+// Draw the PDF onto canvases with PDF.js (like Overleaf does), so the preview
+// works in any browser, no built-in PDF plugin needed. Returns the page count.
+async function renderPdfToContainer(bytes: Uint8Array, container: HTMLDivElement): Promise<number> {
+  const pdfjs = await import("pdfjs-dist");
+  pdfjs.GlobalWorkerOptions.workerSrc = "/pdfjs/pdf.worker.min.mjs";
+  // pdf.js transfers the buffer to its worker, so hand it a copy
+  const doc = await pdfjs.getDocument({ data: bytes.slice() }).promise;
+  container.innerHTML = "";
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const viewport = page.getViewport({ scale: 2 }); // crisp on retina
+    const canvas = document.createElement("canvas");
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    canvas.className = "mb-3 w-full rounded-xl bg-white shadow";
+    container.appendChild(canvas);
+    await page.render({ canvas, canvasContext: canvas.getContext("2d")!, viewport }).promise;
+  }
+  return doc.numPages;
+}
+
 export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
   const api = adminApi(keyVal);
   const pdfB64Ref = useRef<string | null>(null);
   const pdfUrlRef = useRef<string | null>(null);
   const texRef = useRef("");
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [tex, setTex] = useState("");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pageCount, setPageCount] = useState(0);
   const [status, setStatus] = useState<Status>("loading");
   const [log, setLog] = useState("");
   const [showLog, setShowLog] = useState(false);
@@ -48,11 +71,22 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
         );
         if (r.ok && r.pdfBase64) {
           pdfB64Ref.current = r.pdfBase64;
-          const blob = new Blob([b64ToBytes(r.pdfBase64) as BlobPart], { type: "application/pdf" });
+          const bytes = b64ToBytes(r.pdfBase64);
+          // blob URL for "open ↗" / download
+          const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
           const url = URL.createObjectURL(blob);
           if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
           pdfUrlRef.current = url;
           setPdfUrl(url);
+          // paint the pages
+          if (previewRef.current) {
+            try {
+              setPageCount(await renderPdfToContainer(bytes, previewRef.current));
+            } catch {
+              // canvas render failed; the open ↗ link still has the PDF
+              setPageCount(0);
+            }
+          }
           setLog("");
           setStatus("ready");
           setDirty(false);
@@ -163,6 +197,26 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
         >
           {statusLabel}
         </span>
+        {pageCount > 0 && status === "ready" && (
+          <span
+            className={`rounded-full px-2.5 py-0.5 font-body text-xs font-semibold ${
+              pageCount === 1 ? "bg-mint/60 text-ink" : "bg-gold/50 text-ink"
+            }`}
+            title={pageCount === 1 ? "fits on one page" : "spills past one page"}
+          >
+            {pageCount === 1 ? "1 page ✓" : `${pageCount} pages`}
+          </span>
+        )}
+        {pdfUrl && (
+          <a
+            href={pdfUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="font-body text-xs font-semibold text-ink-soft underline decoration-dotted hover:text-ink"
+          >
+            open ↗
+          </a>
+        )}
         {dirty && status === "ready" && (
           <span className="font-body text-xs italic text-ink-soft/70">edited, recompile to update</span>
         )}
@@ -189,10 +243,9 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
           className="h-[70vh] w-full resize-none rounded-2xl border border-white/70 bg-white/90 p-4 font-mono text-[13px] leading-relaxed text-ink outline-none focus:border-blush focus:ring-2 focus:ring-blush/30"
           placeholder="\documentclass{article}…"
         />
-        <div className="h-[70vh] w-full overflow-hidden rounded-2xl border border-white/70 bg-white/60">
-          {pdfUrl ? (
-            <iframe title="resume preview" src={pdfUrl} className="h-full w-full" />
-          ) : (
+        <div className="relative h-[70vh] w-full overflow-auto rounded-2xl border border-white/70 bg-ink/5 p-3">
+          <div ref={previewRef} />
+          {!pdfUrl && (
             <div className="flex h-full items-center justify-center p-6 text-center font-body text-sm text-ink-soft">
               {status === "error" ? "no PDF yet, see the log" : "compiling your first preview…"}
             </div>
