@@ -439,6 +439,14 @@ function Editor({ keyVal }: { keyVal: string }) {
           )}
         </span>
         {files.msg && <p className="mt-1 font-body text-[11px] text-ink-soft/70">{files.msg}</p>}
+        <div className="mt-3">
+          <a
+            href="/about/edit/resume"
+            className="inline-flex items-center gap-2 rounded-full bg-white/75 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow transition hover:bg-white hover:text-ink"
+          >
+            ✏️ or edit the resume in LaTeX
+          </a>
+        </div>
       </div>
 
       {section("about.heading.education", null, education, setEducation)}
