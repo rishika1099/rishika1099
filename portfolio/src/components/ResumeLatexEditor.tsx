@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { adminApi } from "@/components/editing";
 import RephrasePanel from "@/components/RephrasePanel";
+import type { ResumeAnalysis } from "@/app/api/admin/resume-tex/analyze/route";
 
 type Status = "loading" | "ready" | "compiling" | "error";
 
@@ -59,6 +60,26 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
   // ✨ rephrase: the textarea selection handed to the private assistant
   const taRef = useRef<HTMLTextAreaElement>(null);
   const [rephrase, setRephrase] = useState<{ text: string; start: number; end: number } | null>(null);
+  // 🔍 analyze: the LLM recruiter's report on the whole resume
+  const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysisErr, setAnalysisErr] = useState("");
+
+  async function analyze() {
+    setAnalyzing(true);
+    setAnalysisErr("");
+    try {
+      const r = await api<{ analysis: ResumeAnalysis }>("/api/admin/resume-tex/analyze", {
+        method: "POST",
+        body: JSON.stringify({ tex: texRef.current }),
+      });
+      setAnalysis(r.analysis);
+    } catch {
+      setAnalysisErr("the reviewer didn't answer, try again?");
+    } finally {
+      setAnalyzing(false);
+    }
+  }
 
   useEffect(() => {
     texRef.current = tex;
@@ -268,6 +289,16 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
             </div>
           )}
         </div>
+        {/* 🔍 analyze: an LLM recruiter reads the resume, points at weak spots */}
+        <button
+          type="button"
+          onClick={analyze}
+          disabled={analyzing || !tex.trim()}
+          title="an LLM recruiter reviews the resume: weak points, fixes, quick wins"
+          className="rounded-full bg-mint/60 px-4 py-2 font-body text-sm font-semibold text-ink transition hover:bg-mint/80 disabled:opacity-50"
+        >
+          {analyzing ? "reading…" : "🔍 analyze"}
+        </button>
         {saveMsg && <span className="font-body text-xs text-ink-soft">{saveMsg}</span>}
         {log && (
           <button
@@ -301,6 +332,69 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
           )}
         </div>
       </div>
+
+      {analysisErr && <p className="mt-3 font-body text-sm text-rose-500">{analysisErr}</p>}
+      {analysis && (
+        <div className="mt-4 rounded-3xl p-5 soft-card">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-body text-base font-bold text-ink">🔍 the reviewer&apos;s read</h2>
+            <span className="flex items-center gap-2">
+              <span
+                className={`rounded-full px-3 py-1 font-body text-sm font-bold ${
+                  analysis.score >= 80 ? "bg-mint/70 text-ink" : analysis.score >= 60 ? "bg-gold/60 text-ink" : "bg-rose/60 text-ink"
+                }`}
+              >
+                {analysis.score}/100
+              </span>
+              <button
+                type="button"
+                onClick={() => setAnalysis(null)}
+                className="font-body text-xs text-ink-soft underline decoration-dotted hover:text-ink"
+              >
+                dismiss
+              </button>
+            </span>
+          </div>
+          <p className="mt-2 font-body text-sm italic text-ink-soft">&ldquo;{analysis.verdict}&rdquo;</p>
+
+          {analysis.strengths.length > 0 && (
+            <>
+              <p className="mt-4 font-body text-xs font-bold uppercase tracking-wide text-ink-soft">what works</p>
+              <ul className="mt-1.5 space-y-1">
+                {analysis.strengths.map((s, i) => (
+                  <li key={i} className="rounded-xl bg-mint/25 px-3 py-1.5 font-body text-sm text-ink">🌿 {s}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {analysis.weaknesses.length > 0 && (
+            <>
+              <p className="mt-4 font-body text-xs font-bold uppercase tracking-wide text-ink-soft">weak points</p>
+              <div className="mt-1.5 space-y-2">
+                {analysis.weaknesses.map((w, i) => (
+                  <div key={i} className="rounded-xl bg-rose/20 px-3 py-2">
+                    <p className="font-body text-sm font-semibold text-ink">⚠️ {w.issue}</p>
+                    {w.where && <p className="mt-0.5 font-body text-xs italic text-ink-soft">{w.where}</p>}
+                    {w.fix && <p className="mt-1 font-body text-sm text-ink">💡 {w.fix}</p>}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {analysis.quickWins.length > 0 && (
+            <>
+              <p className="mt-4 font-body text-xs font-bold uppercase tracking-wide text-ink-soft">quick wins</p>
+              <ul className="mt-1.5 space-y-1">
+                {analysis.quickWins.map((s, i) => (
+                  <li key={i} className="rounded-xl bg-gold/25 px-3 py-1.5 font-body text-sm text-ink">✦ {s}</li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      )}
 
       {showLog && log && (
         <pre className="mt-3 max-h-64 overflow-auto rounded-2xl bg-twilight/95 p-4 font-mono text-[11px] leading-relaxed text-[#f3eefe]">
