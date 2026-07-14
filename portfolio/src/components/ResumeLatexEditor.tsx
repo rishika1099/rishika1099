@@ -21,6 +21,44 @@ function b64ToBytes(b64: string): Uint8Array {
   return out;
 }
 
+// Scroll a textarea so the character at `index` is comfortably in view. Line
+// counting fails here because long LaTeX lines wrap, so measure for real: a
+// hidden mirror with the same metrics, filled up to `index`, tells us the
+// selection's pixel offset.
+function scrollTextareaTo(ta: HTMLTextAreaElement, index: number) {
+  const cs = getComputedStyle(ta);
+  const div = document.createElement("div");
+  for (const p of [
+    "fontFamily",
+    "fontSize",
+    "fontWeight",
+    "lineHeight",
+    "letterSpacing",
+    "paddingTop",
+    "paddingRight",
+    "paddingBottom",
+    "paddingLeft",
+    "tabSize",
+  ] as const) {
+    div.style[p] = cs[p];
+  }
+  div.style.position = "absolute";
+  div.style.visibility = "hidden";
+  div.style.whiteSpace = "pre-wrap";
+  div.style.overflowWrap = "break-word";
+  div.style.boxSizing = "border-box";
+  div.style.border = "0";
+  div.style.width = `${ta.clientWidth}px`; // clientWidth = padding + content, minus scrollbar
+  div.textContent = ta.value.slice(0, index);
+  const marker = document.createElement("span");
+  marker.textContent = "​";
+  div.appendChild(marker);
+  document.body.appendChild(div);
+  const top = marker.offsetTop;
+  div.remove();
+  ta.scrollTop = Math.max(0, top - ta.clientHeight / 3);
+}
+
 // A click on the preview, distilled: the text of the clicked line plus how far
 // through the document the click sits (to pick between repeated phrases).
 interface PreviewClick {
@@ -170,9 +208,7 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
     const end = map[Math.min(idx + needle.length - 1, map.length - 1)] + 1;
     ta.focus();
     ta.setSelectionRange(start, end);
-    const lh = parseFloat(getComputedStyle(ta).lineHeight) || 21;
-    const line = src.slice(0, start).split("\n").length;
-    ta.scrollTop = Math.max(0, (line - 4) * lh);
+    scrollTextareaTo(ta, start);
     setSaveMsg("");
   }
 
