@@ -21,9 +21,22 @@ function b64ToBytes(b64: string): Uint8Array {
   return out;
 }
 
+// A click on the preview, distilled: the text of the clicked line plus how far
+// through the document the click sits (to pick between repeated phrases).
+interface PreviewClick {
+  phrase: string;
+  ratio: number; // 0..1 through the whole document
+}
+
 // Draw the PDF onto canvases with PDF.js (like Overleaf does), so the preview
-// works in any browser, no built-in PDF plugin needed. Returns the page count.
-async function renderPdfToContainer(bytes: Uint8Array, container: HTMLDivElement): Promise<number> {
+// works in any browser, no built-in PDF plugin needed. When onLocate is given,
+// clicking a canvas reports the clicked line's text (reverse search, à la
+// Overleaf's sync — done by text matching since the compiler gives no synctex).
+async function renderPdfToContainer(
+  bytes: Uint8Array,
+  container: HTMLDivElement,
+  onLocate?: (c: PreviewClick) => void,
+): Promise<number> {
   const pdfjs = await import("pdfjs-dist");
   pdfjs.GlobalWorkerOptions.workerSrc = "/pdfjs/pdf.worker.min.mjs";
   // pdf.js transfers the buffer to its worker, so hand it a copy
@@ -38,6 +51,37 @@ async function renderPdfToContainer(bytes: Uint8Array, container: HTMLDivElement
     canvas.className = "mb-3 w-full rounded-xl bg-white shadow";
     container.appendChild(canvas);
     await page.render({ canvas, canvasContext: canvas.getContext("2d")!, viewport }).promise;
+
+    if (onLocate) {
+      const tc = await page.getTextContent();
+      const items = tc.items
+        .map((it) => {
+          const t = it as { str?: string; transform?: number[] };
+          if (!t.str?.trim() || !t.transform) return null;
+          const [vx, vy] = viewport.convertToViewportPoint(t.transform[4], t.transform[5]);
+          return { str: t.str, vx, vy };
+        })
+        .filter((x): x is { str: string; vx: number; vy: number } => !!x);
+      canvas.style.cursor = "crosshair";
+      canvas.title = "click to jump to this spot in the source";
+      const pageIndex = i;
+      const total = doc.numPages;
+      canvas.addEventListener("click", (e) => {
+        const r = canvas.getBoundingClientRect();
+        const x = ((e.clientX - r.left) * canvas.width) / r.width;
+        const y = ((e.clientY - r.top) * canvas.height) / r.height;
+        // everything on the clicked line, left to right
+        const line = items.filter((it) => Math.abs(it.vy - y) < 14).sort((a, b) => a.vx - b.vx);
+        const chosen = line.length
+          ? line
+          : items
+              .slice()
+              .sort((a, b) => Math.hypot(a.vx - x, a.vy - y) - Math.hypot(b.vx - x, b.vy - y))
+              .slice(0, 1);
+        const phrase = chosen.map((it) => it.str).join(" ").trim();
+        if (phrase) onLocate({ phrase, ratio: (pageIndex - 1 + y / canvas.height) / total });
+      });
+    }
   }
   return doc.numPages;
 }
@@ -85,6 +129,53 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
     texRef.current = tex;
   }, [tex]);
 
+  // reverse search: match the clicked line's text back into the LaTeX source
+  // (both sides squashed to alphanumerics so \%, braces and ligatures don't
+  // break the match) and select it, picking the occurrence nearest the click's
+  // position in the document when a phrase repeats
+  function jumpToSource(c: PreviewClick) {
+    const ta = taRef.current;
+    if (!ta) return;
+    const src = ta.value;
+    const map: number[] = [];
+    let norm = "";
+    for (let i = 0; i < src.length; i++) {
+      const ch = src[i].toLowerCase();
+      if (/[a-z0-9]/.test(ch)) {
+        norm += ch;
+        map.push(i);
+      }
+    }
+    let needle = c.phrase.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 48);
+    let idx = -1;
+    while (needle.length >= 6) {
+      const hits: number[] = [];
+      let p = norm.indexOf(needle);
+      while (p !== -1) {
+        hits.push(p);
+        p = norm.indexOf(needle, p + 1);
+      }
+      if (hits.length) {
+        const target = c.ratio * norm.length;
+        idx = hits.reduce((b, h) => (Math.abs(h - target) < Math.abs(b - target) ? h : b), hits[0]);
+        break;
+      }
+      needle = needle.slice(0, Math.floor(needle.length * 0.7)); // shrink and retry
+    }
+    if (idx === -1) {
+      setSaveMsg("couldn't find that spot in the source ✦");
+      return;
+    }
+    const start = map[idx];
+    const end = map[Math.min(idx + needle.length - 1, map.length - 1)] + 1;
+    ta.focus();
+    ta.setSelectionRange(start, end);
+    const lh = parseFloat(getComputedStyle(ta).lineHeight) || 21;
+    const line = src.slice(0, start).split("\n").length;
+    ta.scrollTop = Math.max(0, (line - 4) * lh);
+    setSaveMsg("");
+  }
+
   const compile = useCallback(
     async (source: string) => {
       setStatus("compiling");
@@ -106,7 +197,7 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
           // paint the pages
           if (previewRef.current) {
             try {
-              setPageCount(await renderPdfToContainer(bytes, previewRef.current));
+              setPageCount(await renderPdfToContainer(bytes, previewRef.current, jumpToSource));
             } catch {
               // canvas render failed; the open ↗ link still has the PDF
               setPageCount(0);
@@ -404,7 +495,8 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
 
       <p className="mt-3 font-body text-xs text-ink-soft/70">
         Compiled with pdfLaTeX on texlive.net (the LaTeX project&apos;s compile service, full TeX
-        Live, any package works). Paste in any resume template you like.
+        Live, any package works). Paste in any resume template you like. 💡 click anywhere on the
+        preview to jump to that spot in the source.
       </p>
     </div>
   );
