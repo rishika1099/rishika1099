@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { adminApi } from "@/components/editing";
 import RephrasePanel from "@/components/RephrasePanel";
 import type { ResumeAnalysis } from "@/app/api/admin/resume-tex/analyze/route";
+import type { JobMatch } from "@/app/api/admin/resume-tex/jobmatch/route";
 
 type Status = "loading" | "ready" | "compiling" | "error";
 
@@ -146,6 +147,36 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
   const [analysis, setAnalysis] = useState<ResumeAnalysis | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisErr, setAnalysisErr] = useState("");
+  // 🎯 job match: paste a JD, get a gap report or a tailored cover letter
+  const [jdOpen, setJdOpen] = useState(false);
+  const [jd, setJd] = useState("");
+  const [match, setMatch] = useState<JobMatch | null>(null);
+  const [letter, setLetter] = useState<string | null>(null);
+  const [jmBusy, setJmBusy] = useState<"match" | "cover" | null>(null);
+  const [jmErr, setJmErr] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  async function runJobMatch(mode: "match" | "cover") {
+    if (!jd.trim()) {
+      setJmErr("paste a job description first ✦");
+      return;
+    }
+    setJmBusy(mode);
+    setJmErr("");
+    try {
+      const r = await api<{ match?: JobMatch; letter?: string }>("/api/admin/resume-tex/jobmatch", {
+        method: "POST",
+        body: JSON.stringify({ tex: texRef.current, jd, mode }),
+      });
+      if (mode === "match" && r.match) setMatch(r.match);
+      else if (mode === "cover" && r.letter) setLetter(r.letter);
+      else setJmErr("nothing came back, try again?");
+    } catch {
+      setJmErr("that didn't work, try again?");
+    } finally {
+      setJmBusy(null);
+    }
+  }
 
   async function analyze() {
     setAnalyzing(true);
@@ -426,6 +457,16 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
         >
           {analyzing ? "reading…" : "🔍 analyze"}
         </button>
+        <button
+          type="button"
+          onClick={() => setJdOpen((v) => !v)}
+          title="paste a job description: gap report + tailored cover letter"
+          className={`rounded-full px-4 py-2 font-body text-sm font-semibold text-ink transition ${
+            jdOpen ? "bg-gold/70" : "bg-gold/50 hover:bg-gold/70"
+          }`}
+        >
+          🎯 job match
+        </button>
         {saveMsg && <span className="font-body text-xs text-ink-soft">{saveMsg}</span>}
         {log && (
           <button
@@ -459,6 +500,140 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
           )}
         </div>
       </div>
+
+      {/* 🎯 job match: JD in, gap report or cover letter out */}
+      {jdOpen && (
+        <div className="mt-4 rounded-3xl p-5 soft-card">
+          <h2 className="font-body text-base font-bold text-ink">🎯 match against a job</h2>
+          <textarea
+            value={jd}
+            onChange={(e) => setJd(e.target.value)}
+            placeholder="paste the job description here…"
+            className="mt-3 h-40 w-full resize-y rounded-2xl border border-white/70 bg-white/90 p-3 font-body text-sm text-ink outline-none focus:border-blush focus:ring-2 focus:ring-blush/30"
+          />
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => runJobMatch("match")}
+              disabled={!!jmBusy}
+              className="rounded-full bg-ink px-4 py-2 font-body text-sm font-semibold text-cream transition hover:opacity-90 disabled:opacity-50"
+            >
+              {jmBusy === "match" ? "comparing…" : "📊 analyze fit"}
+            </button>
+            <button
+              type="button"
+              onClick={() => runJobMatch("cover")}
+              disabled={!!jmBusy}
+              className="rounded-full bg-blush px-4 py-2 font-body text-sm font-semibold text-ink transition hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+            >
+              {jmBusy === "cover" ? "drafting…" : "💌 draft cover letter"}
+            </button>
+            {jmErr && <span className="font-body text-xs text-rose-500">{jmErr}</span>}
+          </div>
+
+          {match && (
+            <div className="mt-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`rounded-full px-3 py-1 font-body text-sm font-bold ${
+                    match.fit >= 75 ? "bg-mint/70 text-ink" : match.fit >= 50 ? "bg-gold/60 text-ink" : "bg-rose/60 text-ink"
+                  }`}
+                >
+                  fit {match.fit}/100
+                </span>
+                <span className="font-body text-sm italic text-ink-soft">{match.verdict}</span>
+              </div>
+
+              {match.hits.length > 0 && (
+                <>
+                  <p className="mt-4 font-body text-xs font-bold uppercase tracking-wide text-ink-soft">you already match</p>
+                  <div className="mt-1.5 space-y-1.5">
+                    {match.hits.map((h, i) => (
+                      <div key={i} className="rounded-xl bg-mint/25 px-3 py-1.5 font-body text-sm text-ink">
+                        ✅ <span className="font-semibold">{h.requirement}</span>
+                        <span className="text-ink-soft"> · {h.evidence}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {match.gaps.length > 0 && (
+                <>
+                  <p className="mt-4 font-body text-xs font-bold uppercase tracking-wide text-ink-soft">gaps</p>
+                  <div className="mt-1.5 space-y-1.5">
+                    {match.gaps.map((g, i) => (
+                      <div key={i} className="rounded-xl bg-rose/20 px-3 py-2 font-body text-sm text-ink">
+                        <span className="font-semibold">
+                          {g.severity === "high" ? "🔴" : g.severity === "medium" ? "🟡" : "⚪"} {g.requirement}
+                        </span>
+                        <p className="mt-0.5 text-ink-soft">💡 {g.suggestion}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {match.keywordsMissing.length > 0 && (
+                <>
+                  <p className="mt-4 font-body text-xs font-bold uppercase tracking-wide text-ink-soft">ATS keywords to add (truthfully)</p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {match.keywordsMissing.map((k, i) => (
+                      <span key={i} className="rounded-full bg-lavender/50 px-2.5 py-0.5 font-body text-xs font-semibold text-ink">{k}</span>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {match.emphasize.length > 0 && (
+                <>
+                  <p className="mt-4 font-body text-xs font-bold uppercase tracking-wide text-ink-soft">lead with</p>
+                  <ul className="mt-1.5 space-y-1">
+                    {match.emphasize.map((s, i) => (
+                      <li key={i} className="rounded-xl bg-gold/25 px-3 py-1.5 font-body text-sm text-ink">⭐ {s}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {match.tweaks.length > 0 && (
+                <>
+                  <p className="mt-4 font-body text-xs font-bold uppercase tracking-wide text-ink-soft">suggested rewrites</p>
+                  <div className="mt-1.5 space-y-1.5">
+                    {match.tweaks.map((t, i) => (
+                      <div key={i} className="rounded-xl bg-white/60 px-3 py-2 font-body text-sm">
+                        <p className="text-ink-soft line-through decoration-rose/60">{t.current}</p>
+                        <p className="mt-0.5 text-ink">✏️ {t.suggested}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {letter && (
+            <div className="mt-4 rounded-2xl bg-white/70 p-4">
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-body text-xs font-bold uppercase tracking-wide text-ink-soft">cover letter draft</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(letter).then(() => {
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    });
+                  }}
+                  className="rounded-full bg-white px-3 py-1 font-body text-xs font-semibold text-ink-soft transition hover:text-ink"
+                >
+                  {copied ? "copied ✓" : "📋 copy"}
+                </button>
+              </div>
+              <p className="mt-2 whitespace-pre-line font-body text-sm leading-relaxed text-ink">{letter}</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {analysisErr && <p className="mt-3 font-body text-sm text-rose-500">{analysisErr}</p>}
       {analysis && (
