@@ -15,6 +15,11 @@ export default async function Work() {
   const copy = await getCopy();
   const intro = copyToHtml(copy["work.intro"]).replace("{count}", String(projects.length));
 
+  // the built-in taxonomy plus any custom tags added to projects in the atelier,
+  // so a hand-added area (reinforcement learning, robotics, …) still gets a filter
+  const allCategories = Array.from(new Set([...categories, ...projects.flatMap((p) => p.categories)]));
+  const allDomains = Array.from(new Set([...domains, ...projects.flatMap((p) => p.domains ?? [])]));
+
   return (
     <PageShell vibe="meadow">
       <PageTitle><RichText html={copyToHtml(copy["work.title"])} /></PageTitle>
@@ -22,7 +27,7 @@ export default async function Work() {
         <span className="rich-passage" dangerouslySetInnerHTML={{ __html: intro }} />
       </p>
 
-      <WorkGallery projects={projects} categories={categories} domains={domains} />
+      <WorkGallery projects={projects} categories={allCategories} domains={allDomains} />
       <ProjectGalaxy copy={copy} />
     </PageShell>
   );

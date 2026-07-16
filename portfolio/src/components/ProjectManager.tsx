@@ -190,6 +190,7 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
                       options={ALL_CATEGORIES}
                       value={form.categories}
                       onChange={(v) => setForm({ ...form, categories: v })}
+                      allowCustom
                     />
                   </div>
                 </div>
@@ -203,6 +204,7 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
                       value={form.domains}
                       onChange={(v) => setForm({ ...form, domains: v })}
                       colorFor={(t) => domainColor[t as Domain]}
+                      allowCustom
                     />
                   </div>
                 </div>

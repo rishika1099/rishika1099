@@ -54,7 +54,7 @@ function DomainChips({ domains }: { domains?: Domain[] }) {
       {domains.map((d) => (
         <span
           key={d}
-          style={{ backgroundColor: domainColor[d] }}
+          style={{ backgroundColor: domainColor[d] ?? "#e6d7f5" }}
           className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
         >
           {d}
@@ -446,12 +446,12 @@ export default function WorkGallery({
           <select
             value={domain}
             onChange={(e) => setDomain(e.target.value as Domain | "All")}
-            style={domain !== "All" ? { backgroundColor: domainColor[domain] } : undefined}
+            style={domain !== "All" ? { backgroundColor: domainColor[domain] ?? "#e6d7f5" } : undefined}
             className="rounded-full border border-white/70 bg-white/80 px-4 py-1.5 font-body text-sm font-semibold text-ink outline-none transition focus:border-blush focus:ring-2 focus:ring-blush/40"
           >
             <option value="All">All domains</option>
             {domains.map((d) => (
-              <option key={d} value={d} style={{ backgroundColor: domainColor[d] }}>
+              <option key={d} value={d} style={{ backgroundColor: domainColor[d] ?? "#e6d7f5" }}>
                 {d}
               </option>
             ))}
