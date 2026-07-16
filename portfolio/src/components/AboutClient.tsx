@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import PdfThumb from "@/components/PdfThumb";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import SkillGraph from "@/components/SkillGraph";
@@ -93,13 +94,7 @@ function Attachments({ entry }: { entry: Entry }) {
               title={a.name}
               className="relative block h-24 w-24 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-white/70 transition hover:scale-105"
             >
-              <iframe
-                title={a.name}
-                tabIndex={-1}
-                src={`${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                className="pointer-events-none border-0"
-                style={{ width: 320, height: 320, transform: "scale(0.3)", transformOrigin: "top left" }}
-              />
+              <PdfThumb id={a.id} className="h-full w-full object-contain object-top" />
               <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-ink/60 px-1.5 py-0.5 text-left font-body text-[9px] font-semibold text-cream">
                 📄 {a.name}
               </span>

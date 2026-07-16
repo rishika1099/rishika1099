@@ -7,6 +7,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import PdfThumb from "@/components/PdfThumb";
 import SkillGraph from "@/components/SkillGraph";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
@@ -163,13 +164,7 @@ function EntryEditor({
                       title={a.name}
                       className="block h-20 w-20 overflow-hidden rounded-lg bg-white ring-1 ring-white/70"
                     >
-                      <iframe
-                        title={a.name}
-                        src={`/api/attachment/${a.id}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                        className="pointer-events-none border-0"
-                        style={{ width: 264, height: 264, transform: "scale(0.303)", transformOrigin: "top left" }}
-                        tabIndex={-1}
-                      />
+                      <PdfThumb id={a.id} className="h-full w-full object-contain object-top" />
                     </a>
                   )}
                   <button
