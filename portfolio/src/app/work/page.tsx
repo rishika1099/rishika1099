@@ -10,6 +10,11 @@ import RichText from "@/components/RichText";
 
 export const metadata = { title: "Work" };
 
+// Reads admin-editable project overrides (blurbs, tags, results/article links)
+// from Blobs, so it must render per request like the other editable pages,
+// otherwise edits get baked into a static prerender and never show up.
+export const dynamic = "force-dynamic";
+
 export default async function Work() {
   const projects = await getAllProjects();
   const copy = await getCopy();
