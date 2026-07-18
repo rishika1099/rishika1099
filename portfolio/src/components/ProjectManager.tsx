@@ -24,6 +24,8 @@ interface AdminProject {
   categories: string[];
   domains: string[];
   tags: string[];
+  results: string;
+  article: string;
   repo: string;
   overridden: string[];
 }
@@ -76,6 +78,8 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
           categories: form.categories,
           domains: form.domains,
           tags: form.tags,
+          results: form.results,
+          article: form.article,
         }),
       });
       setOpen(null);
@@ -215,6 +219,24 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
                     value={form.tags.join(", ")}
                     placeholder="RAG, Python, …"
                     onChange={(e) => setForm({ ...form, tags: e.target.value.split(",").map((s) => s.trim()) })}
+                  />
+                </div>
+                <div>
+                  <p className="font-body text-[11px] font-semibold text-ink-soft">📊 results dashboard link (optional)</p>
+                  <input
+                    className={field}
+                    value={form.results}
+                    placeholder="https://… (an HTML dashboard)"
+                    onChange={(e) => setForm({ ...form, results: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <p className="font-body text-[11px] font-semibold text-ink-soft">📰 article link (optional)</p>
+                  <input
+                    className={field}
+                    value={form.article}
+                    placeholder="https://…substack.com/p/…"
+                    onChange={(e) => setForm({ ...form, article: e.target.value })}
                   />
                 </div>
                 <p className="font-body text-[11px] text-ink-soft/70">

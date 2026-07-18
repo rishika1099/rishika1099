@@ -33,6 +33,8 @@ export async function GET(request: Request) {
         categories: p.categories,
         domains: p.domains ?? [],
         tags: p.tags ?? [],
+        results: p.results ?? "",
+        article: p.article ?? "",
         repo: p.repo,
         overridden: Object.keys(overrides[slug] ?? {}),
       };
@@ -59,6 +61,8 @@ export async function POST(request: Request) {
       categories: strArr(body.categories) as ProjectOverride["categories"],
       domains: strArr(body.domains) as ProjectOverride["domains"],
       tags: strArr(body.tags),
+      results: typeof body.results === "string" ? body.results.trim() : undefined,
+      article: typeof body.article === "string" ? body.article.trim() : undefined,
     };
     await saveProjectOverride(slug, o);
     return NextResponse.json({ ok: true });

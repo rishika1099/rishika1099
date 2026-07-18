@@ -163,6 +163,8 @@ export async function getAllProjects(): Promise<Project[]> {
       categories: o.categories?.length ? o.categories : p.categories,
       domains: o.domains?.length ? o.domains : p.domains,
       tags: o.tags?.length ? o.tags : p.tags,
+      results: o.results ?? p.results,
+      article: o.article ?? p.article,
     };
   };
 

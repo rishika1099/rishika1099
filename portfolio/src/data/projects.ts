@@ -38,6 +38,8 @@ export interface Project {
   syncBlurb?: boolean;
   repo: string;
   demo?: string;
+  results?: string; // link to an HTML results dashboard, if there is one
+  article?: string; // link to a Substack write-up, if there is one
   tags: string[];
 }
 

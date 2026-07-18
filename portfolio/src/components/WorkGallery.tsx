@@ -22,7 +22,7 @@ function Blurb({ text }: { text: string }) {
   );
 }
 
-function Links({ p }: { p: Pick<Project, "repo" | "demo"> }) {
+function Links({ p }: { p: Pick<Project, "repo" | "demo" | "results" | "article"> }) {
   return (
     <div className="mt-3 flex flex-wrap gap-2">
       <a
@@ -41,6 +41,26 @@ function Links({ p }: { p: Pick<Project, "repo" | "demo"> }) {
           className="rounded-full bg-blush/80 px-3 py-1 font-body text-xs font-semibold text-ink transition hover:scale-105"
         >
           ✿ Live demo
+        </a>
+      )}
+      {p.results && (
+        <a
+          href={p.results}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-full bg-mint/80 px-3 py-1 font-body text-xs font-semibold text-ink transition hover:scale-105"
+        >
+          📊 Results
+        </a>
+      )}
+      {p.article && (
+        <a
+          href={p.article}
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-full bg-gold/70 px-3 py-1 font-body text-xs font-semibold text-ink transition hover:scale-105"
+        >
+          📰 Article
         </a>
       )}
     </div>
