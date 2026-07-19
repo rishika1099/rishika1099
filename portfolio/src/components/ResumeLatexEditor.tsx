@@ -156,6 +156,9 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
   // each one is applied by hand (or all at once), never a silent overwrite
   const [tailor, setTailor] = useState<{ summary: string; edits: TailorEdit[] } | null>(null);
   const [editState, setEditState] = useState<("pending" | "applied" | "missing")[]>([]);
+  // true once a tailored edit is in the buffer: the JD version is meant to be
+  // downloaded per application, so saving it as the live resume asks first
+  const [tailored, setTailored] = useState(false);
   const [jmBusy, setJmBusy] = useState<"match" | "cover" | "tailor" | null>(null);
   const [jmErr, setJmErr] = useState("");
   const [copied, setCopied] = useState(false);
@@ -203,8 +206,23 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
     ta.setRangeText(e.replace, idx, idx + e.find.length);
     setTex(ta.value);
     setDirty(true);
+    setTailored(true);
     setEditState((s) => s.map((v, k) => (k === i ? "applied" : v)));
     return true;
+  }
+
+  // toss the JD-tailored buffer and reload the saved live resume
+  async function restoreLive() {
+    try {
+      const { tex: source } = await api<{ tex: string }>("/api/admin/resume-tex");
+      setTex(source);
+      setTailored(false);
+      setEditState((s) => s.map((v) => (v === "applied" ? "pending" : v)));
+      setDirty(true);
+      setSaveMsg("live resume restored, recompile to preview ✦");
+    } catch {
+      setSaveMsg("couldn't reload the saved resume, refresh?");
+    }
   }
 
   async function analyze() {
@@ -345,12 +363,21 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
       setSaveMsg("compile a clean PDF first ✦");
       return;
     }
+    if (
+      tailored &&
+      !confirm(
+        "This version has JD-tailored edits meant for one application. Make it the live resume on the site anyway?",
+      )
+    ) {
+      return;
+    }
     setSaveMsg("saving…");
     try {
       await api("/api/admin/resume-tex", {
         method: "POST",
         body: JSON.stringify({ tex: texRef.current, pdfBase64: pdfB64Ref.current }),
       });
+      setTailored(false);
       setSaveMsg("saved ✓ /resume now serves this");
     } catch {
       setSaveMsg("save failed, try again?");
@@ -506,6 +533,22 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
           </button>
         )}
       </div>
+
+      {/* a JD-tailored buffer is for downloading per application, not the site */}
+      {tailored && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-2xl bg-gold/30 px-4 py-2">
+          <span className="font-body text-sm text-ink">
+            ✨ this is a JD-tailored version — compile &amp; ⬇ download it for the application; the live resume is untouched
+          </span>
+          <button
+            type="button"
+            onClick={restoreLive}
+            className="ml-auto rounded-full bg-white/80 px-3 py-1 font-body text-xs font-semibold text-ink transition hover:bg-white"
+          >
+            ⤺ restore live resume
+          </button>
+        </div>
+      )}
 
       {/* split pane */}
       <div className="mt-3 grid gap-3 lg:grid-cols-2">
