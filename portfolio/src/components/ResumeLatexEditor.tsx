@@ -149,6 +149,7 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
   const [analysisErr, setAnalysisErr] = useState("");
   // 🎯 job match: paste a JD, get a gap report or a tailored cover letter
   const [jdOpen, setJdOpen] = useState(false);
+  const jdSeenRef = useRef(false); // scrolled-into-view once per open
   const [jd, setJd] = useState("");
   const [match, setMatch] = useState<JobMatch | null>(null);
   const [letter, setLetter] = useState<string | null>(null);
@@ -573,9 +574,20 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
         </div>
       </div>
 
-      {/* 🎯 job match: JD in, gap report or cover letter out */}
+      {/* 🎯 job match: JD in, gap report or cover letter out. It lives below
+          the tall split pane, so scroll it into view when it opens or the
+          toggle looks like it did nothing. */}
       {jdOpen && (
-        <div className="mt-4 rounded-3xl p-5 soft-card">
+        <div
+          ref={(el) => {
+            if (el && !jdSeenRef.current) {
+              jdSeenRef.current = true;
+              el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+            if (!el) jdSeenRef.current = false;
+          }}
+          className="mt-4 rounded-3xl p-5 soft-card"
+        >
           <h2 className="font-body text-base font-bold text-ink">🎯 match against a job</h2>
           <textarea
             value={jd}
