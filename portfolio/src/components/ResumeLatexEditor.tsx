@@ -11,7 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { adminApi } from "@/components/editing";
 import RephrasePanel from "@/components/RephrasePanel";
 import type { ResumeAnalysis } from "@/app/api/admin/resume-tex/analyze/route";
-import type { JobMatch } from "@/app/api/admin/resume-tex/jobmatch/route";
+import type { JobMatch, TailorEdit } from "@/app/api/admin/resume-tex/jobmatch/route";
 
 type Status = "loading" | "ready" | "compiling" | "error";
 
@@ -152,11 +152,15 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
   const [jd, setJd] = useState("");
   const [match, setMatch] = useState<JobMatch | null>(null);
   const [letter, setLetter] = useState<string | null>(null);
-  const [jmBusy, setJmBusy] = useState<"match" | "cover" | null>(null);
+  // ✨ tailor: reviewable find→replace edits speaking the JD's language;
+  // each one is applied by hand (or all at once), never a silent overwrite
+  const [tailor, setTailor] = useState<{ summary: string; edits: TailorEdit[] } | null>(null);
+  const [editState, setEditState] = useState<("pending" | "applied" | "missing")[]>([]);
+  const [jmBusy, setJmBusy] = useState<"match" | "cover" | "tailor" | null>(null);
   const [jmErr, setJmErr] = useState("");
   const [copied, setCopied] = useState(false);
 
-  async function runJobMatch(mode: "match" | "cover") {
+  async function runJobMatch(mode: "match" | "cover" | "tailor") {
     if (!jd.trim()) {
       setJmErr("paste a job description first ✦");
       return;
@@ -164,18 +168,43 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
     setJmBusy(mode);
     setJmErr("");
     try {
-      const r = await api<{ match?: JobMatch; letter?: string }>("/api/admin/resume-tex/jobmatch", {
-        method: "POST",
-        body: JSON.stringify({ tex: texRef.current, jd, mode }),
-      });
+      const r = await api<{ match?: JobMatch; letter?: string; summary?: string; edits?: TailorEdit[] }>(
+        "/api/admin/resume-tex/jobmatch",
+        {
+          method: "POST",
+          body: JSON.stringify({ tex: texRef.current, jd, mode }),
+        },
+      );
       if (mode === "match" && r.match) setMatch(r.match);
       else if (mode === "cover" && r.letter) setLetter(r.letter);
-      else setJmErr("nothing came back, try again?");
+      else if (mode === "tailor" && r.edits?.length) {
+        setTailor({ summary: r.summary ?? "", edits: r.edits });
+        setEditState(r.edits.map(() => "pending"));
+      } else setJmErr("nothing came back, try again?");
     } catch {
       setJmErr("that didn't work, try again?");
     } finally {
       setJmBusy(null);
     }
+  }
+
+  // swap one tailored edit into the source, through the textarea so undo
+  // (cmd+z) still works; the edit can go stale if she hand-edits that line
+  // first, in which case it's marked missing instead of guessing
+  function applyTailorEdit(i: number): boolean {
+    const ta = taRef.current;
+    const e = tailor?.edits[i];
+    if (!ta || !e) return false;
+    const idx = ta.value.indexOf(e.find);
+    if (idx === -1) {
+      setEditState((s) => s.map((v, k) => (k === i ? "missing" : v)));
+      return false;
+    }
+    ta.setRangeText(e.replace, idx, idx + e.find.length);
+    setTex(ta.value);
+    setDirty(true);
+    setEditState((s) => s.map((v, k) => (k === i ? "applied" : v)));
+    return true;
   }
 
   async function analyze() {
@@ -528,6 +557,15 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
             >
               {jmBusy === "cover" ? "drafting…" : "💌 draft cover letter"}
             </button>
+            <button
+              type="button"
+              onClick={() => runJobMatch("tailor")}
+              disabled={!!jmBusy}
+              title="reword existing bullets to speak this JD's language; you review each change"
+              className="rounded-full bg-lavender/60 px-4 py-2 font-body text-sm font-semibold text-ink transition hover:bg-lavender/80 disabled:opacity-50"
+            >
+              {jmBusy === "tailor" ? "tailoring…" : "✨ tailor resume"}
+            </button>
             {jmErr && <span className="font-body text-xs text-rose-500">{jmErr}</span>}
           </div>
 
@@ -609,6 +647,54 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
                   </div>
                 </>
               )}
+            </div>
+          )}
+
+          {tailor && (
+            <div className="mt-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-body text-xs font-bold uppercase tracking-wide text-ink-soft">
+                  ✨ tailored edits, review each one
+                </p>
+                <button
+                  type="button"
+                  onClick={() => tailor.edits.forEach((_, i) => editState[i] === "pending" && applyTailorEdit(i))}
+                  disabled={!editState.includes("pending")}
+                  className="rounded-full bg-ink px-3 py-1 font-body text-xs font-semibold text-cream transition hover:opacity-90 disabled:opacity-40"
+                >
+                  apply all remaining
+                </button>
+              </div>
+              {tailor.summary && (
+                <p className="mt-1 font-body text-sm italic text-ink-soft">{tailor.summary}</p>
+              )}
+              <div className="mt-2 space-y-2">
+                {tailor.edits.map((e, i) => (
+                  <div key={i} className="rounded-xl bg-white/60 px-3 py-2">
+                    <p className="font-mono text-xs text-ink-soft line-through decoration-rose/60">{e.find}</p>
+                    <p className="mt-1 font-mono text-xs text-ink">{e.replace}</p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                      {e.why && <span className="font-body text-xs text-ink-soft">💡 {e.why}</span>}
+                      {editState[i] === "applied" ? (
+                        <span className="ml-auto rounded-full bg-mint/60 px-2.5 py-0.5 font-body text-xs font-semibold text-ink">applied ✓</span>
+                      ) : editState[i] === "missing" ? (
+                        <span className="ml-auto rounded-full bg-rose/40 px-2.5 py-0.5 font-body text-xs font-semibold text-ink" title="that line changed since the suggestion was made">line not found</span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => applyTailorEdit(i)}
+                          className="ml-auto rounded-full bg-blush/70 px-2.5 py-0.5 font-body text-xs font-semibold text-ink transition hover:bg-blush"
+                        >
+                          apply
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2 font-body text-xs text-ink-soft/80">
+                nothing is saved until you compile and save, and cmd+z undoes an applied edit ✦
+              </p>
             </div>
           )}
 

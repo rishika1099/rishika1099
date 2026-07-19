@@ -5,8 +5,9 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 // The application machine: paste a job description next to the resume and get
-// either a gap report (mode "match") or a tailored cover letter draft (mode
-// "cover"). Key-gated, owner-only, like the rest of the studio.
+// a gap report (mode "match"), a tailored cover letter draft (mode "cover"),
+// or a set of reviewable resume edits speaking that JD's language (mode
+// "tailor"). Key-gated, owner-only, like the rest of the studio.
 
 export interface JobMatch {
   fit: number; // 0-100
@@ -17,6 +18,27 @@ export interface JobMatch {
   emphasize: string[];
   tweaks: { current: string; suggested: string }[];
 }
+
+export interface TailorEdit {
+  find: string; // exact substring of the current .tex
+  replace: string; // the tailored replacement, valid LaTeX
+  why: string; // one short line: what this buys for THIS jd
+}
+
+const TAILOR_SYSTEM = `You tailor a LaTeX resume to a specific job description for data science / ML roles, as a set of small reviewable edits.
+
+Hard rules:
+- TRUTHFUL ONLY. Reword, reorder emphasis, and weave in the JD's exact terminology for things the resume already claims. Never invent experience, tools, titles, or metrics that are not already there.
+- Each edit must be a surgical swap: "find" is an EXACT character-for-character substring copied from the given .tex source (one bullet or phrase, including its LaTeX commands), and "replace" is the reworded version, valid LaTeX with the same structure and escaping (\\%, \\&, braces).
+- Never touch the preamble, layout commands, or personal details. Only reword content lines.
+- Keep each replacement roughly the same length as the original (within ~15%) so the resume stays one page.
+- 3-8 edits, highest-impact first: mirror the JD's language for skills she genuinely has, front-load the most relevant outcomes, and work in missing ATS keywords only where truthful.
+
+Reply with ONLY JSON:
+{
+  "summary": "one sentence: the tailoring strategy for this JD",
+  "edits": [{"find": "exact current tex", "replace": "tailored tex", "why": "what this buys"}]
+}`;
 
 const MATCH_SYSTEM = `You are a ruthless but constructive recruiter screening a resume against a specific job description, for data science / ML roles. Judge only what the resume actually says; never invent experience.
 
@@ -49,16 +71,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "that's too long" }, { status: 400 });
     }
     const cover = mode === "cover";
+    const tailor = mode === "tailor";
 
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "gpt-4o",
-        temperature: cover ? 0.7 : 0.3,
+        temperature: cover ? 0.7 : tailor ? 0.4 : 0.3,
         response_format: { type: "json_object" },
         messages: [
-          { role: "system", content: cover ? COVER_SYSTEM : MATCH_SYSTEM },
+          { role: "system", content: cover ? COVER_SYSTEM : tailor ? TAILOR_SYSTEM : MATCH_SYSTEM },
           {
             role: "user",
             content: `JOB DESCRIPTION:\n${jd}\n\nRESUME (LaTeX source, judge the content):\n${tex}`,
@@ -75,6 +98,27 @@ export async function POST(request: Request) {
       const j = JSON.parse(raw) as { letter?: string };
       if (!j.letter) return NextResponse.json({ error: "no letter came back, try again?" }, { status: 502 });
       return NextResponse.json({ letter: j.letter });
+    }
+
+    if (tailor) {
+      const j = JSON.parse(raw) as { summary?: string; edits?: TailorEdit[] };
+      // Only keep edits whose "find" really is in the source, so the client
+      // can apply each one as an exact swap; drop anything the model mangled.
+      const edits = (Array.isArray(j.edits) ? j.edits : [])
+        .filter(
+          (e): e is TailorEdit =>
+            typeof e?.find === "string" &&
+            typeof e?.replace === "string" &&
+            e.find.trim() !== "" &&
+            e.find !== e.replace &&
+            tex.includes(e.find),
+        )
+        .slice(0, 8)
+        .map((e) => ({ find: e.find, replace: e.replace, why: typeof e.why === "string" ? e.why : "" }));
+      if (!edits.length) {
+        return NextResponse.json({ error: "no clean edits came back, try again?" }, { status: 502 });
+      }
+      return NextResponse.json({ summary: typeof j.summary === "string" ? j.summary : "", edits });
     }
 
     const j = JSON.parse(raw) as Partial<JobMatch> & { keywords_missing?: string[] };
