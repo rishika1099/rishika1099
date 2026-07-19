@@ -3,20 +3,52 @@ import { readProjectOverrides, repoSlug } from "@/lib/projectOverrides";
 
 const GH_USER = "rishika1099";
 
-const CATEGORY_EMOJI: Record<Category, string> = {
-  "Generative AI": "✨",
-  "Agentic AI": "🤖",
-  NLP: "💬",
-  "Causal Inference": "🧬",
-  "Statistical Modeling": "📈",
-  "Machine Learning": "🌼",
-  "Predictive Analysis": "🔮",
-  "Deep Learning": "🧠",
-  "Computer Vision": "👁️",
-  "High Performance Machine Learning": "⚡",
-  Cybersecurity: "🔐",
-  "Internet of Things": "📡",
-};
+// Auto-pulled repos often share a category (lots of "Generative AI"), so a
+// category-only emoji leaves a wall of identical ✨. Pick a more specific icon
+// from the repo's own words first; fall back to a varied pool so no two look
+// the same. First keyword match wins, so put the specific ones first.
+const EMOJI_RULES: [RegExp, string][] = [
+  [/\b(gateway|proxy|router|route|routing|load ?balanc)/i, "🚦"],
+  [/\b(fail|debug|bug|minimiz|shrink|repro)/i, "🐛"],
+  [/\b(context|window|long-?context|lost-?in-?the-?middle)/i, "🪟"],
+  [/\b(consistency|calibrat|agreement|self-?consist)/i, "🎯"],
+  [/\b(reliab|harness|fault|robust)/i, "🛡️"],
+  [/\b(token|budget|early-?exit|cost)/i, "🎟️"],
+  [/\b(speculat|draft|decoding)/i, "🎲"],
+  [/\b(bench|benchmark|regression|test|ci\b|eval)/i, "🧪"],
+  [/\b(stress|latency|throughput|profil|perf)/i, "🌡️"],
+  [/\b(cache|kv-?cache|memory|quantiz)/i, "🗃️"],
+  [/\b(reason|chain-?of-?thought|cot\b|think)/i, "🧩"],
+  [/\b(prompt|template)/i, "📝"],
+  [/\b(search|retriev|rag|index|embed)/i, "🔎"],
+  [/\b(vision|image|photo|camera|ocr)/i, "🖼️"],
+  [/\b(voice|speech|audio|whisper)/i, "🎙️"],
+  [/\b(graph|network|node|edge)/i, "🕸️"],
+  [/\b(data|dataset|pipeline|etl|table)/i, "📦"],
+  [/\b(dashboard|chart|plot|visual|metric)/i, "📊"],
+  [/\b(game|play|puzzle|maze)/i, "🎮"],
+  [/\b(schedul|cron|time|clock|calendar)/i, "⏰"],
+  [/\b(map|geo|location|spatial)/i, "🗺️"],
+  [/\b(secure|auth|encrypt|cipher|guard)/i, "🔐"],
+];
+
+// A whimsical pool for repos that match no keyword, chosen deterministically by
+// slug so every project keeps a stable, distinct-feeling icon across renders.
+const EMOJI_POOL = [
+  "🌸", "🍃", "🌙", "⭐", "🐚", "🍄", "🪷", "🌷", "🦋", "🐝",
+  "🌻", "🪴", "🍯", "🫧", "🌿", "🐌", "🕊️", "🌾", "🍀", "🪶",
+];
+
+function hashSlug(slug: string): number {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+function pickEmoji(text: string, slug: string): string {
+  for (const [re, e] of EMOJI_RULES) if (re.test(text)) return e;
+  return EMOJI_POOL[hashSlug(slug) % EMOJI_POOL.length];
+}
 
 // Ordered keyword rules: first match wins, so put the more specific ones first.
 // First match wins, so unambiguous signals (crypto, agents) go first.
@@ -120,7 +152,7 @@ export async function getAllProjects(): Promise<Project[]> {
         .map((t) => String(t));
       return {
         name: prettyName(r.name),
-        emoji: CATEGORY_EMOJI[categories[0]],
+        emoji: pickEmoji(text, r.name.toLowerCase()),
         blurb: r.description || "A little experiment on GitHub ✦",
         categories,
         domains: detectDomains(text),
@@ -167,6 +199,25 @@ export async function getAllProjects(): Promise<Project[]> {
       article: o.article ?? p.article,
     };
   };
+
+  // Keep the auto-pulled icons distinct: if a keyword pick collides with an
+  // emoji already used (by a curated project or an earlier auto one), walk the
+  // whimsical pool from a per-slug offset for the first free icon. Curated
+  // emojis are intentional, so they claim their spot first and never move.
+  const used = new Set(mergedCurated.map((p) => p.emoji));
+  for (const p of extra) {
+    if (used.has(p.emoji)) {
+      const start = hashSlug(repoSlug(p.repo));
+      for (let i = 0; i < EMOJI_POOL.length; i++) {
+        const cand = EMOJI_POOL[(start + i) % EMOJI_POOL.length];
+        if (!used.has(cand)) {
+          p.emoji = cand;
+          break;
+        }
+      }
+    }
+    used.add(p.emoji);
+  }
 
   return [...mergedCurated, ...extra].map(applyOverride);
 }
