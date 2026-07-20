@@ -4,39 +4,43 @@ import { readProjectOverrides, repoSlug } from "@/lib/projectOverrides";
 const GH_USER = "rishika1099";
 
 // Auto-pulled repos often share a category (lots of "Generative AI"), so a
-// category-only emoji leaves a wall of identical ✨. Pick a more specific icon
-// from the repo's own words first; fall back to a varied pool so no two look
-// the same. First keyword match wins, so put the specific ones first.
-const EMOJI_RULES: [RegExp, string][] = [
-  [/\b(gateway|proxy|router|route|routing|load ?balanc)/i, "🚦"],
-  [/\b(fail|debug|bug|minimiz|shrink|repro)/i, "🐛"],
-  [/\b(context|window|long-?context|lost-?in-?the-?middle)/i, "🪟"],
-  [/\b(consistency|calibrat|agreement|self-?consist)/i, "🎯"],
-  [/\b(reliab|harness|fault|robust)/i, "🛡️"],
-  [/\b(token|budget|early-?exit|cost)/i, "🎟️"],
-  [/\b(speculat|draft|decoding)/i, "🎲"],
-  [/\b(bench|benchmark|regression|test|ci\b|eval)/i, "🧪"],
-  [/\b(stress|latency|throughput|profil|perf)/i, "🌡️"],
-  [/\b(cache|kv-?cache|memory|quantiz)/i, "🗃️"],
-  [/\b(reason|chain-?of-?thought|cot\b|think)/i, "🧩"],
-  [/\b(prompt|template)/i, "📝"],
-  [/\b(search|retriev|rag|index|embed)/i, "🔎"],
-  [/\b(vision|image|photo|camera|ocr)/i, "🖼️"],
-  [/\b(voice|speech|audio|whisper)/i, "🎙️"],
-  [/\b(graph|network|node|edge)/i, "🕸️"],
-  [/\b(data|dataset|pipeline|etl|table)/i, "📦"],
-  [/\b(dashboard|chart|plot|visual|metric)/i, "📊"],
-  [/\b(game|play|puzzle|maze)/i, "🎮"],
-  [/\b(schedul|cron|time|clock|calendar)/i, "⏰"],
-  [/\b(map|geo|location|spatial)/i, "🗺️"],
-  [/\b(secure|auth|encrypt|cipher|guard)/i, "🔐"],
+// category-only emoji leaves a wall of identical ✨. Each keyword rule offers
+// several on-theme icons; a project's candidates are every matching rule's
+// icons in priority order, so when two projects want the same icon the loser
+// slides to the next RELATED one instead of a random flower. First rules win,
+// so the more specific signals go first.
+const EMOJI_RULES: [RegExp, string[]][] = [
+  [/\b(encrypt|cipher|crypto|secure|auth|guard)/i, ["🔐", "🗝️", "🔏"]],
+  [/\b(gateway|proxy|load ?balanc)/i, ["🚦", "🎛️", "🛂"]],
+  [/\b(router|route|routing)/i, ["🧭", "🚦", "🛣️"]],
+  [/\b(fail|debug|bug|minimiz|shrink|repro)/i, ["🐛", "🔬", "🩹"]],
+  [/\b(context|window|long-?context|lost-?in-?the-?middle)/i, ["🪟", "📜", "🔭"]],
+  [/\b(consistency|calibrat|agreement|self-?consist)/i, ["⚖️", "🎯", "📏"]],
+  [/\b(reliab|harness|fault|robust)/i, ["🧰", "🛡️", "⚙️"]],
+  [/\b(token|budget|early-?exit|cost)/i, ["🪙", "🎟️", "⏳"]],
+  [/\b(speculat|draft|decoding)/i, ["🎲", "🃏", "🔮"]],
+  [/\b(bench|benchmark|regression|test|ci\b|eval)/i, ["🧪", "📋", "✅"]],
+  [/\b(stress|latency|throughput|profil|perf)/i, ["🌡️", "⏱️", "📉"]],
+  [/\b(cache|kv-?cache|memory|quantiz)/i, ["🗃️", "🧊", "📦"]],
+  [/\b(reason|chain-?of-?thought|cot\b|think)/i, ["🧩", "💭", "🧠"]],
+  [/\b(prompt|template)/i, ["📝", "✍️", "📄"]],
+  [/\b(search|retriev|rag|index|embed)/i, ["🔎", "📚", "🗂️"]],
+  [/\b(vision|image|photo|camera|ocr)/i, ["🖼️", "📷", "🎨"]],
+  [/\b(voice|speech|audio|whisper)/i, ["🎙️", "🔊", "🎧"]],
+  [/\b(graph|network|node|edge)/i, ["🕸️", "🔗", "🧬"]],
+  [/\b(data|dataset|pipeline|etl|table)/i, ["📦", "🧺", "🚰"]],
+  [/\b(dashboard|chart|plot|visual|metric)/i, ["📊", "📈", "🗠"]],
+  [/\b(game|play|puzzle|maze)/i, ["🎮", "🕹️", "🧸"]],
+  [/\b(schedul|cron|time|clock|calendar)/i, ["⏰", "🗓️", "⌛"]],
+  [/\b(map|geo|location|spatial)/i, ["🗺️", "📍", "🌍"]],
+  [/\b(llm|gpt|language model|inference)/i, ["🤖", "💬", "🦜"]],
 ];
 
-// A whimsical pool for repos that match no keyword, chosen deterministically by
-// slug so every project keeps a stable, distinct-feeling icon across renders.
+// Last-resort pool for repos matching no keyword at all, chosen
+// deterministically by slug so the icon stays stable across renders.
 const EMOJI_POOL = [
   "🌸", "🍃", "🌙", "⭐", "🐚", "🍄", "🪷", "🌷", "🦋", "🐝",
-  "🌻", "🪴", "🍯", "🫧", "🌿", "🐌", "🕊️", "🌾", "🍀", "🪶",
+  "🌻", "🪴", "🫧", "🌿", "🕊️", "🍀", "🪶", "🎐", "🧿", "🪅",
 ];
 
 function hashSlug(slug: string): number {
@@ -45,9 +49,17 @@ function hashSlug(slug: string): number {
   return h;
 }
 
-function pickEmoji(text: string, slug: string): string {
-  for (const [re, e] of EMOJI_RULES) if (re.test(text)) return e;
-  return EMOJI_POOL[hashSlug(slug) % EMOJI_POOL.length];
+// Every icon this repo could reasonably wear, most specific first: a keyword
+// in the repo's NAME says what the project is about, so those rules outrank
+// rules that only hit somewhere in the description.
+function emojiCandidates(name: string, text: string, slug: string): string[] {
+  const out: string[] = [];
+  const readable = name.replace(/[-_]+/g, " ");
+  for (const [re, es] of EMOJI_RULES) if (re.test(readable)) out.push(...es);
+  for (const [re, es] of EMOJI_RULES) if (re.test(text)) out.push(...es);
+  const start = hashSlug(slug);
+  for (let i = 0; i < EMOJI_POOL.length; i++) out.push(EMOJI_POOL[(start + i) % EMOJI_POOL.length]);
+  return [...new Set(out)];
 }
 
 // Ordered keyword rules: first match wins, so put the more specific ones first.
@@ -137,6 +149,7 @@ export async function getAllProjects(): Promise<Project[]> {
     // offline / rate-limited: just show the curated list
   }
 
+  const candsBySlug = new Map<string, string[]>();
   const extra: Project[] = repos
     .filter(
       (r) =>
@@ -150,9 +163,10 @@ export async function getAllProjects(): Promise<Project[]> {
       const tags = (r.topics?.length ? r.topics.slice(0, 4) : [r.language])
         .filter(Boolean)
         .map((t) => String(t));
+      candsBySlug.set(r.name.toLowerCase(), emojiCandidates(r.name, text, r.name.toLowerCase()));
       return {
         name: prettyName(r.name),
-        emoji: pickEmoji(text, r.name.toLowerCase()),
+        emoji: "✨", // placeholder, assigned from candidates below
         blurb: r.description || "A little experiment on GitHub ✦",
         categories,
         domains: detectDomains(text),
@@ -200,22 +214,14 @@ export async function getAllProjects(): Promise<Project[]> {
     };
   };
 
-  // Keep the auto-pulled icons distinct: if a keyword pick collides with an
-  // emoji already used (by a curated project or an earlier auto one), walk the
-  // whimsical pool from a per-slug offset for the first free icon. Curated
-  // emojis are intentional, so they claim their spot first and never move.
+  // Keep the auto-pulled icons distinct AND meaningful: each project takes its
+  // first candidate not already worn by a curated project (those are hand-set
+  // and never move) or an earlier auto one. Because candidates are grouped by
+  // theme, a collision slides to a related icon, not a random flower.
   const used = new Set(mergedCurated.map((p) => p.emoji));
   for (const p of extra) {
-    if (used.has(p.emoji)) {
-      const start = hashSlug(repoSlug(p.repo));
-      for (let i = 0; i < EMOJI_POOL.length; i++) {
-        const cand = EMOJI_POOL[(start + i) % EMOJI_POOL.length];
-        if (!used.has(cand)) {
-          p.emoji = cand;
-          break;
-        }
-      }
-    }
+    const cands = candsBySlug.get(repoSlug(p.repo)) ?? [];
+    p.emoji = cands.find((e) => !used.has(e)) ?? cands[0] ?? "🌸";
     used.add(p.emoji);
   }
 
