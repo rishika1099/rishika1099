@@ -38,6 +38,7 @@ That site isn't a static page. Most of its content is *generated, organized, and
 - 🏷️ **Zero-shot blog tagging:** multi-prototype label embeddings plus a confidence rule (precision over recall) auto-tag posts; the topic filter pills grow on their own as new areas appear.
 - 📸 **Photo clustering:** k-means with silhouette selection over CLIP image embeddings (which roughly doubled the silhouette vs caption text).
 - ✨ **LLM-as-a-function touches:** poem mood classification (avg 0.894 confidence), AI-generated poem art, auto-captioned photos, an ELI5 / expert rewrite toggle, and a guestbook that sorts each note into one of six moods.
+- 🎴 **A work gallery that runs itself:** new GitHub repos pull in on their own, sort into technical areas and domains, and each gets a distinct on-theme emoji (with collisions nudged to a related icon, never a repeat). Project cards can point to a live results dashboard (📊) and a Substack write-up (📰) beside the code and demo, tags can be anything (reinforcement learning, robotics, …), and PDF attachments preview their first page right in the card.
 - 🛠️ **The engineering around it:** caching plus ISR, batched calls, graceful keyword fallbacks, an RSS feed, and an installable PWA.
 
 <p align="center">

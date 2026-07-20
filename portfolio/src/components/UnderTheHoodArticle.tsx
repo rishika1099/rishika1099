@@ -286,6 +286,7 @@ export default function UnderTheHoodArticle({
           {slot("tour.tag.body")}
           {slot("tour.tag.pills")}
           {slot("tour.tag.rules")}
+          {slot("tour.tag.emoji")}
         </Section>
 
         <Section id="clustering" emoji="📸" title="Photo clustering (k-means + silhouette + CLIP)">
@@ -314,6 +315,7 @@ export default function UnderTheHoodArticle({
             <li>{slot("tour.eng.b2")}</li>
             <li>{slot("tour.eng.b3")}</li>
             <li>{slot("tour.eng.b4")}</li>
+            <li>{slot("tour.eng.b5")}</li>
           </ul>
         </Section>
 
