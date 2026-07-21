@@ -4,7 +4,7 @@ A personal portfolio + creative corner, built as a Studio-Ghibli-pastel, soft-an
 Next.js site. It doubles as a little playground for data-science and AI ideas: the
 content isn't just *displayed*, parts of it are *generated, organized, and answered by models*.
 
-Live: https://rishika-m.netlify.app
+Live: https://rishika-m.com
 
 ---
 
@@ -61,7 +61,9 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 - **Live GitHub project sync + auto-categorization.** The Work tab fetches public repos
   straight from GitHub (ISR, hourly) and **classifies each one** into a technical area
   (Generative AI, Causal Inference, Computer Vision, etc.) and a domain (Healthcare,
-  Finance, …) using a keyword/topic matcher, so new projects appear on their own.
+  Finance, …) using a keyword/topic matcher, so new projects appear on their own. Each one
+  is also assigned a **distinct on-theme emoji** from its own words (a gateway → 🚦, a
+  benchmark → 🧪), with collisions nudged to a related icon so no two repeat.
   (`src/lib/github-projects.ts`)
 - **Auto-pulled blog with embedding zero-shot tagging.** New Substack posts flow into the
   Technical Blogs page on their own (RSS, ISR hourly): the title, date, and subtitle (the
@@ -95,6 +97,9 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 - **About:** expandable study/work/research cards, and the skills network graph.
 - **Work:** semantic search box + ELI5/expert toggle + featured projects + filterable grid
   (by technical area and domain, auto-fed from GitHub) + the embeddings galaxy.
+- **Project cards:** code + live demo, plus optional 📊 results-dashboard and 📰 article
+  (Substack) links, freely editable tags (anything, not just the built-in taxonomy), and
+  inline first-page previews for PDF attachments.
 - **Writing room (Blog):** three doors, Technical Blogs (Markdown + Substack posts pulled
   and tagged automatically by embedding similarity), Poems (password-gated and **re-locking
   on every refresh**, with AI art + mood
@@ -135,7 +140,7 @@ A few of the projects showcased on the Work tab:
 - **This portfolio** — the site itself: RAG chatbot, semantic search, embeddings galaxy,
   CLIP photo clustering, and an LLM poem-mood classifier.
   ([code](https://github.com/rishika1099/rishika1099) ·
-  [live](https://rishika-m.netlify.app))
+  [live](https://rishika-m.com))
 
 The full, always-current list is generated live on the Work tab (curated entries plus every
 public GitHub repo, auto-categorized).

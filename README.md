@@ -17,7 +17,7 @@
 ---
 
 <p align="center">
-  <a href="https://rishika-m.netlify.app/">
+  <a href="https://rishika-m.com/">
     <img src="./images/computer-girl.gif" width="450" alt="Portfolio">
   </a>
 </p>
@@ -42,7 +42,7 @@ That site isn't a static page. Most of its content is *generated, organized, and
 - 🛠️ **The engineering around it:** caching plus ISR, batched calls, graceful keyword fallbacks, an RSS feed, and an installable PWA.
 
 <p align="center">
-  <a href="https://rishika-m.netlify.app/blog/technical/under-the-hood">
+  <a href="https://rishika-m.com/blog/technical/under-the-hood">
     <img src="https://img.shields.io/badge/Read_the_full_tour-D9BED1?style=for-the-badge&logo=readme&logoColor=white" alt="Under the hood tour" />
   </a>
 </p>
@@ -502,7 +502,7 @@ achievements = {
 ## 🌐 Connect with Me!
 
 <p align="center">
-  <a href="https://rishika-m.netlify.app/">
+  <a href="https://rishika-m.com/">
     <img src="https://img.shields.io/badge/Portfolio-D9BED1?style=for-the-badge&logo=google-chrome&logoColor=white" />
   </a>
   <a href="https://substack.com/@rishika1099">
