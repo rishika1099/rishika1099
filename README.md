@@ -43,10 +43,11 @@ const rishika = {
     "Technical Analyst @ Novartis 💊"
   ],
   research: [
-    "RA — Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥",
-    "RA — LLM Risk Modeling @ Columbia GSAS 🌍"
+    "RA: Vision Science & Retinal Imaging @ AI4VS Lab, Columbia Irving Medical Center 👁️",
+    "RA: Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥",
+    "RA: LLM Risk Modeling @ Columbia GSAS 🌍"
   ],
-  teaching: "TA — Artificial Intelligence for Public Policy @ Columbia DSI 🎓",
+  teaching: "TA: Artificial Intelligence for Public Policy @ Columbia DSI 🎓",
   interests: [
     "Healthcare AI",
     "Deep Learning",
@@ -122,7 +123,7 @@ const rishika = {
 
 ## 🔬 Research Experience
 
-### 👁️ AI4VS Lab, Columbia University Irving Medical Center | Research Assistant — Vision Science & Retinal Imaging
+### 👁️ AI4VS Lab, Columbia University Irving Medical Center | Research Assistant: Vision Science & Retinal Imaging
 **Jun 2026 - Present** | 📍 New York, NY
 
 Working in the **Artificial Intelligence for Vision Science (AI4VS) Lab** (Department of Ophthalmology) on human-vision-inspired, interpretable diagnostic AI, across two projects:
@@ -134,7 +135,7 @@ Working in the **Artificial Intelligence for Vision Science (AI4VS) Lab** (Depar
 
 ---
 
-### 🏥 Columbia University Irving Medical Center | Research Assistant — Clinical LLM & Phenotyping
+### 🏥 Columbia University Irving Medical Center | Research Assistant: Clinical LLM & Phenotyping
 **Jan 2026 - Present** | 📍 New York, NY
 
 Automated phenotype extraction for a **118-patient cardiac sarcoidosis cohort** under IRB AAAV0341, transforming **50,486 Epic cardiology progress notes + 153 rheumatology consults** into a structured 56-field clinical dataset for phenotyping and outcome modeling.
@@ -152,7 +153,7 @@ Automated phenotype extraction for a **118-patient cardiac sarcoidosis cohort** 
 
 ---
 
-### 🌍 Columbia University GSAS | Research Assistant — Human Rights LLM Evaluation
+### 🌍 Columbia University GSAS | Research Assistant: Human Rights LLM Evaluation
 **Jan 2026 - Present** | 📍 New York, NY
 
 Built an automated **Human Rights Due Diligence scoring framework** for **27 defense manufacturers**, grounded in UNGP, UNICEF CRBP, ABA Defense Industry HRDD Guidance, UN Six Grave Violations, and Arms Trade Treaty Article 7.4.
@@ -204,7 +205,7 @@ teaching = {
 
 ## 🤝 Volunteer Experience
 
-### 🏛️ Columbia University Data Science Institute | Student Council — Communications & Professional Resources
+### 🏛️ Columbia University Data Science Institute | Student Council: Communications & Professional Resources
 **Sep 2025 - Present** | 📍 New York, NY
 
 ```python
@@ -437,12 +438,12 @@ achievements = {
 
 - 🧑‍🏫 Teaching Assistant for Artificial Intelligence for Public Policy
 - 🔬 Research Assistant at Columbia Irving Medical Center and Columbia GSAS
-- 🏛️ Data Science Institute Student Council — Communications & Professional Resources
+- 🏛️ Data Science Institute Student Council: Communications & Professional Resources
 
 ### Vellore Institute of Technology | B.Tech Computer Science - Data Science
 **May 2023 | Vellore, IN | CGPA: 9.51/10**
 
-- 🏆 Rank: **7/~200** — Top 4%
+- 🏆 Rank: **7/~200** (Top 4%)
 - 🎖️ Recipient of **Merit Scholarship 2019-2023**
 - 👥 Program Representative 2019-2023
 
