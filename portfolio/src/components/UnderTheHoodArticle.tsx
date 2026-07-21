@@ -169,7 +169,7 @@ function SearchDemo() {
         })}
       </div>
       <p className="mt-4 font-body text-xs italic text-ink-soft/70">
-        Illustrative cosine scores. Anything under {THRESHOLD} is treated as &ldquo;no real match&rdquo; and
+        Illustrative cosine scores. Anything under {THRESHOLD}{" "}is treated as &ldquo;no real match&rdquo; and
         dropped, which is why a vague word still returns only what&apos;s genuinely relevant.
       </p>
     </div>
