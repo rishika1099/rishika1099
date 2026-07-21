@@ -149,9 +149,9 @@ const rishika = {
 Working in the **Artificial Intelligence for Vision Science (AI4VS) Lab** (Department of Ophthalmology) on human-vision-inspired, interpretable diagnostic AI, across two projects:
 
 - **Eye-tracking simulation experiment:** running an eye-tracking experiment that records visual attention during simulated image-reading tasks, toward interpretable, gaze-informed diagnostic models.
-- **Retinal-imaging classification:** relating trimester-labeled retinal images (Optos ultra-widefield and OCT) and maternal history to hypertensive disorders of pregnancy, framing prediction across the preeclampsia spectrum (preeclampsia, eclampsia, superimposed preeclampsia), with an eye to transfer for adjacent cardiovascular questions such as ANOCA.
+- **Retinal-imaging classification:** using Vision Transformers and diffusion models on trimester-labeled retinal images (Optos ultra-widefield and OCT), relating imaging and maternal history to hypertensive disorders of pregnancy, framing prediction across the preeclampsia spectrum (preeclampsia, eclampsia, superimposed preeclampsia), with an eye to transfer for adjacent cardiovascular questions such as ANOCA.
 
-**Stack:** Python, PyTorch, medical imaging (Optos, OCT), REDCap
+**Stack:** Python, PyTorch, Vision Transformers (ViT), diffusion models, medical imaging (Optos, OCT), REDCap
 
 ---
 
