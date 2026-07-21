@@ -143,6 +143,18 @@ const rishika = {
 
 ## 🔬 Research Experience
 
+### 👁️ AI4VS Lab, Columbia University Irving Medical Center | Research Assistant — Vision Science & Retinal Imaging
+**Jun 2026 - Present** | 📍 New York, NY
+
+Working in the **Artificial Intelligence for Vision Science (AI4VS) Lab** (Department of Ophthalmology) on human-vision-inspired, interpretable diagnostic AI, across two projects:
+
+- **Eye-tracking simulation experiment:** running an eye-tracking experiment that records visual attention during simulated image-reading tasks, toward interpretable, gaze-informed diagnostic models.
+- **Retinal-imaging classification:** relating trimester-labeled retinal images (Optos ultra-widefield and OCT) and maternal history to hypertensive disorders of pregnancy, framing prediction across the preeclampsia spectrum (preeclampsia, eclampsia, superimposed preeclampsia), with an eye to transfer for adjacent cardiovascular questions such as ANOCA.
+
+**Stack:** Python, PyTorch, medical imaging (Optos, OCT), REDCap
+
+---
+
 ### 🏥 Columbia University Irving Medical Center | Research Assistant — Clinical LLM & Phenotyping
 **Jan 2026 - Present** | 📍 New York, NY
 
