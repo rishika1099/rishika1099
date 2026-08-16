@@ -136,7 +136,7 @@ export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
               return (
                 <div
                   key={e.id}
-                  className={`mb-3 inline-block w-full break-inside-avoid rounded-2xl p-4 shadow-sm ring-1 ring-white/60 transition-transform hover:rotate-0 ${tilt}`}
+                  className={`mb-3 block w-full break-inside-avoid rounded-2xl p-4 shadow-sm ring-1 ring-white/60 transition-transform hover:rotate-0 ${tilt}`}
                   style={{ backgroundColor: m ? `${m.tint}5c` : "rgba(255,255,255,0.6)" }}
                 >
                   <div className="flex items-start gap-3">
