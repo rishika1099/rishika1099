@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { searchProjects } from "@/lib/search";
+import { recordSearch } from "@/lib/analytics";
 
 export const runtime = "nodejs";
 
@@ -11,6 +12,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "search-unconfigured" }, { status: 503 });
   }
   try {
+    // log the phrase people searched for (the words only, tied to nobody)
+    void recordSearch(q);
     const results = await searchProjects(q);
     return NextResponse.json({ results });
   } catch (err) {

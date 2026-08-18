@@ -19,6 +19,17 @@ export interface VisitStats {
   byOS: Record<string, number>;
   events: Record<string, number>; // clicks, downloads, conversions, searches…
   vitals: Record<string, { sum: number; n: number }>; // Core Web Vitals, averaged
+  // campaign + context counters (all coarse, stored as independent aggregate
+  // tallies, never joined per visitor, so they can't compose into a fingerprint)
+  byCampaign: Record<string, number>; // utm_source / ?ref= a link was tagged with
+  byRefPath: Record<string, number>; // full referring URL (host + path)
+  byEntry: Record<string, number>; // the page a session landed on first
+  byLang: Record<string, number>;
+  byTimezone: Record<string, number>;
+  byViewport: Record<string, number>;
+  // engagement, averaged per page
+  readDepth: Record<string, { sum: number; n: number }>; // % of the page scrolled
+  dwell: Record<string, { sum: number; n: number }>; // engaged seconds (tab visible)
   updatedAt?: string;
 }
 
@@ -41,6 +52,14 @@ const EMPTY: VisitStats = {
   byOS: {},
   events: {},
   vitals: {},
+  byCampaign: {},
+  byRefPath: {},
+  byEntry: {},
+  byLang: {},
+  byTimezone: {},
+  byViewport: {},
+  readDepth: {},
+  dwell: {},
 };
 
 // fill in any fields missing from older stored data
@@ -102,6 +121,12 @@ export interface VisitInput {
   browser?: string;
   os?: string;
   visitor?: "new" | "returning";
+  campaign?: string;
+  refPath?: string;
+  entry?: string;
+  lang?: string;
+  timezone?: string;
+  viewport?: string;
 }
 
 export async function recordVisit(v: VisitInput) {
@@ -117,6 +142,12 @@ export async function recordVisit(v: VisitInput) {
   if (v.device) bump(stats.byDevice, v.device);
   if (v.browser) bump(stats.byBrowser, v.browser);
   if (v.os) bump(stats.byOS, v.os);
+  if (v.campaign) bump(stats.byCampaign, v.campaign);
+  if (v.refPath) bump(stats.byRefPath, v.refPath);
+  if (v.entry) bump(stats.byEntry, v.entry);
+  if (v.lang) bump(stats.byLang, v.lang);
+  if (v.timezone) bump(stats.byTimezone, v.timezone);
+  if (v.viewport) bump(stats.byViewport, v.viewport);
   stats.updatedAt = new Date().toISOString();
   await writeJson("visits", stats);
 }
@@ -139,12 +170,41 @@ export async function recordVital(name: string, value: number) {
   await writeJson("visits", stats);
 }
 
+/**
+ * How far down a page a visit got and how long it stayed engaged. Averaged per
+ * path, so it answers "does anyone finish the tour" without tracking anyone.
+ */
+export async function recordRead(path: string, depth?: number, seconds?: number) {
+  const key = (path || "/").slice(0, 200);
+  const stats = normalize(await readJson<VisitStats>("visits", structuredClone(EMPTY)));
+  if (typeof depth === "number" && isFinite(depth) && depth > 0) {
+    const d = Math.max(0, Math.min(100, Math.round(depth)));
+    const cur = stats.readDepth[key] ?? { sum: 0, n: 0 };
+    stats.readDepth[key] = { sum: cur.sum + d, n: cur.n + 1 };
+  }
+  if (typeof seconds === "number" && isFinite(seconds) && seconds > 0) {
+    const sec = Math.max(0, Math.min(3600, Math.round(seconds)));
+    const cur = stats.dwell[key] ?? { sum: 0, n: 0 };
+    stats.dwell[key] = { sum: cur.sum + sec, n: cur.n + 1 };
+  }
+  stats.updatedAt = new Date().toISOString();
+  await writeJson("visits", stats);
+}
+
+/** What people typed into on-site search (the phrase only, no visitor tied to it). */
+export async function recordSearch(q: string) {
+  const list = await readJson<LoggedQuestion[]>("searches", []);
+  list.push({ q: q.slice(0, 200), at: new Date().toISOString() });
+  await writeJson("searches", list.slice(-500));
+}
+
 /** Wipe all analytics (visits + question log + journeys) back to zero. */
 export async function clearStats() {
   await Promise.all([
     writeJson("visits", structuredClone(EMPTY)),
     writeJson("questions", []),
     writeJson("journeys", []),
+    writeJson("searches", []),
   ]);
 }
 
@@ -193,11 +253,16 @@ export async function recordQuestion(q: string) {
 }
 
 export async function readStats() {
-  const [visits, questions] = await Promise.all([
+  const [visits, questions, searches] = await Promise.all([
     readJson<VisitStats>("visits", structuredClone(EMPTY)),
     readJson<LoggedQuestion[]>("questions", []),
+    readJson<LoggedQuestion[]>("searches", []),
   ]);
-  return { visits: normalize(visits), questions: questions.slice().reverse() };
+  return {
+    visits: normalize(visits),
+    questions: questions.slice().reverse(),
+    searches: searches.slice().reverse(),
+  };
 }
 
 /**

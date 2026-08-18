@@ -23,7 +23,11 @@ function classify(href: string): string | null {
   if (!href) return null;
   if (href.startsWith("/resume") || /resume.*\.pdf/i.test(href)) return "download: resume";
   if (href.startsWith("mailto:")) return "click: email";
+  // a project's results dashboard (a static HTML report) vs its source
+  if (/\.github\.io|dashboard/i.test(href)) return "click: results dashboard";
   if (/github\.com/i.test(href)) return "click: github";
+  if (/vercel\.app|streamlit\.app|netlify\.app|fly\.dev|onrender\.com|huggingface\.co/i.test(href))
+    return "click: live demo";
   if (/linkedin\.com/i.test(href)) return "click: linkedin";
   if (/substack\.com/i.test(href)) return "click: substack";
   if (/^https?:\/\//i.test(href)) return "click: outbound";
@@ -52,9 +56,29 @@ export default function Metrics() {
     };
     const onSubmit = () => send("conversion: form submit");
     const onPalette = () => send("open: search");
+    // printing or saving a page to PDF is a strong "taking this seriously" signal
+    const onPrint = () => send(`print: ${location.pathname}`);
+    // only the email address counts, never whatever else someone copies
+    const onCopy = () => {
+      try {
+        const text = String(window.getSelection() ?? "");
+        if (/[\w.+-]+@[\w-]+\.[\w.]+/.test(text)) send("copy: email");
+      } catch {
+        // selection unavailable: skip
+      }
+    };
+    const onInstalled = () => send("install: pwa");
     document.addEventListener("click", onClick, { capture: true });
     document.addEventListener("submit", onSubmit, { capture: true });
     window.addEventListener("open-command-palette", onPalette);
+    window.addEventListener("beforeprint", onPrint);
+    document.addEventListener("copy", onCopy);
+    window.addEventListener("appinstalled", onInstalled);
+    try {
+      if (window.matchMedia("(display-mode: standalone)").matches) send("visit: installed app");
+    } catch {
+      // matchMedia unavailable: skip
+    }
 
     // ---- Core Web Vitals (lightweight, no external lib) ----
     let lcp = 0;
@@ -114,6 +138,9 @@ export default function Metrics() {
       document.removeEventListener("click", onClick, { capture: true });
       document.removeEventListener("submit", onSubmit, { capture: true });
       window.removeEventListener("open-command-palette", onPalette);
+      window.removeEventListener("beforeprint", onPrint);
+      document.removeEventListener("copy", onCopy);
+      window.removeEventListener("appinstalled", onInstalled);
       document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("pagehide", report);
       obs.forEach((o) => o.disconnect());

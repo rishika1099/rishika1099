@@ -14,6 +14,7 @@ type Journey = { id: string; city?: string; country?: string; pages: string[]; s
 type Stats = {
   visits: VisitStats;
   questions: LoggedQuestion[];
+  searches?: LoggedQuestion[];
   reactions?: Reactions;
   journeys?: Journey[];
 };
@@ -55,6 +56,59 @@ function Board({
       </div>
     </div>
   );
+}
+
+/** Averages board for {sum, n} counters (read depth, engaged time). */
+function AvgBoard({
+  title,
+  rec,
+  unit,
+  max = 8,
+  hint,
+}: {
+  title: string;
+  rec: Record<string, { sum: number; n: number }>;
+  unit: string;
+  max?: number;
+  hint?: string;
+}) {
+  const rows = Object.entries(rec)
+    .filter(([, v]) => v?.n)
+    .map(([k, v]) => [k, v.sum / v.n, v.n] as const)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, max);
+  const top = rows[0]?.[1] ?? 1;
+  return (
+    <div className="rounded-3xl p-5 soft-card">
+      <h2 className="font-body text-base font-bold text-ink">{title}</h2>
+      {hint && <p className="mt-0.5 font-body text-xs text-ink-soft">{hint}</p>}
+      {rows.length === 0 && <p className="mt-2 font-body text-sm text-ink-soft">nothing yet ✦</p>}
+      <div className="mt-3 space-y-2">
+        {rows.map(([k, avg, n]) => (
+          <div key={k}>
+            <div className="flex items-center justify-between gap-3 font-body text-sm">
+              <span className="truncate text-ink">{k === "/" ? "home 🏠" : k}</span>
+              <span className="shrink-0 font-semibold text-ink-soft">
+                {unit === "s" ? formatSecs(avg) : `${Math.round(avg)}${unit}`}
+                <span className="ml-1 text-ink-soft/60">· {n}</span>
+              </span>
+            </div>
+            <div className="mt-0.5 h-1.5 w-full overflow-hidden rounded-full bg-white/60">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-mint to-lavender"
+                style={{ width: `${Math.round((avg / top) * 100)}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function formatSecs(s: number) {
+  const n = Math.round(s);
+  return n < 60 ? `${n}s` : `${Math.floor(n / 60)}m ${String(n % 60).padStart(2, "0")}s`;
 }
 
 // Core Web Vitals thresholds (good / needs-improvement / poor)
@@ -229,6 +283,28 @@ export default function StatsPage() {
             <Board title="💻 devices" rec={v.byDevice} />
             <Board title="🧭 browsers" rec={v.byBrowser} />
             <Board title="🖥️ operating systems" rec={v.byOS} />
+            <Board
+              title="🏷️ campaigns"
+              rec={v.byCampaign ?? {}}
+              label={(k) => k}
+            />
+            <Board title="🛬 landing pages" rec={v.byEntry ?? {}} />
+            <Board title="🔗 referring pages" rec={v.byRefPath ?? {}} label={(k) => k} />
+            <Board title="🗣️ languages" rec={v.byLang ?? {}} label={(k) => k} />
+            <Board title="🕰️ time zones" rec={v.byTimezone ?? {}} label={(k) => k} />
+            <Board title="📐 viewports" rec={v.byViewport ?? {}} label={(k) => k} />
+            <AvgBoard
+              title="📖 read depth"
+              rec={v.readDepth ?? {}}
+              unit="%"
+              hint="how far down each page people actually get"
+            />
+            <AvgBoard
+              title="⏳ engaged time"
+              rec={v.dwell ?? {}}
+              unit="s"
+              hint="time with the tab actually in front"
+            />
             <div className="rounded-3xl p-5 soft-card">
               <h2 className="font-body text-base font-bold text-ink">👥 new vs returning</h2>
               <div className="mt-4 flex items-end gap-6">
@@ -373,6 +449,23 @@ export default function StatsPage() {
           </div>
 
           {/* chatbot log */}
+          <div className="mt-6 rounded-3xl p-5 soft-card">
+            <h2 className="font-body text-base font-bold text-ink">🔍 recent searches</h2>
+            {(!stats.searches || stats.searches.length === 0) && (
+              <p className="mt-2 font-body text-sm text-ink-soft">no searches yet ✦</p>
+            )}
+            <ul className="mt-3 space-y-2">
+              {(stats.searches ?? []).slice(0, 30).map((q, i) => (
+                <li key={i} className="rounded-2xl bg-white/60 px-3 py-2 font-body text-sm text-ink">
+                  {q.q}
+                  <span className="ml-2 text-xs text-ink-soft">
+                    {new Date(q.at).toLocaleDateString()}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <div className="mt-6 rounded-3xl p-5 soft-card">
             <h2 className="font-body text-base font-bold text-ink">💬 recent chatbot questions</h2>
             {stats.questions.length === 0 && (
