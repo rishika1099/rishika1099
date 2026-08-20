@@ -38,12 +38,13 @@ const rishika = {
     "Vellore Institute of Technology 🧑🏾‍🎓 | B.Tech CSE & Data Science"
   ],
   experience: [
-    "Data Science Intern @ NYC ACS 🗽 (Summer 2026)",
+    "Predictive Analytics Intern @ NYC ACS 🗽 (Summer 2026)",
     "Software Engineer @ Shell 🔋",
     "Technical Analyst @ Novartis 💊"
   ],
   research: [
-    "RA: Vision Science & Retinal Imaging @ AI4VS Lab, Columbia Irving Medical Center 👁️",
+    "RA: Ocean Carbon Data Valuation @ Columbia Lamont-Doherty Earth Observatory 🌊",
+    "RA: Ophthalmic AI & Eye Tracking @ AI4VS Lab, Columbia Irving Medical Center 👁️",
     "RA: Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥",
     "RA: LLM Risk Modeling @ Columbia GSAS 🌍"
   ],
@@ -123,15 +124,24 @@ const rishika = {
 
 ## 🔬 Research Experience
 
-### 👁️ AI4VS Lab, Columbia University Irving Medical Center | Research Assistant: Vision Science & Retinal Imaging
-**Jun 2026 - Present** | 📍 New York, NY
+### 🌊 Columbia Lamont-Doherty Earth Observatory | Research Assistant: Ocean Carbon Data Valuation (McKinley Group)
+**Sep 2026 - Present** | 📍 Palisades, NY
+
+Extending a **Data Shapley** framework to value individual **SOCAT** surface-ocean fCO₂ observations against a physical model prior rather than an empty baseline, using **KNN-Shapley** approximation and spatially blocked cross-validation to target where sparse, expensive measurements would most improve the ocean carbon record.
+
+**Stack:** Python, Data Shapley, KNN-Shapley, spatial cross-validation
+
+---
+
+### 👁️ AI4VS Lab, Columbia University Irving Medical Center | Research Assistant: Ophthalmic AI & Eye Tracking
+**Jul 2026 - Present** | 📍 New York, NY
 
 Working in the **Artificial Intelligence for Vision Science (AI4VS) Lab** (Department of Ophthalmology) on human-vision-inspired, interpretable diagnostic AI, across two projects:
 
-- **Eye-tracking simulation experiment:** running an eye-tracking experiment that records visual attention during simulated image-reading tasks, toward interpretable, gaze-informed diagnostic models.
-- **Retinal-imaging classification:** using Vision Transformers and diffusion models on trimester-labeled retinal images (Optos ultra-widefield and OCT), relating imaging and maternal history to hypertensive disorders of pregnancy, framing prediction across the preeclampsia spectrum (preeclampsia, eclampsia, superimposed preeclampsia), with an eye to transfer for adjacent cardiovascular questions such as ANOCA.
+- **Gaze-augmented glaucoma diagnosis:** developing deep learning models that fuse clinician **eye-tracking** with OCT report features, aligning model attention with expert reading behaviour to make automated screening for irreversible vision loss auditable enough for clinical use.
+- **Retinal imaging for maternal health:** using **Vision Transformers** and **diffusion models** on trimester-labelled retinal images (Optos ultra-widefield and OCT), relating imaging and maternal history to hypertensive disorders of pregnancy across the preeclampsia spectrum.
 
-**Stack:** Python, PyTorch, Vision Transformers (ViT), diffusion models, medical imaging (Optos, OCT), REDCap
+**Stack:** Python, PyTorch, Vision Transformers (ViT), diffusion models, eye tracking, medical imaging (Optos, OCT)
 
 ---
 
@@ -236,15 +246,20 @@ council = {
 
 ## 💼 Professional Journey
 
-### <img src="./images/nyc-acs.png" width="30" alt="NYC ACS"> NYC Administration for Children's Services | Data Science Intern
+### <img src="./images/nyc-acs.png" width="30" alt="NYC ACS"> NYC Administration for Children's Services | Predictive Analytics Intern
 **Jun 2026 - Aug 2026** | 📍 New York, NY
 
 ```python
 achievements = {
-    "Child_Welfare_Risk_Modeling": {
-        "description": "Developing predictive risk models on child welfare administrative data with explainable ML, fairness auditing, and causal adjustment",
-        "tools": ["Python", "scikit-learn", "SQL", "NCANDS data"],
-        "result": "Transparent decision-support modeling in a high-stakes public-sector setting 📈"
+    "Explainability_Framework": {
+        "description": "Built an explainability framework for a child welfare risk model on 900K+ records, turning black-box predictions into transparent, policy-driven decisions via configurable operating thresholds spanning 25-80% recall",
+        "tools": ["Python", "scikit-learn", "SHAP", "SQL", "NCANDS data"],
+        "result": "0.799 ROC-AUC at 7.2x base-rate precision 📈"
+    },
+    "Reliability_Audit": {
+        "description": "Designed a three-level reliability audit proving explanations reproducible across evaluation sets, then established via noise-control testing that only 15 of 149 features carried real signal",
+        "tools": ["Python", "statistical testing"],
+        "result": "rho=0.991 reproducibility, and a defensible limit on what the agency can claim from any feature ranking 🔍"
     }
 }
 ```
@@ -351,12 +366,33 @@ achievements = {
 | [Just-Ask-Coach-Query-SQL-Translation](https://github.com/rishika1099/Just-Ask-Coach-Query-SQL-Translation) | Natural language to SQL to visualization pipeline for sports performance analytics with semantic KPI retrieval, SQL generation, AST safety validation, self-verification, charting, and follow-up suggestions | FastAPI, SQLite, ChromaDB, Claude, React, Vite | ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) |
 | [Prescribed-Motion-Exercise-Recommendation-LLM](https://github.com/rishika1099/Prescribed-Motion-Exercise-Recommendation-LLM) | AI coaching system mapping natural language fitness queries to personalized exercise recommendations using two-stage retrieval over 100k+ exercises and Claude tool-use re-ranking | FastAPI, PostgreSQL, Supabase, Claude, Fly.io, Netlify | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 | [Ruchi-Pantry-to-Plate-Intelligence-Platform](https://github.com/rishika1099/Ruchi-Pantry-to-Plate-Intelligence-Platform) | AI food platform with video-to-recipe extraction, pantry-to-plate matching, nutrition and allergen data, health coaching, smart swaps, and adaptive meal plans | React, Vite, Framer Motion, OpenAI, Serverless | ![Food & Nutrition](https://img.shields.io/badge/Food_%26_Nutrition-FF7043?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
-| [Reel-Chef-Video-To-Recipe-Extractor](https://github.com/rishika1099/Reel-Chef-Video-To-Recipe-Extractor) | Vision-language pipeline that converts cooking videos into structured recipes with ingredient lists, step-by-step instructions, timestamps, and estimated cook times | Python, Computer Vision, LLMs | ![Food & Nutrition](https://img.shields.io/badge/Food_%26_Nutrition-FF7043?style=flat-square) ![Multimodal AI](https://img.shields.io/badge/Multimodal_AI-3949AB?style=flat-square) |
+| [Reel-Chef-Video-To-Recipie-Extractor](https://github.com/rishika1099/Reel-Chef-Video-To-Recipie-Extractor) | Vision-language pipeline that converts cooking videos into structured recipes with ingredient lists, step-by-step instructions, timestamps, and estimated cook times | Python, Computer Vision, LLMs | ![Food & Nutrition](https://img.shields.io/badge/Food_%26_Nutrition-FF7043?style=flat-square) ![Multimodal AI](https://img.shields.io/badge/Multimodal_AI-3949AB?style=flat-square) |
 | [Hey-Swiftie-Cluster-Emotion-Verse](https://github.com/rishika1099/Hey-Swiftie-Cluster-Emotion-Verse) | AI diary that converts journal entries into personalized verses and music recommendations using DistilRoBERTa emotion classification, K-Means clustering, lyric embeddings, and RAG | Python, DistilRoBERTa, K-Means, OpenAI, React, RAG | ![Creative AI](https://img.shields.io/badge/Creative_AI-AB47BC?style=flat-square) ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 | [DSI-Course-Evaluation-Website](https://github.com/rishika1099/DSI-Course-Evaluation-Website) | Student dashboard for Columbia MSDS course reviews with live Google Sheets data, personalized course rankings, AI-summarized review deep dives, and course recommendations | Python, Google Sheets API, LLMs | ![Education](https://img.shields.io/badge/Education-1E88E5?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
-| [AI-Blog-Assistant](https://github.com/rishika1099/AI-Blog-Assistant) | GPT-4 blog generator with image generation and SEO optimization | OpenAI, Streamlit | ![Creative AI](https://img.shields.io/badge/Creative_AI-AB47BC?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
+| [Ghost-Writer-AI-Blog-Assistant](https://github.com/rishika1099/Ghost-Writer-AI-Blog-Assistant) | GPT-4 blog generator with image generation and SEO optimization | OpenAI, Streamlit | ![Creative AI](https://img.shields.io/badge/Creative_AI-AB47BC?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 | [Analogy-Tutor](https://github.com/rishika1099/Analogy-Tutor) | Explains technical concepts through personalized analogies | OpenAI, Streamlit | ![Education](https://img.shields.io/badge/Education-1E88E5?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 | [Fake-News-Detection](https://github.com/rishika1099/Fake-News-Detection) | TF-IDF and Linear SVM pipeline for news credibility prediction | TF-IDF, SVM | ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+
+---
+
+## ⚙️ LLM Systems, Inference & Evaluation
+
+Serving infrastructure, inference efficiency, and the measurement harnesses that keep LLM systems honest.
+
+| Project | Description | Tech Stack | Tags |
+|---------|-------------|------------|------|
+| [LLM-Gateway](https://github.com/rishika1099/LLM-Gateway) | Production-style LLM gateway written in pure Python stdlib: auth, semantic cache, rate limiting, retries, fallbacks, circuit breaker, and cost tracking, load-tested through a simulated brownout | Python (stdlib) | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![High Performance ML](https://img.shields.io/badge/High_Performance_ML-5E35B1?style=flat-square) |
+| [InferRoute](https://github.com/rishika1099/InferRoute) | Cost-, latency-, and quality-aware model router benchmarked against always-large and always-small baselines over a 4k-request workload | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![High Performance ML](https://img.shields.io/badge/High_Performance_ML-5E35B1?style=flat-square) |
+| [LLM-Inference-Profiler](https://github.com/rishika1099/LLM-Inference-Profiler) | Inference profiler measuring TTFT, inter-token latency, throughput, memory, and quality across FP16/INT8/INT4, batch size, context length, and KV caching, with a dashboard | Python, quantization | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![High Performance ML](https://img.shields.io/badge/High_Performance_ML-5E35B1?style=flat-square) |
+| [Speculative-Decoding-Bench](https://github.com/rishika1099/Speculative-Decoding-Bench) | Speculative decoding sweep over draft size x gamma x task, with closed-form speedup predictions validated by token-level Monte Carlo simulation | Python, Colab | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![High Performance ML](https://img.shields.io/badge/High_Performance_ML-5E35B1?style=flat-square) |
+| [TokenBudget-Early-Exit](https://github.com/rishika1099/TokenBudget-Early-Exit) | Adaptive reasoning-depth controller that exits chain-of-thought early once the answer stabilizes, compared against fixed budgets and self-consistency | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![High Performance ML](https://img.shields.io/badge/High_Performance_ML-5E35B1?style=flat-square) |
+| [Context-Window-Stress](https://github.com/rishika1099/Context-Window-Stress) | Long-context stress tests: lost-in-the-middle heatmaps, multi-hop joins, instruction retention, distractor robustness, and the latency and KV-memory bill | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![High Performance ML](https://img.shields.io/badge/High_Performance_ML-5E35B1?style=flat-square) |
+| [Real-Cross-Model-Benchmark](https://github.com/rishika1099/Real-Cross-Model-Benchmark) | Live cross-model benchmark of reasoning accuracy, real streaming latency and throughput, and structured-output validity across GPT-4o, Claude, Gemini, and Grok | Python, multi-provider APIs | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
+| [Self-Consistency-Lab](https://github.com/rishika1099/Self-Consistency-Lab) | Does agreement across reasoning chains predict correctness? Calibration curves, ECE, and five selection strategies evaluated against chain count | Python, calibration metrics | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![Explainable AI](https://img.shields.io/badge/Explainable_AI-FB8C00?style=flat-square) |
+| [Output-Reliability-Harness](https://github.com/rishika1099/Output-Reliability-Harness) | Fault-injection harness for structured outputs, comparing JSON mode, function calling, grammar constraints, and a staged repair pipeline | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
+| [ReasonBench-CI](https://github.com/rishika1099/ReasonBench-CI) | Regression testing for LLM reasoning: declarative test specs, consistency checks, and a CI gate that fails deploys on category regressions | Python, CI | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) |
+| [LLM-Failure-Minimizer](https://github.com/rishika1099/LLM-Failure-Minimizer) | Delta debugging (ddmin) for prompts: shrinks a failing prompt to the minimal sub-prompt that still reproduces the failure | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![Explainable AI](https://img.shields.io/badge/Explainable_AI-FB8C00?style=flat-square) |
+| [Safety-Eval-Harness](https://github.com/rishika1099/Safety-Eval-Harness) | Defensive safety evaluation measuring refusal robustness across harm categories and framings, over-refusal on benign lookalikes, and consistency | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 
 ---
 
@@ -390,7 +426,7 @@ achievements = {
 | Project | Description | Tech Stack | Tags |
 |---------|-------------|------------|------|
 | [Kidney-Disorder-Detection](https://github.com/rishika1099/Kidney-Disorder-Detection) | Deep learning system classifying CT scans for kidney disorders with 99.2% accuracy | TensorFlow, VGG19, ResNet50 | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Deep Learning](https://img.shields.io/badge/Deep_Learning-D84315?style=flat-square) ![Computer Vision](https://img.shields.io/badge/Computer_Vision-1E88E5?style=flat-square) |
-| [Medical-Image-Analysis-Assistant](https://github.com/rishika1099/Medical-Image-Analysis-Assistant) | AI-powered medical image analysis assistant using Gemini Vision | Gemini, Streamlit | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Multimodal AI](https://img.shields.io/badge/Multimodal_AI-3949AB?style=flat-square) ![Computer Vision](https://img.shields.io/badge/Computer_Vision-1E88E5?style=flat-square) |
+| [Dr-Pixel-Medical-Image-Analysis-Assistant](https://github.com/rishika1099/Dr-Pixel-Medical-Image-Analysis-Assistant) | AI-powered medical image analysis assistant using Gemini Vision | Gemini, Streamlit | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Multimodal AI](https://img.shields.io/badge/Multimodal_AI-3949AB?style=flat-square) ![Computer Vision](https://img.shields.io/badge/Computer_Vision-1E88E5?style=flat-square) |
 | [Cataract-Detection](https://github.com/rishika1099/Cataract-Detection) | CNN and transfer learning system for automated cataract detection | TensorFlow, CNN | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Deep Learning](https://img.shields.io/badge/Deep_Learning-D84315?style=flat-square) ![Computer Vision](https://img.shields.io/badge/Computer_Vision-1E88E5?style=flat-square) |
 | [Keratoconus-Detection](https://github.com/rishika1099/Keratoconus-Detection) | SVM and deep neural network models for keratoconus detection | SVM, DNN | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Deep Learning](https://img.shields.io/badge/Deep_Learning-D84315?style=flat-square) ![Computer Vision](https://img.shields.io/badge/Computer_Vision-1E88E5?style=flat-square) |
 | [Traffic-Sign-Classifier](https://github.com/rishika1099/Traffic-Sign-Classifier) | VGG16 transfer learning model achieving 98% accuracy on GTSRB traffic sign classification | TensorFlow, VGG16 | ![Deep Learning](https://img.shields.io/badge/Deep_Learning-D84315?style=flat-square) ![Computer Vision](https://img.shields.io/badge/Computer_Vision-1E88E5?style=flat-square) |
@@ -402,7 +438,7 @@ achievements = {
 
 | Project | Description | Tech Stack | Tags |
 |---------|-------------|------------|------|
-| [KV-Cache-Implementation](https://github.com/rishika1099/KV-Cache-Implementation) | Controlled single-codebase benchmark of five KV-cache optimization techniques on Llama-2-7B: KIVI 2/4-bit quantization, TopK sparse selection, SnapKV eviction, TransMLA latent projection, and KIVI×TopK hybrid. KIVI 4-bit achieved 1.93× decode throughput at batch size 32 with lossless LongBench quality | PyTorch, Hugging Face Transformers, Triton, Modal, W&B | ![High Performance ML](https://img.shields.io/badge/High_Performance_ML-5E35B1?style=flat-square) ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) |
+| [KV-Cache-Optimization](https://github.com/rishika1099/KV-Cache-Optimization) | Controlled single-codebase benchmark of five KV-cache optimization techniques on Llama-2-7B: KIVI 2/4-bit quantization, TopK sparse selection, SnapKV eviction, TransMLA latent projection, and KIVI×TopK hybrid. KIVI 4-bit achieved 1.93× decode throughput at batch size 32 with lossless LongBench quality | PyTorch, Hugging Face Transformers, Triton, Modal, W&B | ![High Performance ML](https://img.shields.io/badge/High_Performance_ML-5E35B1?style=flat-square) ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) |
 
 ---
 
@@ -410,6 +446,7 @@ achievements = {
 
 | Project | Description | Tech Stack | Tags |
 |---------|-------------|------------|------|
+| [Sentinel-Intruder-Detection-System](https://github.com/rishika1099/Sentinel-Intruder-Detection-System) | Real-time surveillance and threat detection combining YOLO person/weapon/fire detection, ArcFace facial recognition, and IoT sensor fusion from ESP32/Wokwi devices, with MQTT telemetry, AI threat analysis, and automated incident reports | Python, YOLO, ArcFace, MQTT, Streamlit | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Computer Vision](https://img.shields.io/badge/Computer_Vision-1E88E5?style=flat-square) ![Internet of Things](https://img.shields.io/badge/Internet_of_Things-00838F?style=flat-square) |
 | [Android-Malware-Analysis](https://github.com/rishika1099/Android-Malware-Analysis) | Deep learning malware detection using static and dynamic Android application features with 98% accuracy | Python, Deep Learning | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Deep Learning](https://img.shields.io/badge/Deep_Learning-D84315?style=flat-square) |
 | [Blockchain-Secure-Data-Storage](https://github.com/rishika1099/Blockchain-Secure-Data-Storage) | Secure medical data storage prototype using ECDSA signatures and Proof of Work | Blockchain, ECDSA | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) |
 | [Modular-Image-Encryption](https://github.com/rishika1099/Modular-Image-Encryption) | Custom image encryption framework using image slicing and key-based transformations for secure image storage and transmission | Python, OpenCV, NumPy | ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-424242?style=flat-square) ![Image Processing](https://img.shields.io/badge/Image_Processing-5E35B1?style=flat-square) |
