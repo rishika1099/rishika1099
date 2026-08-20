@@ -1,8 +1,9 @@
 // Commit a file straight into the GitHub repo from the server, used to keep the
 // resume PDF that the profile README links in step with the one saved in the
-// studio. Needs a token with contents:write on the repo, set as GITHUB_TOKEN
-// (fine-grained PAT). Without the token this is a no-op, so the site works
-// exactly as before until the token is configured.
+// studio. Needs a token with contents:write on the repo. GITHUB_TOKEN_RESUME is
+// preferred: a fine-grained PAT scoped to just this repo, so a broader
+// GITHUB_TOKEN kept around for other things is never used for these writes.
+// Without any token this is a no-op, so the site works exactly as before.
 
 const REPO = process.env.GITHUB_RESUME_REPO || "rishika1099/rishika1099";
 const BRANCH = process.env.GITHUB_RESUME_BRANCH || "main";
@@ -15,7 +16,9 @@ export type PushResult =
   | { status: "failed"; reason: string };
 
 function token(): string | undefined {
-  return process.env.GITHUB_TOKEN || process.env.GH_TOKEN || undefined;
+  return (
+    process.env.GITHUB_TOKEN_RESUME || process.env.GITHUB_TOKEN || process.env.GH_TOKEN || undefined
+  );
 }
 
 export function githubConfigured(): boolean {
