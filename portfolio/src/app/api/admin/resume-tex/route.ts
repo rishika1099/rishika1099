@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
 import { getResumeTex, saveResumeTex } from "@/lib/resumeSource";
 import { writeFileKind } from "@/lib/files";
+import { pushFileToGitHub } from "@/lib/githubFile";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
   const denied = guard(request);
   if (denied) return denied;
   try {
+    let github: Awaited<ReturnType<typeof pushFileToGitHub>> | undefined;
     const body = (await request.json()) as { tex?: string; pdfBase64?: string };
     if (typeof body.tex !== "string" || !body.tex.trim()) {
       return NextResponse.json({ error: "tex is required" }, { status: 400 });
@@ -43,9 +45,17 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "that didn't look like a PDF" }, { status: 400 });
       }
       await writeFileKind("resume", buf, "application/pdf");
+
+      // keep the copy the profile README links in step with this one. [skip ci]
+      // so a resume save doesn't trigger a site rebuild it doesn't need.
+      github = await pushFileToGitHub(
+        process.env.GITHUB_RESUME_PATH || "Rishika_Resume.pdf",
+        buf,
+        "Update resume PDF from the studio [skip ci]",
+      );
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, github });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
   }

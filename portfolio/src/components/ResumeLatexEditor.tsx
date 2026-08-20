@@ -374,12 +374,25 @@ export default function ResumeLatexEditor({ keyVal }: { keyVal: string }) {
     }
     setSaveMsg("saving…");
     try {
-      await api("/api/admin/resume-tex", {
-        method: "POST",
-        body: JSON.stringify({ tex: texRef.current, pdfBase64: pdfB64Ref.current }),
-      });
+      const res = await api<{ github?: { status: string; reason?: string; commit?: string } }>(
+        "/api/admin/resume-tex",
+        {
+          method: "POST",
+          body: JSON.stringify({ tex: texRef.current, pdfBase64: pdfB64Ref.current }),
+        },
+      );
       setTailored(false);
-      setSaveMsg("saved ✓ /resume now serves this");
+      // the PDF the profile README links is pushed to GitHub on save too
+      const g = res.github;
+      const note =
+        g?.status === "pushed"
+          ? " · pushed to GitHub ✓"
+          : g?.status === "unchanged"
+            ? " · GitHub already matched"
+            : g?.status === "failed"
+              ? ` · GitHub push failed (${g.reason ?? "unknown"})`
+              : "";
+      setSaveMsg(`saved ✓ /resume now serves this${note}`);
     } catch {
       setSaveMsg("save failed, try again?");
     }
