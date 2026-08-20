@@ -15,10 +15,14 @@ export type PushResult =
   | { status: "skipped"; reason: string }
   | { status: "failed"; reason: string };
 
-function token(): string | undefined {
-  return (
-    process.env.GITHUB_TOKEN_RESUME || process.env.GITHUB_TOKEN || process.env.GH_TOKEN || undefined
-  );
+/** The token plus which variable it came from, for debuggable errors. */
+function token(): { value: string; from: string } | undefined {
+  for (const name of ["GITHUB_TOKEN_RESUME", "GITHUB_TOKEN", "GH_TOKEN"]) {
+    // trim: a pasted value can carry a trailing newline, which GitHub rejects
+    const value = process.env[name]?.trim();
+    if (value) return { value, from: name };
+  }
+  return undefined;
 }
 
 export function githubConfigured(): boolean {
@@ -29,7 +33,7 @@ async function gh(path: string, init?: RequestInit) {
   return fetch(`${API}${path}`, {
     ...init,
     headers: {
-      Authorization: `Bearer ${token()}`,
+      Authorization: `Bearer ${token()?.value ?? ""}`,
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
       "Content-Type": "application/json",
@@ -49,7 +53,8 @@ export async function pushFileToGitHub(
   content: Buffer,
   message: string,
 ): Promise<PushResult> {
-  if (!token()) return { status: "skipped", reason: "no GITHUB_TOKEN configured" };
+  const t = token();
+  if (!t) return { status: "skipped", reason: "no GitHub token configured" };
   try {
     // the API needs the blob sha of the file being replaced (absent = new file)
     let sha: string | undefined;
@@ -61,6 +66,11 @@ export async function pushFileToGitHub(
       if (cur.content && Buffer.from(cur.content, "base64").equals(content)) {
         return { status: "unchanged" };
       }
+    } else if (head.status === 401 || head.status === 403) {
+      return {
+        status: "failed",
+        reason: `${t.from} was rejected (${head.status}); check the value and that it has Contents write on ${REPO}`,
+      };
     } else if (head.status !== 404) {
       return { status: "failed", reason: `lookup failed (${head.status})` };
     }
@@ -76,7 +86,11 @@ export async function pushFileToGitHub(
     });
     if (!res.ok) {
       const detail = (await res.json().catch(() => ({}))) as { message?: string };
-      return { status: "failed", reason: detail.message || `push failed (${res.status})` };
+      const hint =
+        res.status === 403 || res.status === 404
+          ? ` (${t.from} likely lacks Contents write on ${REPO})`
+          : "";
+      return { status: "failed", reason: (detail.message || `push failed (${res.status})`) + hint };
     }
     const out = (await res.json()) as { commit?: { sha?: string } };
     return { status: "pushed", commit: out.commit?.sha?.slice(0, 7) };
