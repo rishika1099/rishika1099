@@ -56,6 +56,17 @@ export default function ContactClient({
       </div>
 
       <ContactForm copy={copy} />
+
+      {copy?.["contact.neighbor"]?.trim() && (
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="rich-passage mx-auto mt-12 max-w-xl text-center font-body text-base text-ink-soft [&_a]:font-semibold [&_a]:text-[#c77dba] [&_a]:underline hover:[&_a]:text-ink"
+          dangerouslySetInnerHTML={{ __html: copy["contact.neighbor"] }}
+        />
+      )}
+
       <Guestbook copy={copy} />
     </PageShell>
   );

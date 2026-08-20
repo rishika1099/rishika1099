@@ -103,6 +103,7 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "contact.form.placeholder.message": { page: "contact", label: "message box placeholder", text: "say hi, share an idea, or a poem you loved…" },
   "contact.form.send": { page: "contact", label: "message send button", text: "send ✦" },
   "contact.form.sent": { page: "contact", label: "message sent confirmation", text: "thank you, your note is on its way ✦" },
+  "contact.neighbor": { page: "contact", label: "neighbouring site shout-out", text: "And while you're here, check out <a href=\"https://praj3sh-dev.netlify.app/\" target=\"_blank\" rel=\"noreferrer\">this neighboring corner of the internet</a>.<br />(A totally unbiased recommendation, of course. 😌✨)" },
   "contact.guestbook.title": { page: "contact", label: "guestbook heading", text: "📖 sign the guestbook" },
   "contact.guestbook.public": { page: "contact", label: "guestbook public-wall badge", text: "🌸 public wall · everyone who visits sees this" },
   "contact.guestbook.hint": { page: "contact", label: "guestbook sub-note", text: "leave a little note, it gets a mood ✦ (a model reads the vibe, not you)" },

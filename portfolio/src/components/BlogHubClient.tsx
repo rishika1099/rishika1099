@@ -89,26 +89,6 @@ export default function BlogHubClient({
           </span>
         </Link>
       </motion.div>
-
-      <motion.p
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.55 }}
-        className="mx-auto mt-12 max-w-xl text-center font-body text-base text-ink-soft"
-      >
-        And while you&apos;re here, check out{" "}
-        <a
-          href="https://blog-praj3sh.web.app/"
-          target="_blank"
-          rel="noreferrer"
-          className="font-semibold text-[#c77dba] underline hover:text-ink"
-        >
-          this neighboring corner of the internet
-        </a>
-        .
-        <br />
-        (A totally unbiased recommendation, of course. 😌✨)
-      </motion.p>
     </PageShell>
   );
 }
