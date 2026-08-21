@@ -1,0 +1,44 @@
+name: Sync README projects
+
+# Adds any newly-published repo to the project tables in the profile README.
+# Append-only: rows already there are never rewritten, so hand-written
+# descriptions stay exactly as written. Skip a repo with the topic `no-readme`.
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # daily, 06:00 UTC
+  workflow_dispatch: # or run it by hand from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-readme-projects
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Add new projects to the README
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/sync-readme-projects.mjs
+
+      - name: Commit if anything changed
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "README unchanged, nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Add newly published projects to the README [skip ci]"
+          git push
