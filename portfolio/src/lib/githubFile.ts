@@ -15,14 +15,41 @@ export type PushResult =
   | { status: "skipped"; reason: string }
   | { status: "failed"; reason: string };
 
+/**
+ * Clean up a pasted secret: env values routinely arrive with a trailing
+ * newline, wrapping quotes, or an already-included "Bearer " prefix, any of
+ * which produce a malformed header and a 401 that looks like a bad token.
+ */
+function clean(raw: string): string {
+  let v = raw.trim();
+  if (v.length > 1 && ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")))) {
+    v = v.slice(1, -1).trim();
+  }
+  return v.replace(/^Bearer\s+/i, "").trim();
+}
+
 /** The token plus which variable it came from, for debuggable errors. */
 function token(): { value: string; from: string } | undefined {
   for (const name of ["GITHUB_TOKEN_RESUME", "GITHUB_TOKEN", "GH_TOKEN"]) {
-    // trim: a pasted value can carry a trailing newline, which GitHub rejects
-    const value = process.env[name]?.trim();
+    const raw = process.env[name];
+    if (!raw) continue;
+    const value = clean(raw);
     if (value) return { value, from: name };
   }
   return undefined;
+}
+
+/** Describe a token without revealing it: enough to spot a truncated paste. */
+function shape(v: string): string {
+  const kind = v.startsWith("github_pat_")
+    ? "fine-grained"
+    : v.startsWith("ghp_")
+      ? "classic"
+      : v.startsWith("gho_") || v.startsWith("ghs_")
+        ? "oauth/app"
+        : "unrecognised prefix";
+  const expected = v.startsWith("github_pat_") ? ", expected ~93" : v.startsWith("ghp_") ? ", expected ~40" : "";
+  return `${kind}, ${v.length} chars${expected}`;
 }
 
 export function githubConfigured(): boolean {
@@ -69,7 +96,7 @@ export async function pushFileToGitHub(
     } else if (head.status === 401 || head.status === 403) {
       return {
         status: "failed",
-        reason: `${t.from} was rejected (${head.status}); check the value and that it has Contents write on ${REPO}`,
+        reason: `${t.from} was rejected (${head.status}). The stored value is ${shape(t.value)}. Regenerate it, or redeploy if you already updated it.`,
       };
     } else if (head.status !== 404) {
       return { status: "failed", reason: `lookup failed (${head.status})` };
