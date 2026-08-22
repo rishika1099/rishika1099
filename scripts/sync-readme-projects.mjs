@@ -140,6 +140,56 @@ function insertRow(md, heading, row) {
   return lines.join("\n");
 }
 
+/** Skills to suggest on LinkedIn: the repo's own language and topics, plus its area. */
+function linkedinSkills(r, category) {
+  const skip = new Set(["llm", "ai", "ml"]);
+  const topics = (r.topics ?? []).filter((t) => !skip.has(t)).map(prettyName);
+  return [...new Set([r.language, category, ...topics].filter(Boolean))].slice(0, 6).join(", ");
+}
+
+/**
+ * Open an issue holding paste-ready LinkedIn copy. LinkedIn has no public API
+ * for the profile's Projects section, and automating the form would breach
+ * their terms, so the writing is automated and the four clicks stay manual.
+ */
+async function openLinkedInIssue(entries) {
+  if (!token) {
+    console.log("(no token: skipping the LinkedIn issue)");
+    return;
+  }
+  const repo = process.env.GITHUB_REPOSITORY || `${USER}/${USER}`;
+  const body = [
+    "New project" + (entries.length > 1 ? "s" : "") + " to add to your LinkedIn **Projects** section.",
+    "",
+    "LinkedIn has no API for this section, so this is copy-paste ready rather than automatic.",
+    "",
+    ...entries.flatMap(({ repo: r, category }) => [
+      `### ${prettyName(r.name)}`,
+      "",
+      `**Project name:** ${prettyName(r.name)}`,
+      `**Description:** ${(r.description ?? "").trim() || "(add a line)"}`,
+      `**Skills:** ${linkedinSkills(r, category)}`,
+      `**Link:** ${r.html_url}`,
+      "",
+    ]),
+    "Close this once they are added ✦",
+  ].join("\n");
+
+  const res = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: `Add to LinkedIn: ${entries.map((e) => prettyName(e.repo.name)).join(", ")}`.slice(0, 200),
+      body,
+    }),
+  });
+  console.log(res.ok ? "LinkedIn issue opened." : `Could not open the issue (${res.status}).`);
+}
+
 async function main() {
   const dryRun = process.argv.includes("--dry-run");
   let md = readFileSync(FILE, "utf8");
@@ -163,6 +213,7 @@ async function main() {
   }
 
   const added = [];
+  const forLinkedIn = [];
   for (const r of repos.reverse()) {
     const { category, row } = buildRow(r);
     const section = SECTIONS.find((s) => s.cats.includes(category)) ?? SECTIONS.at(-1);
@@ -173,6 +224,7 @@ async function main() {
     }
     md = next;
     added.push(`${r.name} -> ${section.heading.replace(/^##\s*/, "")}`);
+    forLinkedIn.push({ repo: r, category });
   }
 
   if (!added.length) {
@@ -187,6 +239,7 @@ async function main() {
   }
   writeFileSync(FILE, md);
   console.log("README updated.");
+  if (forLinkedIn.length) await openLinkedInIssue(forLinkedIn);
 }
 
 main().catch((e) => {

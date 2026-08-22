@@ -72,3 +72,8 @@ portfolio/src/content/guestbook.json
 portfolio/src/content/files/
 # entry attachments (certificate images / diploma PDFs) uploaded via /edit
 portfolio/src/content/attachments/
+
+# Playwright (e2e tour)
+tests/node_modules/
+tests/test-results/
+tests/playwright-report/

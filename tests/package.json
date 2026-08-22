@@ -1,0 +1,12 @@
+{
+  "name": "portfolio-e2e",
+  "private": true,
+  "description": "End-to-end tour of the public site: doubles as smoke tests and as the recorded demo reel.",
+  "scripts": {
+    "test": "playwright test",
+    "tour": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

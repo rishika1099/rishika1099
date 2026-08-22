@@ -1,0 +1,79 @@
+name: Site tour (smoke tests + demo reel)
+
+# Walks the public site end to end. The same pass asserts every feature still
+# works and records a video, so a broken deploy fails loudly and the demo reel
+# is always current. Read-only: it never signs the guestbook or sends a message.
+
+on:
+  schedule:
+    - cron: "30 6 * * 1" # Mondays, 06:30 UTC
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: "Site to test (defaults to production)"
+        required: false
+        default: "https://rishika-m.com"
+      commit_reel:
+        description: "Commit the recorded reel to demo/site-tour.gif"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  tour:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Playwright
+        working-directory: tests
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Run the tour
+        working-directory: tests
+        env:
+          SITE_URL: ${{ inputs.site_url || 'https://rishika-m.com' }}
+        run: npx playwright test
+
+      - name: Keep the report and the recording
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-tour
+          path: |
+            tests/playwright-report
+            tests/test-results
+          retention-days: 30
+
+      - name: Turn the recording into a GIF
+        if: ${{ inputs.commit_reel }}
+        run: |
+          video=$(find tests/test-results -name "*.webm" | head -1)
+          if [ -z "$video" ]; then echo "no recording found"; exit 1; fi
+          mkdir -p demo
+          # two-pass palette keeps the pastels from banding
+          ffmpeg -y -i "$video" -vf "fps=10,scale=960:-1:flags=lanczos,palettegen" /tmp/pal.png
+          ffmpeg -y -i "$video" -i /tmp/pal.png -lavfi "fps=10,scale=960:-1:flags=lanczos[x];[x][1:v]paletteuse" demo/site-tour.gif
+          ls -lh demo/site-tour.gif
+
+      - name: Commit the reel
+        if: ${{ inputs.commit_reel }}
+        run: |
+          if git diff --quiet -- demo/site-tour.gif; then
+            echo "reel unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add demo/site-tour.gif
+          git commit -m "Update the site demo reel [skip ci]"
+          git push
