@@ -33,7 +33,6 @@
 <p align="center">
   <i>a real visit, at real speed ✦ recorded end to end by the test suite, so it can't go stale</i>
 </p>
-</p>
 
 ---
 
