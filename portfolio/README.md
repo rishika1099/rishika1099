@@ -107,6 +107,13 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 - **Quick jump (⌘K):** a command palette to fuzzy-jump to any page or project.
 - **Ask-about-me chatbot:** a floating widget, available site-wide, that answers questions
   about Rishika from her real portfolio with source citations.
+- **Editable in place:** nearly everything on the site is edited from the site itself, not in
+  code. A key-gated **atelier** (plus little `/edit` rooms on each page) covers page copy,
+  project names/blurbs/tags/links, About and Education entries, photos and their captions,
+  the guestbook, and the LaTeX résumé. Edits are stored as overrides in **Netlify Blobs** and
+  win at render time, so they go live instantly with no rebuild; the pages that read them
+  render per request so an edit can never get stuck behind a cached build.
+  (`src/lib/siteCopy.ts`, `aboutData.ts`, `projectOverrides.ts`)
 - **Whimsy:** a butterfly cursor companion (desktop, respects reduced-motion).
 - **Contact:** ways to reach me + a message form.
 - **SEO:** sitemap, robots, and an auto-generated Open Graph preview image so links unfurl

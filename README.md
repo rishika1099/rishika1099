@@ -33,9 +33,6 @@
 <p align="center">
   <i>a real visit, at real speed ✦ recorded end to end by the test suite, so it can't go stale</i>
 </p>
-
-<p align="center">
-  <i>and every word, project, blurb and photo on it is editable in place, from a secret little atelier ✦</i>
 </p>
 
 ---
