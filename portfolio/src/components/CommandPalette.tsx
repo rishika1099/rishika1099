@@ -27,12 +27,16 @@ const PAGES: Item[] = [
   { label: "Resume (page)", hint: "resume", href: "/resume/print" },
 ];
 
-const PROJECT_ITEMS: Item[] = projects.map((p) => ({
-  label: p.name,
-  hint: "project",
-  href: p.demo ?? p.repo,
-  external: true,
-}));
+// Only the flagships. The Work tab lists all 45 projects (curated plus every
+// repo pulled from GitHub); putting them all here would bury the pages.
+const PROJECT_ITEMS: Item[] = projects
+  .filter((p) => p.featured)
+  .map((p) => ({
+    label: p.name,
+    hint: "flagship",
+    href: p.demo ?? p.repo,
+    external: true,
+  }));
 
 const ALL = [...PAGES, ...PROJECT_ITEMS];
 
