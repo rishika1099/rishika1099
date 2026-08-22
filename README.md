@@ -26,14 +26,6 @@
   ↳ click the screen, she built something
 </p>
 
-<p align="center">
-  <img src="./demo/site-tour.gif" width="760" alt="A tour of the site: semantic search, the ELI5 toggle, the embeddings galaxy, the chatbot, the poems door, and the guestbook" />
-</p>
-
-<p align="center">
-  <i>a real visit, at real speed ✦ recorded end to end by the test suite, so it can't go stale</i>
-</p>
-
 ---
 
 ## 💼 About Me
