@@ -1,0 +1,60 @@
+name: Back up site content
+
+# Everything editable on the site lives only in Netlify Blobs: the poems, the
+# guestbook, every page passage, the project overrides, the résumé source. This
+# takes a weekly encrypted snapshot so none of it has a single point of failure.
+#
+# Encrypted because this repo is public and the poems are password-gated.
+# Needs two secrets: ADMIN_KEY and BACKUP_PASSPHRASE.
+
+on:
+  schedule:
+    - cron: "0 5 * * 0" # Sundays, 05:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Collect the snapshot
+        env:
+          ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
+          BACKUP_OUT: /tmp/portfolio-backup.json
+        run: node scripts/backup-content.mjs
+
+      - name: Encrypt it
+        env:
+          PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$PASSPHRASE" ]; then
+            echo "BACKUP_PASSPHRASE is not set; refusing to commit plaintext poems to a public repo."
+            exit 1
+          fi
+          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt \
+            -in /tmp/portfolio-backup.json \
+            -out backups/portfolio-backup.json.enc \
+            -pass env:PASSPHRASE
+          # never let the plaintext linger in the workspace
+          shred -u /tmp/portfolio-backup.json 2>/dev/null || rm -f /tmp/portfolio-backup.json
+          ls -lh backups/portfolio-backup.json.enc
+
+      - name: Commit if it changed
+        run: |
+          if git diff --quiet -- backups/; then
+            echo "Nothing changed since the last backup."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backups/portfolio-backup.json.enc
+          git commit -m "Weekly encrypted content backup [skip ci]"
+          git push

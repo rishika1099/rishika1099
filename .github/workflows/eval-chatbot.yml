@@ -1,0 +1,64 @@
+name: Chatbot eval
+
+# The README and the under-the-hood tour both claim 100% retrieval, answer, and
+# refusal accuracy. The knowledge base is rebuilt from every project README and
+# Substack post, so those numbers can drift as new work is published and quietly
+# leave a false claim on the profile. This re-measures them weekly.
+#
+# Runs against the deployed site, so it needs no API key of its own.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1" # Mondays, 07:00 UTC
+  workflow_dispatch:
+    inputs:
+      floor:
+        description: "Fail below this percentage"
+        required: false
+        default: "90"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Measure retrieval, answer, and refusal accuracy
+        id: eval
+        working-directory: portfolio
+        env:
+          EVAL_BASE: https://rishika-m.com
+          EVAL_MIN: ${{ inputs.floor || '90' }}
+        run: |
+          set -o pipefail
+          node scripts/eval-chat.mjs 2>&1 | tee /tmp/eval.txt
+
+      - name: Open an issue if it slipped
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let out = '(no output captured)';
+            try { out = fs.readFileSync('/tmp/eval.txt', 'utf8').slice(-4000); } catch {}
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Chatbot eval slipped below the floor',
+              body: [
+                'The weekly chatbot eval failed, so the accuracy quoted in the README',
+                'and the under-the-hood tour may no longer be true.',
+                '',
+                '```',
+                out,
+                '```',
+              ].join('\n'),
+            });

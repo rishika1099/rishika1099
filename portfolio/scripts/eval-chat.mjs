@@ -79,3 +79,24 @@ console.log("=== summary ===");
 console.log(`retrieval hit rate : ${pct(retrievalHits, grounded.length)}`);
 console.log(`answer accuracy    : ${pct(answerHits, grounded.length)}`);
 console.log(`refusal correctness: ${pct(refusalHits, refusals.length)}`);
+
+// The README and the tour both quote these numbers. The knowledge base grows
+// every time a repo or a Substack post is published, so set EVAL_MIN in CI to
+// fail the run if any of them slips and quietly makes those claims untrue.
+const floor = Number(process.env.EVAL_MIN ?? 0);
+if (floor > 0) {
+  const rates = {
+    retrieval: (retrievalHits / grounded.length) * 100,
+    answer: (answerHits / grounded.length) * 100,
+    refusal: (refusalHits / refusals.length) * 100,
+  };
+  const below = Object.entries(rates).filter(([, v]) => v < floor);
+  if (below.length) {
+    console.error(
+      `\nBelow the ${floor}% floor: ` +
+        below.map(([k, v]) => `${k} ${Math.round(v)}%`).join(", "),
+    );
+    process.exit(1);
+  }
+  console.log(`\nAll three at or above the ${floor}% floor ✓`);
+}
