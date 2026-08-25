@@ -35,6 +35,7 @@ export async function GET(request: Request) {
         tags: p.tags ?? [],
         results: p.results ?? "",
         article: p.article ?? "",
+        emoji: p.emoji ?? "",
         repo: p.repo,
         overridden: Object.keys(overrides[slug] ?? {}),
       };
@@ -63,6 +64,8 @@ export async function POST(request: Request) {
       tags: strArr(body.tags),
       results: typeof body.results === "string" ? body.results.trim() : undefined,
       article: typeof body.article === "string" ? body.article.trim() : undefined,
+      // a couple of characters is plenty for an emoji, and stops a stray paste
+      emoji: typeof body.emoji === "string" ? body.emoji.trim().slice(0, 8) : undefined,
     };
     await saveProjectOverride(slug, o);
     return NextResponse.json({ ok: true });

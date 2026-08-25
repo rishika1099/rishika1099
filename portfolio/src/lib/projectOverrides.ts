@@ -17,6 +17,7 @@ export interface ProjectOverride {
   tags?: string[];
   results?: string; // HTML dashboard link
   article?: string; // Substack link
+  emoji?: string; // hand-picked, overriding the keyword-guessed one
 }
 
 export type OverrideMap = Record<string, ProjectOverride>; // key: repo slug (lowercase)
@@ -82,7 +83,7 @@ export async function saveProjectOverride(slug: string, o: ProjectOverride): Pro
     if (o.tags.length) next.tags = o.tags;
     else delete next.tags;
   }
-  for (const k of ["results", "article"] as const) {
+  for (const k of ["results", "article", "emoji"] as const) {
     if (o[k] !== undefined) {
       const v = o[k]!.trim();
       if (v) next[k] = v;

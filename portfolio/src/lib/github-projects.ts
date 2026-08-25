@@ -254,6 +254,8 @@ export async function getAllProjects(): Promise<Project[]> {
       tags: o.tags?.length ? o.tags : p.tags,
       results: o.results ?? p.results,
       article: o.article ?? p.article,
+      // a hand-picked emoji always wins over the keyword guess
+      emoji: o.emoji || p.emoji,
     };
   };
 

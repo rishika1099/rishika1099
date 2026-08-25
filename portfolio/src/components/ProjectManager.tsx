@@ -26,6 +26,7 @@ interface AdminProject {
   tags: string[];
   results: string;
   article: string;
+  emoji: string;
   repo: string;
   overridden: string[];
 }
@@ -80,6 +81,7 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
           tags: form.tags,
           results: form.results,
           article: form.article,
+          emoji: form.emoji,
         }),
       });
       setOpen(null);
@@ -220,6 +222,29 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
                     placeholder="RAG, Python, …"
                     onChange={(e) => setForm({ ...form, tags: e.target.value.split(",").map((s) => s.trim()) })}
                   />
+                </div>
+                <div>
+                  <p className="font-body text-[11px] font-semibold text-ink-soft">
+                    its little face {form.emoji ? "" : "(guessed from the project's words)"}
+                  </p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <input
+                      className={`${field} max-w-[6rem] text-center text-lg`}
+                      value={form.emoji}
+                      placeholder="🌸"
+                      onChange={(e) => setForm({ ...form, emoji: e.target.value })}
+                    />
+                    {form.emoji && (
+                      <button
+                        type="button"
+                        onClick={() => setForm({ ...form, emoji: "" })}
+                        className={btnSoft}
+                        title="go back to the guessed emoji"
+                      >
+                        use the guess
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <p className="font-body text-[11px] font-semibold text-ink-soft">📊 results dashboard link (optional)</p>
