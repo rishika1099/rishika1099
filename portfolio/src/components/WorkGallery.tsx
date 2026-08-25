@@ -79,7 +79,7 @@ function DomainChips({ domains }: { domains?: Domain[] }) {
           style={{ backgroundColor: domainColor[d] ?? "#e6d7f5" }}
           className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
         >
-          {d}
+          {domainEmoji[d] ?? "✦"} {d}
         </span>
       ))}
     </div>
