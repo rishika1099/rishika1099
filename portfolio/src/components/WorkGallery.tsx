@@ -227,11 +227,16 @@ function Carousel({ children }: { children: React.ReactNode }) {
     const release = () => (held = false);
     let quietUntil = 0;
     const hush = () => (quietUntil = Date.now() + 6000);
+    // scrolling the page with the cursor over a shelf fires wheel here too;
+    // only a sideways gesture means the reader is actually driving this shelf
+    const maybeHush = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) hush();
+    };
     el.addEventListener("pointerenter", hold);
     el.addEventListener("pointerleave", release);
     el.addEventListener("focusin", hold);
     el.addEventListener("focusout", release);
-    el.addEventListener("wheel", hush, { passive: true });
+    el.addEventListener("wheel", maybeHush, { passive: true });
     el.addEventListener("pointerdown", hush);
     el.addEventListener("touchstart", hush, { passive: true });
 
@@ -260,7 +265,7 @@ function Carousel({ children }: { children: React.ReactNode }) {
       el.removeEventListener("pointerleave", release);
       el.removeEventListener("focusin", hold);
       el.removeEventListener("focusout", release);
-      el.removeEventListener("wheel", hush);
+      el.removeEventListener("wheel", maybeHush);
       el.removeEventListener("pointerdown", hush);
       el.removeEventListener("touchstart", hush);
     };
@@ -334,8 +339,10 @@ export default function WorkGallery({
 }) {
   // stable id for each area section, so a pill can jump straight to it
   const areaId = (c: string) => "area-" + c.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  // which category sections have been opened past their preview
+  // which category sections have been opened into a grid
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({});
+  // the area currently on screen, so one pill reads as "you are here"
+  const [activeArea, setActiveArea] = useState<string>("");
   const [filter, setFilter] = useState<Category | "All">("All");
   const [domain, setDomain] = useState<Domain | "All">("All");
   const [query, setQuery] = useState("");
@@ -349,6 +356,8 @@ export default function WorkGallery({
   const [similarLoading, setSimilarLoading] = useState(false);
 
   const searching = query.trim().length >= 2;
+
+
 
   // Narrow the grid to the projects most similar to `name`, like a filter.
   async function findSimilar(name: string) {
@@ -459,6 +468,27 @@ export default function WorkGallery({
   const placed = new Set(sections.flatMap((s) => s.items.map((p) => p.name)));
   const leftovers = grid.filter((p) => !placed.has(p.name));
   if (leftovers.length) sections.push({ category: "More" as Category, items: leftovers });
+
+  // highlight the pill for whichever area is in view, the way the About page's
+  // jump bar does. Marking every area you had opened just accumulated.
+  useEffect(() => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('section[id^="area-"]'));
+    if (!nodes.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        const first = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (first) setActiveArea(first.target.id);
+      },
+      { rootMargin: "-120px 0px -55% 0px", threshold: 0 },
+    );
+    nodes.forEach((n) => io.observe(n));
+    return () => io.disconnect();
+    // rebuilt only when the set of sections changes; without a dependency list
+    // every highlight tore the observer down before it could report the next one
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtering, sections.length]);
 
   return (
     <>
@@ -596,7 +626,7 @@ export default function WorkGallery({
             key={lv}
             type="button"
             onClick={() => setLevel(lv)}
-            className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
+            className={`rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
               level === lv ? "bg-ink text-cream" : "bg-white/70 text-ink-soft hover:bg-white"
             }`}
           >
@@ -678,8 +708,8 @@ export default function WorkGallery({
                 60,
               );
             }}
-            className={`rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
-              c !== "All" && openCats[c]
+            className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
+              c !== "All" && activeArea === areaId(c)
                 ? "bg-ink text-cream"
                 : "bg-white/70 text-ink-soft hover:bg-white"
             }`}
