@@ -169,6 +169,8 @@ export default function WorkGallery({
   categories: Category[];
   domains: Domain[];
 }) {
+  // which category sections have been opened past their preview
+  const [openCats, setOpenCats] = useState<Record<string, boolean>>({});
   const [filter, setFilter] = useState<Category | "All">("All");
   const [domain, setDomain] = useState<Domain | "All">("All");
   const [query, setQuery] = useState("");
@@ -281,6 +283,20 @@ export default function WorkGallery({
   // When a filter is active, show every match (featured included). Otherwise the
   // featured blooms sit in their own section and the grid holds the rest.
   const grid = projects.filter((p) => matches(p) && (filtering || !p.featured));
+
+  // With 80+ projects a single flat grid buries everything, so group the rest by
+  // technical area and show a few from each until you ask for more. While a
+  // filter is on the result set is already narrow, so it stays a plain grid.
+  const PREVIEW = 4;
+  const sections = filtering
+    ? []
+    : categories
+        .map((c) => ({ category: c, items: grid.filter((p) => p.categories[0] === c) }))
+        .filter((s) => s.items.length > 0);
+  // anything whose primary area isn't in the taxonomy still needs a home
+  const placed = new Set(sections.flatMap((s) => s.items.map((p) => p.name)));
+  const leftovers = grid.filter((p) => !placed.has(p.name));
+  if (leftovers.length) sections.push({ category: "More" as Category, items: leftovers });
 
   return (
     <>
@@ -495,6 +511,64 @@ export default function WorkGallery({
         ))}
       </div>
 
+      {!filtering &&
+        sections.map((sec) => {
+          const open = !!openCats[sec.category];
+          const shown = open ? sec.items : sec.items.slice(0, PREVIEW);
+          const hidden = sec.items.length - shown.length;
+          return (
+            <section key={sec.category} className="mt-10">
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <h2 className="font-body text-xl font-bold text-ink">
+                  {sec.category}{" "}
+                  <span className="font-normal text-ink-soft">({sec.items.length})</span>
+                </h2>
+                {hidden > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setOpenCats((o) => ({ ...o, [sec.category]: true }))}
+                    className="rounded-full bg-white/70 px-3.5 py-1 font-body text-sm font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
+                  >
+                    show all {sec.items.length} →
+                  </button>
+                )}
+                {open && sec.items.length > PREVIEW && (
+                  <button
+                    type="button"
+                    onClick={() => setOpenCats((o) => ({ ...o, [sec.category]: false }))}
+                    className="rounded-full bg-white/70 px-3.5 py-1 font-body text-sm font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
+                  >
+                    show fewer
+                  </button>
+                )}
+              </div>
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {shown.map((p) => (
+                  <motion.article
+                    layout
+                    key={p.name}
+                    initial={{ opacity: 0, scale: 0.94 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.22 }}
+                    whileHover={{ y: -5 }}
+                    className="flex flex-col rounded-3xl p-5 soft-card"
+                  >
+                    <span className="text-3xl">{p.emoji}</span>
+                    <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
+                    <Blurb text={blurbFor(p)} />
+                    <DomainChips domains={p.domains} />
+                    <TechChips categories={p.categories} />
+                    <Links p={p} />
+                    <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
+                  </motion.article>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+
+      {/* filtered results stay one flat grid: the set is already narrow */}
+      {filtering && (
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {grid.map((p) => (
@@ -522,6 +596,7 @@ export default function WorkGallery({
           <p className="font-body text-ink-soft">nothing growing in this patch yet ✦</p>
         )}
       </div>
+      )}
       </>
       )}
     </>
