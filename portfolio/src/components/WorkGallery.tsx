@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  categoryStyle,
   domainColor,
   type Category,
   type Domain,
@@ -90,9 +91,10 @@ function TechChips({ categories }: { categories: Category[] }) {
       {categories.map((c) => (
         <span
           key={c}
-          className="rounded-full bg-mint/70 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft"
+          style={{ backgroundColor: categoryStyle[c]?.color ?? "#d8efe2" }}
+          className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
         >
-          {c}
+          {categoryStyle[c]?.emoji ?? "✦"} {c}
         </span>
       ))}
     </div>
@@ -689,9 +691,36 @@ export default function WorkGallery({
         </label>
       </div>
 
+      {/* A domain filter flattens the page into one grid, so the patch menu has
+          nothing to jump to. Swap it for the way back out. */}
+      {filtering && (
+        <div className="sticky top-20 z-30 mt-4 flex justify-center">
+          <div className="flex items-center gap-3 rounded-full px-4 py-1.5 font-body text-sm soft-card">
+            <span className="text-ink-soft">
+              showing{" "}
+              <span
+                style={{ backgroundColor: domainColor[domain as Domain] ?? "#e6d7f5" }}
+                className="rounded-full px-2 py-0.5 font-semibold text-ink"
+              >
+                {domain}
+              </span>{" "}
+              · {grid.length} project{grid.length === 1 ? "" : "s"}
+            </span>
+            <button
+              type="button"
+              onClick={() => setDomain("All")}
+              className="rounded-full bg-ink/90 px-3 py-1 font-body text-xs font-semibold text-cream transition hover:opacity-90"
+            >
+              ✕ clear
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* A dropdown rather than a row of pills: thirteen areas ran off the edge
           of the row, so half of them were unreachable without side-scrolling.
           It reflects the area you are looking at, and picking one jumps there. */}
+      {!filtering && (
       <div className="sticky top-20 z-30 mt-4 flex justify-center">
         <label className="flex items-center gap-2 rounded-full px-3 py-1.5 font-body text-sm font-semibold text-ink-soft soft-card">
           patch
@@ -707,12 +736,13 @@ export default function WorkGallery({
             <option value="All">All patches</option>
             {sections.map((sec) => (
               <option key={sec.category} value={sec.category}>
-                {sec.category} ({sec.items.length})
+                {categoryStyle[sec.category]?.emoji ?? "✦"} {sec.category} ({sec.items.length})
               </option>
             ))}
           </select>
         </label>
       </div>
+      )}
 
       {!filtering &&
         sections.map((sec) => {
@@ -721,7 +751,14 @@ export default function WorkGallery({
           return (
             <section key={sec.category} id={areaId(sec.category)} className="mt-10 scroll-mt-24">
               <div className="flex flex-wrap items-baseline justify-between gap-3">
-                <h2 className="font-body text-xl font-bold text-ink">
+                <h2 className="flex items-center gap-2 font-body text-xl font-bold text-ink">
+                  <span
+                    aria-hidden
+                    style={{ backgroundColor: categoryStyle[sec.category]?.color ?? "#d8efe2" }}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-base"
+                  >
+                    {categoryStyle[sec.category]?.emoji ?? "✦"}
+                  </span>
                   {sec.category}{" "}
                   <span className="font-normal text-ink-soft">({sec.items.length})</span>
                 </h2>

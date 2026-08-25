@@ -416,6 +416,24 @@ export const domains: Domain[] = [
 ];
 
 // Soft pastel chip colors (paired with dark text for readability).
+// Each technical area gets a face and a tint, so a card, a section heading and
+// the patch menu all identify an area the same way. Pastels in the same family
+// as domainColor, kept light enough for ink text to stay readable on them.
+export const categoryStyle: Record<Category, { emoji: string; color: string }> = {
+  "Generative AI": { emoji: "✨", color: "#e5d4f7" },
+  "Agentic AI": { emoji: "🤖", color: "#d7d2f7" },
+  NLP: { emoji: "💬", color: "#cfe4fa" },
+  "Causal Inference": { emoji: "🧬", color: "#c9e8d8" },
+  "Statistical Modeling": { emoji: "📊", color: "#bfe4e0" },
+  "Machine Learning": { emoji: "🌼", color: "#fae2c2" },
+  "Predictive Analysis": { emoji: "🔮", color: "#f8d9ea" },
+  "Deep Learning": { emoji: "🧠", color: "#f7cfc9" },
+  "Computer Vision": { emoji: "👁️", color: "#cfdcf7" },
+  "High Performance Machine Learning": { emoji: "⚡", color: "#e2d6f2" },
+  Cybersecurity: { emoji: "🔐", color: "#d4d7dd" },
+  "Internet of Things": { emoji: "📡", color: "#c7e6e8" },
+};
+
 export const domainColor: Record<Domain, string> = {
   Healthcare: "#f6c9d5",
   Education: "#c5e0f5",
