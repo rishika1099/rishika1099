@@ -11,6 +11,7 @@ import type { Attachment, Entry } from "@/data/about";
 import { domainColor } from "@/data/projects";
 import { copyToHtml, detailsToHtml, hasDetails as entryHasDetails } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
+import SectionNav from "@/components/SectionNav";
 
 // full-screen viewer for an attachment (Esc or backdrop to close)
 function Lightbox({ attachment, onClose }: { attachment: Attachment; onClose: () => void }) {
@@ -218,12 +219,20 @@ export default function AboutClient({
   bioHtml,
   title,
   heads,
+  navLabels,
 }: {
   education: Entry[];
   timeline: Entry[];
   certifications?: Entry[];
   bioHtml: string;
   title: React.ReactNode;
+  navLabels: {
+    education: string;
+    skills: string;
+    work: string;
+    research: string;
+    certifications: string;
+  };
   heads: {
     education: React.ReactNode;
     skills: React.ReactNode;
@@ -258,8 +267,20 @@ export default function AboutClient({
         </a>
       </div>
 
+      <SectionNav
+        sections={[
+          { id: "education", label: navLabels.education },
+          { id: "skills", label: navLabels.skills },
+          { id: "work", label: navLabels.work },
+          { id: "research", label: navLabels.research },
+          ...(certifications.length
+            ? [{ id: "certifications", label: navLabels.certifications }]
+            : []),
+        ]}
+      />
+
       {/* Education */}
-      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
+      <h2 id="education" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.education}
       </h2>
       <div className="mt-5 space-y-4">
@@ -269,7 +290,7 @@ export default function AboutClient({
       </div>
 
       {/* Skills */}
-      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
+      <h2 id="skills" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.skills}
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
@@ -278,7 +299,7 @@ export default function AboutClient({
       <SkillGraph />
 
       {/* Jobs */}
-      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
+      <h2 id="work" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.work}
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
@@ -293,7 +314,7 @@ export default function AboutClient({
       </div>
 
       {/* Research */}
-      <h2 className="mt-12 font-body text-2xl font-bold text-ink">
+      <h2 id="research" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.research}
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
@@ -310,7 +331,7 @@ export default function AboutClient({
       {/* Certifications & short courses (only when there are any) */}
       {certifications.length > 0 && (
         <>
-          <h2 className="mt-12 font-body text-2xl font-bold text-ink">{heads.certifications}</h2>
+          <h2 id="certifications" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">{heads.certifications}</h2>
           <div className="mt-5 space-y-4">
             {certifications.map((e, i) => (
               <EntryCard key={e.title} entry={e} i={i} />
