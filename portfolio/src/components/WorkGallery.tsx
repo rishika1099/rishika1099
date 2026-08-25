@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   categoryStyle,
   domainColor,
+  domainEmoji,
   type Category,
   type Domain,
   type Project,
@@ -684,13 +685,17 @@ export default function WorkGallery({
             <option value="All">All domains</option>
             {domains.map((d) => (
               <option key={d} value={d} style={{ backgroundColor: domainColor[d] ?? "#e6d7f5" }}>
-                {d}
+                {domainEmoji[d] ?? "✦"} {d}
               </option>
             ))}
           </select>
         </label>
       </div>
 
+      {/* Everything the patch bar belongs to lives in here. A sticky element
+          stops at the bottom of its own container, so bounding it this way is
+          what stops the bar drifting on over the embeddings galaxy below. */}
+      <div className="relative">
       {/* A domain filter flattens the page into one grid, so the patch menu has
           nothing to jump to. Swap it for the way back out. */}
       {filtering && (
@@ -726,6 +731,10 @@ export default function WorkGallery({
           patch
           <select
             value={sections.find((sec) => areaId(sec.category) === activeArea)?.category ?? "All"}
+            style={(() => {
+              const here = sections.find((sec) => areaId(sec.category) === activeArea)?.category;
+              return here ? { backgroundColor: categoryStyle[here]?.color } : undefined;
+            })()}
             onChange={(e) => {
               const v = e.target.value;
               const target = v === "All" ? "areas" : areaId(v);
@@ -735,7 +744,11 @@ export default function WorkGallery({
           >
             <option value="All">All patches</option>
             {sections.map((sec) => (
-              <option key={sec.category} value={sec.category}>
+              <option
+                key={sec.category}
+                value={sec.category}
+                style={{ backgroundColor: categoryStyle[sec.category]?.color ?? "#d8efe2" }}
+              >
                 {categoryStyle[sec.category]?.emoji ?? "✦"} {sec.category} ({sec.items.length})
               </option>
             ))}
@@ -841,6 +854,7 @@ export default function WorkGallery({
         )}
       </div>
       )}
+      </div>
       </>
       )}
     </>

@@ -434,6 +434,21 @@ export const categoryStyle: Record<Category, { emoji: string; color: string }> =
   "Internet of Things": { emoji: "📡", color: "#c7e6e8" },
 };
 
+// A face for each domain too, so the domain menu reads like the patch menu.
+export const domainEmoji: Record<Domain, string> = {
+  Healthcare: "🩺",
+  Education: "🎓",
+  "Public Sector": "🏛️",
+  Legal: "⚖️",
+  "Human Rights": "🕊️",
+  Finance: "🏦",
+  Cybersecurity: "🔐",
+  Agriculture: "🌾",
+  "Food & Nutrition": "🍲",
+  "Social Media": "📱",
+  Sports: "🏅",
+};
+
 export const domainColor: Record<Domain, string> = {
   Healthcare: "#f6c9d5",
   Education: "#c5e0f5",
