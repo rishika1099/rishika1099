@@ -476,12 +476,14 @@ export default function WorkGallery({
     if (!nodes.length) return;
     const io = new IntersectionObserver(
       (entries) => {
-        const first = entries
+        // the section filling most of the reading band wins; picking whichever
+        // was simply topmost lagged a section behind while scrolling
+        const best = entries
           .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-        if (first) setActiveArea(first.target.id);
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (best) setActiveArea(best.target.id);
       },
-      { rootMargin: "-120px 0px -55% 0px", threshold: 0 },
+      { rootMargin: "-100px 0px -60% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
     );
     nodes.forEach((n) => io.observe(n));
     return () => io.disconnect();
@@ -667,7 +669,7 @@ export default function WorkGallery({
       )}
 
       {/* Filters */}
-      <div className="mt-12 flex flex-wrap items-center justify-between gap-3">
+      <div id="areas" className="mt-12 scroll-mt-24 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-body text-2xl font-bold text-ink">🐝 wander the patches</h2>
         <label className="flex items-center gap-2 font-body text-sm font-semibold text-ink-soft">
           domain
@@ -687,37 +689,29 @@ export default function WorkGallery({
         </label>
       </div>
 
-      {/* sticky so you can hop between patches without scrolling back up; one
-          scrollable row rather than three wrapped lines eating the viewport */}
-      <div className="sticky top-20 z-30 mt-4">
-      <div className="mx-auto flex max-w-full gap-2 overflow-x-auto rounded-full p-1.5 soft-card [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {(["All", ...categories] as const).map((c) => (
-          <button
-            key={c}
-            // the sections below are already grouped by area, so a pill jumps to
-            // one and opens it rather than filtering to a duplicate of it
-            onClick={() => {
-              if (c === "All") {
-                setOpenCats({});
-                document.getElementById("areas")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                return;
-              }
-              setOpenCats((o) => ({ ...o, [c]: true }));
-              setTimeout(
-                () => document.getElementById(areaId(c))?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                60,
-              );
+      {/* A dropdown rather than a row of pills: thirteen areas ran off the edge
+          of the row, so half of them were unreachable without side-scrolling.
+          It reflects the area you are looking at, and picking one jumps there. */}
+      <div className="sticky top-20 z-30 mt-4 flex justify-center">
+        <label className="flex items-center gap-2 rounded-full px-3 py-1.5 font-body text-sm font-semibold text-ink-soft soft-card">
+          patch
+          <select
+            value={sections.find((sec) => areaId(sec.category) === activeArea)?.category ?? "All"}
+            onChange={(e) => {
+              const v = e.target.value;
+              const target = v === "All" ? "areas" : areaId(v);
+              document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
-            className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
-              c !== "All" && activeArea === areaId(c)
-                ? "bg-ink text-cream"
-                : "bg-white/70 text-ink-soft hover:bg-white"
-            }`}
+            className="rounded-full border border-white/70 bg-white/80 px-4 py-1.5 font-body text-sm font-semibold text-ink outline-none transition focus:border-blush focus:ring-2 focus:ring-blush/40"
           >
-            {c}
-          </button>
-        ))}
-      </div>
+            <option value="All">All patches</option>
+            {sections.map((sec) => (
+              <option key={sec.category} value={sec.category}>
+                {sec.category} ({sec.items.length})
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
       {!filtering &&
