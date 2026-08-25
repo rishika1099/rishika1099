@@ -192,13 +192,68 @@ function ProjectCard({
   );
 }
 
-/** Horizontal shelf for one area. Arrows because a mouse has no sideways scroll. */
+/**
+ * Horizontal shelf for one area. Arrows because a mouse has no sideways scroll,
+ * and it advances a card at a time on its own, the way a phone carousel does.
+ *
+ * The advance yields to the reader: it stops while hovered, focused, or touched,
+ * while the shelf is off-screen, for a few seconds after any manual scroll, and
+ * entirely when the visitor prefers reduced motion.
+ */
 function Carousel({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const nudge = (dir: 1 | -1) => {
     const el = ref.current;
-    if (el) el.scrollBy({ left: dir * Math.max(300, el.clientWidth * 0.8), behavior: "smooth" });
+    if (el) el.scrollBy({ left: dir * cardStep(el), behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let onScreen = false;
+    const io = new IntersectionObserver((es) => (onScreen = es[0]?.isIntersecting ?? false), {
+      threshold: 0.3,
+    });
+    io.observe(el);
+
+    // native listeners rather than React's synthetic enter/leave, which are
+    // derived from mouseover and easy to miss on a scrolling container
+    let held = false;
+    const hold = () => (held = true);
+    const release = () => (held = false);
+    let quietUntil = 0;
+    const hush = () => (quietUntil = Date.now() + 6000);
+    el.addEventListener("pointerenter", hold);
+    el.addEventListener("pointerleave", release);
+    el.addEventListener("focusin", hold);
+    el.addEventListener("focusout", release);
+    el.addEventListener("wheel", hush, { passive: true });
+    el.addEventListener("pointerdown", hush);
+    el.addEventListener("touchstart", hush, { passive: true });
+
+    const id = setInterval(() => {
+      if (!onScreen || held || Date.now() < quietUntil) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max < 4) return;
+      if (el.scrollLeft >= max - 4) el.scrollTo({ left: 0, behavior: "smooth" });
+      else el.scrollBy({ left: cardStep(el), behavior: "smooth" });
+    }, 3800);
+
+    return () => {
+      clearInterval(id);
+      io.disconnect();
+      el.removeEventListener("pointerenter", hold);
+      el.removeEventListener("pointerleave", release);
+      el.removeEventListener("focusin", hold);
+      el.removeEventListener("focusout", release);
+      el.removeEventListener("wheel", hush);
+      el.removeEventListener("pointerdown", hush);
+      el.removeEventListener("touchstart", hush);
+    };
+  }, []);
+
   return (
     <div className="relative">
       <div
@@ -225,6 +280,12 @@ function Carousel({ children }: { children: React.ReactNode }) {
       </button>
     </div>
   );
+}
+
+/** One card plus the flex gap, so a step lands cleanly on the next card. */
+function cardStep(el: HTMLElement): number {
+  const card = el.querySelector("article");
+  return card ? card.getBoundingClientRect().width + 16 : Math.max(300, el.clientWidth * 0.8);
 }
 
 export default function WorkGallery({
@@ -500,7 +561,7 @@ export default function WorkGallery({
             key={lv}
             type="button"
             onClick={() => setLevel(lv)}
-            className={`rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
+            className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
               level === lv ? "bg-ink text-cream" : "bg-white/70 text-ink-soft hover:bg-white"
             }`}
           >
@@ -561,7 +622,10 @@ export default function WorkGallery({
         </label>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      {/* sticky so you can hop between patches without scrolling back up; one
+          scrollable row rather than three wrapped lines eating the viewport */}
+      <div className="sticky top-20 z-30 mt-4">
+      <div className="mx-auto flex max-w-full gap-2 overflow-x-auto rounded-full p-1.5 soft-card [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {(["All", ...categories] as const).map((c) => (
           <button
             key={c}
@@ -588,6 +652,7 @@ export default function WorkGallery({
             {c}
           </button>
         ))}
+      </div>
       </div>
 
       {!filtering &&
