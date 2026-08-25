@@ -202,6 +202,8 @@ function ProjectCard({
  */
 function Carousel({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [at, setAt] = useState(0);
+  const [count, setCount] = useState(0);
   const nudge = (dir: 1 | -1) => {
     const el = ref.current;
     if (el) el.scrollBy({ left: dir * cardStep(el), behavior: "smooth" });
@@ -233,6 +235,15 @@ function Carousel({ children }: { children: React.ReactNode }) {
     el.addEventListener("pointerdown", hush);
     el.addEventListener("touchstart", hush, { passive: true });
 
+    // keep the dots in step with wherever the shelf actually is, however it got
+    // there: an advance, an arrow, a swipe, or a dot
+    const sync = () => {
+      setCount(el.querySelectorAll("article").length);
+      setAt(Math.round(el.scrollLeft / cardStep(el)));
+    };
+    sync();
+    el.addEventListener("scroll", sync, { passive: true });
+
     const id = setInterval(() => {
       if (!onScreen || held || Date.now() < quietUntil) return;
       const max = el.scrollWidth - el.clientWidth;
@@ -244,6 +255,7 @@ function Carousel({ children }: { children: React.ReactNode }) {
     return () => {
       clearInterval(id);
       io.disconnect();
+      el.removeEventListener("scroll", sync);
       el.removeEventListener("pointerenter", hold);
       el.removeEventListener("pointerleave", release);
       el.removeEventListener("focusin", hold);
@@ -278,6 +290,29 @@ function Carousel({ children }: { children: React.ReactNode }) {
       >
         ›
       </button>
+
+      {count > 1 && (
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+          {Array.from({ length: count }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={`go to project ${i + 1} of ${count}`}
+              aria-current={i === at ? "true" : undefined}
+              onClick={() => {
+                const el = ref.current;
+                if (el) el.scrollTo({ left: i * cardStep(el), behavior: "smooth" });
+              }}
+              className={`h-1.5 rounded-full transition-all ${
+                i === at ? "w-5 bg-ink/70" : "w-1.5 bg-ink/20 hover:bg-ink/40"
+              }`}
+            />
+          ))}
+          <span className="ml-2 font-body text-xs text-ink-soft/70">
+            {Math.min(at + 1, count)} / {count}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
