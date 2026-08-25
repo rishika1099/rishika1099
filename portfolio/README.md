@@ -62,8 +62,10 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   straight from GitHub (ISR, hourly) and **classifies each one** into a technical area
   (Generative AI, Causal Inference, Computer Vision, etc.) and a domain (Healthcare,
   Finance, …) using a keyword/topic matcher, so new projects appear on their own. Each one
-  is also assigned a **distinct on-theme emoji** from its own words (a gateway → 🚦, a
-  benchmark → 🧪), with collisions nudged to a related icon so no two repeat.
+  is also assigned an **on-theme emoji** from its own words across ~46 keyword themes
+  (a gateway → 🚦, a benchmark → 🧪, a camera trap → 🦌). Each theme offers several icons,
+  and when they run out a project reuses its own theme's icon rather than reaching for an
+  unrelated one: a sensible repeat beats a unique absurdity at 80+ projects.
   (`src/lib/github-projects.ts`)
 - **Auto-pulled blog with embedding zero-shot tagging.** New Substack posts flow into the
   Technical Blogs page on their own (RSS, ISR hourly): the title, date, and subtitle (the
@@ -94,9 +96,18 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   twinkling sparkles, and a synced card-hover tint. The active nav tab tints to match the
   page it leads to.
 - **Home:** flower-framed portrait, animated cursive name, quick links.
-- **About:** expandable study/work/research cards, and the skills network graph.
-- **Work:** semantic search box + ELI5/expert toggle + featured projects + filterable grid
-  (by technical area and domain, auto-fed from GitHub) + the embeddings galaxy.
+- **About:** expandable education/work/research/certification cards, a sticky jump bar
+  linking straight to each section (and `#research` style deep links), and the skills
+  network graph.
+- **Work:** semantic search box + ELI5/expert toggle + featured blooms, then every project
+  **grouped by technical area**. Each area is a horizontal shelf that advances a card at a
+  time on its own (pausing on hover, focus, touch, off-screen, and under reduced motion),
+  with dots showing where you are and `show all as a grid` to open it out. A project
+  appears under **every** area it belongs to, so an IoT intrusion detector shows up under
+  Internet of Things, Computer Vision and Cybersecurity alike. A "patch" menu jumps between
+  areas and follows your scroll; the domain menu filters across areas and offers a way back.
+  Areas and domains each carry their own emoji and tint, used identically on the chips, the
+  headings and the menus. Then the embeddings galaxy.
 - **Project cards:** code + live demo, plus optional 📊 results-dashboard and 📰 article
   (Substack) links, freely editable tags (anything, not just the built-in taxonomy), and
   inline first-page previews for PDF attachments.
