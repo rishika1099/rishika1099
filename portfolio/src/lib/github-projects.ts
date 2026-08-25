@@ -38,6 +38,7 @@ const EMOJI_RULES: [RegExp, string[]][] = [
   [/\b(active learning|acquisition|sampling|budget)/i, ["🎣", "🪙", "🎯", "📊"]],
   [/\b(reinforcement|offline rl|\brl\b|policy|bandit|\bope\b)/i, ["🕹️", "🎮", "🎰", "🚀"]],
   [/\b(feature store|automl|pipeline|etl|dataset|data quality)/i, ["📦", "🧺", "🚰", "🏗️"]],
+  [/\b(wildlife|camera.?trap|ecolog|species|biodivers)/i, ["🦌", "🐾", "🦉", "🌲"]],
   // causal / statistics
   [/\b(causal|counterfactual|treatment-?effect|mediation|confound|estimand|negative control|synthetic control|assumption)/i, ["🧬", "🔀", "⚗️", "🪢"]],
   [/\b(statistic|bayesian|hypothesis|distribution|correlation|measurement error)/i, ["📊", "📉", "🎲", "📏"]],
@@ -47,7 +48,6 @@ const EMOJI_RULES: [RegExp, string[]][] = [
   [/\b(x-?ray|ct scan|mri|scan|medical imaging|retina|cataract|keratoconus|glaucoma)/i, ["🩻", "🔬", "👁️", "🩺"]],
   [/\b(grasp|robot|tactile|touch|manipulat|actuator)/i, ["🦾", "🤖", "✋", "🔧"]],
   [/\b(audio|sound|speech|voice|whisper|acoustic)/i, ["🎙️", "🔊", "🎧", "🎵"]],
-  [/\b(wildlife|camera.?trap|ecolog|species|animal|biodivers)/i, ["🦌", "🌿", "🐾", "🦉"]],
   // language / text
   [/\b(nlp|sentiment|summari|translat|language model|bert|tokeniz|\bterm\b|lexic|arxiv)/i, ["💬", "📝", "🗣️", "📖"]],
   [/\b(fake news|misinformation|fact.?check|credibility)/i, ["📰", "🔍", "🚩", "📢"]],
@@ -64,7 +64,9 @@ const EMOJI_RULES: [RegExp, string[]][] = [
   [/\b(iot|sensor|arduino|esp32|raspberry ?pi|mqtt|embedded|hardware)/i, ["📡", "🔌", "🛰️", "⚙️"]],
   [/\b(blockchain|ledger|distributed|consensus)/i, ["⛓️", "🧱", "🔗", "🗝️"]],
   // shape / structure / maps
-  [/\b(cartograph|atlas|map|landscape|topolog|cluster|taxonom|museum|gallery|archaeolog)/i, ["🗺️", "🧭", "🖼️", "🏛️"]],
+  [/\b(museum|gallery|exhibit|archaeolog|archive)/i, ["🏛️", "🖼️", "🗿", "🏷️"]],
+  [/\b(cartograph|atlas|map|landscape|topolog|cluster|taxonom)/i, ["🗺️", "📍", "🧿", "🗂️"]],
+  [/\b(ladder|bucket|tier|staged|sweep|recompil|search space)/i, ["🪜", "🧗", "🎚️", "🗜️"]],
   [/\b(dashboard|chart|plot|visual|report|metric)/i, ["📊", "📈", "🗂️", "📋"]],
   // last, broad: anything explicitly LLM that none of the above caught
   [/\b(llm|gpt-|openai|anthropic|language model)/i, ["🦜", "✨", "🔮", "🧠"]],

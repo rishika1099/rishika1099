@@ -455,17 +455,20 @@ export default function WorkGallery({
   const filtering = domain !== "All";
   const matches = (p: Project) => domain === "All" || (p.domains?.includes(domain) ?? false);
   const featured = projects.filter((p) => p.featured);
-  // When a filter is active, show every match (featured included). Otherwise the
-  // featured blooms sit in their own section and the grid holds the rest.
-  const grid = projects.filter((p) => matches(p) && (filtering || !p.featured));
+  // Featured projects appear in their areas too, not only in the blooms strip:
+  // Sentinel belongs under Internet of Things whether or not it is featured.
+  const grid = projects.filter(matches);
 
   // With 80+ projects a single flat grid buries everything, so group the rest by
   // technical area and show a few from each until you ask for more. While a
   // filter is on the result set is already narrow, so it stays a plain grid.
+  // A project sits in every area it belongs to, not just its first one, so
+  // Sentinel shows up under Internet of Things as well as Cybersecurity. The
+  // counts therefore sum to more than the project total, which is the point.
   const sections = filtering
     ? []
     : categories
-        .map((c) => ({ category: c, items: grid.filter((p) => p.categories[0] === c) }))
+        .map((c) => ({ category: c, items: grid.filter((p) => p.categories.includes(c)) }))
         .filter((s) => s.items.length > 0);
   // anything whose primary area isn't in the taxonomy still needs a home
   const placed = new Set(sections.flatMap((s) => s.items.map((p) => p.name)));
