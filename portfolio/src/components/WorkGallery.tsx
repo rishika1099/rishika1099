@@ -287,7 +287,8 @@ export default function WorkGallery({
   // With 80+ projects a single flat grid buries everything, so group the rest by
   // technical area and show a few from each until you ask for more. While a
   // filter is on the result set is already narrow, so it stays a plain grid.
-  const PREVIEW = 4;
+  // the grid is three across on desktop, so three fills exactly one row
+  const PREVIEW = 3;
   const sections = filtering
     ? []
     : categories
