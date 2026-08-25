@@ -41,7 +41,7 @@ export default function SectionNav({ sections }: { sections: NavSection[] }) {
       aria-label="jump to a section"
       className="sticky top-20 z-30 -mx-4 mt-8 px-4 sm:mx-0 sm:px-0"
     >
-      <ul className="mx-auto flex w-fit max-w-full snap-x snap-mandatory gap-2 overflow-x-auto rounded-full bg-cream/80 p-1.5 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:overflow-visible">
+      <ul className="mx-auto flex w-fit max-w-full snap-x snap-mandatory gap-2 overflow-x-auto rounded-full p-1.5 soft-card [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:overflow-visible">
         {sections.map((s) => {
           const on = active === s.id;
           return (
