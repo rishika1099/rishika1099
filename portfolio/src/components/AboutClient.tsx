@@ -286,7 +286,7 @@ export default function AboutClient({
       </p>
       <div className="mt-5 space-y-4">
         {timeline
-          .filter((t) => !richToText(t.title).startsWith("Research Assistant"))
+          .filter((t) => !richToText(t.title).includes("Research Assistant"))
           .map((t, i) => (
             <EntryCard key={t.title} entry={t} i={i} />
           ))}
@@ -301,7 +301,7 @@ export default function AboutClient({
       </p>
       <div className="mt-5 space-y-4">
         {timeline
-          .filter((t) => richToText(t.title).startsWith("Research Assistant"))
+          .filter((t) => richToText(t.title).includes("Research Assistant"))
           .map((t, i) => (
             <EntryCard key={t.title} entry={t} i={i} />
           ))}
