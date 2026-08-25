@@ -47,26 +47,49 @@ test("public feature tour", async ({ page }) => {
   });
 
   await test.step("ELI5 / expert rewrite toggle", async () => {
-    const original = await page.locator("article").first().innerText();
+    // compare the blurb itself, not the whole card: the name, chips and links
+    // never change, so comparing them only adds noise
+    const blurb = page.locator("article").first().locator("p, span.rich-passage").first();
+    const original = await blurb.innerText();
     await page.getByRole("button", { name: /i'm 5/i }).click();
-    await expect
-      .poll(async () => page.locator("article").first().innerText(), { timeout: 25_000 })
-      .not.toBe(original);
+    // one batched rewrite for every project, so a cold call takes a while
+    await expect.poll(async () => blurb.innerText(), { timeout: 60_000 }).not.toBe(original);
     await beat(page, 1200);
     await page.getByRole("button", { name: /default/i }).click();
+    await expect.poll(async () => blurb.innerText(), { timeout: 20_000 }).toBe(original);
     await beat(page);
   });
 
-  await test.step("filter the grid by technical area", async () => {
-    const filter = page.getByRole("button", { name: /^Computer Vision$/ }).first();
-    if (await filter.isVisible().catch(() => false)) {
-      const before = await page.locator("article").count();
-      await filter.click();
-      await expect.poll(async () => page.locator("article").count()).toBeLessThan(before);
-      await beat(page, 1100);
-      await filter.click();
-      await beat(page);
-    }
+  await test.step("projects grouped into shelves by area", async () => {
+    const areas = page.locator('section[id^="area-"]');
+    await expect(areas.first()).toBeVisible();
+    expect(await areas.count()).toBeGreaterThan(4);
+    // each area is a shelf carrying all of its projects, with position dots
+    const firstShelf = areas.first();
+    await firstShelf.scrollIntoViewIfNeeded();
+    await expect(firstShelf.locator('button[aria-label^="go to project"]').first()).toBeVisible();
+    await beat(page, 1200);
+  });
+
+  await test.step("the patch menu jumps between areas", async () => {
+    const patch = page.getByLabel("patch");
+    await expect(patch).toBeVisible();
+    await patch.selectOption("Computer Vision");
+    await expect(page.locator("#area-computer-vision")).toBeInViewport();
+    await beat(page, 1400);
+  });
+
+  await test.step("a domain filter narrows everything, and lets you back out", async () => {
+    const before = await page.locator("article").count();
+    await page.getByLabel("domain").selectOption("Healthcare");
+    await expect.poll(async () => page.locator("article").count()).toBeLessThan(before);
+    // the way back is the point: a filter you cannot clear is a trap
+    const clear = page.getByRole("button", { name: /clear/i });
+    await expect(clear).toBeVisible();
+    await beat(page, 1200);
+    await clear.click();
+    await expect(page.locator('section[id^="area-"]').first()).toBeVisible();
+    await beat(page);
   });
 
   await test.step("embeddings galaxy places you on the same axes", async () => {
