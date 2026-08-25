@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   domainColor,
@@ -160,6 +160,73 @@ function CardActions({ name, onSimilar }: { name: string; onSimilar: () => void 
   );
 }
 
+/** One project card. Shared by the carousel and the grid so they can't drift. */
+function ProjectCard({
+  p,
+  blurb,
+  onSimilar,
+  className = "",
+}: {
+  p: Project;
+  blurb: string;
+  onSimilar: () => void;
+  className?: string;
+}) {
+  return (
+    <motion.article
+      layout
+      initial={{ opacity: 0, scale: 0.94 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.22 }}
+      whileHover={{ y: -5 }}
+      className={`flex flex-col rounded-3xl p-5 soft-card ${className}`}
+    >
+      <span className="text-3xl">{p.emoji}</span>
+      <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
+      <Blurb text={blurb} />
+      <DomainChips domains={p.domains} />
+      <TechChips categories={p.categories} />
+      <Links p={p} />
+      <CardActions name={p.name} onSimilar={onSimilar} />
+    </motion.article>
+  );
+}
+
+/** Horizontal shelf for one area. Arrows because a mouse has no sideways scroll. */
+function Carousel({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const nudge = (dir: 1 | -1) => {
+    const el = ref.current;
+    if (el) el.scrollBy({ left: dir * Math.max(300, el.clientWidth * 0.8), behavior: "smooth" });
+  };
+  return (
+    <div className="relative">
+      <div
+        ref={ref}
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {children}
+      </div>
+      <button
+        type="button"
+        aria-label="scroll left"
+        onClick={() => nudge(-1)}
+        className="absolute -left-3 top-1/2 hidden -translate-y-1/2 rounded-full bg-white/90 p-2 text-ink-soft shadow-md transition hover:text-ink lg:block"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        aria-label="scroll right"
+        onClick={() => nudge(1)}
+        className="absolute -right-3 top-1/2 hidden -translate-y-1/2 rounded-full bg-white/90 p-2 text-ink-soft shadow-md transition hover:text-ink lg:block"
+      >
+        ›
+      </button>
+    </div>
+  );
+}
+
 export default function WorkGallery({
   projects,
   categories,
@@ -169,6 +236,8 @@ export default function WorkGallery({
   categories: Category[];
   domains: Domain[];
 }) {
+  // stable id for each area section, so a pill can jump straight to it
+  const areaId = (c: string) => "area-" + c.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   // which category sections have been opened past their preview
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({});
   const [filter, setFilter] = useState<Category | "All">("All");
@@ -275,10 +344,8 @@ export default function WorkGallery({
     };
   }, [query]);
 
-  const filtering = filter !== "All" || domain !== "All";
-  const matches = (p: Project) =>
-    (filter === "All" || p.categories.includes(filter)) &&
-    (domain === "All" || (p.domains?.includes(domain) ?? false));
+  const filtering = domain !== "All";
+  const matches = (p: Project) => domain === "All" || (p.domains?.includes(domain) ?? false);
   const featured = projects.filter((p) => p.featured);
   // When a filter is active, show every match (featured included). Otherwise the
   // featured blooms sit in their own section and the grid holds the rest.
@@ -287,8 +354,6 @@ export default function WorkGallery({
   // With 80+ projects a single flat grid buries everything, so group the rest by
   // technical area and show a few from each until you ask for more. While a
   // filter is on the result set is already narrow, so it stays a plain grid.
-  // the grid is three across on desktop, so three fills exactly one row
-  const PREVIEW = 3;
   const sections = filtering
     ? []
     : categories
@@ -500,9 +565,22 @@ export default function WorkGallery({
         {(["All", ...categories] as const).map((c) => (
           <button
             key={c}
-            onClick={() => setFilter(c)}
+            // the sections below are already grouped by area, so a pill jumps to
+            // one and opens it rather than filtering to a duplicate of it
+            onClick={() => {
+              if (c === "All") {
+                setOpenCats({});
+                document.getElementById("areas")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                return;
+              }
+              setOpenCats((o) => ({ ...o, [c]: true }));
+              setTimeout(
+                () => document.getElementById(areaId(c))?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                60,
+              );
+            }}
             className={`rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
-              filter === c
+              c !== "All" && openCats[c]
                 ? "bg-ink text-cream"
                 : "bg-white/70 text-ink-soft hover:bg-white"
             }`}
@@ -514,56 +592,60 @@ export default function WorkGallery({
 
       {!filtering &&
         sections.map((sec) => {
+          // collapsed = a horizontal shelf of the whole area; open = the grid
           const open = !!openCats[sec.category];
-          const shown = open ? sec.items : sec.items.slice(0, PREVIEW);
-          const hidden = sec.items.length - shown.length;
           return (
-            <section key={sec.category} className="mt-10">
+            <section key={sec.category} id={areaId(sec.category)} className="mt-10 scroll-mt-24">
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <h2 className="font-body text-xl font-bold text-ink">
                   {sec.category}{" "}
                   <span className="font-normal text-ink-soft">({sec.items.length})</span>
                 </h2>
-                {hidden > 0 && (
+                {!open && sec.items.length > 1 && (
                   <button
                     type="button"
                     onClick={() => setOpenCats((o) => ({ ...o, [sec.category]: true }))}
                     className="rounded-full bg-white/70 px-3.5 py-1 font-body text-sm font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
                   >
-                    show all {sec.items.length} →
+                    show all {sec.items.length} as a grid →
                   </button>
                 )}
-                {open && sec.items.length > PREVIEW && (
+                {open && (
                   <button
                     type="button"
                     onClick={() => setOpenCats((o) => ({ ...o, [sec.category]: false }))}
                     className="rounded-full bg-white/70 px-3.5 py-1 font-body text-sm font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
                   >
-                    show fewer
+                    back to a shelf
                   </button>
                 )}
               </div>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {shown.map((p) => (
-                  <motion.article
-                    layout
-                    key={p.name}
-                    initial={{ opacity: 0, scale: 0.94 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.22 }}
-                    whileHover={{ y: -5 }}
-                    className="flex flex-col rounded-3xl p-5 soft-card"
-                  >
-                    <span className="text-3xl">{p.emoji}</span>
-                    <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-                    <Blurb text={blurbFor(p)} />
-                    <DomainChips domains={p.domains} />
-                    <TechChips categories={p.categories} />
-                    <Links p={p} />
-                    <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
-                  </motion.article>
-                ))}
-              </div>
+              {open ? (
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {sec.items.map((p) => (
+                    <ProjectCard
+                      key={p.name}
+                      p={p}
+                      blurb={blurbFor(p)}
+                      onSimilar={() => findSimilar(p.name)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-4">
+                  <Carousel>
+                    {sec.items.map((p) => (
+                      <ProjectCard
+                        key={p.name}
+                        p={p}
+                        blurb={blurbFor(p)}
+                        onSimilar={() => findSimilar(p.name)}
+                        className="w-[19rem] shrink-0 snap-start"
+                      />
+                    ))}
+                  </Carousel>
+                </div>
+              )}
             </section>
           );
         })}
