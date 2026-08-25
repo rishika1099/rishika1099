@@ -10,37 +10,72 @@ const GH_USER = "rishika1099";
 // slides to the next RELATED one instead of a random flower. First rules win,
 // so the more specific signals go first.
 const EMOJI_RULES: [RegExp, string[]][] = [
-  [/\b(encrypt|cipher|crypto|secure|auth|guard)/i, ["🔐", "🗝️", "🔏"]],
-  [/\b(gateway|proxy|load ?balanc)/i, ["🚦", "🎛️", "🛂"]],
-  [/\b(router|route|routing)/i, ["🧭", "🚦", "🛣️"]],
-  [/\b(fail|debug|bug|minimiz|shrink|repro)/i, ["🐛", "🔬", "🩹"]],
-  [/\b(context|window|long-?context|lost-?in-?the-?middle)/i, ["🪟", "📜", "🔭"]],
-  [/\b(consistency|calibrat|agreement|self-?consist)/i, ["⚖️", "🎯", "📏"]],
-  [/\b(reliab|harness|fault|robust)/i, ["🧰", "🛡️", "⚙️"]],
-  [/\b(token|budget|early-?exit|cost)/i, ["🪙", "🎟️", "⏳"]],
-  [/\b(speculat|draft|decoding)/i, ["🎲", "🃏", "🔮"]],
-  [/\b(bench|benchmark|regression|test|ci\b|eval)/i, ["🧪", "📋", "✅"]],
-  [/\b(stress|latency|throughput|profil|perf)/i, ["🌡️", "⏱️", "📉"]],
-  [/\b(cache|kv-?cache|memory|quantiz)/i, ["🗃️", "🧊", "📦"]],
-  [/\b(reason|chain-?of-?thought|cot\b|think)/i, ["🧩", "💭", "🧠"]],
-  [/\b(prompt|template)/i, ["📝", "✍️", "📄"]],
-  [/\b(search|retriev|rag|index|embed)/i, ["🔎", "📚", "🗂️"]],
-  [/\b(vision|image|photo|camera|ocr)/i, ["🖼️", "📷", "🎨"]],
-  [/\b(voice|speech|audio|whisper)/i, ["🎙️", "🔊", "🎧"]],
-  [/\b(graph|network|node|edge)/i, ["🕸️", "🔗", "🧬"]],
-  [/\b(data|dataset|pipeline|etl|table)/i, ["📦", "🧺", "🚰"]],
-  [/\b(dashboard|chart|plot|visual|metric)/i, ["📊", "📈", "🗠"]],
-  [/\b(game|play|puzzle|maze)/i, ["🎮", "🕹️", "🧸"]],
-  [/\b(schedul|cron|time|clock|calendar)/i, ["⏰", "🗓️", "⌛"]],
-  [/\b(map|geo|location|spatial)/i, ["🗺️", "📍", "🌍"]],
-  [/\b(llm|gpt|language model|inference)/i, ["🤖", "💬", "🦜"]],
+  // security / privacy
+  [/\b(encrypt|cipher|crypto|watermark|stylometr|firewall|anonymi|privacy)/i, ["🔐", "🗝️", "🕵️", "🛡️"]],
+  [/\b(injection|jailbreak|adversarial|attack|exploit|malware|intrusion|surveillance)/i, ["🧨", "🚨", "🕷️", "⚠️"]],
+  // safety / refusal / evaluation
+  [/\b(refusal|over-?refus|safety|harm|guardrail|moderation)/i, ["🦺", "🧯", "⚖️", "🚧"]],
+  [/\b(eval|benchmark|harness|regression test|leaderboard|test spec)/i, ["🧪", "📋", "🔬", "📐"]],
+  [/\b(calibrat|confidence|uncertain|ambigu|humility|honest)/i, ["🎚️", "⚖️", "🌡️", "🎯"]],
+  // agents
+  [/\b(agent|agentic|crew|multi-?agent|orchestrat|deadlock|replay)/i, ["🤖", "🎭", "🕹️", "🧩"]],
+  [/\b(planning|planner|budget-?aware|tool ?use)\b/i, ["🗺️", "📅", "🧮", "🎯"]],
+  // llm serving / inference efficiency
+  [/\b(gateway|proxy|load ?balanc|rate limit)/i, ["🚦", "🎛️", "🛂", "🚪"]],
+  [/\b(router|routing|dispatch)/i, ["🧭", "🔀", "🛣️", "📍"]],
+  [/\b(kv-?cache|cache|quantiz|compression|precision|throughput|latency|profil|speculative|early.?exit|token budget)/i, ["⚡", "🗃️", "🧊", "⏱️", "🪶"]],
+  [/\b(energy|joule|watt|carbon footprint|energy-?efficien)/i, ["🔋", "⚡", "🌱", "♻️"]],
+  [/\b(context.?window|long-?context|retrieval|rag|index|embed|vector)/i, ["🪟", "📚", "🔎", "🗂️"]],
+  // reasoning / prompts / debugging
+  [/\b(reason|chain-?of-?thought|self-?consistency|thinking)/i, ["💭", "🧠", "🧩", "🪞"]],
+  [/\b(prompt|delta debugging|minimiz|repro|debug|failure|shortcut|bug)/i, ["🐛", "🔍", "✂️", "🩹"]],
+  [/\b(structured output|json|schema|grammar|parse|format)/i, ["📐", "🧱", "📎", "🗒️"]],
+  [/\b(provenance|citation|attribution|audit|ledger|lineage)/i, ["🧾", "🔗", "📜", "🗄️"]],
+  // learning dynamics / data
+  [/\b(memory|forget|retention|catastrophic|drift|decay|stale|retrain)/i, ["🧠", "🌊", "⏳", "🍂"]],
+  [/\b(grokking|curriculum|training dynamic|scaling|small.?data|regime|learning curve)/i, ["📈", "🪜", "🌱", "🎼"]],
+  [/\b(label|annotat|noise|preference|reward|human feedback|rlhf)/i, ["🏷️", "👍", "🎚️", "🗳️"]],
+  [/\b(active learning|acquisition|sampling|budget)/i, ["🎣", "🪙", "🎯", "📊"]],
+  [/\b(reinforcement|offline rl|\brl\b|policy|bandit|\bope\b)/i, ["🕹️", "🎮", "🎰", "🚀"]],
+  [/\b(feature store|automl|pipeline|etl|dataset|data quality)/i, ["📦", "🧺", "🚰", "🏗️"]],
+  // causal / statistics
+  [/\b(causal|counterfactual|treatment-?effect|mediation|confound|estimand|negative control|synthetic control|assumption)/i, ["🧬", "🔀", "⚗️", "🪢"]],
+  [/\b(statistic|bayesian|hypothesis|distribution|correlation|measurement error)/i, ["📊", "📉", "🎲", "📏"]],
+  [/\b(forecast|predict|churn|price|risk|demand|time.?series|weather)/i, ["🔮", "📈", "🌤️", "🧿"]],
+  // vision / sensing / robotics
+  [/\b(vision|image|photo|camera|ocr|segmentation|yolo|resnet|vgg|visual)/i, ["🖼️", "👁️", "📷", "🎨"]],
+  [/\b(x-?ray|ct scan|mri|scan|medical imaging|retina|cataract|keratoconus|glaucoma)/i, ["🩻", "🔬", "👁️", "🩺"]],
+  [/\b(grasp|robot|tactile|touch|manipulat|actuator)/i, ["🦾", "🤖", "✋", "🔧"]],
+  [/\b(audio|sound|speech|voice|whisper|acoustic)/i, ["🎙️", "🔊", "🎧", "🎵"]],
+  [/\b(wildlife|camera.?trap|ecolog|species|animal|biodivers)/i, ["🦌", "🌿", "🐾", "🦉"]],
+  // language / text
+  [/\b(nlp|sentiment|summari|translat|language model|bert|tokeniz|\bterm\b|lexic|arxiv)/i, ["💬", "📝", "🗣️", "📖"]],
+  [/\b(fake news|misinformation|fact.?check|credibility)/i, ["📰", "🔍", "🚩", "📢"]],
+  // domains
+  [/\b(health|clinic|medical|patient|disease|cancer|cardio|diabet|kidney|heart)/i, ["🩺", "💊", "🫀", "🏥"]],
+  [/\b(legal|law|court|usc|precedent|contract|compliance)/i, ["⚖️", "📜", "🏛️", "🗂️"]],
+  [/\b(child|welfare|human-?rights|refugee|equity|fairness|bias)/i, ["🧸", "🤝", "🕊️", "⚖️"]],
+  [/\b(finance|loan|stock|credit|bank|revenue|cost)/i, ["🏦", "💰", "📉", "🪙"]],
+  [/\b(food|recipe|nutrition|diet|meal|cook|pantry|wine)/i, ["🍲", "🥗", "🍯", "🧑‍🍳"]],
+  [/\b(plant|crop|agricultur|farm|soil|ocean|climate|earth)/i, ["🌾", "🌊", "🌍", "🪴"]],
+  [/\b(course|student|educat|tutor|teach|exam|coach|skill)/i, ["🎓", "📚", "🧑‍🏫", "🍎"]],
+  [/\b(sport|fitness|exercise|workout|athlet|gym)/i, ["🏅", "🏃", "🤸", "⚽"]],
+  [/\b(traffic|road ?sign|vehicle|\bcar\b|driving|autonomous)/i, ["🚸", "🚗", "🛣️", "🚦"]],
+  [/\b(iot|sensor|arduino|esp32|raspberry ?pi|mqtt|embedded|hardware)/i, ["📡", "🔌", "🛰️", "⚙️"]],
+  [/\b(blockchain|ledger|distributed|consensus)/i, ["⛓️", "🧱", "🔗", "🗝️"]],
+  // shape / structure / maps
+  [/\b(cartograph|atlas|map|landscape|topolog|cluster|taxonom|museum|gallery|archaeolog)/i, ["🗺️", "🧭", "🖼️", "🏛️"]],
+  [/\b(dashboard|chart|plot|visual|report|metric)/i, ["📊", "📈", "🗂️", "📋"]],
+  // last, broad: anything explicitly LLM that none of the above caught
+  [/\b(llm|gpt-|openai|anthropic|language model)/i, ["🦜", "✨", "🔮", "🧠"]],
 ];
 
-// Last-resort pool for repos matching no keyword at all, chosen
-// deterministically by slug so the icon stays stable across renders.
+// Genuine last resort, reached only by a repo whose words match no theme at
+// all. Kept deliberately neutral: a nondescript object reads as "uncategorised"
+// where a butterfly on a safety harness reads as a bug.
 const EMOJI_POOL = [
-  "🌸", "🍃", "🌙", "⭐", "🐚", "🍄", "🪷", "🌷", "🦋", "🐝",
-  "🌻", "🪴", "🫧", "🌿", "🕊️", "🍀", "🪶", "🎐", "🧿", "🪅",
+  "🌸", "🍃", "🌙", "⭐", "🪄", "🧷", "🎏", "🪁", "🧩", "🔖",
+  "🪺", "🧶", "🫧", "🌿", "🕊️", "🍀", "🪶", "🎐", "🧿", "🪅",
 ];
 
 function hashSlug(slug: string): number {
@@ -51,15 +86,21 @@ function hashSlug(slug: string): number {
 
 // Every icon this repo could reasonably wear, most specific first: a keyword
 // in the repo's NAME says what the project is about, so those rules outrank
-// rules that only hit somewhere in the description.
-function emojiCandidates(name: string, text: string, slug: string): string[] {
-  const out: string[] = [];
+// rules that only hit somewhere in the description. Themed icons come first
+// and the whimsical pool last, so the pool is only reached by a repo whose
+// words match nothing at all.
+function emojiCandidates(name: string, text: string, slug: string): {
+  themed: string[];
+  fallback: string[];
+} {
+  const themed: string[] = [];
   const readable = name.replace(/[-_]+/g, " ");
-  for (const [re, es] of EMOJI_RULES) if (re.test(readable)) out.push(...es);
-  for (const [re, es] of EMOJI_RULES) if (re.test(text)) out.push(...es);
+  for (const [re, es] of EMOJI_RULES) if (re.test(readable)) themed.push(...es);
+  for (const [re, es] of EMOJI_RULES) if (re.test(text)) themed.push(...es);
   const start = hashSlug(slug);
-  for (let i = 0; i < EMOJI_POOL.length; i++) out.push(EMOJI_POOL[(start + i) % EMOJI_POOL.length]);
-  return [...new Set(out)];
+  const fallback: string[] = [];
+  for (let i = 0; i < EMOJI_POOL.length; i++) fallback.push(EMOJI_POOL[(start + i) % EMOJI_POOL.length]);
+  return { themed: [...new Set(themed)], fallback };
 }
 
 // Ordered keyword rules: first match wins, so put the more specific ones first.
@@ -149,7 +190,7 @@ export async function getAllProjects(): Promise<Project[]> {
     // offline / rate-limited: just show the curated list
   }
 
-  const candsBySlug = new Map<string, string[]>();
+  const candsBySlug = new Map<string, { themed: string[]; fallback: string[] }>();
   const extra: Project[] = repos
     .filter(
       (r) =>
@@ -220,8 +261,16 @@ export async function getAllProjects(): Promise<Project[]> {
   // theme, a collision slides to a related icon, not a random flower.
   const used = new Set(mergedCurated.map((p) => p.emoji));
   for (const p of extra) {
-    const cands = candsBySlug.get(repoSlug(p.repo)) ?? [];
-    p.emoji = cands.find((e) => !used.has(e)) ?? cands[0] ?? "🌸";
+    const c = candsBySlug.get(repoSlug(p.repo));
+    const themed = c?.themed ?? [];
+    const fallback = c?.fallback ?? [];
+    // A sensible repeat beats a unique absurdity: once every icon for a
+    // project's own themes is taken, reuse its best themed icon rather than
+    // handing a safety harness a seashell. The pool is only for repos whose
+    // words matched no theme at all.
+    p.emoji =
+      themed.find((e) => !used.has(e)) ??
+      (themed.length ? themed[0] : fallback.find((e) => !used.has(e)) ?? fallback[0] ?? "🌸");
     used.add(p.emoji);
   }
 
