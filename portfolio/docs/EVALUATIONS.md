@@ -35,10 +35,14 @@ Sample rankings (top match shown):
 
 | query | top match | cosine |
 |---|---|---|
-| make LLMs run faster | KV-Cache Optimization | 0.45 |
+| make LLMs run faster | LLM Inference Profiler | 0.55 |
 | causal effect of a treatment | Colon Cancer Trial Causal Analysis | 0.54 |
-| quantization and sparsity for transformer decoding | KV-Cache Optimization | 0.38 |
+| quantization and sparsity for transformer decoding | Speculative Decoding Bench | 0.43 |
 | gemini | Dr. Pixel (only real match; others correctly dropped) | 0.25 |
+
+These move as projects are published: "make LLMs run faster" used to top out at
+KV-Cache Optimization (0.45) before the inference-tooling repos existed. The ranking
+following the work, rather than staying pinned to an old favourite, is the point.
 
 Each result card surfaces its relevance %, so the ranking is transparent to the visitor.
 

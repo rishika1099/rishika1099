@@ -94,28 +94,33 @@ function Section({ id, emoji, title, children }: { id: string; emoji: string; ti
 
 /* ---------- interactive semantic-search demo ---------- */
 
+// Real scores from the live search, refreshed when the project set changes.
+// A demo that teaches how ranking works has to agree with what the site does.
 const DEMO: Record<string, [string, number][]> = {
   "make LLMs run faster": [
-    ["⚡ KV-Cache Optimization", 0.45],
-    ["📚 Folio (clinical RAG)", 0.26],
-    ["🌸 This Portfolio", 0.22],
+    ["🦜 LLM Inference Profiler", 0.55],
+    ["✂️ LLM Failure Minimizer", 0.49],
+    ["🚦 LLM Gateway", 0.44],
+    ["🩺 Folio (clinical RAG)", 0.21],
   ],
   "causal effect of a treatment": [
     ["🧬 Colon Cancer Trial Causal Analysis", 0.54],
-    ["📚 Folio (clinical RAG)", 0.24],
-    ["👁️ Dr. Pixel", 0.2],
+    ["🪢 Negative Controls Service", 0.43],
+    ["⚗️ Assumption Dial", 0.42],
+    ["🔮 House Price Prediction", 0.19],
   ],
   "read legal documents": [
-    ["⚖️ Federal Eagle: AI Legal Assistant", 0.49],
-    ["📚 Folio (clinical RAG)", 0.23],
-    ["🌸 This Portfolio", 0.19],
+    ["🦅 Federal Eagle: AI Legal Assistant", 0.36],
+    ["🩺 Folio (clinical RAG)", 0.33],
+    ["👁️ Dr. Pixel", 0.2],
   ],
   "what can I cook tonight": [
-    ["🍳 Ruchi: Pantry-to-Plate Intelligence", 0.47],
-    ["👁️ Dr. Pixel", 0.18],
+    ["🎬 ReelChef: Video to Recipe", 0.34],
+    ["🍲 Ruchi: Pantry-to-Plate Intelligence", 0.33],
     ["⚡ KV-Cache Optimization", 0.16],
   ],
 };
+
 const THRESHOLD = 0.24;
 
 function SearchDemo() {

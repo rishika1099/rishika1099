@@ -65,8 +65,9 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   is also assigned an **on-theme emoji** from its own words across ~46 keyword themes
   (a gateway → 🚦, a benchmark → 🧪, a camera trap → 🦌). Each theme offers several icons,
   and when they run out a project reuses its own theme's icon rather than reaching for an
-  unrelated one: a sensible repeat beats a unique absurdity at 80+ projects.
-  (`src/lib/github-projects.ts`)
+  unrelated one: a sensible repeat beats a unique absurdity at 80+ projects. Any guess can
+  be overridden by hand in the project editor, so a wrong icon is a ten-second fix rather
+  than a regex change. (`src/lib/github-projects.ts`)
 - **Auto-pulled blog with embedding zero-shot tagging.** New Substack posts flow into the
   Technical Blogs page on their own (RSS, ISR hourly): the title, date, and subtitle (the
   RSS `<description>`) are parsed out, and each post is **tagged by an embedding zero-shot
