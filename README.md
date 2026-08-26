@@ -451,6 +451,11 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 | [Stylometric-Firewall](https://github.com/rishika1099/Stylometric-Firewall) | Rewrite text so it means the same but no longer sounds like you: the anonymity-meaning frontier | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Preference-Cartography](https://github.com/rishika1099/Preference-Cartography) | Map where annotators disagree over preference space, and how that reshapes reward models | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Forgetting-Dose-Response](https://github.com/rishika1099/Forgetting-Dose-Response) | Catastrophic forgetting as a dose-response law, inverted into a calculator for the largest safe fine-tune | Python | ![Legal](https://img.shields.io/badge/Legal-3949AB?style=flat-square) ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Fragmentation-Detective](https://github.com/rishika1099/Fragmentation-Detective) | Diagnose out-of-memory errors that are fragmentation, not capacity: a caching-allocator replay, a fragmentation-aware OOM detector, and a size-class fix that removes the OOM without adding memory | HTML | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Recovery-Not-Execution](https://github.com/rishika1099/Recovery-Not-Execution) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Optimizer-Autopsy-Bench](https://github.com/rishika1099/Optimizer-Autopsy-Bench) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Scanner-Invariant-Histopathology](https://github.com/rishika1099/Scanner-Invariant-Histopathology) | A little experiment on GitHub | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Curriculum-That-Transfers-Out](https://github.com/rishika1099/Curriculum-That-Transfers-Out) | A little experiment on GitHub | HTML | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 
 ---
 
