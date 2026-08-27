@@ -456,6 +456,8 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 | [Optimizer-Autopsy-Bench](https://github.com/rishika1099/Optimizer-Autopsy-Bench) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Scanner-Invariant-Histopathology](https://github.com/rishika1099/Scanner-Invariant-Histopathology) | A little experiment on GitHub | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Curriculum-That-Transfers-Out](https://github.com/rishika1099/Curriculum-That-Transfers-Out) | A little experiment on GitHub | HTML | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Attention-Roofline](https://github.com/rishika1099/Attention-Roofline) | A little experiment on GitHub | HTML | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Parallelism-Config-Oracle](https://github.com/rishika1099/Parallelism-Config-Oracle) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 
 ---
 
