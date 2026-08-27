@@ -17,6 +17,9 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     viewport: { width: 1280, height: 800 },
+    // this suite drives a real browser against production, so it would otherwise
+    // be counted as a visitor and quietly skew the analytics it is meant to protect
+    extraHTTPHeaders: { "x-no-track": "1" },
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

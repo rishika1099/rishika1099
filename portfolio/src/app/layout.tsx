@@ -48,12 +48,16 @@ const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
 });
-// extra faces offered in the ink editor's font menu
-const playfair = Playfair_Display({ variable: "--font-playfair", subsets: ["latin"], weight: ["400", "600", "700"] });
-const dancing = Dancing_Script({ variable: "--font-dancing", subsets: ["latin"], weight: ["400", "600", "700"] });
-const pacifico = Pacifico({ variable: "--font-pacifico", subsets: ["latin"], weight: ["400"] });
-const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], weight: ["400", "500", "600", "700"] });
-const spaceMono = Space_Mono({ variable: "--font-space-mono", subsets: ["latin"], weight: ["400", "700"] });
+// Extra faces offered in the ink editor's font menu. `preload: false` matters:
+// these exist for the editor's picker, but every visitor was downloading them
+// on first paint, and the largest thing on the page is text waiting for fonts.
+// Now the browser only fetches one if a passage actually uses it. One weight
+// each, since a picker needs a face, not a family.
+const playfair = Playfair_Display({ variable: "--font-playfair", subsets: ["latin"], weight: ["400"], preload: false });
+const dancing = Dancing_Script({ variable: "--font-dancing", subsets: ["latin"], weight: ["400"], preload: false });
+const pacifico = Pacifico({ variable: "--font-pacifico", subsets: ["latin"], weight: ["400"], preload: false });
+const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], weight: ["400"], preload: false });
+const spaceMono = Space_Mono({ variable: "--font-space-mono", subsets: ["latin"], weight: ["400"], preload: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

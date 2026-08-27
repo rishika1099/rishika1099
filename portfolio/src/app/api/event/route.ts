@@ -10,6 +10,7 @@ const BOT_RE = /bot|crawl|spider|preview|headless|lighthouse|monitor/i;
 export async function POST(request: Request) {
   try {
     if (BOT_RE.test(request.headers.get("user-agent") ?? "")) return NextResponse.json({ ok: true });
+    if (request.headers.get("x-no-track")) return NextResponse.json({ ok: true });
     const body = (await request.json()) as {
       name?: string;
       value?: number;

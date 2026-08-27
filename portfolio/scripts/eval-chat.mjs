@@ -38,7 +38,7 @@ const REFUSAL_MARKERS = ["not sure", "don't have", "do not have", "isn't", "is n
 async function ask(question) {
   const res = await fetch(`${BASE}/api/ask`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "x-no-track": "1" },
     body: JSON.stringify({ question, stream: false }),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status} for: ${question}`);

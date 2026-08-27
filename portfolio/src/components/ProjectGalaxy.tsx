@@ -187,7 +187,7 @@ export default function ProjectGalaxy({ copy }: { copy?: Record<string, string> 
           </div>
           {qErr && <p className="mt-3 font-body text-sm text-rose-500">{qErr}</p>}
 
-          <div className="relative mt-4 aspect-[16/10] w-full overflow-hidden rounded-3xl soft-card">
+          <div className="relative mt-4 aspect-[16/10] w-full overflow-hidden rounded-3xl border border-white/50 bg-white/45 shadow-[0_10px_30px_-12px_rgba(74,74,94,0.28)] backdrop-blur-sm">
             {/* subtle xy grid so it reads like a coordinate space */}
             <div
               aria-hidden

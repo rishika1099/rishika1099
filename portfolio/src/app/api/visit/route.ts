@@ -9,6 +9,9 @@ export async function POST(request: Request) {
   try {
     const ua = request.headers.get("user-agent") ?? "";
     if (BOT_RE.test(ua)) return NextResponse.json({ ok: true });
+    // the end-to-end suite drives a real browser, so it looks like a visitor
+    // unless it says otherwise; its runs must not land in the numbers
+    if (request.headers.get("x-no-track")) return NextResponse.json({ ok: true });
 
     let path = "/";
     let referrer: string | undefined;

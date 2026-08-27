@@ -32,8 +32,11 @@ export default async function Work() {
         <span className="rich-passage" dangerouslySetInnerHTML={{ __html: intro }} />
       </p>
 
-      <WorkGallery projects={projects} categories={allCategories} domains={allDomains} />
+      {/* The galaxy sits above the shelves: read-depth said only about a third of
+          visits reached the bottom of this page, so it was the best thing here
+          that almost nobody saw. */}
       <ProjectGalaxy copy={copy} />
+      <WorkGallery projects={projects} categories={allCategories} domains={allDomains} />
     </PageShell>
   );
 }

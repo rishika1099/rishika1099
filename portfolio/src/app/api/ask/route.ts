@@ -44,7 +44,9 @@ export async function POST(request: Request) {
 
   // Private question log (what visitors actually ask), must never break asking.
   try {
-    await recordQuestion(question);
+    // the weekly eval and the tour ask scripted questions; logging them would
+    // bury the real ones people asked
+    if (!request.headers.get("x-no-track")) await recordQuestion(question);
   } catch {}
 
   // Non-streaming JSON mode (used by the eval harness).
