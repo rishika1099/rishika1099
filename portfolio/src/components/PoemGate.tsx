@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 export default function PoemGate({ onUnlocked }: { onUnlocked: () => void }) {
   const [password, setPassword] = useState("");
@@ -36,19 +36,19 @@ export default function PoemGate({ onUnlocked }: { onUnlocked: () => void }) {
 
   return (
     <div className="mx-auto mt-10 max-w-md text-center">
-      <motion.div
+      <m.div
         key={shake}
         animate={shake ? { x: [0, -10, 10, -8, 8, 0] } : {}}
         transition={{ duration: 0.45 }}
         className="rounded-[2rem] p-7 soft-card sm:p-9"
       >
-        <motion.div
+        <m.div
           animate={{ y: [0, -8, 0] }}
           transition={{ repeat: Infinity, duration: 3 }}
           className="text-6xl"
         >
           🚪
-        </motion.div>
+        </m.div>
         <h2
           style={{ fontFamily: "var(--font-halimun)" }}
           className="mt-3 text-2xl text-ink"
@@ -80,7 +80,7 @@ export default function PoemGate({ onUnlocked }: { onUnlocked: () => void }) {
         {error && (
           <p className="mt-3 font-body text-sm text-[#c0506b]">{error}</p>
         )}
-      </motion.div>
+      </m.div>
     </div>
   );
 }

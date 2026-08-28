@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useState } from "react";
 
 const links = [
@@ -64,7 +64,7 @@ export default function Nav() {
                 <span className="hover-wiggle text-base">{l.icon}</span>
                 {l.label}
                 {isActive(l.href) && (
-                  <motion.span
+                  <m.span
                     layoutId="nav-pill"
                     className="absolute inset-0 -z-10 rounded-full"
                     style={{ backgroundColor: pillTint(pathname) }}
@@ -101,7 +101,7 @@ export default function Nav() {
 
       {/* Mobile menu */}
       {open && (
-        <motion.ul
+        <m.ul
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           className="mx-auto mt-2 flex max-w-5xl flex-col gap-1 rounded-3xl p-3 soft-card md:hidden"
@@ -121,7 +121,7 @@ export default function Nav() {
               </Link>
             </li>
           ))}
-        </motion.ul>
+        </m.ul>
       )}
     </header>
   );

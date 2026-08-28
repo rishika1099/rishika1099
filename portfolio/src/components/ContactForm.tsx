@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const encode = (data: Record<string, string>) =>
   Object.keys(data)
@@ -41,7 +41,7 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
 
   if (status === "sent") {
     return (
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="mt-10 w-full max-w-xl rounded-3xl p-7 text-center soft-card"
@@ -51,12 +51,12 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
         <p className="mt-1 font-body text-sm text-ink-soft">
           I&apos;ll get back to you soon.
         </p>
-      </motion.div>
+      </m.div>
     );
   }
 
   return (
-    <motion.form
+    <m.form
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
@@ -118,6 +118,6 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
           </p>
         )}
       </div>
-    </motion.form>
+    </m.form>
   );
 }

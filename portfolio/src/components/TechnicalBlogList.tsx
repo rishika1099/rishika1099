@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { domainColor, type Domain } from "@/data/projects";
 import type { Doc } from "@/lib/content";
 
@@ -112,7 +112,7 @@ export default function TechnicalBlogList({ posts }: { posts: Doc[] }) {
               </>
             );
             return (
-              <motion.div
+              <m.div
                 layout
                 key={p.slug}
                 initial={{ opacity: 0, scale: 0.96 }}
@@ -129,7 +129,7 @@ export default function TechnicalBlogList({ posts }: { posts: Doc[] }) {
                     {inner}
                   </Link>
                 )}
-              </motion.div>
+              </m.div>
             );
           })}
         </AnimatePresence>

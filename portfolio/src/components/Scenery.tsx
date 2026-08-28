@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 export type Vibe =
   | "dawn"
@@ -166,7 +166,7 @@ export default function Scenery({ vibe }: { vibe: Vibe }) {
       />
 
       {/* soft sun / moon glow */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 0.5, scale: 1 }}
         transition={{ duration: 1.6 }}

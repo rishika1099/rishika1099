@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 // tint the launcher to the current page's vibe so it feels integrated, the
 // white ring + shadow keep it visible against the matching background
@@ -169,7 +169,7 @@ export default function AskMe() {
   return (
     <>
       {/* Floating launcher */}
-      <motion.button
+      <m.button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "close the portfolio guide" : "ask about Rishika"}
@@ -178,19 +178,19 @@ export default function AskMe() {
         style={{ backgroundColor: tint }}
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full px-5 py-3.5 font-body text-sm font-bold text-ink shadow-lg shadow-ink/25 backdrop-blur transition hover:brightness-105"
       >
-        <motion.span
+        <m.span
           animate={{ rotate: open ? 0 : [0, 12, -8, 0] }}
           transition={{ repeat: open ? 0 : Infinity, repeatDelay: 1.6, duration: 1.2 }}
           className="text-xl"
         >
           {open ? "✕" : "🐻‍❄️"}
-        </motion.span>
+        </m.span>
         {open ? "close" : "ask about me"}
-      </motion.button>
+      </m.button>
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.96 }}
@@ -304,7 +304,7 @@ export default function AskMe() {
                 ➤
               </button>
             </form>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

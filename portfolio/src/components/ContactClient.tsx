@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import ContactForm from "@/components/ContactForm";
@@ -21,19 +21,19 @@ export default function ContactClient({
 }) {
   return (
     <PageShell vibe="rose" className="flex flex-col items-center text-center">
-      <motion.span
+      <m.span
         animate={{ y: [0, -10, 0] }}
         transition={{ repeat: Infinity, duration: 3 }}
         className="text-6xl"
       >
         📮
-      </motion.span>
+      </m.span>
       <PageTitle className="mt-3 text-ink">{title}</PageTitle>
       <div className="mt-3 max-w-xl font-body text-lg text-ink-soft">{intro}</div>
 
       <div className="mt-9 grid w-full max-w-xl gap-4 sm:grid-cols-2">
         {links.map((l, i) => (
-          <motion.a
+          <m.a
             key={l.label}
             href={l.href}
             target={l.href.startsWith("http") ? "_blank" : undefined}
@@ -51,14 +51,14 @@ export default function ContactClient({
               </span>
               <span className="font-body text-sm text-ink-soft">{l.value}</span>
             </span>
-          </motion.a>
+          </m.a>
         ))}
       </div>
 
       <ContactForm copy={copy} />
 
       {copy?.["contact.neighbor"]?.trim() && (
-        <motion.p
+        <m.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}

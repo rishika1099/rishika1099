@@ -7,21 +7,21 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { motion, animate, useInView } from "framer-motion";
+import { m, animate, useInView } from "framer-motion";
 import PageShell from "@/components/PageShell";
 
 /* ---------- little building blocks ---------- */
 
 function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 22 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, delay }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -52,7 +52,7 @@ function MetricBar({ label, value, display }: { label: string; value: number; di
         <span className="shrink-0 font-semibold text-ink">{display}</span>
       </div>
       <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-white/60">
-        <motion.div
+        <m.div
           initial={{ width: 0 }}
           animate={inView ? { width: `${Math.round(value * 100)}%` } : { width: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
@@ -159,7 +159,7 @@ function SearchDemo() {
                 </span>
               </div>
               <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-white/60">
-                <motion.div
+                <m.div
                   key={q + name}
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.round((score / 0.6) * 100)}%` }}
@@ -211,7 +211,7 @@ export default function UnderTheHoodArticle({
         </Link>
 
         {/* hero */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -231,10 +231,10 @@ export default function UnderTheHoodArticle({
           <div className="mx-auto mt-4 max-w-xl">
             {slot("tour.hero", "font-serif text-lg italic text-ink-soft")}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* animated stat strip */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -251,7 +251,7 @@ export default function UnderTheHoodArticle({
               <div className="mt-1 font-body text-xs text-ink-soft">{s.l}</div>
             </div>
           ))}
-        </motion.div>
+        </m.div>
 
         <Reveal delay={0.1}>
           <div className="mt-8">{slot("tour.lead", "font-body text-base leading-relaxed text-ink")}</div>

@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml } from "@/lib/copyRender";
@@ -165,13 +165,13 @@ function Editor({ keyVal }: { keyVal: string }) {
         onMakeDefault={makeDefault}
         onRevert={revert}
       />
-      <motion.span
+      <m.span
         animate={{ y: [0, -10, 0] }}
         transition={{ repeat: Infinity, duration: 3 }}
         className="text-6xl"
       >
         📮
-      </motion.span>
+      </m.span>
       <div className="mx-auto mt-3 w-full max-w-xl">
         <InkEditor
           initialHtml={copyToHtml(title)}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 
 type Cluster = {
   label: string;
@@ -94,7 +94,7 @@ export default function SkillGraph() {
       }
     >
       <div className="flex h-full w-full items-center justify-center">
-        <motion.div
+        <m.div
           key={resetKey}
           drag
           dragMomentum={false}
@@ -145,7 +145,7 @@ export default function SkillGraph() {
 
           {/* tool / method nodes */}
           {nodes.map((n, i) => (
-            <motion.span
+            <m.span
               key={`${n.skill}-${i}`}
               style={{ left: `${n.x}%`, top: `${n.y}%` }}
               animate={{ y: [0, -4, 0] }}
@@ -153,22 +153,22 @@ export default function SkillGraph() {
               className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-white/70 bg-white/90 px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink-soft shadow-sm"
             >
               {n.skill}
-            </motion.span>
+            </m.span>
           ))}
-        </motion.div>
+        </m.div>
       </div>
 
       {/* hover hint */}
       <AnimatePresence>
         {hint && (
-          <motion.span
+          <m.span
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             className="pointer-events-none absolute left-1/2 top-4 z-20 -translate-x-1/2 rounded-full bg-ink px-3 py-1 font-body text-xs font-semibold text-cream shadow-lg"
           >
             ✦ drag me
-          </motion.span>
+          </m.span>
         )}
       </AnimatePresence>
 

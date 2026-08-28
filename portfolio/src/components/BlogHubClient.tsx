@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 
@@ -27,7 +27,7 @@ export default function BlogHubClient({
 
       <div className="mt-9 grid gap-5 sm:grid-cols-3">
         {doors.map((d, i) => (
-          <motion.div
+          <m.div
             key={d.href}
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -45,12 +45,12 @@ export default function BlogHubClient({
               </span>
               <div className="w-full font-body text-base text-ink-soft">{doorBlurbs[d.key]}</div>
             </Link>
-          </motion.div>
+          </m.div>
         ))}
       </div>
 
       {/* featured: the meta post about how this site is built */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45 }}
@@ -88,7 +88,7 @@ export default function BlogHubClient({
             read the tour →
           </span>
         </Link>
-      </motion.div>
+      </m.div>
     </PageShell>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import type { Poem } from "@/lib/poems-store";
 import { moodColor } from "@/lib/moods";
 import ReactionBar from "@/components/ReactionBar";
@@ -97,7 +97,7 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
       <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {shown.map((poem, i) => (
-            <motion.button
+            <m.button
               layout
               key={poem.slug}
               type="button"
@@ -130,21 +130,21 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
                   </div>
                 )}
               </div>
-            </motion.button>
+            </m.button>
           ))}
         </AnimatePresence>
       </div>
 
       <AnimatePresence>
         {active && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setActive(null)}
             className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#0b0b0e]/80 p-4 backdrop-blur-sm sm:p-8"
           >
-            <motion.article
+            <m.article
               initial={{ opacity: 0, y: 24, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 24, scale: 0.97 }}
@@ -185,8 +185,8 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
               <div className="mt-7 border-t border-white/10 pt-5">
                 <ReactionBar id={`poem:${active.slug}`} dark />
               </div>
-            </motion.article>
-          </motion.div>
+            </m.article>
+          </m.div>
         )}
       </AnimatePresence>
     </>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import type { PhotoFrame, PhotoGroup } from "@/lib/photos";
 
 // Soft placeholder frames shown until you drop real photos into /public/photos.
@@ -35,7 +35,7 @@ function Frame({
   const fy = frame?.y ?? 50;
   const zoom = frame?.zoom ?? 1;
   return (
-    <motion.figure
+    <m.figure
       initial={{ opacity: 0, y: 20, rotate }}
       whileInView={{ opacity: 1, y: 0, rotate }}
       viewport={{ once: true }}
@@ -61,7 +61,7 @@ function Frame({
       <figcaption className="mt-3 text-center font-hand text-xl text-ink-soft">
         {caption || "untitled ✦"}
       </figcaption>
-    </motion.figure>
+    </m.figure>
   );
 }
 
@@ -72,7 +72,7 @@ export default function PhotoGallery({ groups }: { groups: PhotoGroup[] }) {
     return (
       <div className="mt-10 flex flex-wrap justify-center gap-6">
         {placeholders.map((p, i) => (
-          <motion.figure
+          <m.figure
             key={i}
             initial={{ opacity: 0, y: 20, rotate: p.rotate }}
             whileInView={{ opacity: 1, y: 0, rotate: p.rotate }}
@@ -89,7 +89,7 @@ export default function PhotoGallery({ groups }: { groups: PhotoGroup[] }) {
             <figcaption className="mt-3 text-center font-hand text-xl text-ink-soft">
               {p.caption}
             </figcaption>
-          </motion.figure>
+          </m.figure>
         ))}
       </div>
     );

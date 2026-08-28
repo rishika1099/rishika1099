@@ -14,9 +14,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import SiteFooter from "@/components/SiteFooter";
-import AskMe from "@/components/AskMe";
 import CursorCompanion from "@/components/CursorCompanion";
-import CommandPalette from "@/components/CommandPalette";
+import DeferredUI from "@/components/DeferredUI";
+import MotionProvider from "@/components/MotionProvider";
 import VisitPing from "@/components/VisitPing";
 import Metrics from "@/components/Metrics";
 
@@ -134,12 +134,13 @@ export default function RootLayout({
             }),
           }}
         />
-        <Nav />
-        <main className="relative">{children}</main>
-        <SiteFooter />
-        <AskMe />
-        <CursorCompanion />
-        <CommandPalette />
+        <MotionProvider>
+          <Nav />
+          <main className="relative">{children}</main>
+          <SiteFooter />
+          <CursorCompanion />
+          <DeferredUI />
+        </MotionProvider>
         <VisitPing />
         <Metrics />
       </body>

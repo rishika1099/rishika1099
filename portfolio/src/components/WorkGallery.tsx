@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   categoryStyle,
   domainColor,
@@ -204,7 +204,7 @@ function ProjectCard({
   className?: string;
 }) {
   return (
-    <motion.article
+    <m.article
       layout
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -216,7 +216,7 @@ function ProjectCard({
       <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
       <CardBody p={p} blurb={blurb} />
       <CardActions name={p.name} onSimilar={onSimilar} />
-    </motion.article>
+    </m.article>
   );
 }
 
@@ -226,7 +226,7 @@ function ProjectCard({
  *
  * The advance yields to the reader: it stops while hovered, focused, or touched,
  * while the shelf is off-screen, for a few seconds after any manual scroll, and
- * entirely when the visitor prefers reduced motion.
+ * entirely when the visitor prefers reduced m.
  */
 function Carousel({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -577,7 +577,7 @@ export default function WorkGallery({
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {hits.map((p) => (
-                <motion.article
+                <m.article
                   layout
                   key={p.name}
                   initial={{ opacity: 0, scale: 0.92 }}
@@ -593,7 +593,7 @@ export default function WorkGallery({
                   </div>
                   <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
                   <CardBody p={p} blurb={p.blurb} />
-                </motion.article>
+                </m.article>
               ))}
             </AnimatePresence>
           </div>
@@ -621,7 +621,7 @@ export default function WorkGallery({
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {similarHits.map((p) => (
-                <motion.article
+                <m.article
                   layout
                   key={p.name}
                   initial={{ opacity: 0, scale: 0.92 }}
@@ -635,7 +635,7 @@ export default function WorkGallery({
                   <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
                   <CardBody p={p} blurb={blurbFor(p)} />
                   <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
-                </motion.article>
+                </m.article>
               ))}
             </AnimatePresence>
           </div>
@@ -674,7 +674,7 @@ export default function WorkGallery({
           </h2>
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
             {featured.map((p, i) => (
-          <motion.article
+          <m.article
             key={p.name}
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -687,7 +687,7 @@ export default function WorkGallery({
             <h3 className="mt-2 font-body text-xl font-bold text-ink">{p.name}</h3>
             <CardBody p={p} blurb={blurbFor(p)} />
                 <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
-              </motion.article>
+              </m.article>
             ))}
           </div>
         </>
@@ -853,7 +853,7 @@ export default function WorkGallery({
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {grid.map((p) => (
-            <motion.article
+            <m.article
               layout
               key={p.name}
               initial={{ opacity: 0, scale: 0.92 }}
@@ -867,7 +867,7 @@ export default function WorkGallery({
               <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
               <CardBody p={p} blurb={blurbFor(p)} />
               <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
-            </motion.article>
+            </m.article>
           ))}
         </AnimatePresence>
         {grid.length === 0 && (

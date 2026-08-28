@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import PdfThumb from "@/components/PdfThumb";
@@ -112,7 +112,7 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
   const [open, setOpen] = useState(false);
   const hasDetails = entryHasDetails(entry.details);
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: -16 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-60px" }}
@@ -172,20 +172,20 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
             {/* soft sonar pulse in the page's lilac tone, hints "tap to expand"
                 (only while collapsed) */}
             {!open && (
-              <motion.span
+              <m.span
                 className="absolute inset-0 rounded-full bg-lavender"
                 initial={{ opacity: 0.5, scale: 0.85 }}
                 animate={{ opacity: [0.5, 0, 0.5], scale: [0.85, 1.6, 0.85] }}
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
-            <motion.span
+            <m.span
               animate={{ rotate: open ? 180 : 0 }}
               transition={{ duration: 0.2 }}
               className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-base leading-none text-ink"
             >
               ⌄
-            </motion.span>
+            </m.span>
           </span>
         )}
       </button>
@@ -194,7 +194,7 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
 
       <AnimatePresence initial={false}>
         {open && hasDetails && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -205,10 +205,10 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
               className="rich-passage entry-details font-body text-sm text-ink-soft [&_li]:mt-2 [&_ul]:list-none"
               dangerouslySetInnerHTML={{ __html: detailsToHtml(entry.details) }}
             />
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }
 

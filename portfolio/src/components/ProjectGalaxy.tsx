@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 interface Point {
   name: string;
@@ -256,7 +256,7 @@ export default function ProjectGalaxy({ copy }: { copy?: Record<string, string> 
               const popBelow = p.y < 0.55;
               const popLeft = p.x > 0.75;
               return (
-                <motion.div
+                <m.div
                   key={p.name}
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: you && !isNear ? 0.4 : 1, scale: 1 }}
@@ -325,13 +325,13 @@ export default function ProjectGalaxy({ copy }: { copy?: Record<string, string> 
                       </div>
                     </div>
                   )}
-                </motion.div>
+                </m.div>
               );
             })}
 
             {/* the "you are here" star */}
             {you && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: "spring", stiffness: 220, damping: 16 }}
@@ -345,7 +345,7 @@ export default function ProjectGalaxy({ copy }: { copy?: Record<string, string> 
                 <span className="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-2 py-0.5 font-body text-[10px] font-semibold text-cream">
                   you
                 </span>
-              </motion.div>
+              </m.div>
             )}
           </div>
 
