@@ -16,17 +16,17 @@ const isHtml = (s: string) => /<[a-z][\s\S]*>/i.test(s);
 function Blurb({ text }: { text: string }) {
   return isHtml(text) ? (
     <span
-      className="rich-passage mt-1 block font-body text-sm text-ink-soft"
+      className="rich-passage mt-3 block font-body text-sm text-ink-soft"
       dangerouslySetInnerHTML={{ __html: text }}
     />
   ) : (
-    <p className="mt-1 font-body text-sm text-ink-soft">{text}</p>
+    <p className="mt-3 font-body text-sm text-ink-soft">{text}</p>
   );
 }
 
 function Links({ p }: { p: Pick<Project, "repo" | "demo" | "results" | "article"> }) {
   return (
-    <div className="mt-3 flex flex-wrap gap-2">
+    <div className="mt-auto flex flex-wrap gap-2 pt-3">
       <a
         href={p.repo}
         target="_blank"
@@ -72,7 +72,7 @@ function Links({ p }: { p: Pick<Project, "repo" | "demo" | "results" | "article"
 function DomainChips({ domains }: { domains?: Domain[] }) {
   if (!domains?.length) return null;
   return (
-    <div className="mt-3 flex flex-wrap gap-1.5">
+    <div className="mt-2 flex flex-wrap gap-1.5">
       {domains.map((d) => (
         <span
           key={d}
@@ -88,7 +88,7 @@ function DomainChips({ domains }: { domains?: Domain[] }) {
 
 function TechChips({ categories }: { categories: Category[] }) {
   return (
-    <div className="mt-2 flex flex-wrap gap-1.5">
+    <div className="mt-1.5 flex flex-wrap gap-1.5">
       {categories.map((c) => (
         <span
           key={c}
@@ -99,6 +99,34 @@ function TechChips({ categories }: { categories: Category[] }) {
         </span>
       ))}
     </div>
+  );
+}
+
+/** What every card carries under its title. Order is deliberate: the chips say
+ *  what a project *is* and belong with the name, the links say what you can *do*
+ *  with it and sit at the foot of the card, and the description separates the
+ *  two so identity and actions never read as one run-on pile of pills. */
+function CardBody({
+  p,
+  blurb,
+}: {
+  p: {
+    categories: Category[];
+    domains?: Domain[];
+    repo: string;
+    demo?: string;
+    results?: string;
+    article?: string;
+  };
+  blurb: string;
+}) {
+  return (
+    <>
+      <DomainChips domains={p.domains} />
+      <TechChips categories={p.categories} />
+      <Blurb text={blurb} />
+      <Links p={p} />
+    </>
   );
 }
 
@@ -138,7 +166,7 @@ function ScoreBadge({ score }: { score: number }) {
 // similarity; "ask about this" opens the chatbot pre-loaded with the project.
 function CardActions({ name, onSimilar }: { name: string; onSimilar: () => void }) {
   return (
-    <div className="mt-auto flex flex-wrap gap-3 pt-3">
+    <div className="flex flex-wrap gap-3 pt-3">
       <button
         type="button"
         onClick={onSimilar}
@@ -186,10 +214,7 @@ function ProjectCard({
     >
       <span className="text-3xl">{p.emoji}</span>
       <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-      <Blurb text={blurb} />
-      <DomainChips domains={p.domains} />
-      <TechChips categories={p.categories} />
-      <Links p={p} />
+      <CardBody p={p} blurb={blurb} />
       <CardActions name={p.name} onSimilar={onSimilar} />
     </motion.article>
   );
@@ -567,10 +592,7 @@ export default function WorkGallery({
                     <ScoreBadge score={p.score} />
                   </div>
                   <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-                  <Blurb text={p.blurb} />
-                  <DomainChips domains={p.domains} />
-                  <TechChips categories={p.categories} />
-                  <Links p={p} />
+                  <CardBody p={p} blurb={p.blurb} />
                 </motion.article>
               ))}
             </AnimatePresence>
@@ -611,10 +633,7 @@ export default function WorkGallery({
                 >
                   <span className="text-3xl">{p.emoji}</span>
                   <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-                  <Blurb text={blurbFor(p)} />
-                  <DomainChips domains={p.domains} />
-                  <TechChips categories={p.categories} />
-                  <Links p={p} />
+                  <CardBody p={p} blurb={blurbFor(p)} />
                   <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
                 </motion.article>
               ))}
@@ -666,10 +685,7 @@ export default function WorkGallery({
           >
             <span className="animate-float-med text-4xl">{p.emoji}</span>
             <h3 className="mt-2 font-body text-xl font-bold text-ink">{p.name}</h3>
-            <Blurb text={blurbFor(p)} />
-                <DomainChips domains={p.domains} />
-                <TechChips categories={p.categories} />
-                <Links p={p} />
+            <CardBody p={p} blurb={blurbFor(p)} />
                 <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
               </motion.article>
             ))}
@@ -849,10 +865,7 @@ export default function WorkGallery({
             >
               <span className="text-3xl">{p.emoji}</span>
               <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-              <Blurb text={blurbFor(p)} />
-              <DomainChips domains={p.domains} />
-              <TechChips categories={p.categories} />
-              <Links p={p} />
+              <CardBody p={p} blurb={blurbFor(p)} />
               <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
             </motion.article>
           ))}
