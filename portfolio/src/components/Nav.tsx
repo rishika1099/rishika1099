@@ -55,6 +55,7 @@ export default function Nav() {
             <li key={l.href}>
               <Link
                 href={l.href}
+                aria-current={isActive(l.href) ? "page" : undefined}
                 className={`group relative flex items-center gap-1.5 rounded-full px-3 py-1.5 font-body text-sm font-semibold transition-colors ${
                   isActive(l.href)
                     ? "text-ink"
@@ -111,6 +112,7 @@ export default function Nav() {
               <Link
                 href={l.href}
                 onClick={() => setOpen(false)}
+                aria-current={isActive(l.href) ? "page" : undefined}
                 style={isActive(l.href) ? { backgroundColor: pillTint(pathname) } : undefined}
                 className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 font-body font-semibold ${
                   isActive(l.href) ? "text-ink" : "text-ink-soft"

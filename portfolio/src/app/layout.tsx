@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { SITE_URL } from "@/lib/siteUrl";
 import {
   Nunito,
@@ -59,6 +59,12 @@ const pacifico = Pacifico({ variable: "--font-pacifico", subsets: ["latin"], wei
 const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], weight: ["400"], preload: false });
 const spaceMono = Space_Mono({ variable: "--font-space-mono", subsets: ["latin"], weight: ["400"], preload: false });
 
+export const viewport: Viewport = {
+  // tints the browser chrome on mobile to match the page rather than leaving a
+  // slab of white above a cream site
+  themeColor: "#fff8f0",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -79,6 +85,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Rishika Mamidibathula" }],
   alternates: {
+    // "./" is per route: each page is canonical to itself, not to the homepage
+    canonical: "./",
     types: { "application/rss+xml": "/feed.xml" },
   },
   openGraph: {
@@ -134,9 +142,15 @@ export default function RootLayout({
             }),
           }}
         />
+        <a
+          href="#content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:font-body focus:text-sm focus:font-semibold focus:text-ink focus:shadow-lg"
+        >
+          skip to content
+        </a>
         <MotionProvider>
           <Nav />
-          <main className="relative">{children}</main>
+          <main id="content" className="relative">{children}</main>
           <SiteFooter />
           <CursorCompanion />
           <DeferredUI />

@@ -29,6 +29,10 @@ export default function FlowerPortrait() {
       <m.img
         src="/portrait"
         alt="Rishika"
+        width={256}
+        height={256}
+        fetchPriority="high"
+        decoding="async"
         animate={{ y: [0, -6, 0] }}
         transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
         className="relative h-full w-full rounded-full border-4 border-white object-cover shadow-lg"
