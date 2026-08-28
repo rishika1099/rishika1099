@@ -176,21 +176,37 @@ interface GhRepo {
  * pulled live from GitHub, so new projects show up here on their own. Falls back
  * to just the curated list if GitHub is unreachable.
  */
-export async function getAllProjects(): Promise<Project[]> {
-  const curatedSlugs = new Set(
-    curated.map((p) => p.repo.split("/").pop()!.toLowerCase()),
-  );
+// The repo list is external data that changes at GitHub's pace, so it is held
+// for a few minutes per instance. Deliberately narrow: her own overrides are
+// still read fresh on every request, because those are edits she expects to see
+// the moment she saves, and caching them is what made /work look frozen before.
+let repoCache: { at: number; repos: GhRepo[] } | null = null;
+const REPO_TTL_MS = 5 * 60 * 1000;
 
-  let repos: GhRepo[] = [];
+async function fetchRepos(): Promise<GhRepo[]> {
+  if (repoCache && Date.now() - repoCache.at < REPO_TTL_MS) return repoCache.repos;
   try {
     const res = await fetch(
       `https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=updated`,
       { headers: { Accept: "application/vnd.github+json" }, next: { revalidate: 3600 } },
     );
-    if (res.ok) repos = (await res.json()) as GhRepo[];
+    if (res.ok) {
+      const repos = (await res.json()) as GhRepo[];
+      repoCache = { at: Date.now(), repos };
+      return repos;
+    }
   } catch {
-    // offline / rate-limited: just show the curated list
+    // offline / rate-limited: fall back to whatever we last saw, else curated only
   }
+  return repoCache?.repos ?? [];
+}
+
+export async function getAllProjects(): Promise<Project[]> {
+  const curatedSlugs = new Set(
+    curated.map((p) => p.repo.split("/").pop()!.toLowerCase()),
+  );
+
+  const repos = await fetchRepos();
 
   const candsBySlug = new Map<string, { themed: string[]; fallback: string[] }>();
   const extra: Project[] = repos

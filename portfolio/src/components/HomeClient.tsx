@@ -96,9 +96,12 @@ export default function HomeClient({
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.35, type: "spring", stiffness: 120 }}
+            // painted immediately: this is the largest thing on the page, and
+            // fading it in delays the largest-contentful-paint by the whole
+            // animation. The spring is on scale only, which costs nothing.
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 120 }}
             className="mt-10 flex flex-col items-center gap-6 font-name text-[2.1rem] font-normal leading-[1.15] text-ink text-shadow-soft sm:mt-14 sm:text-6xl"
           >
             <motion.span
@@ -118,9 +121,11 @@ export default function HomeClient({
           </motion.h1>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            // likewise: the intro paragraph is the single biggest element, so it
+            // renders at once and only slides a little
+            initial={{ y: 6 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.4 }}
             className="mx-auto mt-6 max-w-xl font-body text-base text-ink-soft sm:text-lg"
           >
             {intro}
