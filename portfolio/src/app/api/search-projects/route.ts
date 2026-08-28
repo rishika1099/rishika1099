@@ -13,7 +13,8 @@ export async function GET(request: Request) {
   }
   try {
     // log the phrase people searched for (the words only, tied to nobody)
-    void recordSearch(q);
+    // the tour searches too; its queries are not real interest
+    if (!request.headers.get("x-no-track")) void recordSearch(q);
     const results = await searchProjects(q);
     return NextResponse.json({ results });
   } catch (err) {

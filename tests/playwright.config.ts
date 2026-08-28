@@ -17,9 +17,14 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     viewport: { width: 1280, height: 800 },
-    // this suite drives a real browser against production, so it would otherwise
-    // be counted as a visitor and quietly skew the analytics it is meant to protect
+    // This suite drives a real browser against production, so it would otherwise
+    // be counted as a visitor and skew the analytics it exists to protect. The
+    // header covers ordinary requests; the user agent covers page views, which
+    // are sent with sendBeacon and cannot carry custom headers at all.
     extraHTTPHeaders: { "x-no-track": "1" },
+    userAgent:
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) " +
+      "Chrome/131.0.0.0 Safari/537.36 PortfolioTourBot/1.0",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });
