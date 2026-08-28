@@ -52,8 +52,9 @@ test("public feature tour", async ({ page }) => {
     const blurb = page.locator("article").first().locator("p, span.rich-passage").first();
     const original = await blurb.innerText();
     await page.getByRole("button", { name: /i'm 5/i }).click();
-    // one batched rewrite for every project, so a cold call takes a while
-    await expect.poll(async () => blurb.innerText(), { timeout: 60_000 }).not.toBe(original);
+    // one batched rewrite for every project; the first ever call for a given
+    // project set is a real LLM round trip before it is cached for good
+    await expect.poll(async () => blurb.innerText(), { timeout: 90_000 }).not.toBe(original);
     await beat(page, 1200);
     await page.getByRole("button", { name: /default/i }).click();
     await expect.poll(async () => blurb.innerText(), { timeout: 20_000 }).toBe(original);

@@ -335,10 +335,13 @@ export default function WorkGallery({
   projects,
   categories,
   domains,
+  afterFeatured,
 }: {
   projects: Project[];
   categories: Category[];
   domains: Domain[];
+  /** rendered between the featured blooms and the area shelves */
+  afterFeatured?: React.ReactNode;
 }) {
   // stable id for each area section, so a pill can jump straight to it
   const areaId = (c: string) => "area-" + c.toLowerCase().replace(/[^a-z0-9]+/g, "-");
@@ -673,6 +676,8 @@ export default function WorkGallery({
           </div>
         </>
       )}
+
+      {afterFeatured}
 
       {/* Filters */}
       <div id="areas" className="mt-12 scroll-mt-24 flex flex-wrap items-center justify-between gap-3">

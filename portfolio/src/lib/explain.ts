@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import OpenAI from "openai";
 import { richToText } from "@/lib/richHtml";
 import { getAllProjects } from "@/lib/github-projects";
+import { blobsEnabled, store } from "@/lib/blobs";
 
 export type Level = "eli5" | "expert";
 
@@ -10,13 +12,39 @@ const AUDIENCE: Record<Level, string> = {
     "a senior ML engineer or technical recruiter: precise and concrete, name the methods, models, and any metrics, no fluff, one or two sentences each",
 };
 
-// Cache rewrites per (project set, level) so each level costs one LLM call.
+// Rewrites are cached per (project set, level): one LLM call per level, ever.
+//
+// The in-process Map alone was not enough. Each serverless instance starts with
+// an empty one, so most visitors were paying the full rewrite: ~27s of waiting
+// after clicking a toggle, and a fresh API bill each time. Persisting to Blobs
+// makes it computed once and instant thereafter, the same way poem art works.
+// The key includes a hash of the project set, so publishing a repo invalidates
+// it on its own rather than serving a stale list.
 const cache = new Map<string, Record<string, string>>();
+
+const blobKey = (level: Level, sig: string) => `explain-${level}-${sig}`;
+
+async function readCached(level: Level, sig: string): Promise<Record<string, string> | null> {
+  const local = cache.get(blobKey(level, sig));
+  if (local) return local;
+  if (!blobsEnabled()) return null;
+  try {
+    const s = await store("explain");
+    const raw = (await s.get(blobKey(level, sig), { type: "json" })) as Record<string, string> | null;
+    if (raw && Object.keys(raw).length) {
+      cache.set(blobKey(level, sig), raw);
+      return raw;
+    }
+  } catch {
+    // a cache miss must never break the toggle
+  }
+  return null;
+}
 
 export async function explainProjects(level: Level): Promise<Record<string, string>> {
   const projects = await getAllProjects();
-  const key = `${level}:${projects.map((p) => p.name).join("|")}`;
-  const hit = cache.get(key);
+  const sig = createHash("sha1").update(projects.map((p) => p.name).join("|")).digest("hex").slice(0, 12);
+  const hit = await readCached(level, sig);
   if (hit) return hit;
 
   const openai = new OpenAI();
@@ -51,6 +79,14 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
     out = {};
   }
 
-  cache.set(key, out);
+  cache.set(blobKey(level, sig), out);
+  if (blobsEnabled() && Object.keys(out).length) {
+    try {
+      const s = await store("explain");
+      await s.setJSON(blobKey(level, sig), out);
+    } catch {
+      // still fine, it just costs the next instance a rewrite
+    }
+  }
   return out;
 }
