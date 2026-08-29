@@ -458,6 +458,11 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 | [Curriculum-That-Transfers-Out](https://github.com/rishika1099/Curriculum-That-Transfers-Out) | A little experiment on GitHub | HTML | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Attention-Roofline](https://github.com/rishika1099/Attention-Roofline) | A little experiment on GitHub | HTML | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Parallelism-Config-Oracle](https://github.com/rishika1099/Parallelism-Config-Oracle) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Sim2Real-Gap-Budget](https://github.com/rishika1099/Sim2Real-Gap-Budget) | A little experiment on GitHub | HTML | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Commodity-Control-Loop](https://github.com/rishika1099/Commodity-Control-Loop) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Physics-As-Judge](https://github.com/rishika1099/Physics-As-Judge) | A little experiment on GitHub | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Rules-Data-Exchange-Rate](https://github.com/rishika1099/Rules-Data-Exchange-Rate) | A little experiment on GitHub | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Distillation-Receipts](https://github.com/rishika1099/Distillation-Receipts) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 
 ---
 
