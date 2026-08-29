@@ -121,7 +121,10 @@ function EntryLogo({ logo }: { logo: NonNullable<Entry["logo"]> }) {
     // The box stretches, not the image. Letting a replaced element stretch
     // itself makes the browser resolve its height from its own aspect ratio,
     // which drags the whole card taller; a plain box has no such opinion.
-    <span className="w-14 shrink-0 self-stretch overflow-hidden rounded-2xl bg-white/80 p-2 ring-1 ring-white/70 sm:w-20">
+    // Stretches to the card's content, but capped. Real entries run 350-550px
+    // tall once the blurb and chips are in, and a logo floating in a strip that
+    // long reads as an empty column rather than as a mark.
+    <span className="max-h-28 w-14 shrink-0 self-stretch overflow-hidden rounded-2xl bg-white/80 p-2 ring-1 ring-white/70 sm:w-20">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={`/api/attachment/${logo.id}`}
