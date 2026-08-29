@@ -37,16 +37,25 @@ const nunito = Nunito({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
 });
+// Both are declared here because the whole site can reach them, but neither is
+// on most pages. next/font preloads by default, and a font declared in the root
+// layout preloads on *every* route: Caveat is only ever painted on the
+// photography and technical-blog pages, yet it was the single largest download
+// on the homepage. preload: false leaves the @font-face in place and lets the
+// browser fetch each face only on a page that actually paints with it, which
+// for Cormorant also means fetching the italic without the upright.
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  preload: false,
 });
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
+  preload: false,
 });
 // Extra faces offered in the ink editor's font menu. `preload: false` matters:
 // these exist for the editor's picker, but every visitor was downloading them
