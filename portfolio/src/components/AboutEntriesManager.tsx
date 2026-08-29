@@ -93,7 +93,7 @@ function EntryEditor({
                 type="button"
                 onClick={() => onChange({ ...entry, logo: undefined })}
                 aria-label="remove logo"
-                title="remove logo, the emoji comes back"
+                title="remove logo"
                 className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-rose/80 font-body text-[10px] font-bold text-ink shadow transition hover:bg-rose"
               >
                 ✕
@@ -101,7 +101,7 @@ function EntryEditor({
             </span>
           ) : (
             <label
-              title="upload a company or school logo, it replaces the emoji"
+              title="upload a company or school logo, it sits next to the emoji"
               className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl border border-dashed border-ink-soft/30 bg-white/40 font-body text-[10px] font-semibold leading-tight text-ink-soft/70 transition hover:border-ink-soft/60 hover:bg-white/70"
             >
               logo

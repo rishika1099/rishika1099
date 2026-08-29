@@ -109,28 +109,27 @@ function Attachments({ entry }: { entry: Entry }) {
 }
 
 /**
- * The mark on the left of an entry: an uploaded company or school logo when
- * there is one, otherwise the emoji. Both sit in the same fixed box so the
- * text lines up across cards whether or not a logo has been added yet.
+ * The company or school mark, sitting beside the emoji rather than replacing
+ * it. It stretches to the height of the card's own content, from the date line
+ * down through the tag chips, which is why it lives inside the button: the
+ * expandable details sit outside, so an opened card does not stretch the logo
+ * down with it. object-contain because a wordmark cropped to fit stops being a
+ * logo, and the fixed width keeps every card's text starting at the same place.
  */
-function EntryMark({ entry }: { entry: Entry }) {
+function EntryLogo({ logo }: { logo: NonNullable<Entry["logo"]> }) {
   return (
-    <span className="animate-float-med flex h-12 w-12 shrink-0 items-center justify-center">
-      {entry.logo ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={`/api/attachment/${entry.logo.id}`}
-          alt={entry.logo.name}
-          width={48}
-          height={48}
-          loading="lazy"
-          decoding="async"
-          // contain, not cover: a wordmark cropped to a square stops being a logo
-          className="h-full w-full rounded-xl bg-white/80 object-contain p-1 ring-1 ring-white/70"
-        />
-      ) : (
-        <span className="text-3xl">{entry.icon}</span>
-      )}
+    // The box stretches, not the image. Letting a replaced element stretch
+    // itself makes the browser resolve its height from its own aspect ratio,
+    // which drags the whole card taller; a plain box has no such opinion.
+    <span className="w-14 shrink-0 self-stretch overflow-hidden rounded-2xl bg-white/80 p-2 ring-1 ring-white/70 sm:w-20">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`/api/attachment/${logo.id}`}
+        alt={logo.name}
+        loading="lazy"
+        decoding="async"
+        className="h-full w-full object-contain"
+      />
     </span>
   );
 }
@@ -154,7 +153,10 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
           hasDetails ? "cursor-pointer" : "cursor-default"
         }`}
       >
-        <EntryMark entry={entry} />
+        <span className="animate-float-med flex h-12 w-12 shrink-0 items-center justify-center text-3xl">
+          {entry.icon}
+        </span>
+        {entry.logo && <EntryLogo logo={entry.logo} />}
         <div className="flex-1">
           <div
             className="rich-passage font-body text-sm italic text-ink-soft"
