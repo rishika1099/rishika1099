@@ -186,7 +186,7 @@ function Gallery({ keyVal }: { keyVal: string }) {
 
   return (
     <div className="mt-8">
-      <FileDrop className="inline-block">
+      <FileDrop>
         <label className="inline-block cursor-pointer rounded-full bg-ink px-4 py-1.5 font-body text-sm font-semibold text-cream transition hover:opacity-90">
           {busy ? "working…" : "⇪ upload a photo"}
           <input

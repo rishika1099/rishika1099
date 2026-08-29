@@ -76,6 +76,15 @@ function EntryEditor({
     }
   }
 
+  async function addLogo(file: File) {
+    setAttMsg(`uploading ${file.name}…`);
+    const meta = await onUpload(file);
+    if (meta && meta.kind === "image") {
+      onChange({ ...entry, logo: meta });
+      setAttMsg("");
+    } else setAttMsg("logo upload failed (an image, under 8MB)");
+  }
+
   function removeFile(id: string) {
     onChange({ ...entry, attachments: attachments.filter((a) => a.id !== id) });
   }
@@ -83,11 +92,32 @@ function EntryEditor({
   return (
     <div className="rounded-3xl p-5 soft-card">
       <div className="flex gap-4">
-        <EditableText
-          value={entry.icon}
-          onChange={(v) => onChange({ ...entry, icon: v })}
-          className="!w-14 shrink-0 text-center text-3xl"
-        />
+        <div className="flex w-14 shrink-0 flex-col items-center gap-2 self-start">
+          <EditableText
+            value={entry.icon}
+            onChange={(v) => onChange({ ...entry, icon: v })}
+            className="!w-14 text-center text-3xl"
+          />
+          {entry.logo && (
+            <span className="relative inline-flex">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/api/attachment/${entry.logo.id}`}
+                alt={entry.logo.name}
+                className="h-14 w-14 rounded-xl bg-white/80 object-contain p-1 ring-1 ring-white/70"
+              />
+              <button
+                type="button"
+                onClick={() => onChange({ ...entry, logo: undefined })}
+                aria-label="remove logo"
+                title="remove logo"
+                className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-rose/80 font-body text-[10px] font-bold text-ink shadow transition hover:bg-rose"
+              >
+                ✕
+              </button>
+            </span>
+          )}
+        </div>
         <div className="flex-1 space-y-2">
           <InkEditor
             initialHtml={copyToHtml(entry.when)}
@@ -145,6 +175,24 @@ function EntryEditor({
             value={entry.tech ?? []}
             onChange={(v) => onChange({ ...entry, tech: v as Entry["tech"] })}
           />
+          <p className="pt-1 font-body text-[11px] text-ink-soft/60">
+            company or school logo (shown next to the emoji on the card):
+          </p>
+          <FileDrop>
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
+              {entry.logo ? "🏷 change the logo" : "🏷 add a logo"}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) addLogo(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          </FileDrop>
           <p className="pt-1 font-body text-[11px] text-ink-soft/60">files (a certificate picture, a diploma PDF):</p>
           {attachments.length > 0 && (
             <div className="flex flex-wrap gap-2">
@@ -180,7 +228,7 @@ function EntryEditor({
               ))}
             </div>
           )}
-          <FileDrop className="inline-block">
+          <FileDrop>
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
               📎 attach a file
               <input
@@ -416,7 +464,7 @@ function Editor({ keyVal }: { keyVal: string }) {
 
       <div className="mt-6 text-center">
         <span className="inline-flex items-center gap-1.5">
-          <FileDrop className="inline-block">
+          <FileDrop>
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105">
               📄 Replace Resume
               <input

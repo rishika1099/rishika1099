@@ -147,7 +147,7 @@ export default function PoemArtManager({
         >
           ⭑ save this one
         </button>
-        <FileDrop className="inline-block">
+        <FileDrop>
           <button className={btnGhost} disabled={!!busy} onClick={() => fileRef.current?.click()}>
             ⬆ upload
           </button>

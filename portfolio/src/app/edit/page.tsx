@@ -60,7 +60,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         }}
         resumeSlot={
           <span className="flex items-center gap-1.5">
-            <FileDrop className="inline-block">
+            <FileDrop>
               <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-5 py-2 font-body text-base font-bold text-ink shadow-sm backdrop-blur transition hover:bg-white">
                 📄 Replace Resume
                 <input
@@ -85,7 +85,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         }
         portraitOverlay={
           <div className="absolute inset-x-0 bottom-0 z-10 flex justify-center gap-1.5">
-            <FileDrop className="inline-block">
+            <FileDrop>
               <label className="cursor-pointer rounded-full bg-white/90 px-3 py-1 font-body text-xs font-semibold text-ink shadow transition hover:bg-white">
                 🖼️ replace photo
                 <input

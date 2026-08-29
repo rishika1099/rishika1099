@@ -245,7 +245,7 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
 
   return (
     <div className="mt-6">
-      <FileDrop className="inline-block">
+      <FileDrop>
         <label className={`${btnDark} inline-block cursor-pointer`}>
           {busy ? "working…" : "⇪ upload a photo"}
           <input

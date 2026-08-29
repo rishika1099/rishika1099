@@ -162,7 +162,7 @@ function EntryEditor({
           <p className="pt-1 font-body text-[11px] text-ink-soft/60">
             company or school logo (shown next to the emoji on the card):
           </p>
-          <FileDrop className="inline-block">
+          <FileDrop>
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
               {entry.logo ? "🏷 change the logo" : "🏷 add a logo"}
               <input
@@ -208,7 +208,7 @@ function EntryEditor({
               ))}
             </div>
           )}
-          <FileDrop className="inline-block">
+          <FileDrop>
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
               📎 attach a file
               <input

@@ -72,7 +72,7 @@ export default function ContactManager({ keyVal }: { keyVal: string }) {
       {/* resume + portrait swaps */}
       <div className="mt-2 flex flex-wrap gap-3">
         <div className="flex items-center gap-1.5">
-          <FileDrop className="inline-block">
+          <FileDrop>
             <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-4 py-1.5 font-body text-sm font-semibold text-ink shadow-sm transition hover:bg-white">
               📄 replace resume
               <input
@@ -90,7 +90,7 @@ export default function ContactManager({ keyVal }: { keyVal: string }) {
           )}
         </div>
         <div className="flex items-center gap-1.5">
-          <FileDrop className="inline-block">
+          <FileDrop>
             <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-4 py-1.5 font-body text-sm font-semibold text-ink shadow-sm transition hover:bg-white">
               🖼️ replace photo
               <input

@@ -22,6 +22,17 @@ function accepts(input: HTMLInputElement, file: File): boolean {
   });
 }
 
+/** Say what this particular slot takes, rather than guessing on its behalf. */
+function describe(input: HTMLInputElement): string {
+  const spec = (input.getAttribute("accept") ?? "").toLowerCase();
+  const pdf = spec.includes("pdf");
+  const img = spec.includes("image/") || /\.(jpe?g|png|webp|gif|svg|avif)/.test(spec);
+  if (pdf && img) return "images or PDFs";
+  if (pdf) return "PDFs";
+  if (img) return "images";
+  return "that kind of file";
+}
+
 export default function FileDrop({
   children,
   className = "",
@@ -31,7 +42,7 @@ export default function FileDrop({
   className?: string;
   hint?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLSpanElement>(null);
   // dragenter/dragleave fire for every child too, so count them instead of
   // trusting a single leave to mean the pointer actually left
   const depth = useRef(0);
@@ -44,9 +55,12 @@ export default function FileDrop({
   };
 
   return (
-    <div
+    <span
       ref={ref}
-      className={`relative ${className}`}
+      // a <span> rather than a <div>: two of the uploaders this wraps sit
+      // inside spans, where a div is invalid, and an inline-block span behaves
+      // the same everywhere else
+      className={`relative inline-block ${className}`}
       onDragEnter={(e) => {
         if (!e.dataTransfer?.types.includes("Files")) return;
         e.preventDefault();
@@ -72,7 +86,7 @@ export default function FileDrop({
         const dropped = Array.from(e.dataTransfer.files);
         const ok = dropped.filter((f) => accepts(input, f));
         if (!ok.length) {
-          setRejected(input.getAttribute("accept")?.includes("pdf") ? "images or PDFs only" : "images only");
+          setRejected(`${describe(input)} only`);
           return;
         }
         const dt = new DataTransfer();
@@ -83,15 +97,15 @@ export default function FileDrop({
     >
       {children}
       {over && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-blush bg-blush/20 backdrop-blur-[1px]">
+        <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-blush bg-blush/20 backdrop-blur-[1px]">
           <span className="rounded-full bg-white/90 px-3 py-1 font-body text-xs font-semibold text-ink shadow">
             {hint}
           </span>
-        </div>
+        </span>
       )}
       {rejected && (
-        <p className="mt-1 font-body text-[11px] font-semibold text-rose">{rejected}</p>
+        <span className="mt-1 block font-body text-[11px] font-semibold text-rose">{rejected}</span>
       )}
-    </div>
+    </span>
   );
 }
