@@ -6,6 +6,7 @@
 // gets a little replace-photo control.
 
 import HomeClient from "@/components/HomeClient";
+import FileDrop from "@/components/FileDrop";
 import { AdminGate } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 import { useFileSwap } from "@/components/FileSwap";
@@ -59,15 +60,17 @@ function Editor({ keyVal }: { keyVal: string }) {
         }}
         resumeSlot={
           <span className="flex items-center gap-1.5">
-            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-5 py-2 font-body text-base font-bold text-ink shadow-sm backdrop-blur transition hover:bg-white">
-              📄 Replace Resume
-              <input
-                type="file"
-                accept=".pdf"
-                className="hidden"
-                onChange={(e) => e.target.files?.[0] && files.upload("resume", e.target.files[0])}
-              />
-            </label>
+            <FileDrop className="inline-block">
+              <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-5 py-2 font-body text-base font-bold text-ink shadow-sm backdrop-blur transition hover:bg-white">
+                📄 Replace Resume
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && files.upload("resume", e.target.files[0])}
+                />
+              </label>
+            </FileDrop>
             {files.has.resume && (
               <button
                 type="button"
@@ -82,15 +85,17 @@ function Editor({ keyVal }: { keyVal: string }) {
         }
         portraitOverlay={
           <div className="absolute inset-x-0 bottom-0 z-10 flex justify-center gap-1.5">
-            <label className="cursor-pointer rounded-full bg-white/90 px-3 py-1 font-body text-xs font-semibold text-ink shadow transition hover:bg-white">
-              🖼️ replace photo
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png,.webp"
-                className="hidden"
-                onChange={(e) => e.target.files?.[0] && files.upload("portrait", e.target.files[0])}
-              />
-            </label>
+            <FileDrop className="inline-block">
+              <label className="cursor-pointer rounded-full bg-white/90 px-3 py-1 font-body text-xs font-semibold text-ink shadow transition hover:bg-white">
+                🖼️ replace photo
+                <input
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp"
+                  className="hidden"
+                  onChange={(e) => e.target.files?.[0] && files.upload("portrait", e.target.files[0])}
+                />
+              </label>
+            </FileDrop>
             {files.has.portrait && (
               <button
                 type="button"

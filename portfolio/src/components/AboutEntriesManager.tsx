@@ -6,6 +6,7 @@
 // atelier's work/education/research clusters.
 
 import { useEffect, useState } from "react";
+import FileDrop from "@/components/FileDrop";
 import { useRouter } from "next/navigation";
 import InkEditor from "@/components/InkEditor";
 import PdfThumb from "@/components/PdfThumb";
@@ -161,19 +162,21 @@ function EntryEditor({
           <p className="pt-1 font-body text-[11px] text-ink-soft/60">
             company or school logo (shown next to the emoji on the card):
           </p>
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
-            {entry.logo ? "🏷 change the logo" : "🏷 add a logo"}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) addLogo(f);
-                e.target.value = "";
-              }}
-            />
-          </label>
+          <FileDrop className="inline-block">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
+              {entry.logo ? "🏷 change the logo" : "🏷 add a logo"}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) addLogo(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          </FileDrop>
           <p className="pt-1 font-body text-[11px] text-ink-soft/60">files (a certificate picture, a diploma PDF):</p>
           {attachments.length > 0 && (
             <div className="flex flex-wrap gap-2">
@@ -205,19 +208,21 @@ function EntryEditor({
               ))}
             </div>
           )}
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
-            📎 attach a file
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) addFile(f);
-                e.target.value = "";
-              }}
-            />
-          </label>
+          <FileDrop className="inline-block">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
+              📎 attach a file
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) addFile(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          </FileDrop>
           {attMsg && <p className="font-body text-[11px] text-ink-soft/70">{attMsg}</p>}
         </div>
         <button

@@ -5,6 +5,7 @@
 // through key-gated admin APIs into Netlify Blobs (or local files in dev).
 
 import { Suspense, useEffect, useState } from "react";
+import FileDrop from "@/components/FileDrop";
 import { useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
@@ -244,16 +245,18 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
 
   return (
     <div className="mt-6">
-      <label className={`${btnDark} inline-block cursor-pointer`}>
-        {busy ? "working…" : "⇪ upload a photo"}
-        <input
-          type="file"
-          accept=".jpg,.jpeg,.png,.webp"
-          className="hidden"
-          disabled={busy}
-          onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
-        />
-      </label>
+      <FileDrop className="inline-block">
+        <label className={`${btnDark} inline-block cursor-pointer`}>
+          {busy ? "working…" : "⇪ upload a photo"}
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            className="hidden"
+            disabled={busy}
+            onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
+          />
+        </label>
+      </FileDrop>
       {msg && <p className="mt-3 font-body text-sm text-ink-soft">{msg}</p>}
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {photos.map((p) => (

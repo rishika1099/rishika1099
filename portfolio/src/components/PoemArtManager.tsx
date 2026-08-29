@@ -4,6 +4,7 @@
 // goes live, keep versions you like to come back to, or upload your own.
 
 import { useEffect, useRef, useState } from "react";
+import FileDrop from "@/components/FileDrop";
 import { adminApi } from "@/components/editing";
 
 interface SavedArt {
@@ -146,16 +147,18 @@ export default function PoemArtManager({
         >
           ⭑ save this one
         </button>
-        <button className={btnGhost} disabled={!!busy} onClick={() => fileRef.current?.click()}>
-          ⬆ upload
-        </button>
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".png,.jpg,.jpeg,.webp"
-          className="hidden"
-          onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
-        />
+        <FileDrop className="inline-block">
+          <button className={btnGhost} disabled={!!busy} onClick={() => fileRef.current?.click()}>
+            ⬆ upload
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".png,.jpg,.jpeg,.webp"
+            className="hidden"
+            onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
+          />
+        </FileDrop>
       </div>
 
       {status.saved.length > 0 && (

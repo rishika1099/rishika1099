@@ -5,6 +5,7 @@
 // remove a photo, all in the page's own sunset light.
 
 import Link from "next/link";
+import FileDrop from "@/components/FileDrop";
 import { useEffect, useRef, useState } from "react";
 import PageShell from "@/components/PageShell";
 import { AdminGate, adminApi } from "@/components/editing";
@@ -185,16 +186,18 @@ function Gallery({ keyVal }: { keyVal: string }) {
 
   return (
     <div className="mt-8">
-      <label className="inline-block cursor-pointer rounded-full bg-ink px-4 py-1.5 font-body text-sm font-semibold text-cream transition hover:opacity-90">
-        {busy ? "working…" : "⇪ upload a photo"}
-        <input
-          type="file"
-          accept=".jpg,.jpeg,.png,.webp"
-          className="hidden"
-          disabled={busy}
-          onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
-        />
-      </label>
+      <FileDrop className="inline-block">
+        <label className="inline-block cursor-pointer rounded-full bg-ink px-4 py-1.5 font-body text-sm font-semibold text-cream transition hover:opacity-90">
+          {busy ? "working…" : "⇪ upload a photo"}
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp"
+            className="hidden"
+            disabled={busy}
+            onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
+          />
+        </label>
+      </FileDrop>
       {msg && <p className="mt-3 font-body text-sm text-ink-soft">{msg}</p>}
       <div className="mt-5 columns-2 gap-4 sm:columns-3 [&>figure]:mb-4">
         {photos === null && <p className="font-body text-sm text-ink-soft">opening the album… ✦</p>}

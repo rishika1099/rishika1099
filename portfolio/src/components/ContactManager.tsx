@@ -4,6 +4,7 @@
 // swap the resume PDF and the portrait photo. Used in the atelier.
 
 import { useEffect, useState } from "react";
+import FileDrop from "@/components/FileDrop";
 import { useRouter } from "next/navigation";
 import { EditableText, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
@@ -71,15 +72,17 @@ export default function ContactManager({ keyVal }: { keyVal: string }) {
       {/* resume + portrait swaps */}
       <div className="mt-2 flex flex-wrap gap-3">
         <div className="flex items-center gap-1.5">
-          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-4 py-1.5 font-body text-sm font-semibold text-ink shadow-sm transition hover:bg-white">
-            📄 replace resume
-            <input
-              type="file"
-              accept=".pdf"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && files.upload("resume", e.target.files[0])}
-            />
-          </label>
+          <FileDrop className="inline-block">
+            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-4 py-1.5 font-body text-sm font-semibold text-ink shadow-sm transition hover:bg-white">
+              📄 replace resume
+              <input
+                type="file"
+                accept=".pdf"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && files.upload("resume", e.target.files[0])}
+              />
+            </label>
+          </FileDrop>
           {files.has.resume && (
             <button className={btnSoft} onClick={() => files.reset("resume")} title="back to the original resume">
               ↺
@@ -87,15 +90,17 @@ export default function ContactManager({ keyVal }: { keyVal: string }) {
           )}
         </div>
         <div className="flex items-center gap-1.5">
-          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-4 py-1.5 font-body text-sm font-semibold text-ink shadow-sm transition hover:bg-white">
-            🖼️ replace photo
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png,.webp"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && files.upload("portrait", e.target.files[0])}
-            />
-          </label>
+          <FileDrop className="inline-block">
+            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-white/75 px-4 py-1.5 font-body text-sm font-semibold text-ink shadow-sm transition hover:bg-white">
+              🖼️ replace photo
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && files.upload("portrait", e.target.files[0])}
+              />
+            </label>
+          </FileDrop>
           {files.has.portrait && (
             <button className={btnSoft} onClick={() => files.reset("portrait")} title="back to the GitHub photo">
               ↺

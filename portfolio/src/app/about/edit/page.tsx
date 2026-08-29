@@ -5,6 +5,7 @@
 // research live in their own sections, just like the real page.
 
 import { useEffect, useState } from "react";
+import FileDrop from "@/components/FileDrop";
 import { useRouter } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PdfThumb from "@/components/PdfThumb";
@@ -179,19 +180,21 @@ function EntryEditor({
               ))}
             </div>
           )}
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
-            📎 attach a file
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) addFile(f);
-                e.target.value = "";
-              }}
-            />
-          </label>
+          <FileDrop className="inline-block">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-xs font-semibold text-ink-soft transition hover:bg-white">
+              📎 attach a file
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) addFile(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          </FileDrop>
           {attMsg && <p className="font-body text-[11px] text-ink-soft/70">{attMsg}</p>}
         </div>
         <button
@@ -413,15 +416,17 @@ function Editor({ keyVal }: { keyVal: string }) {
 
       <div className="mt-6 text-center">
         <span className="inline-flex items-center gap-1.5">
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105">
-            📄 Replace Resume
-            <input
-              type="file"
-              accept=".pdf"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && files.upload("resume", e.target.files[0])}
-            />
-          </label>
+          <FileDrop className="inline-block">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-blush/80 px-7 py-3 font-body text-lg font-semibold text-ink shadow-lg shadow-ink/20 transition hover:scale-105">
+              📄 Replace Resume
+              <input
+                type="file"
+                accept=".pdf"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && files.upload("resume", e.target.files[0])}
+              />
+            </label>
+          </FileDrop>
           {files.has.resume && (
             <button
               type="button"
