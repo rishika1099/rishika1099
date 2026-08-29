@@ -118,6 +118,126 @@ export default function InkEditor({
     return false;
   }
 
+  /**
+   * Set (or clear) inline style properties on the selection.
+   *
+   * The old path just wrapped a fresh <span> around whatever was selected, so
+   * picking a second font nested a second span inside the first, three picks
+   * left four spans deep, and there was no way back to the page's own font at
+   * all: the wrapper you wanted gone might start before your selection and end
+   * after it. This walks out of any wrapper carrying the same property first,
+   * splitting it so the selection owns its own element, then strips the
+   * property from anything inside, and only then applies the new value. A null
+   * value means "just take it off", which is what the "default" menu entries
+   * send.
+   */
+  function splitAncestor(el: HTMLElement, range: Range): Range {
+    const parent = el.parentNode;
+    if (!parent) return range;
+    // the tail first: pulling the head out first would move the boundaries the
+    // tail is measured against
+    const post = document.createRange();
+    post.setStart(range.endContainer, range.endOffset);
+    post.setEnd(el, el.childNodes.length);
+    const postFrag = post.extractContents();
+
+    const pre = document.createRange();
+    pre.setStart(el, 0);
+    pre.setEnd(range.startContainer, range.startOffset);
+    const preFrag = pre.extractContents();
+
+    if (preFrag.textContent) {
+      const head = el.cloneNode(false) as HTMLElement;
+      head.appendChild(preFrag);
+      parent.insertBefore(head, el);
+    }
+    if (postFrag.textContent) {
+      const tail = el.cloneNode(false) as HTMLElement;
+      tail.appendChild(postFrag);
+      parent.insertBefore(tail, el.nextSibling);
+    }
+    // el now holds exactly the selection: unwrap it
+    const first = el.firstChild;
+    const last = el.lastChild;
+    while (el.firstChild) parent.insertBefore(el.firstChild, el);
+    parent.removeChild(el);
+    const next = document.createRange();
+    if (first && last) {
+      next.setStartBefore(first);
+      next.setEndAfter(last);
+    }
+    return first && last ? next : range;
+  }
+
+  function stripProp(node: Node, prop: string) {
+    for (const el of Array.from((node as ParentNode).querySelectorAll?.("*") ?? [])) {
+      const h = el as HTMLElement;
+      if (!h.style) continue;
+      h.style.removeProperty(prop);
+      // a span that existed only to carry that property has no reason to stay
+      if (h.tagName === "SPAN" && !h.getAttribute("style") && h.attributes.length === 0) {
+        const parent = h.parentNode;
+        if (!parent) continue;
+        while (h.firstChild) parent.insertBefore(h.firstChild, h);
+        parent.removeChild(h);
+      }
+    }
+  }
+
+  function applyStyle(styles: Record<string, string | null>) {
+    if (!ensureSelection()) return;
+    const sel = window.getSelection();
+    const root = ref.current;
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed || !root?.contains(sel.anchorNode)) return;
+    let range = sel.getRangeAt(0);
+
+    for (const prop of Object.keys(styles)) {
+      // climb out of every wrapper that already sets this property
+      for (let guard = 0; guard < 8; guard++) {
+        let node: Node | null = range.commonAncestorContainer;
+        if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+        let hit: HTMLElement | null = null;
+        for (let el = node as HTMLElement | null; el && el !== root; el = el.parentElement) {
+          if (el.nodeType === Node.ELEMENT_NODE && el.style?.getPropertyValue(prop)) hit = el;
+        }
+        if (!hit) break;
+        range = splitAncestor(hit, range);
+      }
+    }
+
+    const frag = range.extractContents();
+    for (const prop of Object.keys(styles)) stripProp(frag, prop);
+
+    const holder = document.createElement("span");
+    holder.appendChild(frag);
+    range.insertNode(holder);
+
+    const applied = Object.entries(styles).filter(([, v]) => v);
+    if (applied.length) {
+      for (const [k, v] of applied) holder.style.setProperty(k, v as string);
+      sel.removeAllRanges();
+      const r = document.createRange();
+      r.selectNodeContents(holder);
+      sel.addRange(r);
+    } else {
+      const parent = holder.parentNode;
+      const first = holder.firstChild;
+      const last = holder.lastChild;
+      if (parent) {
+        while (holder.firstChild) parent.insertBefore(holder.firstChild, holder);
+        parent.removeChild(holder);
+      }
+      sel.removeAllRanges();
+      if (first && last) {
+        const r = document.createRange();
+        r.setStartBefore(first);
+        r.setEndAfter(last);
+        sel.addRange(r);
+      }
+    }
+    emit();
+  }
+
   // wrap the current selection in a styled element (works across most selections)
   function wrapSelection(styles: Record<string, string>, tag = "span") {
     if (!ensureSelection()) return;
@@ -175,7 +295,7 @@ export default function InkEditor({
     const el = (node?.nodeType === 3 ? node.parentElement : (node as Element | null)) ?? null;
     const cur = el ? parseFloat(getComputedStyle(el).fontSize) : 16;
     const next = Math.max(8, Math.min(96, Math.round((cur || 16) + delta)));
-    wrapSelection({ "font-size": `${next}px` });
+    applyStyle({ "font-size": `${next}px` });
   }
 
   // format painter: capture the current look, then paint it onto the next selection
@@ -216,7 +336,7 @@ export default function InkEditor({
       const s = window.getSelection();
       if (s && s.rangeCount && !s.isCollapsed && surface.contains(s.anchorNode)) {
         done = true;
-        wrapSelection(painter);
+        applyStyle(painter);
         setPainter(null);
       }
     };
@@ -274,11 +394,19 @@ export default function InkEditor({
           "font",
           "font",
           <>
+            <button
+              type="button"
+              onClick={() => { applyStyle({ "font-family": null }); setMenu(null); }}
+              className={menuItem}
+              title="back to the page's own font"
+            >
+              ✕ default
+            </button>
             {FONTS.map(([label, family]) => (
               <button
                 key={label}
                 type="button"
-                onClick={() => { wrapSelection({ "font-family": family }); setMenu(null); }}
+                onClick={() => { applyStyle({ "font-family": family }); setMenu(null); }}
                 className={menuItem}
                 style={{ fontFamily: family }}
               >
@@ -293,7 +421,7 @@ export default function InkEditor({
               <button
                 key={label}
                 type="button"
-                onClick={() => { wrapSelection({ "font-family": family }); setMenu(null); }}
+                onClick={() => { applyStyle({ "font-family": family }); setMenu(null); }}
                 className={menuItem}
                 style={{ fontFamily: family }}
               >
@@ -308,11 +436,21 @@ export default function InkEditor({
           "size",
           "size",
           "text size",
-          SIZES.map(([label, px]) => (
-            <button key={label} type="button" onClick={() => { wrapSelection({ "font-size": px }); setMenu(null); }} className={menuItem}>
-              {label} · {px}
+          <>
+            <button
+              type="button"
+              onClick={() => { applyStyle({ "font-size": null }); setMenu(null); }}
+              className={menuItem}
+              title="back to the page's own size"
+            >
+              ✕ default
             </button>
-          )),
+            {SIZES.map(([label, px]) => (
+              <button key={label} type="button" onClick={() => { applyStyle({ "font-size": px }); setMenu(null); }} className={menuItem}>
+                {label} · {px}
+              </button>
+            ))}
+          </>,
         )}
         {/* size stepper: − [px] + */}
         <span className="inline-flex items-center gap-0.5">
@@ -327,7 +465,7 @@ export default function InkEditor({
             onChange={(e) => {
               const n = parseInt(e.target.value, 10);
               setCurSize(Number.isNaN(n) ? null : n);
-              if (n >= 6 && n <= 200) wrapSelection({ "font-size": `${n}px` });
+              if (n >= 6 && n <= 200) applyStyle({ "font-size": `${n}px` });
             }}
             className={`w-10 rounded-lg px-1 py-0.5 text-center font-body text-xs outline-none ${
               dark ? "bg-white/10 text-cream" : "bg-white/80 text-ink"
@@ -344,14 +482,32 @@ export default function InkEditor({
           <>
             <p className={`w-full font-body text-[10px] font-bold uppercase tracking-wide ${dark ? "text-cream/60" : "text-ink-soft/70"}`}>text</p>
             <div className="flex w-full flex-wrap gap-1.5">
+              <button
+                type="button"
+                aria-label="default text colour"
+                title="back to the page's own colour"
+                onClick={() => { applyStyle({ color: null }); setMenu(null); }}
+                className="flex h-5 w-5 items-center justify-center rounded-full bg-white font-body text-[10px] font-bold text-ink-soft ring-1 ring-ink/20 transition hover:scale-110"
+              >
+                ✕
+              </button>
               {COLORS.map((c) => (
-                <button key={`t${c}`} type="button" aria-label={`text ${c}`} onClick={() => { wrapSelection({ color: c }); setMenu(null); }} className="h-5 w-5 rounded-full ring-1 ring-ink/20 transition hover:scale-110" style={{ backgroundColor: c }} />
+                <button key={`t${c}`} type="button" aria-label={`text ${c}`} onClick={() => { applyStyle({ color: c }); setMenu(null); }} className="h-5 w-5 rounded-full ring-1 ring-ink/20 transition hover:scale-110" style={{ backgroundColor: c }} />
               ))}
             </div>
             <p className={`mt-1 w-full font-body text-[10px] font-bold uppercase tracking-wide ${dark ? "text-cream/60" : "text-ink-soft/70"}`}>highlight</p>
             <div className="flex w-full flex-wrap gap-1.5">
+              <button
+                type="button"
+                aria-label="no highlight"
+                title="take the highlight off"
+                onClick={() => { applyStyle({ "background-color": null }); setMenu(null); }}
+                className="flex h-5 w-5 items-center justify-center rounded-md bg-white font-body text-[10px] font-bold text-ink-soft ring-1 ring-ink/20 transition hover:scale-110"
+              >
+                ✕
+              </button>
               {COLORS.map((c) => (
-                <button key={`h${c}`} type="button" aria-label={`highlight ${c}`} onClick={() => { wrapSelection({ "background-color": c }); setMenu(null); }} className="h-5 w-5 rounded-md ring-1 ring-ink/20 transition hover:scale-110" style={{ backgroundColor: c }} />
+                <button key={`h${c}`} type="button" aria-label={`highlight ${c}`} onClick={() => { applyStyle({ "background-color": c }); setMenu(null); }} className="h-5 w-5 rounded-md ring-1 ring-ink/20 transition hover:scale-110" style={{ backgroundColor: c }} />
               ))}
             </div>
             <div className={`my-1 w-full border-t ${dark ? "border-white/10" : "border-ink/10"}`} />
@@ -359,11 +515,11 @@ export default function InkEditor({
             <div className="flex w-full items-center gap-2">
               <label className={`flex items-center gap-1 font-body text-[11px] ${dark ? "text-cream/80" : "text-ink-soft"}`}>
                 text
-                <input type="color" defaultValue="#4a4a5e" onMouseDown={(e) => e.stopPropagation()} onChange={(e) => wrapSelection({ color: e.target.value })} className="h-6 w-7 cursor-pointer rounded border-0 bg-transparent p-0" />
+                <input type="color" defaultValue="#4a4a5e" onMouseDown={(e) => e.stopPropagation()} onChange={(e) => applyStyle({ color: e.target.value })} className="h-6 w-7 cursor-pointer rounded border-0 bg-transparent p-0" />
               </label>
               <label className={`flex items-center gap-1 font-body text-[11px] ${dark ? "text-cream/80" : "text-ink-soft"}`}>
                 bg
-                <input type="color" defaultValue="#fff3b0" onMouseDown={(e) => e.stopPropagation()} onChange={(e) => wrapSelection({ "background-color": e.target.value })} className="h-6 w-7 cursor-pointer rounded border-0 bg-transparent p-0" />
+                <input type="color" defaultValue="#fff3b0" onMouseDown={(e) => e.stopPropagation()} onChange={(e) => applyStyle({ "background-color": e.target.value })} className="h-6 w-7 cursor-pointer rounded border-0 bg-transparent p-0" />
               </label>
             </div>
             <input
@@ -373,7 +529,7 @@ export default function InkEditor({
               onKeyDown={(e) => {
                 if (e.key !== "Enter") return;
                 const raw = e.currentTarget.value.trim().replace(/^#/, "");
-                if (/^[0-9a-f]{3,8}$/i.test(raw)) wrapSelection({ color: `#${raw}` });
+                if (/^[0-9a-f]{3,8}$/i.test(raw)) applyStyle({ color: `#${raw}` });
               }}
               className={`w-full rounded-lg px-2 py-1 font-body text-xs outline-none ${dark ? "bg-white/10 text-cream placeholder:text-cream/40" : "bg-white/70 text-ink placeholder:text-ink-soft/50"}`}
             />
