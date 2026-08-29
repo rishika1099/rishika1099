@@ -51,6 +51,11 @@ function cleanEntry(e: unknown): Entry | null {
       .map((a) => ({ id: str(a.id), name: str(a.name).slice(0, 120) || "file", kind: a.kind as "image" | "pdf" }));
     if (atts.length) entry.attachments = atts;
   }
+  // the logo lives in the same attachment store, pinned to its own slot
+  const logo = o.logo as Record<string, unknown> | undefined;
+  if (logo && /^[a-z0-9]+$/i.test(str(logo.id)) && logo.kind === "image") {
+    entry.logo = { id: str(logo.id), name: str(logo.name).slice(0, 120) || "logo", kind: "image" };
+  }
   return entry;
 }
 

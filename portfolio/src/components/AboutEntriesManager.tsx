@@ -63,14 +63,61 @@ function EntryEditor({
       setAttMsg("");
     } else setAttMsg("upload failed (images or pdf, under 8MB)");
   }
+  async function addLogo(file: File) {
+    setAttMsg(`uploading ${file.name}…`);
+    const meta = await onUpload(file);
+    // pdfs go in the attachment strip, not the logo slot
+    if (meta && meta.kind === "image") {
+      onChange({ ...entry, logo: meta });
+      setAttMsg("");
+    } else setAttMsg("logo upload failed (an image, under 8MB)");
+  }
   return (
     <div className="rounded-3xl p-5 soft-card">
       <div className="flex gap-4">
-        <EditableText
-          value={entry.icon}
-          onChange={(v) => onChange({ ...entry, icon: v })}
-          className="!w-14 shrink-0 text-center text-3xl"
-        />
+        <div className="flex w-14 shrink-0 flex-col items-center gap-1.5">
+          <EditableText
+            value={entry.icon}
+            onChange={(v) => onChange({ ...entry, icon: v })}
+            className="!w-14 text-center text-3xl"
+          />
+          {entry.logo ? (
+            <span className="relative inline-flex">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`/api/attachment/${entry.logo.id}`}
+                alt={entry.logo.name}
+                className="h-12 w-12 rounded-xl bg-white/80 object-contain p-1 ring-1 ring-white/70"
+              />
+              <button
+                type="button"
+                onClick={() => onChange({ ...entry, logo: undefined })}
+                aria-label="remove logo"
+                title="remove logo, the emoji comes back"
+                className="absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-rose/80 font-body text-[10px] font-bold text-ink shadow transition hover:bg-rose"
+              >
+                ✕
+              </button>
+            </span>
+          ) : (
+            <label
+              title="upload a company or school logo, it replaces the emoji"
+              className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl border border-dashed border-ink-soft/30 bg-white/40 font-body text-[10px] font-semibold leading-tight text-ink-soft/70 transition hover:border-ink-soft/60 hover:bg-white/70"
+            >
+              logo
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) addLogo(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          )}
+        </div>
         <div className="flex-1 space-y-2">
           <InkEditor
             initialHtml={copyToHtml(entry.when)}

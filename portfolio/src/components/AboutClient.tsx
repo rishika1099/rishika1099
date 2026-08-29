@@ -108,6 +108,33 @@ function Attachments({ entry }: { entry: Entry }) {
   );
 }
 
+/**
+ * The mark on the left of an entry: an uploaded company or school logo when
+ * there is one, otherwise the emoji. Both sit in the same fixed box so the
+ * text lines up across cards whether or not a logo has been added yet.
+ */
+function EntryMark({ entry }: { entry: Entry }) {
+  return (
+    <span className="animate-float-med flex h-12 w-12 shrink-0 items-center justify-center">
+      {entry.logo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={`/api/attachment/${entry.logo.id}`}
+          alt={entry.logo.name}
+          width={48}
+          height={48}
+          loading="lazy"
+          decoding="async"
+          // contain, not cover: a wordmark cropped to a square stops being a logo
+          className="h-full w-full rounded-xl bg-white/80 object-contain p-1 ring-1 ring-white/70"
+        />
+      ) : (
+        <span className="text-3xl">{entry.icon}</span>
+      )}
+    </span>
+  );
+}
+
 function EntryCard({ entry, i }: { entry: Entry; i: number }) {
   const [open, setOpen] = useState(false);
   const hasDetails = entryHasDetails(entry.details);
@@ -127,7 +154,7 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
           hasDetails ? "cursor-pointer" : "cursor-default"
         }`}
       >
-        <span className="animate-float-med text-3xl">{entry.icon}</span>
+        <EntryMark entry={entry} />
         <div className="flex-1">
           <div
             className="rich-passage font-body text-sm italic text-ink-soft"

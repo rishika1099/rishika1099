@@ -22,6 +22,8 @@ export type Entry = {
   tech?: Category[];
   // uploaded pictures / PDFs shown on the card
   attachments?: Attachment[];
+  // a company or school mark, shown in place of the emoji when one is uploaded
+  logo?: Attachment;
 };
 
 // The bio now lives in src/data/copy.ts (editable in the atelier).
