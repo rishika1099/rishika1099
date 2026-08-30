@@ -262,6 +262,31 @@ function EntryCard({
           className="absolute inset-0 z-0 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blush"
         />
       )}
+      {/* Pinned to the card's corner rather than sitting in the row. As a row
+          child it followed the text into the column on a phone and came out
+          floating under the chips, which is what looked misplaced. */}
+      {hasDetails && (
+        <span
+          className="pointer-events-none absolute right-4 top-4 z-10 flex items-center gap-2"
+          aria-hidden
+        >
+          <span className="whitespace-nowrap font-body text-xs font-semibold text-ink-soft opacity-0 transition group-hover:opacity-100">
+            read more
+          </span>
+          <span className="relative flex h-7 w-7 items-center justify-center">
+            {/* soft sonar pulse in the page's lilac tone */}
+            <m.span
+              className="absolute inset-0 rounded-full bg-lavender"
+              initial={{ opacity: 0.5, scale: 0.85 }}
+              animate={{ opacity: [0.5, 0, 0.5], scale: [0.85, 1.6, 0.85] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <span className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-xs leading-none text-ink transition group-hover:scale-110 group-hover:bg-lavender">
+              ⤢
+            </span>
+          </span>
+        </span>
+      )}
       <div
         className={`relative z-10 flex w-full flex-col gap-3 text-left sm:flex-row sm:gap-4 ${
           hasDetails ? "pointer-events-none" : ""
@@ -270,7 +295,9 @@ function EntryCard({
         {/* On a phone the mark sits above the text so the blurb gets the full
             width; from 640px up it is a plain row again. */}
         <EntryMark entry={entry} hidden={noMark} />
-        <div className="flex-1">
+        {/* room kept clear on the right for the corner icon, so a title that
+            wraps to the full width never runs underneath it */}
+        <div className={`flex-1 ${hasDetails ? "pr-9" : ""}`}>
           <div
             className="rich-passage font-body text-sm italic text-ink-soft"
             dangerouslySetInnerHTML={{ __html: copyToHtml(entry.when) }}
@@ -309,28 +336,6 @@ function EntryCard({
             </div>
           )}
         </div>
-        {hasDetails && (
-          <span className="mt-0.5 flex shrink-0 items-center gap-2" aria-hidden>
-            <span className="whitespace-nowrap font-body text-xs font-semibold text-ink-soft opacity-0 transition group-hover:opacity-100">
-              read more
-            </span>
-            <span className="relative flex h-7 w-7 items-center justify-center">
-            {/* soft sonar pulse in the page's lilac tone, hints "tap to expand"
-                (only while collapsed) */}
-            {!open && (
-              <m.span
-                className="absolute inset-0 rounded-full bg-lavender"
-                initial={{ opacity: 0.5, scale: 0.85 }}
-                animate={{ opacity: [0.5, 0, 0.5], scale: [0.85, 1.6, 0.85] }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-              />
-            )}
-            <span className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-xs leading-none text-ink transition group-hover:scale-110 group-hover:bg-lavender">
-              ⤢
-            </span>
-            </span>
-          </span>
-        )}
       </div>
 
       {/* above the overlay, so a tile opens the file it shows */}
