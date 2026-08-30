@@ -378,6 +378,7 @@ achievements = {
 | [Provenance-Summariser](https://github.com/rishika1099/Provenance-Summariser) | A summariser where every sentence carries its source span and unsupported ones are flagged, with a validated NLI verifier | Python | ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) |
 | [Agent-Deadlock-Detector](https://github.com/rishika1099/Agent-Deadlock-Detector) | Debug multi-agent systems like distributed systems: happens-before graphs and deadlock/livelock/lost-update detection | Python | ![Agentic AI](https://img.shields.io/badge/Agentic_AI-5E35B1?style=flat-square) |
 | [Forgetful-Memory](https://github.com/rishika1099/Forgetful-Memory) | An agent memory layer benchmarked on facts that change: contradiction resolution and recency vs naive similarity | JavaScript | ![Agentic AI](https://img.shields.io/badge/Agentic_AI-5E35B1?style=flat-square) |
+| [Tokenizer-Tax](https://github.com/rishika1099/Tokenizer-Tax) | A little experiment on GitHub | JavaScript | ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) |
 
 ---
 
@@ -463,6 +464,8 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 | [Physics-As-Judge](https://github.com/rishika1099/Physics-As-Judge) | A little experiment on GitHub | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Rules-Data-Exchange-Rate](https://github.com/rishika1099/Rules-Data-Exchange-Rate) | A little experiment on GitHub | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Distillation-Receipts](https://github.com/rishika1099/Distillation-Receipts) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Seed-Lottery](https://github.com/rishika1099/Seed-Lottery) | A little experiment on GitHub | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Early-Stopping-Regret](https://github.com/rishika1099/Early-Stopping-Regret) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 
 ---
 
