@@ -75,7 +75,7 @@ function Attachments({ entry }: { entry: Entry }) {
           beside it, and could only show a truncated name burned over the
           artwork ("19BDS0163_Ri…"). A chip carries a real preview and the whole
           filename, and several sit on one line. */}
-      <div className={`mt-3 flex flex-wrap gap-2 ${textIndent(entry)}`}>
+      <div className={`mt-3 flex flex-wrap gap-2 ${textIndent()}`}>
         {entry.attachments.map((a) => (
           <button
             key={a.id}
@@ -107,30 +107,37 @@ function Attachments({ entry }: { entry: Entry }) {
 }
 
 /**
- * The company or school mark, sitting beside the emoji rather than replacing
- * it. It stretches to the height of the card's own content, from the date line
- * down through the tag chips, which is why it lives inside the button: the
- * expandable details sit outside, so an opened card does not stretch the logo
- * down with it. object-contain because a wordmark cropped to fit stops being a
- * logo, and the fixed width keeps every card's text starting at the same place.
+ * One mark per card: the logo when there is one, with the emoji riding its
+ * corner as a badge, otherwise the emoji on its own. It was a logo *beside* an
+ * emoji, which cost 160px of gutter before the text could start and left cards
+ * with a logo out of line with cards without one. A single fixed 3.5rem box
+ * means every title and every file chip on the page starts at the same place.
  */
-function EntryLogo({ logo }: { logo: NonNullable<Entry["logo"]> }) {
+function EntryMark({ entry }: { entry: Entry }) {
+  if (!entry.logo) {
+    return (
+      <span className="animate-float-med flex h-14 w-14 shrink-0 items-center justify-center text-3xl">
+        {entry.icon}
+      </span>
+    );
+  }
   return (
-    // The box stretches, not the image. Letting a replaced element stretch
-    // itself makes the browser resolve its height from its own aspect ratio,
-    // which drags the whole card taller; a plain box has no such opinion.
-    // Stretches to the card's content, but capped. Real entries run 350-550px
-    // tall once the blurb and chips are in, and a logo floating in a strip that
-    // long reads as an empty column rather than as a mark.
-    <span className="max-h-28 w-14 shrink-0 self-stretch overflow-hidden rounded-2xl bg-white/80 p-2 ring-1 ring-white/70 sm:w-20">
+    <span className="relative flex h-14 w-14 shrink-0 items-center justify-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={`/api/attachment/${logo.id}`}
-        alt={logo.name}
+        src={`/api/attachment/${entry.logo.id}`}
+        alt={entry.logo.name}
         loading="lazy"
         decoding="async"
-        className="h-full w-full object-contain"
+        // contain, not cover: a wordmark cropped square stops being a logo
+        className="h-full w-full rounded-2xl bg-white/85 object-contain p-1.5 ring-1 ring-white/70"
       />
+      <span
+        aria-hidden
+        className="absolute -bottom-1.5 -left-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-cream text-sm shadow-sm ring-1 ring-white/80"
+      >
+        {entry.icon}
+      </span>
     </span>
   );
 }
@@ -142,9 +149,9 @@ function EntryLogo({ logo }: { logo: NonNullable<Entry["logo"]> }) {
  * hanging under the marks instead of under the words. Zero on a phone, where
  * the marks sit on their own row above the text.
  */
-function textIndent(entry: Entry): string {
-  // emoji 3rem + gap 1rem, plus logo 5rem + gap 1rem when there is one
-  return entry.logo ? "sm:ml-40" : "sm:ml-16";
+function textIndent(): string {
+  // the mark is 3.5rem and the row gap 1rem, on every card alike
+  return "sm:ml-[4.5rem]";
 }
 
 function EntryCard({ entry, i }: { entry: Entry; i: number }) {
@@ -166,17 +173,9 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
           hasDetails ? "cursor-pointer" : "cursor-default"
         }`}
       >
-        {/* On a phone the emoji and the logo sit in a row above the text, which
-            then gets the full width. Side by side they left the blurb 113px, or
-            about thirteen characters a line, on a 375px screen. `sm:contents`
-            dissolves this wrapper on wider screens so both go back to being
-            direct children of the row, which is the desktop layout unchanged. */}
-        <span className="flex shrink-0 items-center gap-3 sm:contents">
-          <span className="animate-float-med flex h-12 w-12 shrink-0 items-center justify-center text-3xl">
-            {entry.icon}
-          </span>
-          {entry.logo && <EntryLogo logo={entry.logo} />}
-        </span>
+        {/* On a phone the mark sits above the text so the blurb gets the full
+            width; from 640px up it is a plain row again. */}
+        <EntryMark entry={entry} />
         <div className="flex-1">
           <div
             className="rich-passage font-body text-sm italic text-ink-soft"
@@ -248,7 +247,7 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className={`mt-2 overflow-hidden ${textIndent(entry)}`}
+            className={`mt-2 overflow-hidden ${textIndent()}`}
           >
             <div
               className="rich-passage entry-details font-body text-sm text-ink-soft [&_li]:mt-2 [&_ul]:list-none"
