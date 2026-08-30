@@ -70,7 +70,7 @@ function Attachments({ entry }: { entry: Entry }) {
   if (!entry.attachments?.length) return null;
   return (
     <>
-      <div className="ml-[3.25rem] mt-3 flex flex-wrap gap-3">
+      <div className={`mt-3 flex flex-wrap gap-3 ${textIndent(entry)}`}>
         {entry.attachments.map((a) => {
           const url = `/api/attachment/${a.id}`;
           if (a.kind === "image") {
@@ -135,6 +135,18 @@ function EntryLogo({ logo }: { logo: NonNullable<Entry["logo"]> }) {
       />
     </span>
   );
+}
+
+/**
+ * How far the strip under a card has to be pushed to line up with the text.
+ * It used to be a flat 3.25rem, which assumed the only thing to its left was an
+ * emoji. Adding a logo widened that column and left the files and the details
+ * hanging under the marks instead of under the words. Zero on a phone, where
+ * the marks sit on their own row above the text.
+ */
+function textIndent(entry: Entry): string {
+  // emoji 3rem + gap 1rem, plus logo 5rem + gap 1rem when there is one
+  return entry.logo ? "sm:ml-40" : "sm:ml-16";
 }
 
 function EntryCard({ entry, i }: { entry: Entry; i: number }) {
@@ -238,7 +250,7 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="ml-[3.25rem] mt-2 overflow-hidden"
+            className={`mt-2 overflow-hidden ${textIndent(entry)}`}
           >
             <div
               className="rich-passage entry-details font-body text-sm text-ink-soft [&_li]:mt-2 [&_ul]:list-none"
