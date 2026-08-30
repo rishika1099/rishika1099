@@ -3,6 +3,7 @@
 import { AnimatePresence, m } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Carousel } from "@/components/Carousel";
 import PdfThumb from "@/components/PdfThumb";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
@@ -171,7 +172,16 @@ function textIndent(): string {
   return "sm:ml-[4.5rem]";
 }
 
-function EntryCard({ entry, i }: { entry: Entry; i: number }) {
+function EntryCard({
+  entry,
+  i,
+  className = "",
+}: {
+  entry: Entry;
+  i: number;
+  /** set when the card sits on a shelf rather than in a stack */
+  className?: string;
+}) {
   const [open, setOpen] = useState(false);
   const hasDetails = entryHasDetails(entry.details);
   return (
@@ -180,7 +190,8 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ delay: i * 0.06 }}
-      className="rounded-3xl p-5 soft-card"
+      data-carousel-item
+      className={`rounded-3xl p-5 soft-card ${className}`}
     >
       <button
         type="button"
@@ -397,10 +408,15 @@ export default function AboutClient({
       {certifications.length > 0 && (
         <>
           <h2 id="certifications" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">{heads.certifications}</h2>
-          <div className="mt-5 space-y-4">
-            {certifications.map((e, i) => (
-              <EntryCard key={e.title} entry={e} i={i} />
-            ))}
+          {/* A shelf rather than a stack: six of these ran to 1344px, a quarter
+              of the whole page and more than work or research took. Same
+              carousel the project shelves use. */}
+          <div className="mt-5">
+            <Carousel label="certification">
+              {certifications.map((e, i) => (
+                <EntryCard key={e.title} entry={e} i={i} className="w-[21rem] shrink-0 snap-start" />
+              ))}
+            </Carousel>
           </div>
         </>
       )}
