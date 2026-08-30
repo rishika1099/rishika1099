@@ -2,8 +2,15 @@
 // older/default passages are plain text (with **bold** and blank-line
 // paragraphs), so upgrade those to HTML on the fly.
 
+// Leave an already-escaped entity alone. The editor sanitises on save, so a
+// typed "&" is stored as "&amp;"; escaping that again on render produced a
+// literal "&amp;" on the page, and retyping it just repeated the round trip,
+// which is why the ampersand in a title could not be fixed from the editor.
 const escapeHtml = (s: string) =>
-  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  s
+    .replace(/&(?!#\d+;|#x[0-9a-f]+;|[a-z][a-z0-9]{1,30};)/gi, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
 export function copyToHtml(text: string): string {
   if (/<[a-z][\s\S]*>/i.test(text)) return text; // already ink-editor HTML
