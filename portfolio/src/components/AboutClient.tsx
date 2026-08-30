@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, m } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import PdfThumb from "@/components/PdfThumb";
 import PageShell from "@/components/PageShell";
@@ -87,7 +87,12 @@ function Attachments({ entry }: { entry: Entry }) {
             <span className="h-7 w-7 shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-ink/5">
               {a.kind === "image" ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={`/api/attachment/${a.id}`} alt="" className="h-full w-full object-cover" />
+                <img
+                  src={`/api/attachment/${a.id}`}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  onError={(e) => (e.currentTarget.style.display = "none")}
+                />
               ) : (
                 <PdfThumb id={a.id} className="h-full w-full object-cover object-top" />
               )}
@@ -114,7 +119,18 @@ function Attachments({ entry }: { entry: Entry }) {
  * means every title and every file chip on the page starts at the same place.
  */
 function EntryMark({ entry }: { entry: Entry }) {
-  if (!entry.logo) {
+  const [broken, setBroken] = useState(false);
+  const ref = useRef<HTMLImageElement>(null);
+
+  // onError alone is not enough: the image is server-rendered, so it can finish
+  // failing before React hydrates and attaches the handler, and nothing fires.
+  // A complete image with no intrinsic width is one that failed.
+  useEffect(() => {
+    const img = ref.current;
+    if (img && img.complete && img.naturalWidth === 0) setBroken(true);
+  }, []);
+
+  if (!entry.logo || broken) {
     return (
       <span className="animate-float-med flex h-14 w-14 shrink-0 items-center justify-center text-3xl">
         {entry.icon}
@@ -125,10 +141,11 @@ function EntryMark({ entry }: { entry: Entry }) {
     <span className="relative flex h-14 w-14 shrink-0 items-center justify-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        ref={ref}
         src={`/api/attachment/${entry.logo.id}`}
         alt={entry.logo.name}
-        loading="lazy"
         decoding="async"
+        onError={() => setBroken(true)}
         // contain, not cover: a wordmark cropped square stops being a logo
         className="h-full w-full rounded-2xl bg-white/85 object-contain p-1.5 ring-1 ring-white/70"
       />
