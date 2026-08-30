@@ -71,38 +71,34 @@ function Attachments({ entry }: { entry: Entry }) {
   if (!entry.attachments?.length) return null;
   return (
     <>
-      {/* Compact chips rather than 96px tiles. A tile that size for a PDF
-          nobody opens twice pushed the card tall, left a wide empty gutter
-          beside it, and could only show a truncated name burned over the
-          artwork ("19BDS0163_Ri…"). A chip carries a real preview and the whole
-          filename, and several sit on one line. */}
-      <div className={`mt-3 flex flex-wrap gap-2 ${textIndent()}`}>
+      {/* Tiles, not name-carrying pills: a pill wide enough for "19BDS0163
+          Rishikas VIT Transcript" cannot share a row, so three files became
+          three stacked bars. A tile shows the document and several fit across.
+          No left indent either, which puts them in the empty column under the
+          mark rather than leaving it blank. */}
+      <div className="mt-3 flex flex-wrap gap-2.5">
         {entry.attachments.map((a) => (
           <button
             key={a.id}
             type="button"
             onClick={() => setOpen(a)}
-            title={`open ${a.name}`}
-            className="group flex max-w-full items-center gap-2 rounded-full bg-white/70 py-1 pl-1 pr-3 shadow-sm ring-1 ring-white/70 transition hover:bg-white hover:shadow"
+            title={a.name}
+            aria-label={`open ${a.name}`}
+            className="relative block h-[4.5rem] w-[4.5rem] overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-white/70 transition hover:scale-105 hover:shadow"
           >
-            <span className="h-7 w-7 shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-ink/5">
-              {a.kind === "image" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={`/api/attachment/${a.id}`}
-                  alt=""
-                  className="h-full w-full object-cover"
-                  onError={(e) => (e.currentTarget.style.display = "none")}
-                />
-              ) : (
-                <PdfThumb id={a.id} className="h-full w-full object-cover object-top" />
-              )}
-            </span>
-            <span className="truncate font-body text-xs font-semibold text-ink-soft group-hover:text-ink">
+            {a.kind === "image" ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={`/api/attachment/${a.id}`}
+                alt=""
+                className="h-full w-full object-cover"
+                onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+              />
+            ) : (
+              <PdfThumb id={a.id} className="h-full w-full object-contain object-top" />
+            )}
+            <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-ink/60 px-1.5 py-0.5 text-left font-body text-[9px] font-semibold text-cream">
               {a.name.replace(/\.[a-z0-9]+$/i, "").replace(/[_-]+/g, " ").trim()}
-            </span>
-            <span aria-hidden className="font-body text-[10px] text-ink-soft/70">
-              {a.kind === "pdf" ? "PDF" : "IMG"}
             </span>
           </button>
         ))}
@@ -112,14 +108,7 @@ function Attachments({ entry }: { entry: Entry }) {
   );
 }
 
-/**
- * One mark per card: the logo when there is one, with the emoji riding its
- * corner as a badge, otherwise the emoji on its own. It was a logo *beside* an
- * emoji, which cost 160px of gutter before the text could start and left cards
- * with a logo out of line with cards without one. A single fixed 3.5rem box
- * means every title and every file chip on the page starts at the same place.
- */
-function EntryMark({ entry }: { entry: Entry }) {
+function EntryMark({ entry, hidden }: { entry: Entry; hidden?: boolean }) {
   const [broken, setBroken] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
 
@@ -131,6 +120,7 @@ function EntryMark({ entry }: { entry: Entry }) {
     if (img && img.complete && img.naturalWidth === 0) setBroken(true);
   }, []);
 
+  if (hidden) return null;
   if (!entry.logo || broken) {
     return (
       <span className="animate-float-med flex h-14 w-14 shrink-0 items-center justify-center text-3xl">
@@ -160,27 +150,18 @@ function EntryMark({ entry }: { entry: Entry }) {
   );
 }
 
-/**
- * How far the strip under a card has to be pushed to line up with the text.
- * It used to be a flat 3.25rem, which assumed the only thing to its left was an
- * emoji. Adding a logo widened that column and left the files and the details
- * hanging under the marks instead of under the words. Zero on a phone, where
- * the marks sit on their own row above the text.
- */
-function textIndent(): string {
-  // the mark is 3.5rem and the row gap 1rem, on every card alike
-  return "sm:ml-[4.5rem]";
-}
-
 function EntryCard({
   entry,
   i,
   className = "",
+  noMark = false,
 }: {
   entry: Entry;
   i: number;
   /** set when the card sits on a shelf rather than in a stack */
   className?: string;
+  /** certifications show no mark: no logo, and an emoji adds nothing there */
+  noMark?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const hasDetails = entryHasDetails(entry.details);
@@ -203,7 +184,7 @@ function EntryCard({
       >
         {/* On a phone the mark sits above the text so the blurb gets the full
             width; from 640px up it is a plain row again. */}
-        <EntryMark entry={entry} />
+        <EntryMark entry={entry} hidden={noMark} />
         <div className="flex-1">
           <div
             className="rich-passage font-body text-sm italic text-ink-soft"
@@ -275,7 +256,7 @@ function EntryCard({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className={`mt-2 overflow-hidden ${textIndent()}`}
+            className="mt-2 overflow-hidden"
           >
             <div
               className="rich-passage entry-details font-body text-sm text-ink-soft [&_li]:mt-2 [&_ul]:list-none"
@@ -417,7 +398,7 @@ export default function AboutClient({
           <div className="mt-5">
             <Carousel label="certification">
               {certifications.map((e, i) => (
-                <EntryCard key={e.title} entry={e} i={i} className="w-[21rem] shrink-0 snap-start" />
+                <EntryCard key={e.title} entry={e} i={i} noMark className="w-[21rem] shrink-0 snap-start" />
               ))}
             </Carousel>
           </div>
