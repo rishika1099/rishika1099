@@ -359,7 +359,10 @@ export default function AboutClient({
       <h2 id="education" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.education}
       </h2>
-      <div className="mt-5 space-y-4">
+      {/* Two degrees side by side rather than stacked: each card's text is
+          short enough for half the container, and it saves a screenful before
+          the reader has even reached the work history. */}
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         {education.map((e, i) => (
           <EntryCard key={e.title} entry={e} i={i} />
         ))}
