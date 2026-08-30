@@ -246,14 +246,25 @@ function EntryCard({
       viewport={{ once: true, margin: "-60px" }}
       transition={{ delay: i * 0.06 }}
       data-carousel-item
-      className={`rounded-3xl p-5 soft-card ${className}`}
+      className={`group relative rounded-3xl p-5 soft-card transition duration-200 ${className} ${
+        hasDetails ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-lg" : ""
+      }`}
     >
-      <button
-        type="button"
-        onClick={() => hasDetails && setOpen((o) => !o)}
-        aria-haspopup={hasDetails ? "dialog" : undefined}
-        className={`flex w-full flex-col gap-3 text-left sm:flex-row sm:gap-4 ${
-          hasDetails ? "cursor-pointer" : "cursor-default"
+      {/* The whole card opens it, not just the corner icon. The button sits
+          under the content and the content lets clicks through, so a file tile
+          still opens its file rather than the card. */}
+      {hasDetails && (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-haspopup="dialog"
+          aria-label={`read more about ${richToText(entry.title)}`}
+          className="absolute inset-0 z-0 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blush"
+        />
+      )}
+      <div
+        className={`relative z-10 flex w-full flex-col gap-3 text-left sm:flex-row sm:gap-4 ${
+          hasDetails ? "pointer-events-none" : ""
         }`}
       >
         {/* On a phone the mark sits above the text so the blurb gets the full
@@ -299,7 +310,11 @@ function EntryCard({
           )}
         </div>
         {hasDetails && (
-          <span className="relative mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center" aria-hidden>
+          <span className="mt-0.5 flex shrink-0 items-center gap-2" aria-hidden>
+            <span className="whitespace-nowrap font-body text-xs font-semibold text-ink-soft opacity-0 transition group-hover:opacity-100">
+              read more
+            </span>
+            <span className="relative flex h-7 w-7 items-center justify-center">
             {/* soft sonar pulse in the page's lilac tone, hints "tap to expand"
                 (only while collapsed) */}
             {!open && (
@@ -310,14 +325,18 @@ function EntryCard({
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
-            <span className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-xs leading-none text-ink">
+            <span className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-xs leading-none text-ink transition group-hover:scale-110 group-hover:bg-lavender">
               ⤢
+            </span>
             </span>
           </span>
         )}
-      </button>
+      </div>
 
-      <Attachments entry={entry} />
+      {/* above the overlay, so a tile opens the file it shows */}
+      <div className="relative z-10">
+        <Attachments entry={entry} />
+      </div>
 
       {open && hasDetails && <EntryDialog entry={entry} onClose={() => setOpen(false)} />}
     </m.div>

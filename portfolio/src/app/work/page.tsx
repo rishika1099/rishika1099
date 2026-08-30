@@ -39,7 +39,10 @@ export default async function Work() {
         projects={projects}
         categories={allCategories}
         domains={allDomains}
-        afterFeatured={<ProjectGalaxy copy={copy} />}
+        // Keyed because it is handed across as a prop and lands where React
+        // treats it as a list child; without one it warns about a missing key
+        // on every render of this page.
+        afterFeatured={<ProjectGalaxy key="galaxy" copy={copy} />}
       />
     </PageShell>
   );
