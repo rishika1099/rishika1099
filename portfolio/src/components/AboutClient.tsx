@@ -150,6 +150,80 @@ function EntryMark({ entry, hidden }: { entry: Entry; hidden?: boolean }) {
   );
 }
 
+/**
+ * Details open in a dialog rather than unfolding inside the card.
+ *
+ * In two columns an expanding card stretched its grid row, so opening the VIT
+ * entry left a column of empty white beside it as tall as its coursework list.
+ * A dialog leaves the grid alone and gives the bullets room to be read.
+ */
+function EntryDialog({ entry, onClose }: { entry: Entry; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden"; // the page must not scroll behind it
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+  if (typeof document === "undefined") return null;
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={richToText(entry.title)}
+    >
+      <m.div
+        initial={{ opacity: 0, scale: 0.96, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.18 }}
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-cream p-6 shadow-2xl sm:p-8"
+      >
+        <div className="flex items-start gap-4">
+          <EntryMark entry={entry} />
+          <div className="flex-1">
+            <div
+              className="rich-passage font-body text-sm italic text-ink-soft"
+              dangerouslySetInnerHTML={{ __html: copyToHtml(entry.when) }}
+            />
+            <h3
+              className="rich-passage font-body text-xl font-bold text-ink"
+              dangerouslySetInnerHTML={{ __html: copyToHtml(entry.title) }}
+            />
+            <div
+              className="rich-passage font-body text-sm font-semibold text-ink-soft"
+              dangerouslySetInnerHTML={{ __html: copyToHtml(entry.place) }}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="close"
+            className="shrink-0 rounded-full bg-white/70 px-3 py-1 font-body text-sm font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
+          >
+            ✕
+          </button>
+        </div>
+        <div
+          className="rich-passage mt-3 font-body text-sm text-ink-soft"
+          dangerouslySetInnerHTML={{ __html: copyToHtml(entry.note) }}
+        />
+        <div
+          className="rich-passage entry-details mt-4 font-body text-sm text-ink-soft [&_li]:mt-2 [&_ul]:list-none"
+          dangerouslySetInnerHTML={{ __html: detailsToHtml(entry.details) }}
+        />
+        <Attachments entry={entry} />
+      </m.div>
+    </div>,
+    document.body,
+  );
+}
+
 function EntryCard({
   entry,
   i,
@@ -177,7 +251,7 @@ function EntryCard({
       <button
         type="button"
         onClick={() => hasDetails && setOpen((o) => !o)}
-        aria-expanded={hasDetails ? open : undefined}
+        aria-haspopup={hasDetails ? "dialog" : undefined}
         className={`flex w-full flex-col gap-3 text-left sm:flex-row sm:gap-4 ${
           hasDetails ? "cursor-pointer" : "cursor-default"
         }`}
@@ -236,35 +310,16 @@ function EntryCard({
                 transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
               />
             )}
-            <m.span
-              animate={{ rotate: open ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-              className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-base leading-none text-ink"
-            >
-              ⌄
-            </m.span>
+            <span className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-xs leading-none text-ink">
+              ⤢
+            </span>
           </span>
         )}
       </button>
 
       <Attachments entry={entry} />
 
-      <AnimatePresence initial={false}>
-        {open && hasDetails && (
-          <m.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="mt-2 overflow-hidden"
-          >
-            <div
-              className="rich-passage entry-details font-body text-sm text-ink-soft [&_li]:mt-2 [&_ul]:list-none"
-              dangerouslySetInnerHTML={{ __html: detailsToHtml(entry.details) }}
-            />
-          </m.div>
-        )}
-      </AnimatePresence>
+      {open && hasDetails && <EntryDialog entry={entry} onClose={() => setOpen(false)} />}
     </m.div>
   );
 }
@@ -363,7 +418,7 @@ export default function AboutClient({
         {heads.work}
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
-        tap a card to unfold the details ✦
+        tap a card to read the details ✦
       </p>
       <div className="mt-5 space-y-4">
         {timeline
@@ -378,7 +433,7 @@ export default function AboutClient({
         {heads.research}
       </h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
-        tap a card to unfold the details ✦
+        tap a card to read the details ✦
       </p>
       <div className="mt-5 space-y-4">
         {timeline
