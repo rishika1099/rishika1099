@@ -35,6 +35,8 @@ function cleanEntry(e: unknown): Entry | null {
     place: rich(o.place),
     note: rich(o.note),
   };
+  const subtitle = rich(o.subtitle);
+  if (richToText(subtitle).trim()) entry.subtitle = subtitle;
   // details: a single rich-HTML block (new), or legacy one-string-per-bullet
   if (typeof o.details === "string") {
     const d = rich(o.details, 8000);

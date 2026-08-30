@@ -195,6 +195,12 @@ function EntryDialog({ entry, onClose }: { entry: Entry; onClose: () => void }) 
               className="rich-passage font-body text-xl font-bold text-ink"
               dangerouslySetInnerHTML={{ __html: copyToHtml(entry.title) }}
             />
+            {entry.subtitle && (
+              <div
+                className="rich-passage font-body text-base font-semibold text-ink/80"
+                dangerouslySetInnerHTML={{ __html: copyToHtml(entry.subtitle) }}
+              />
+            )}
             <div
               className="rich-passage font-body text-sm font-semibold text-ink-soft"
               dangerouslySetInnerHTML={{ __html: copyToHtml(entry.place) }}
@@ -304,6 +310,12 @@ function EntryCard({
             className="rich-passage font-body text-lg font-bold text-ink"
             dangerouslySetInnerHTML={{ __html: copyToHtml(entry.title) }}
           />
+          {entry.subtitle && (
+            <div
+              className="rich-passage font-body text-base font-semibold text-ink/80"
+              dangerouslySetInnerHTML={{ __html: copyToHtml(entry.subtitle) }}
+            />
+          )}
           <div
             className="rich-passage font-body text-sm font-semibold text-ink-soft"
             dangerouslySetInnerHTML={{ __html: copyToHtml(entry.place) }}

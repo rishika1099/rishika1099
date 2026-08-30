@@ -12,6 +12,9 @@ export type Entry = {
   icon: string;
   when: string;
   title: string;
+  // a second line under the title, for the part of a name that is not the name:
+  // "Bachelor of Technology" on top, "Computer Science & Data Science" beneath
+  subtitle?: string;
   place: string;
   note: string;
   // extra highlights revealed when the card is clicked. Legacy entries store one

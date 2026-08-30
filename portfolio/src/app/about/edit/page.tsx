@@ -136,6 +136,14 @@ function EntryEditor({
             placeholder="title"
           />
           <InkEditor
+            initialHtml={copyToHtml(entry.subtitle ?? "")}
+            onChange={(v) => onChange({ ...entry, subtitle: v })}
+            compact
+            toolbarOnFocus
+            surfaceClassName="font-body text-lg font-bold text-ink"
+            placeholder="second line, e.g. the field of study"
+          />
+          <InkEditor
             initialHtml={copyToHtml(entry.place)}
             onChange={(v) => onChange({ ...entry, place: v })}
             compact
