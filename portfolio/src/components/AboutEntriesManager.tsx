@@ -314,8 +314,35 @@ export default function AboutEntriesManager({
     }
   }
 
+  // Pin what is on the page now, so revert comes back here instead of to the
+  // code, where certifications is an empty array.
+  async function makeDefault() {
+    if (!confirm('Make the current About entries the default? "Revert" will come back here.')) return;
+    setSaving(true);
+    try {
+      await save();
+      await api("/api/admin/about", { method: "POST", body: JSON.stringify({ promote: true }) });
+      setMsg("pinned as the default ✓");
+    } catch {
+      setMsg("couldn't pin, try again?");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   async function revert() {
-    if (!confirm(`Revert the About ${section} entries to the versions written in the code?`)) return;
+    // This clears the whole About record, not just the section on screen. The
+    // old wording said "the About {section} entries", which is how a revert in
+    // one tab took the certifications with it.
+    const counts = `${education?.length ?? 0} education, ${work.length} work, ${research.length} research, ${certifications.length} certifications`;
+    if (
+      !confirm(
+        `Revert ALL About entries, every section, not just ${section}?\n\n` +
+          `This drops your edits (${counts}) and goes back to the pinned default, ` +
+          `or to the code if nothing has been pinned.`,
+      )
+    )
+      return;
     await api("/api/admin/about", { method: "DELETE" });
     const d = await api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about");
     setEducation(d.education.map(keyed));
@@ -337,7 +364,10 @@ export default function AboutEntriesManager({
         <button className={btnSoft} onClick={() => (setList as (l: KEntry[]) => void)([keyed(BLANK), ...list])}>
           ＋ add
         </button>
-        <button className={btnSoft} onClick={revert}>revert to code</button>
+        <button className={btnSoft} onClick={makeDefault} disabled={saving}>
+          📌 make these the default
+        </button>
+        <button className={btnSoft} onClick={revert}>revert all sections</button>
         {msg && <span className="font-body text-xs text-ink-soft">{msg}</span>}
       </div>
       {section === "research" && (

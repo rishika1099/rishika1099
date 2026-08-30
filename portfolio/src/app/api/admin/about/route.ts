@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
-import { clearAboutEntries, getAboutEntries, saveAboutEntries } from "@/lib/aboutData";
+import {
+  clearAboutEntries,
+  getAboutEntries,
+  promoteAboutBaseline,
+  saveAboutEntries,
+} from "@/lib/aboutData";
 import { richToText, sanitizeRichHtml } from "@/lib/richHtml";
 import type { Entry } from "@/data/about";
 
@@ -73,7 +78,13 @@ export async function POST(request: Request) {
       education?: unknown[];
       timeline?: unknown[];
       certifications?: unknown[];
+      promote?: boolean;
     };
+    // "make these the default": pin what is live now so revert lands here
+    if (body.promote) {
+      await promoteAboutBaseline();
+      return NextResponse.json({ ok: true, promoted: true });
+    }
     if (!Array.isArray(body.education) || !Array.isArray(body.timeline)) {
       return NextResponse.json({ error: "education and timeline arrays required" }, { status: 400 });
     }
@@ -92,7 +103,8 @@ export async function POST(request: Request) {
   }
 }
 
-// revert to the repo defaults
+// Revert to the current default: the pinned baseline if there is one, else the
+// repo code. Only the override is dropped, so a promoted baseline survives.
 export async function DELETE(request: Request) {
   const denied = guard(request);
   if (denied) return denied;

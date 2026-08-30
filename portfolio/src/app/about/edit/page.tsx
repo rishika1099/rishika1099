@@ -365,6 +365,9 @@ function Editor({ keyVal }: { keyVal: string }) {
         method: "POST",
         body: JSON.stringify({ promote: true, ids: COPY_IDS }),
       });
+      // the entries too, not only the words: pinning the copy alone is what let
+      // a revert wipe the certifications and a research role
+      await api("/api/admin/about", { method: "POST", body: JSON.stringify({ promote: true }) });
       setMsg("pinned as the default ✓");
     } catch {
       setMsg("couldn't pin, try again?");

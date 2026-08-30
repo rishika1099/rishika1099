@@ -22,7 +22,13 @@ export interface AboutEntries {
 }
 
 const KEY = "overrides";
+// A pinned snapshot that "revert" comes back to, the same three-layer model the
+// page copy already uses: override wins over baseline wins over the repo code.
+// Without it, reverting dropped straight to src/data/about.ts, where
+// certifications is an empty array, so one revert erased the whole section.
+const BASELINE_KEY = "baseline";
 const LOCAL_FILE = path.join(process.cwd(), "src/content/about-overrides.json");
+const LOCAL_BASELINE = path.join(process.cwd(), "src/content/about-baseline.json");
 
 // only education + timeline are required; certifications is optional for
 // backward compatibility with overrides saved before it existed
@@ -31,14 +37,14 @@ function sane(v: unknown): v is { education: Entry[]; timeline: Entry[]; certifi
   return !!o && Array.isArray(o.education) && Array.isArray(o.timeline);
 }
 
-export async function getAboutEntries(): Promise<AboutEntries> {
+async function read(blobKey: string, localFile: string): Promise<AboutEntries | null> {
   try {
     let raw: string | null = null;
     if (blobsEnabled()) {
       const s = await store("about");
-      raw = (await s.get(KEY, { type: "text" })) ?? null;
-    } else if (fs.existsSync(LOCAL_FILE)) {
-      raw = fs.readFileSync(LOCAL_FILE, "utf8");
+      raw = (await s.get(blobKey, { type: "text" })) ?? null;
+    } else if (fs.existsSync(localFile)) {
+      raw = fs.readFileSync(localFile, "utf8");
     }
     if (raw) {
       const parsed = JSON.parse(raw);
@@ -51,9 +57,37 @@ export async function getAboutEntries(): Promise<AboutEntries> {
       }
     }
   } catch {
-    // fall through to repo defaults
+    // fall through to the next layer
   }
-  return { education: repoEducation, timeline: repoTimeline, certifications: repoCertifications };
+  return null;
+}
+
+/** What the page renders: your edits, else the pinned default, else the code. */
+export async function getAboutEntries(): Promise<AboutEntries> {
+  return (
+    (await read(KEY, LOCAL_FILE)) ??
+    (await read(BASELINE_KEY, LOCAL_BASELINE)) ??
+    { education: repoEducation, timeline: repoTimeline, certifications: repoCertifications }
+  );
+}
+
+/** What "revert" comes back to. */
+export async function getAboutDefaults(): Promise<AboutEntries> {
+  return (
+    (await read(BASELINE_KEY, LOCAL_BASELINE)) ??
+    { education: repoEducation, timeline: repoTimeline, certifications: repoCertifications }
+  );
+}
+
+/** Pin what is on the page now, so a later revert lands here and not on the code. */
+export async function promoteAboutBaseline(): Promise<void> {
+  const current = await getAboutEntries();
+  if (blobsEnabled()) {
+    const s = await store("about");
+    await s.setJSON(BASELINE_KEY, current);
+  } else {
+    fs.writeFileSync(LOCAL_BASELINE, JSON.stringify(current, null, 2));
+  }
 }
 
 export async function saveAboutEntries(data: AboutEntries): Promise<void> {
