@@ -70,38 +70,36 @@ function Attachments({ entry }: { entry: Entry }) {
   if (!entry.attachments?.length) return null;
   return (
     <>
-      <div className={`mt-3 flex flex-wrap gap-3 ${textIndent(entry)}`}>
-        {entry.attachments.map((a) => {
-          const url = `/api/attachment/${a.id}`;
-          if (a.kind === "image") {
-            return (
-              <button key={a.id} type="button" onClick={() => setOpen(a)} title={a.name} className="block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={url}
-                  alt={a.name}
-                  className="h-24 w-24 rounded-xl object-cover shadow-sm ring-1 ring-white/70 transition hover:scale-105"
-                />
-              </button>
-            );
-          }
-          // PDF: same-size thumbnail as the images (a clipped page preview);
-          // click opens the full lightbox (which has its own open ↗)
-          return (
-            <button
-              key={a.id}
-              type="button"
-              onClick={() => setOpen(a)}
-              title={a.name}
-              className="relative block h-24 w-24 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-white/70 transition hover:scale-105"
-            >
-              <PdfThumb id={a.id} className="h-full w-full object-contain object-top" />
-              <span className="pointer-events-none absolute inset-x-0 bottom-0 truncate bg-ink/60 px-1.5 py-0.5 text-left font-body text-[9px] font-semibold text-cream">
-                📄 {a.name}
-              </span>
-            </button>
-          );
-        })}
+      {/* Compact chips rather than 96px tiles. A tile that size for a PDF
+          nobody opens twice pushed the card tall, left a wide empty gutter
+          beside it, and could only show a truncated name burned over the
+          artwork ("19BDS0163_Ri…"). A chip carries a real preview and the whole
+          filename, and several sit on one line. */}
+      <div className={`mt-3 flex flex-wrap gap-2 ${textIndent(entry)}`}>
+        {entry.attachments.map((a) => (
+          <button
+            key={a.id}
+            type="button"
+            onClick={() => setOpen(a)}
+            title={`open ${a.name}`}
+            className="group flex max-w-full items-center gap-2 rounded-full bg-white/70 py-1 pl-1 pr-3 shadow-sm ring-1 ring-white/70 transition hover:bg-white hover:shadow"
+          >
+            <span className="h-7 w-7 shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-ink/5">
+              {a.kind === "image" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={`/api/attachment/${a.id}`} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <PdfThumb id={a.id} className="h-full w-full object-cover object-top" />
+              )}
+            </span>
+            <span className="truncate font-body text-xs font-semibold text-ink-soft group-hover:text-ink">
+              {a.name.replace(/\.[a-z0-9]+$/i, "").replace(/[_-]+/g, " ").trim()}
+            </span>
+            <span aria-hidden className="font-body text-[10px] text-ink-soft/70">
+              {a.kind === "pdf" ? "PDF" : "IMG"}
+            </span>
+          </button>
+        ))}
       </div>
       {open && <Lightbox attachment={open} onClose={() => setOpen(null)} />}
     </>
