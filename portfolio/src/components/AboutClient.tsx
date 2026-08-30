@@ -152,14 +152,21 @@ function EntryCard({ entry, i }: { entry: Entry; i: number }) {
         type="button"
         onClick={() => hasDetails && setOpen((o) => !o)}
         aria-expanded={hasDetails ? open : undefined}
-        className={`flex w-full gap-4 text-left ${
+        className={`flex w-full flex-col gap-3 text-left sm:flex-row sm:gap-4 ${
           hasDetails ? "cursor-pointer" : "cursor-default"
         }`}
       >
-        <span className="animate-float-med flex h-12 w-12 shrink-0 items-center justify-center text-3xl">
-          {entry.icon}
+        {/* On a phone the emoji and the logo sit in a row above the text, which
+            then gets the full width. Side by side they left the blurb 113px, or
+            about thirteen characters a line, on a 375px screen. `sm:contents`
+            dissolves this wrapper on wider screens so both go back to being
+            direct children of the row, which is the desktop layout unchanged. */}
+        <span className="flex shrink-0 items-center gap-3 sm:contents">
+          <span className="animate-float-med flex h-12 w-12 shrink-0 items-center justify-center text-3xl">
+            {entry.icon}
+          </span>
+          {entry.logo && <EntryLogo logo={entry.logo} />}
         </span>
-        {entry.logo && <EntryLogo logo={entry.logo} />}
         <div className="flex-1">
           <div
             className="rich-passage font-body text-sm italic text-ink-soft"
