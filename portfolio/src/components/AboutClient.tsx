@@ -259,6 +259,7 @@ function EntryCard({
           onClick={() => setOpen(true)}
           aria-haspopup="dialog"
           aria-label={`read more about ${richToText(entry.title)}`}
+          title="read the details"
           className="absolute inset-0 z-0 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blush"
         />
       )}
@@ -270,9 +271,6 @@ function EntryCard({
           className="pointer-events-none absolute right-4 top-4 z-10 flex items-center gap-2"
           aria-hidden
         >
-          <span className="whitespace-nowrap font-body text-xs font-semibold text-ink-soft opacity-0 transition group-hover:opacity-100">
-            read more
-          </span>
           <span className="relative flex h-7 w-7 items-center justify-center">
             {/* soft sonar pulse in the page's lilac tone */}
             <m.span
@@ -281,7 +279,7 @@ function EntryCard({
               animate={{ opacity: [0.5, 0, 0.5], scale: [0.85, 1.6, 0.85] }}
               transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
             />
-            <span className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-xs leading-none text-ink transition group-hover:scale-110 group-hover:bg-lavender">
+            <span className="relative flex h-7 w-7 select-none items-center justify-center rounded-full bg-lavender/60 font-body text-xs leading-none text-ink shadow-sm transition duration-200 group-hover:scale-125 group-hover:bg-lavender group-hover:shadow-md">
               ⤢
             </span>
           </span>
