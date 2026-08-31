@@ -25,7 +25,11 @@ interface RoleSpec {
    * order is the ranking, not just the filter.
    */
   areas: Category[];
-  /** the skills worth listing, in the order they should be read */
+  /**
+   * The skills worth listing, in the order they should be read. One skill per
+   * entry: they render as separate bubbles, so "Python, R and SQL" would be a
+   * single bubble with a list inside it rather than three things she knows.
+   */
   skills: string[];
 }
 
@@ -41,11 +45,15 @@ export const ROLE_SPECS: Record<Role, RoleSpec> = {
     ],
     skills: [
       "Causal inference",
-      "Experimentation and A/B testing",
+      "Experimentation",
+      "A/B testing",
       "Statistical modeling",
       "Predictive modeling",
-      "Python, R, SQL",
-      "Explainability and fairness auditing",
+      "Explainability",
+      "Fairness auditing",
+      "Python",
+      "R",
+      "SQL",
     ],
   },
   "ml-engineer": {
@@ -59,12 +67,19 @@ export const ROLE_SPECS: Record<Role, RoleSpec> = {
       "Predictive Analysis",
     ],
     skills: [
-      "Model training and evaluation",
-      "Deep learning (PyTorch)",
-      "Inference optimisation, quantisation, CUDA and Triton",
+      "Model training",
+      "Evaluation",
+      "Deep learning",
+      "PyTorch",
+      "Inference optimisation",
+      "Quantisation",
+      "CUDA",
+      "Triton",
       "Computer vision",
-      "Pipelines and deployment",
-      "Python, SQL",
+      "Pipelines",
+      "Deployment",
+      "Python",
+      "SQL",
     ],
   },
   "ai-engineer": {
@@ -72,12 +87,16 @@ export const ROLE_SPECS: Record<Role, RoleSpec> = {
     article: "an AI Engineer",
     areas: ["Generative AI", "Agentic AI", "NLP", "Deep Learning"],
     skills: [
-      "LLM systems and RAG",
+      "LLM systems",
+      "RAG",
       "Agent orchestration",
-      "Evaluation harnesses and guardrails",
-      "Prompt and context engineering",
+      "Evaluation harnesses",
+      "Guardrails",
+      "Prompt engineering",
+      "Context engineering",
       "NLP",
-      "Python, TypeScript",
+      "Python",
+      "TypeScript",
     ],
   },
 };
