@@ -132,16 +132,6 @@ export default function HomeClient({
             className="mx-auto mt-6 max-w-xl font-body text-base text-ink-soft sm:text-lg"
           >
             {intro}
-            {recruiterLine && (
-              <p className="mt-4">
-                <Link
-                  href="/recruiter"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
-                >
-                  {recruiterLine}
-                </Link>
-              </p>
-            )}
           </m.div>
         </div>
       </div>
@@ -178,7 +168,7 @@ export default function HomeClient({
         initial={{ y: 10 }}
         animate={{ y: 0 }}
         transition={{ delay: 0.95 }}
-        className="mt-6 text-center"
+        className="mt-6 flex flex-wrap items-center justify-center gap-3"
       >
         <Link
           href="/now"
@@ -186,6 +176,14 @@ export default function HomeClient({
         >
           🧭 check what i&apos;m working on now →
         </Link>
+        {recruiterLine && (
+          <Link
+            href="/recruiter"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow-sm backdrop-blur transition hover:bg-white hover:text-ink"
+          >
+            {recruiterLine}
+          </Link>
+        )}
       </m.div>
     </PageShell>
   );

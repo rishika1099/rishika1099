@@ -106,8 +106,8 @@ export const copyDefaults: Record<string, CopyBlock> = {
   // someone hiring for one specific role.
   "home.recruiter": {
     page: "home",
-    label: "the line pointing recruiters at the short version",
-    text: "Hiring? There's a shorter version of all this →",
+    label: "the button pointing recruiters at the short version",
+    text: "👀 check this out if you're hiring →",
   },
   "recruiter.title": {
     page: "recruiter",
