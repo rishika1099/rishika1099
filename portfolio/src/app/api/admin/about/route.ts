@@ -37,6 +37,10 @@ function cleanEntry(e: unknown): Entry | null {
   };
   const subtitle = rich(o.subtitle);
   if (richToText(subtitle).trim()) entry.subtitle = subtitle;
+  // which cluster the card was filed under. Whitelisted like every other field:
+  // anything not named here is dropped on save, which is how `logo` and
+  // `subtitle` went missing before.
+  if (o.section === "work" || o.section === "research") entry.section = o.section;
   // details: a single rich-HTML block (new), or legacy one-string-per-bullet
   if (typeof o.details === "string") {
     const d = rich(o.details, 8000);

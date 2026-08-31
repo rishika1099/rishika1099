@@ -12,6 +12,7 @@ import type { Attachment, Entry } from "@/data/about";
 import { domainColor } from "@/data/projects";
 import { copyToHtml, detailsToHtml, hasDetails as entryHasDetails } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
+import { isResearchEntry } from "@/lib/aboutSections";
 import SectionNav from "@/components/SectionNav";
 
 // full-screen viewer for an attachment (Esc or backdrop to close)
@@ -459,7 +460,7 @@ export default function AboutClient({
       </p>
       <div className="mt-5 space-y-4">
         {timeline
-          .filter((t) => !richToText(t.title).includes("Research Assistant"))
+          .filter((t) => !isResearchEntry(t))
           .map((t, i) => (
             <EntryCard key={t.title} entry={t} i={i} />
           ))}
@@ -474,7 +475,7 @@ export default function AboutClient({
       </p>
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         {timeline
-          .filter((t) => richToText(t.title).includes("Research Assistant"))
+          .filter(isResearchEntry)
           .map((t, i) => (
             <EntryCard key={t.title} entry={t} i={i} />
           ))}

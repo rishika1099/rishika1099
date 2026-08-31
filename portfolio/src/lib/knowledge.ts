@@ -2,6 +2,7 @@ import { skillAreas, type Entry } from "@/data/about";
 import { getAboutEntries } from "@/lib/aboutData";
 import { getCopy } from "@/lib/siteCopy";
 import { richToText } from "@/lib/richHtml";
+import { isResearchEntry } from "@/lib/aboutSections";
 import { detailsToHtml } from "@/lib/copyRender";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
@@ -76,7 +77,7 @@ export async function buildKnowledge(): Promise<Chunk[]> {
 
   for (const e of timeline) {
     const title = richToText(e.title);
-    const isResearch = title.startsWith("Research Assistant");
+    const isResearch = isResearchEntry(e);
     chunks.push({
       id: `exp:${title}`,
       title,

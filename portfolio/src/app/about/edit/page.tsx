@@ -13,13 +13,14 @@ import SkillGraph from "@/components/SkillGraph";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
+import { isResearchEntry, stampSection } from "@/lib/aboutSections";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
 import type { Attachment, Entry } from "@/data/about";
 import TagPicker from "@/components/TagPicker";
 import { categories as ALL_CATEGORIES, domains as ALL_DOMAINS, domainColor, type Domain } from "@/data/projects";
 
-const isResearch = (e: Entry) => richToText(e.title).startsWith("Research Assistant");
+
 
 const BLANK: Entry = { icon: "✨", when: "", title: "", place: "", note: "" };
 
@@ -299,8 +300,8 @@ function Editor({ keyVal }: { keyVal: string }) {
     ])
       .then(([about, copy]) => {
         setEducation(about.education.map(keyed));
-        setWork(about.timeline.filter((e) => !isResearch(e)).map(keyed));
-        setResearch(about.timeline.filter(isResearch).map(keyed));
+        setWork(about.timeline.filter((e) => !isResearchEntry(e)).map(keyed));
+        setResearch(about.timeline.filter(isResearchEntry).map(keyed));
         setCertifications((about.certifications ?? []).map(keyed));
         setBio(copyToHtml(copy.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
         const cm: Record<string, string> = {};
@@ -318,7 +319,15 @@ function Editor({ keyVal }: { keyVal: string }) {
       await Promise.all([
         api("/api/admin/about", {
           method: "POST",
-          body: JSON.stringify({ education, timeline: [...work, ...research], certifications }),
+          body: JSON.stringify({
+            education,
+            // the cluster is the section; stamped so a rename cannot move a card
+            timeline: [
+              ...work.map((e) => stampSection(e, "work")),
+              ...research.map((e) => stampSection(e, "research")),
+            ],
+            certifications,
+          }),
         }),
         api("/api/admin/copy", {
           method: "POST",
@@ -342,7 +351,15 @@ function Editor({ keyVal }: { keyVal: string }) {
       await Promise.all([
         api("/api/admin/about", {
           method: "POST",
-          body: JSON.stringify({ education, timeline: [...work, ...research], certifications }),
+          body: JSON.stringify({
+            education,
+            // the cluster is the section; stamped so a rename cannot move a card
+            timeline: [
+              ...work.map((e) => stampSection(e, "work")),
+              ...research.map((e) => stampSection(e, "research")),
+            ],
+            certifications,
+          }),
         }),
         api("/api/admin/copy", {
           method: "POST",
@@ -393,8 +410,8 @@ function Editor({ keyVal }: { keyVal: string }) {
       api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
     ]);
     setEducation(about.education.map(keyed));
-    setWork(about.timeline.filter((e) => !isResearch(e)).map(keyed));
-    setResearch(about.timeline.filter(isResearch).map(keyed));
+    setWork(about.timeline.filter((e) => !isResearchEntry(e)).map(keyed));
+    setResearch(about.timeline.filter(isResearchEntry).map(keyed));
     setCertifications((about.certifications ?? []).map(keyed));
     setBio(copyToHtml(copyRes.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
     const cm: Record<string, string> = {};
@@ -518,7 +535,7 @@ function Editor({ keyVal }: { keyVal: string }) {
       {section("about.heading.work", null, work, setWork)}
       {section(
         "about.heading.research",
-        'research cards keep a title starting with "Research Assistant" to stay in this section',
+        "a card stays in the section you put it in, whatever you call it",
         research,
         setResearch,
       )}

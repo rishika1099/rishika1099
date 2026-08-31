@@ -27,6 +27,12 @@ export type Entry = {
   attachments?: Attachment[];
   // a company or school mark, shown in place of the emoji when one is uploaded
   logo?: Attachment;
+  // which cluster this belongs to. Work and research share one array, and the
+  // section used to be read off the title: a card whose name said "Research
+  // Assistant" was research. That meant renaming a card silently moved it, so
+  // the section is stored instead. Absent on entries saved before that, which
+  // fall back to the old rule.
+  section?: "work" | "research";
 };
 
 // The bio now lives in src/data/copy.ts (editable in the atelier).
@@ -36,6 +42,7 @@ export const timeline: Entry[] = [
     icon: "🧸",
     when: "Summer 2026",
     title: "Data Science Intern",
+    section: "work",
     place: "NYC Administration for Children's Services",
     note: "Predictive risk models on child-welfare data with explainable ML, fairness auditing, and causal adjustment for high-stakes public-sector decisions.",
     domains: ["Public Sector", "Human Rights"],
@@ -50,6 +57,7 @@ export const timeline: Entry[] = [
     icon: "🏥",
     when: "Jan 2026 – Present",
     title: "Research Assistant: Clinical LLM & Phenotyping",
+    section: "research",
     place: "Columbia University Irving Medical Center",
     note: "An LLM pipeline that turns years of messy clinical notes into structured, research-ready data, with patient privacy and accuracy built in.",
     domains: ["Healthcare"],
@@ -66,6 +74,7 @@ export const timeline: Entry[] = [
     icon: "⚖️",
     when: "Jan 2026 – Present",
     title: "Research Assistant: Human Rights LLM Evaluation",
+    section: "research",
     place: "Columbia GSAS",
     note: "An LLM framework that scores defense manufacturers on human-rights due diligence and checks its own judgments against expert raters.",
     domains: ["Human Rights", "Legal"],
@@ -82,6 +91,7 @@ export const timeline: Entry[] = [
     icon: "🐚",
     when: "2023 – 2025",
     title: "Software Engineer",
+    section: "work",
     place: "Shell, Bengaluru",
     note: "Built and deployed machine-learning forecasting pipelines in Databricks across 12 business units.",
     tech: ["Predictive Analysis", "Machine Learning"],
@@ -96,6 +106,7 @@ export const timeline: Entry[] = [
     icon: "💊",
     when: "Jan – Jul 2023",
     title: "Technical Analyst Intern",
+    section: "work",
     place: "Novartis, Hyderabad",
     note: "Built NLP and time-series workflows supporting clinical-trial analysis and sustainability goals.",
     domains: ["Healthcare"],
@@ -110,6 +121,7 @@ export const timeline: Entry[] = [
     icon: "📢",
     when: "Feb – Mar 2022",
     title: "Data Visualization Intern",
+    section: "work",
     place: "Saint Louis University",
     note: "Built Tableau dashboards to analyze campaign performance and guide resource allocation.",
     domains: ["Education"],

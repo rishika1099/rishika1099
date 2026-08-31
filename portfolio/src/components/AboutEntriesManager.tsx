@@ -14,6 +14,7 @@ import TagPicker from "@/components/TagPicker";
 import { EditableText, adminApi } from "@/components/editing";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
 import { richToText } from "@/lib/richHtml";
+import { isResearchEntry, stampSection } from "@/lib/aboutSections";
 import type { Attachment, Entry } from "@/data/about";
 import {
   categories as ALL_CATEGORIES,
@@ -22,7 +23,7 @@ import {
   type Domain,
 } from "@/data/projects";
 
-const isResearch = (e: Entry) => richToText(e.title).startsWith("Research Assistant");
+
 const BLANK: Entry = { icon: "✨", when: "", title: "", place: "", note: "" };
 
 // stable per-row key so prepending a blank doesn't reuse an existing editor
@@ -48,11 +49,16 @@ function EntryEditor({
   onChange,
   onRemove,
   onUpload,
+  onMove,
+  moveLabel,
 }: {
   entry: Entry;
   onChange: (e: Entry) => void;
   onRemove: () => void;
   onUpload: (file: File) => Promise<Attachment | null>;
+  // present only for work/research, the two sections that share an array
+  onMove?: () => void;
+  moveLabel?: string;
 }) {
   const [attMsg, setAttMsg] = useState("");
   const attachments = entry.attachments ?? [];
@@ -233,14 +239,27 @@ function EntryEditor({
           </FileDrop>
           {attMsg && <p className="font-body text-[11px] text-ink-soft/70">{attMsg}</p>}
         </div>
-        <button
-          type="button"
-          onClick={onRemove}
-          aria-label="remove entry"
-          className="h-7 w-7 shrink-0 rounded-full bg-rose/50 font-body text-sm font-semibold text-ink transition hover:bg-rose/80"
-        >
-          ✕
-        </button>
+        <div className="flex shrink-0 flex-col gap-2">
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label="remove entry"
+            className="h-7 w-7 rounded-full bg-rose/50 font-body text-sm font-semibold text-ink transition hover:bg-rose/80"
+          >
+            ✕
+          </button>
+          {onMove && (
+            <button
+              type="button"
+              onClick={onMove}
+              title={moveLabel}
+              aria-label={moveLabel}
+              className="h-7 w-7 rounded-full bg-lilac/40 font-body text-sm font-semibold text-ink transition hover:bg-lilac/70"
+            >
+              ⇄
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -278,8 +297,8 @@ export default function AboutEntriesManager({
     api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about")
       .then((d) => {
         setEducation(d.education.map(keyed));
-        setWork(d.timeline.filter((e) => !isResearch(e)).map(keyed));
-        setResearch(d.timeline.filter(isResearch).map(keyed));
+        setWork(d.timeline.filter((e) => !isResearchEntry(e)).map(keyed));
+        setResearch(d.timeline.filter(isResearchEntry).map(keyed));
         setCertifications((d.certifications ?? []).map(keyed));
       })
       .catch(() => setMsg("couldn't load, refresh?"));
@@ -311,7 +330,16 @@ export default function AboutEntriesManager({
       // always send every section so none gets wiped
       await api("/api/admin/about", {
         method: "POST",
-        body: JSON.stringify({ education, timeline: [...work, ...research], certifications }),
+        body: JSON.stringify({
+          education,
+          // the cluster a card sits in is its section, stamped on the way out so
+          // a later rename cannot move it
+          timeline: [
+            ...work.map((e) => stampSection(e, "work")),
+            ...research.map((e) => stampSection(e, "research")),
+          ],
+          certifications,
+        }),
       });
       router.refresh();
       setMsg("saved ✓ live now");
@@ -354,8 +382,8 @@ export default function AboutEntriesManager({
     await api("/api/admin/about", { method: "DELETE" });
     const d = await api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about");
     setEducation(d.education.map(keyed));
-    setWork(d.timeline.filter((e) => !isResearch(e)).map(keyed));
-    setResearch(d.timeline.filter(isResearch).map(keyed));
+    setWork(d.timeline.filter((e) => !isResearchEntry(e)).map(keyed));
+    setResearch(d.timeline.filter(isResearchEntry).map(keyed));
     setCertifications((d.certifications ?? []).map(keyed));
     setMsg("reverted ✓");
   }
@@ -378,9 +406,9 @@ export default function AboutEntriesManager({
         <button className={btnSoft} onClick={revert}>revert all sections</button>
         {msg && <span className="font-body text-xs text-ink-soft">{msg}</span>}
       </div>
-      {section === "research" && (
+      {(section === "work" || section === "research") && (
         <p className="mt-2 font-body text-xs text-ink-soft/70">
-          research cards keep a title starting with &quot;Research Assistant&quot; to stay in this section.
+          a card stays in the section you put it in, whatever you call it. use ⇄ to move one across.
         </p>
       )}
       <div className="mt-4 space-y-4">
@@ -394,6 +422,17 @@ export default function AboutEntriesManager({
             onChange={(ne) => (setList as (l: KEntry[]) => void)(list.map((x, j) => (j === i ? (ne as KEntry) : x)))}
             onRemove={() => (setList as (l: KEntry[]) => void)(list.filter((_, j) => j !== i))}
             onUpload={uploadAttachment}
+            moveLabel={section === "work" ? "move to research" : "move to work"}
+            onMove={
+              section === "work" || section === "research"
+                ? () => {
+                    const to = section === "work" ? setResearch : setWork;
+                    const from = section === "work" ? setWork : setResearch;
+                    from((l) => l.filter((_, j) => j !== i));
+                    to((l) => [...l, e]);
+                  }
+                : undefined
+            }
           />
         ))}
       </div>
