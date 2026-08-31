@@ -18,10 +18,9 @@ export async function POST(request: Request) {
   try {
     const { jd } = (await request.json()) as { jd?: unknown };
     const posting = typeof jd === "string" ? jd.trim() : "";
-    // a couple of words is not a posting, and will only produce a vague answer
-    if (posting.length < 40) {
-      return NextResponse.json({ error: "too-short" }, { status: 400 });
-    }
+    // No floor. "healthcare llm" is a perfectly good thing to type, and telling
+    // someone their question is too short is a worse answer than a broad one.
+    if (!posting) return NextResponse.json({ error: "empty" }, { status: 400 });
     return NextResponse.json({ tailored: await tailorTo(posting.slice(0, MAX_JD)) });
   } catch (err) {
     console.error("tailor failed", err);

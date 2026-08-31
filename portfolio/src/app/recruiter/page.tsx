@@ -8,6 +8,7 @@ import { getAboutEntries } from "@/lib/aboutData";
 import { buildPipeline, getPipeline } from "@/lib/pipeline";
 import { getCaseStudy, hasContent } from "@/lib/caseStudies";
 import { buildAutoCaseStudy, getAutoCaseStudy } from "@/lib/caseStudyAuto";
+import { angleEntries } from "@/lib/angle";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
@@ -131,6 +132,40 @@ export default async function Recruiter({
           t={t}
         />
       ) : (
+        // No role picked yet: the constant half of the page is still worth
+        // reading, and the posting box is the other way of asking the question,
+        // so it has to be here too rather than behind a role.
+        <RecruiterView
+          projects={[]}
+          slugs={[]}
+          studies={[]}
+          pipelines={[]}
+          images={[]}
+          skills={[]}
+          angles={{}}
+          projectsLabel={t("recruiter.heading.projects")}
+          projectsHint=""
+          skillsLabel={t("recruiter.heading.skills")}
+          jdLabel={t("recruiter.jd.label")}
+          jdHint={t("recruiter.jd.hint")}
+        >
+          <Heading>{t("recruiter.heading.research")} 🔬</Heading>
+          <RecruiterEntries entries={timeline.filter(isResearchEntry)} />
+
+          <Heading>{t("recruiter.heading.experience")} 💼</Heading>
+          <RecruiterEntries
+            entries={timeline.filter((e) => !isResearchEntry(e))}
+            columns={1}
+            showFiles
+            showAttachments={false}
+          />
+
+          <Heading>{t("recruiter.heading.education")} 🎓</Heading>
+          <RecruiterEntries entries={education} />
+        </RecruiterView>
+      )}
+
+      {!role && (
         <p className="mt-10 font-body text-ink-soft">
           Or wander{" "}
           <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/">
@@ -190,8 +225,19 @@ async function RoleView({
   const research = researchForRole(timeline.filter(isResearchEntry), role);
   const jobs = timeline.filter((e) => !isResearchEntry(e));
 
+  // Her entries re-angled toward this role: the human-rights LLM research is
+  // the closest thing she has to a healthcare LLM job, and should not read as
+  // irrelevant just because the subject differs. Cached per role, since the
+  // four roles are fixed, and under the same deadline as everything else.
+  const angles =
+    (await withDeadline(
+      angleEntries([...jobs, ...research, ...education], spec.article, `role-${role}`),
+      DRAFT_MS,
+    )) ?? {};
+
   return (
     <RecruiterView
+      angles={angles}
       projects={picked}
       slugs={picked.map((p) => repoSlug(p.repo))}
       studies={studies}

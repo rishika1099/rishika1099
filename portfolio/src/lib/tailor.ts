@@ -19,6 +19,7 @@ import { getResumeTex } from "@/lib/resumeSource";
 import { parseResumeTex } from "@/lib/resumeTex";
 import { getAboutEntries } from "@/lib/aboutData";
 import { skillAreas } from "@/data/about";
+import { angleEntries, type Angles } from "@/lib/angle";
 
 /** Long enough for a real posting, short enough to stay cheap. */
 export const MAX_JD = 6000;
@@ -39,6 +40,8 @@ export interface Tailored {
   skills: string[];
   /** what the posting asks for that the resume does not evidence */
   gaps: string[];
+  /** each About entry's note, re-angled toward this posting, keyed by title */
+  angles: Angles;
   projects: SearchHit[];
 }
 
@@ -169,7 +172,7 @@ export async function tailorTo(jd: string): Promise<Tailored> {
   const skillLines = sections.flatMap((s) => s.lines.map(strip)).filter(Boolean);
 
   if (!process.env.OPENAI_API_KEY || !flat.length) {
-    return { summary: "", entries: [], skills: [], gaps: [], projects: [] };
+    return { summary: "", entries: [], skills: [], gaps: [], projects: [], angles: {} };
   }
 
   const openai = new OpenAI();
@@ -244,7 +247,14 @@ export async function tailorTo(jd: string): Promise<Tailored> {
     // on that instead, after the model has read it. Costs about a second, and is
     // the difference between useful and not.
     const focus = str(o.focus) || posting;
-    const ranked = await searchProjects(focus, 40);
+    const [ranked, angles] = await Promise.all([
+      searchProjects(focus, 40),
+      // not cached: this posting belongs to one reader
+      angleEntries(
+        [...aboutEntries.timeline, ...aboutEntries.education],
+        focus,
+      ),
+    ]);
     // the areas the posting names are a sharper signal than its overall drift,
     // read by the same keyword classifier that files the repos
     const wanted = new Set(categorizeAll(focus, 6));
@@ -260,9 +270,10 @@ export async function tailorTo(jd: string): Promise<Tailored> {
       // checked against her own material, never taken on the model's word
       skills: keepEvidenced(list(o.skills, 14), evidenceOf(flat, skillLines, written, about)).slice(0, 10),
       gaps: list(o.gaps, 3),
+      angles,
       projects,
     };
   } catch {
-    return { summary: "", entries: [], skills: [], gaps: [], projects: [] };
+    return { summary: "", entries: [], skills: [], gaps: [], projects: [], angles: {} };
   }
 }

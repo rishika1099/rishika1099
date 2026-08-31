@@ -6,6 +6,8 @@ import type { Project } from "@/data/projects";
 import type { CaseStudy } from "@/lib/caseStudies";
 import type { Pipeline } from "@/lib/pipeline";
 import type { Tailored } from "@/lib/tailor";
+import type { Angles } from "@/lib/angle";
+import { FilledNotes } from "@/components/EntryCard";
 
 /**
  * The role's page, with a job description able to re-aim it.
@@ -23,6 +25,7 @@ export default function RecruiterView({
   pipelines,
   images,
   skills,
+  angles,
   projectsLabel,
   projectsHint,
   skillsLabel,
@@ -36,6 +39,8 @@ export default function RecruiterView({
   pipelines: (Pipeline | null)[];
   images: ({ id: string; name: string } | undefined)[];
   skills: string[];
+  /** each entry's note re-angled toward the role, keyed by title */
+  angles: Angles;
   projectsLabel: string;
   projectsHint: string;
   skillsLabel: string;
@@ -49,7 +54,7 @@ export default function RecruiterView({
   const [match, setMatch] = useState<Tailored | null>(null);
 
   async function run() {
-    if (jd.trim().length < 40) return;
+    if (!jd.trim()) return;
     setState("working");
     try {
       const res = await fetch("/api/tailor", {
@@ -73,6 +78,10 @@ export default function RecruiterView({
     ? shownProjects.map((p) => (p.repo || "").split("/").pop()?.toLowerCase() ?? "")
     : slugs;
   const shownSkills = filtering && match!.skills.length ? match!.skills : skills;
+  // A posting's angles beat the role's, and the cards read them through the
+  // same context the About page uses, so nothing about the card changes: only
+  // which note it is handed.
+  const shownAngles = filtering && Object.keys(match!.angles).length ? match!.angles : angles;
 
   return (
     <>
@@ -91,7 +100,7 @@ export default function RecruiterView({
           <button
             type="button"
             onClick={run}
-            disabled={jd.trim().length < 40 || state === "working"}
+            disabled={!jd.trim() || state === "working"}
             style={{ backgroundColor: "#c2c0ef" }}
             className="rounded-full px-5 py-2 font-body text-sm font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97] disabled:opacity-50"
           >
@@ -106,7 +115,7 @@ export default function RecruiterView({
               }}
               className="font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
             >
-              ✕ back to the role
+              ✕ clear
             </button>
           )}
           {state === "error" && (
@@ -125,6 +134,8 @@ export default function RecruiterView({
         )}
       </section>
 
+      {(filtering || projects.length > 0) && (
+        <>
       <h2 className="mt-14 font-body text-2xl font-bold text-ink">{projectsLabel} 🌱</h2>
       <p className="mt-1 font-body text-sm text-ink-soft">
         {filtering ? "the ones closest to that posting ✦" : projectsHint}
@@ -137,9 +148,13 @@ export default function RecruiterView({
         pipelines={filtering ? shownProjects.map(() => null) : pipelines}
         images={filtering ? shownProjects.map((p) => p.image) : images}
       />
+        </>
+      )}
 
-      {children}
+      <FilledNotes.Provider value={shownAngles}>{children}</FilledNotes.Provider>
 
+      {shownSkills.length > 0 && (
+        <>
       <h2 className="mt-14 font-body text-2xl font-bold text-ink">{skillsLabel} 🛠️</h2>
       {filtering && (
         <p className="mt-1 font-body text-sm text-ink-soft">
@@ -156,6 +171,8 @@ export default function RecruiterView({
           </span>
         ))}
       </div>
+        </>
+      )}
     </>
   );
 }
