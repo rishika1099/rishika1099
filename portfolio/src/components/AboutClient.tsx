@@ -489,7 +489,7 @@ export default function AboutClient({
               of the whole page and more than work or research took. Same
               carousel the project shelves use. */}
           <div className="mt-5">
-            <Carousel label="certification">
+            <Carousel label="certification" fitHeight>
               {certifications.map((e, i) => (
                 <EntryCard key={e.title} entry={e} i={i} noMark className="w-[21rem] shrink-0 snap-start" />
               ))}
