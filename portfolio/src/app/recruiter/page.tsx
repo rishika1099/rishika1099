@@ -5,9 +5,9 @@ import RecruiterEntries from "@/components/RecruiterEntries";
 import RecruiterProjects from "@/components/RecruiterProjects";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
-import { getPipeline } from "@/lib/pipeline";
+import { buildPipeline, getPipeline } from "@/lib/pipeline";
 import { getCaseStudy, hasContent } from "@/lib/caseStudies";
-import { getAutoCaseStudy } from "@/lib/caseStudyAuto";
+import { buildAutoCaseStudy, getAutoCaseStudy } from "@/lib/caseStudyAuto";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
@@ -31,6 +31,22 @@ export const metadata = {
 // projects come from GitHub and entries from Blobs, both of which change
 // without a build
 export const dynamic = "force-dynamic";
+
+/**
+ * How long the page will wait for a draft before rendering without it. Long
+ * enough that a warm-ish cache and a fast model call both land, short enough
+ * that nobody stares at a blank tab: the whole point is that the case study is
+ * there when the page is.
+ */
+const DRAFT_MS = 4000;
+
+/** The value if it arrives in time, otherwise null. The work continues either way. */
+function withDeadline<T>(work: Promise<T>, ms: number): Promise<T | null> {
+  return Promise.race([
+    work.catch(() => null),
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
+  ]);
+}
 
 /**
  * Her site with the volume down, not a different site.
@@ -142,18 +158,32 @@ async function RoleView({
 }) {
   const spec = ROLE_SPECS[role];
   const picked = projectsForRole(projects, role);
-  // Read-only: a cached diagram is drawn, a missing one is fetched by the card
-  // itself. Generating here would make a recruiter wait on an LLM call.
-  const pipelines = await Promise.all(picked.map((p) => getPipeline(repoSlug(p.repo))));
-  // Authored first, then whatever has been drafted from the repo. Read-only in
-  // both cases: anything missing is asked for by the card itself, so the page
-  // never waits on a model call.
+  // Same bargain as the case studies: drawn now if it can be, under the same
+  // deadline, rather than appearing a few seconds after the reader arrived.
+  const pipelines = await Promise.all(
+    picked.map(async (p) => {
+      const slug = repoSlug(p.repo);
+      const cached = await getPipeline(slug);
+      return cached ?? (await withDeadline(buildPipeline(slug), DRAFT_MS));
+    }),
+  );
+  // Authored first, then whatever has been drafted from the repo.
+  //
+  // Reading only, and letting the cards fetch the rest, meant a cold project's
+  // button appeared several seconds after the page did: a recruiter scanning
+  // it would have moved on before the best part loaded. So a missing one is
+  // drafted here, under a deadline, and the deadline is what keeps that safe.
+  // A draft that overruns keeps going and writes to the cache anyway, so it is
+  // there for the next visitor; only this render gives up on it, and only that
+  // card falls back to fetching client-side.
   const studies = await Promise.all(
     picked.map(async (p) => {
       const slug = repoSlug(p.repo);
       const written = await getCaseStudy(slug);
       if (written && hasContent(written)) return written;
-      const drafted = await getAutoCaseStudy(slug);
+      const cached = await getAutoCaseStudy(slug);
+      if (cached && hasContent(cached)) return cached;
+      const drafted = await withDeadline(buildAutoCaseStudy(slug), DRAFT_MS);
       return drafted && hasContent(drafted) ? drafted : null;
     }),
   );

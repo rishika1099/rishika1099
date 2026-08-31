@@ -56,6 +56,20 @@ export async function readStore(name: string): Promise<Record<string, Cached>> {
   return {};
 }
 
+/**
+ * Merge one entry into a store.
+ *
+ * Not writeStore with a spread of what the caller read earlier: six projects
+ * generating in parallel each read the same snapshot and then wrote it back
+ * with only their own addition, so five of the six were lost every time and the
+ * cache never filled. Merging against the live map instead of a stale copy is
+ * the whole fix.
+ */
+export async function putStore(name: string, key: string, value: Cached) {
+  const current = await readStore(name);
+  await writeStore(name, { ...current, [key]: value });
+}
+
 export async function writeStore(name: string, all: Record<string, Cached>) {
   memory.set(name, all);
   if (blobsEnabled()) {

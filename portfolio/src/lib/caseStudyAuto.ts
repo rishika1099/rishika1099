@@ -13,7 +13,7 @@
 import OpenAI from "openai";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
-import { readStore, srcHash, writeStore } from "@/lib/genCache";
+import { putStore, readStore, srcHash } from "@/lib/genCache";
 import { repoSlug } from "@/lib/projectOverrides";
 import { sanitizeRichHtml } from "@/lib/richHtml";
 import type { CaseStudy } from "@/lib/caseStudies";
@@ -116,6 +116,6 @@ export async function buildAutoCaseStudy(slug: string): Promise<CaseStudy | null
   const text = res.choices[0]?.message?.content ?? "{}";
   const parsed = parse(text, slug);
   // the empty answer is cached too, so a thin readme is only paid for once
-  await writeStore(STORE, { ...all, [slug]: { src: source, text: parsed ? text : "{}" } });
+  await putStore(STORE, slug, { src: source, text: parsed ? text : "{}" });
   return parsed;
 }

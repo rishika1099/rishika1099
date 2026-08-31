@@ -11,7 +11,7 @@
 import OpenAI from "openai";
 import { getAllProjects } from "@/lib/github-projects";
 import { getReadmeSnippet } from "@/lib/github-readme";
-import { readStore, srcHash, writeStore } from "@/lib/genCache";
+import { putStore, readStore, srcHash } from "@/lib/genCache";
 import { repoSlug } from "@/lib/projectOverrides";
 
 const STORE = "pipelines";
@@ -88,6 +88,6 @@ export async function buildPipeline(slug: string): Promise<Pipeline | null> {
   const parsed = parse(text);
   // the empty answer is cached too, so a readme with no pipeline in it is only
   // ever paid for once
-  await writeStore(STORE, { ...all, [slug]: { src: source, text: parsed ? text : '{"steps":[]}' } });
+  await putStore(STORE, slug, { src: source, text: parsed ? text : '{"steps":[]}' });
   return parsed;
 }
