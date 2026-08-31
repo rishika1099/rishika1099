@@ -224,7 +224,7 @@ async function RoleView({
       )}
 
       <Heading>{t("recruiter.heading.experience")} 💼</Heading>
-      <RecruiterEntries entries={jobs} columns={1} showFiles />
+      <RecruiterEntries entries={jobs} columns={1} showFiles showAttachments={false} />
 
       <Heading>{t("recruiter.heading.education")} 🎓</Heading>
       <RecruiterEntries entries={education} />
