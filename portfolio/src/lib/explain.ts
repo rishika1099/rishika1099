@@ -160,6 +160,13 @@ async function fillAll(
   /** where the results are stored, which is the level unless a caller scopes it */
   storeAs: string = level,
   deepen: (x: Fillable) => Promise<unknown> = async (x) => x.material,
+  /**
+   * Words per sentence. The band is expressed as a shape because a model cannot
+   * count characters, and a narrower shape gives a narrower spread of card
+   * heights. The About shelf is tighter than the project grid: six cards side
+   * by side make an uneven one obvious in a way a twelve-wide grid does not.
+   */
+  words: { min: number; max: number } = { min: 16, max: 20 },
 ): Promise<Record<string, string>> {
   const cached = await readStore(storeAs);
 
@@ -206,7 +213,7 @@ async function fillAll(
               // and landed 7 of 79 inside the band. It cannot count. A shape it
               // can follow gets the length as a side effect.
               "Never open by restating the project's name: the card already carries it as a heading, and \"Folio: Clinical Multimodal RAG is a...\" spends a fifth of the space saying nothing. Open with the noun phrase itself (\"A multimodal medical-record companion that...\") or with what it did (\"Benchmarked KIVI quantization...\").",
-              "Write exactly two full sentences for each. The first says what the project is and what it is built with. The second says what it does, measures, or found. Each sentence must be 16 to 20 words: not 12, not 25. They sit in a row of equal-height cards, so an uneven one leaves its card visibly empty.",
+              `Write exactly two full sentences for each. The first says what the thing is and what it is built with. The second says what it does, measures, or found. Each sentence must be ${words.min} to ${words.max} words: not fewer, not more. They sit in a row of equal-height cards, so an uneven one leaves its card visibly empty.`,
               "Expand a short one with real detail from its readme, tags and areas. Condense a long one by keeping what is most concrete, the numbers and the named methods first, and dropping the rest: never truncate it mid-thought, and never lose the thing the project actually is.",
               "Reach that length with real detail drawn from the project's own readme, tags, areas and domains. Never pad with filler, restatement, or adjectives, and never invent a fact that is not in the material you were given. If a project genuinely has too little material, write one honest sentence rather than making a second one up.",
               "Keep every fact truthful. Do not use em dashes or en dashes. Never reach the length with consultant filler: no \"enhancing\", \"empowering\", \"leveraging\", \"seamless\", \"robust solution\", or a closing clause about the value it delivers.",
@@ -419,6 +426,6 @@ export async function explainAbout(level: Level): Promise<Record<string, string>
     },
   }));
 
-  const out = await fillAll(level, list, "entry", key);
+  const out = await fillAll(level, list, "entry", key, undefined, { min: 15, max: 17 });
   return out;
 }
