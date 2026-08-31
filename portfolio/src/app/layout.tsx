@@ -13,6 +13,7 @@ import {
 import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import SiteChrome from "@/components/SiteChrome";
 import SiteFooter from "@/components/SiteFooter";
 import CursorCompanion from "@/components/CursorCompanion";
 import DeferredUI from "@/components/DeferredUI";
@@ -158,11 +159,15 @@ export default function RootLayout({
           skip to content
         </a>
         <MotionProvider>
-          <Nav />
+          <SiteChrome>
+            <Nav />
+          </SiteChrome>
           <main id="content" className="relative">{children}</main>
-          <SiteFooter />
-          <CursorCompanion />
-          <DeferredUI />
+          <SiteChrome>
+            <SiteFooter />
+            <CursorCompanion />
+            <DeferredUI />
+          </SiteChrome>
         </MotionProvider>
         <VisitPing />
         <Metrics />

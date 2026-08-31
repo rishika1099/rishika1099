@@ -102,6 +102,43 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "blog.title": { page: "blog", label: "writing room title", text: "the writing room 📖" },
   "blog.technical.title": { page: "blog", label: "technical blogs title", text: "technical blogs 📓" },
   "photography.title": { page: "photography", label: "page title", text: "photography 📷" },
+  // Recruiter mode: a plain, one-scroll reading of the same material for
+  // someone hiring for one specific role.
+  "recruiter.title": {
+    page: "recruiter",
+    label: "page title",
+    text: "For recruiters",
+  },
+  "recruiter.ask": {
+    page: "recruiter",
+    label: "the question above the three role buttons",
+    text: "Which role are you hiring for?",
+  },
+  "recruiter.intro": {
+    page: "recruiter",
+    label: "line under the question",
+    text: "Pick one and this page shows only the work that is evidence for it: selected projects, research, and skills. No animations, one scroll.",
+  },
+  "recruiter.summary.data-scientist": {
+    page: "recruiter",
+    label: "summary shown for Data Scientist",
+    text: "Data Science MS at Columbia, working on causal inference, experimentation, and predictive models on healthcare and public-sector data. Comfortable owning a question end to end: framing it, building the model, and saying honestly what it can and cannot support.",
+  },
+  "recruiter.summary.ml-engineer": {
+    page: "recruiter",
+    label: "summary shown for Machine Learning Engineer",
+    text: "Data Science MS at Columbia with a Computer Science degree and two years as a software engineer at Shell. Builds and ships models rather than notebooks: training and evaluation, inference optimisation on GPU, and pipelines that run on a schedule.",
+  },
+  "recruiter.summary.ai-engineer": {
+    page: "recruiter",
+    label: "summary shown for AI Engineer",
+    text: "Data Science MS at Columbia, building LLM systems end to end: retrieval, agents, evaluation harnesses, and the guardrails around them. Research on clinical and human-rights LLM pipelines, and an early production LLM deployment in regulated pharma.",
+  },
+  "recruiter.heading.projects": { page: "recruiter", label: "projects heading", text: "Selected projects" },
+  "recruiter.heading.research": { page: "recruiter", label: "research heading", text: "Research" },
+  "recruiter.heading.experience": { page: "recruiter", label: "experience heading", text: "Experience" },
+  "recruiter.heading.education": { page: "recruiter", label: "education heading", text: "Education" },
+  "recruiter.heading.skills": { page: "recruiter", label: "skills heading", text: "Skills" },
   "contact.title": { page: "contact", label: "page title", text: "let's say hello 💌" },
   "contact.form.title": { page: "contact", label: "message form heading", text: "send me a message 💌" },
   "contact.form.private": { page: "contact", label: "message form privacy note", text: "📮 just between us · goes straight to my inbox, never shown here" },

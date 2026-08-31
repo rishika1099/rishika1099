@@ -41,6 +41,13 @@ export interface Project {
   results?: string; // link to an HTML results dashboard, if there is one
   article?: string; // link to a Substack write-up, if there is one
   tags: string[];
+  /**
+   * True for the projects hand-written in this file, false for the ones pulled
+   * from GitHub and described by their repo blurb. Both belong on the site; only
+   * the first kind is work she has chosen to write up, which is what a ranking
+   * for a recruiter should lead with.
+   */
+  curated?: boolean;
 }
 
 const gh = (slug: string) => `https://github.com/rishika1099/${slug}`;

@@ -313,5 +313,8 @@ export async function getAllProjects(): Promise<Project[]> {
     used.add(p.emoji);
   }
 
-  return [...mergedCurated, ...extra].map(applyOverride);
+  return [
+    ...mergedCurated.map((p) => ({ ...p, curated: true })),
+    ...extra.map((p) => ({ ...p, curated: false })),
+  ].map(applyOverride);
 }
