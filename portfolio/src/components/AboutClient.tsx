@@ -236,9 +236,17 @@ function EntryCard({
   i,
   className = "",
   noMark = false,
+  showFiles = false,
 }: {
   entry: Entry;
   i: number;
+  /**
+   * Say how many files open with the card. Only the work entries do: they are
+   * full-width bars with room for a line of their own, where the narrow
+   * education, research and certification cards would just be given a fifth
+   * thing to stack.
+   */
+  showFiles?: boolean;
   /** set when the card sits on a shelf rather than in a stack */
   className?: string;
   /** certifications show no mark: no logo, and an emoji adds nothing there */
@@ -356,7 +364,7 @@ function EntryCard({
               ))}
             </div>
           )}
-          {files.length > 0 && (
+          {showFiles && files.length > 0 && (
             <p className="mt-2.5 font-body text-[11px] font-semibold text-ink-soft/70">
               📎 {files.length} {files.length === 1 ? "file" : "files"} inside
             </p>
@@ -494,7 +502,7 @@ export default function AboutClient({
         {timeline
           .filter((t) => !isResearchEntry(t))
           .map((t, i) => (
-            <EntryCard key={t.title} entry={t} i={i} />
+            <EntryCard key={t.title} entry={t} i={i} showFiles />
           ))}
       </div>
 
