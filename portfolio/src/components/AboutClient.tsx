@@ -493,7 +493,7 @@ export default function AboutClient({
           the reader has even reached the work history. */}
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         {education.map((e, i) => (
-          <EntryCard key={e.title} entry={e} i={i} />
+          <EntryCard key={e.title} entry={e} i={i} showAttachments />
         ))}
       </div>
 
