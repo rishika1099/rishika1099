@@ -77,7 +77,13 @@ const EMOJI_RULES: [RegExp, string[]][] = [
 // where a butterfly on a safety harness reads as a bug.
 const EMOJI_POOL = [
   "🌸", "🍃", "🌙", "⭐", "🪄", "🧷", "🎏", "🪁", "🧩", "🔖",
-  "🪺", "🧶", "🫧", "🌿", "🕊️", "🍀", "🪶", "🎐", "🧿", "🪅",
+  "🪺", "🧶", "🫧", "🌱", "🕊️", "🍀", "🪶", "🎐", "🧿", "🪅",
+  "🌻", "🌺", "🌷", "🍄", "🌾", "🪴", "🌵", "🍁", "🐚", "🪸",
+  "🦋", "🐌", "🐞", "🐝", "🦔", "🦭", "🐋", "🦩", "🦚", "🐧",
+  "🍯", "🍓", "🫐", "🍋", "🍑", "🥐", "🧁", "🍡", "🍵", "🧋",
+  "🎨", "🖌️", "🪕", "🎻", "🪗", "🎺", "🥁", "🎹", "🪈", "🎼",
+  "🔭", "🧭", "⛵", "🎠", "🎡", "🏮", "🕯️", "🫖", "📎", "🪟",
+  "🧵", "🪢", "🎀", "🪞", "🧸", "🪆", "🎪", "🗝️", "🪙", "🧊",
 ];
 
 function hashSlug(slug: string): number {
@@ -296,13 +302,14 @@ export async function getAllProjects(): Promise<Project[]> {
     const c = candsBySlug.get(repoSlug(p.repo));
     const themed = c?.themed ?? [];
     const fallback = c?.fallback ?? [];
-    // A sensible repeat beats a unique absurdity: once every icon for a
-    // project's own themes is taken, reuse its best themed icon rather than
-    // handing a safety harness a seashell. The pool is only for repos whose
-    // words matched no theme at all.
+    // A themed icon first, and a distinct one always: two cards wearing the
+    // same face read as the same project at a glance, which is worse than a
+    // card wearing a slightly arbitrary one. Only if every icon in existence is
+    // already taken does anything repeat.
     p.emoji =
       themed.find((e) => !used.has(e)) ??
-      (themed.length ? themed[0] : fallback.find((e) => !used.has(e)) ?? fallback[0] ?? "🌸");
+      fallback.find((e) => !used.has(e)) ??
+      (themed[0] ?? fallback[0] ?? "🌸");
     used.add(p.emoji);
   }
 

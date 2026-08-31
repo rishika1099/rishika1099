@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import OpenAI from "openai";
 import { richToText } from "@/lib/richHtml";
 import { getAllProjects, reposAreComplete } from "@/lib/github-projects";
@@ -36,7 +38,14 @@ const AUDIENCE: Record<Level, string> = {
 const BAND_LOW = 190;
 const BAND_HIGH = 250;
 
-// Rewrites are cached per (project set, level): one LLM call per level, ever.
+// Rewrites are cached per item, not per set.
+//
+// Keying the whole set by one hash meant publishing a single repo changed the
+// signature and threw away all 98 rewrites, paying to rebuild every one of them
+// to gain a card. Each description is stored against a hash of what it was
+// written from, so a new project costs one small batch and everything already
+// written is read back untouched. Nothing is ever computed twice for the same
+// source text.
 //
 // The in-process Map alone was not enough. Each serverless instance starts with
 // an empty one, so most visitors were paying the full rewrite: ~27s of waiting
@@ -44,29 +53,70 @@ const BAND_HIGH = 250;
 // makes it computed once and instant thereafter, the same way poem art works.
 // The key includes a hash of the project set, so publishing a repo invalidates
 // it on its own rather than serving a stale list.
-const cache = new Map<string, Record<string, string>>();
+const cache = new Map<string, Record<string, Cached>>();
 
-// v2: descriptions are now written to a shared target length. A v1 entry holds
-// the short ones, so it must not be served.
-const blobKey = (level: Level, sig: string) => `explain-v2-${level}-${sig}`;
+const LOCAL_CACHE = (level: string) =>
+  path.join(process.cwd(), "src/content/explain-cache", `${level}.json`);
 
-async function readCached(level: Level, sig: string): Promise<Record<string, string> | null> {
-  const local = cache.get(blobKey(level, sig));
-  if (local) return local;
-  if (!blobsEnabled()) return null;
-  try {
-    const s = await store("explain");
-    const raw = (await s.get(blobKey(level, sig), { type: "json" })) as Record<string, string> | null;
-    if (raw && Object.keys(raw).length) {
-      cache.set(blobKey(level, sig), raw);
-      return raw;
-    }
-  } catch {
-    // a cache miss must never break the toggle
-  }
-  return null;
+// v3: one blob per level holding every item, keyed by name, each with the hash
+// of the source it came from. Earlier versions stored a whole set under one
+// signature and are not readable as this shape.
+const storeKey = (level: string) => `explain-v3-${level}`;
+
+const srcHash = (s: string) => createHash("sha1").update(s).digest("hex").slice(0, 12);
+
+interface Cached {
+  /** hash of the description and material this was written from */
+  src: string;
+  text: string;
 }
 
+async function readStore(level: string): Promise<Record<string, Cached>> {
+  const local = cache.get(level);
+  if (local) return local;
+  if (blobsEnabled()) {
+    try {
+      const s = await store("explain");
+      const raw = (await s.get(storeKey(level), { type: "json" })) as Record<string, Cached> | null;
+      if (raw) {
+        cache.set(level, raw);
+        return raw;
+      }
+    } catch {
+      // a cache miss must never break the toggle
+    }
+  } else {
+    // dev has no Blobs, and without this every restart re-paid for all of them
+    try {
+      const raw = fs.readFileSync(LOCAL_CACHE(level), "utf8");
+      const parsed = JSON.parse(raw) as Record<string, Cached>;
+      cache.set(level, parsed);
+      return parsed;
+    } catch {
+      // not written yet
+    }
+  }
+  return {};
+}
+
+async function writeStore(level: string, all: Record<string, Cached>) {
+  cache.set(level, all);
+  if (blobsEnabled()) {
+    try {
+      const s = await store("explain");
+      await s.setJSON(storeKey(level), all);
+    } catch {
+      // still fine, it just costs the next instance a rewrite
+    }
+    return;
+  }
+  try {
+    fs.mkdirSync(path.dirname(LOCAL_CACHE(level)), { recursive: true });
+    fs.writeFileSync(LOCAL_CACHE(level), JSON.stringify(all, null, 2));
+  } catch {
+    // dev convenience only
+  }
+}
 
 /** One thing whose description is being written to fill its card. */
 export interface Fillable {
@@ -84,12 +134,45 @@ export interface Fillable {
  * only the material differs, a repo's readme in one case and an entry's own
  * details in the other.
  */
+// A prompt is a request, not a guarantee: "never open by restating the name"
+// and the ban on consultant filler both slipped through often enough to reach
+// the page. What matters is checked here, where it either holds or it does not.
+const FILLER =
+  /\b(enhanc\w*|empower\w*|leverag\w*|seamless\w*|robust solution|cutting.?edge|state.of.the.art|revolutioni\w*|showcas\w*)\b/i;
+
+function offences(name: string, text: string): string[] {
+  const bad: string[] = [];
+  // "Folio: Clinical Multimodal RAG is a..." spends a fifth of the card
+  // repeating the heading printed directly above it
+  const head = name.split(/[:\u2013\u2014-]/)[0].trim().toLowerCase();
+  if (head.length > 3 && text.trim().toLowerCase().startsWith(head)) {
+    bad.push(`opens by restating the name "${name}"`);
+  }
+  const m = text.match(FILLER);
+  if (m) bad.push(`uses the filler word "${m[0]}"`);
+  return bad;
+}
+
 async function fillAll(
   level: Level,
-  items: Fillable[],
+  all: Fillable[],
   noun: string,
+  /** where the results are stored, which is the level unless a caller scopes it */
+  storeAs: string = level,
   deepen: (x: Fillable) => Promise<unknown> = async (x) => x.material,
 ): Promise<Record<string, string>> {
+  const cached = await readStore(storeAs);
+
+  // Only what has never been written, or whose source text has changed since it
+  // was. Everything else is read straight back: publishing one repo costs one
+  // small batch, not ninety-eight.
+  const sourceOf = (x: Fillable) => srcHash(x.blurb + JSON.stringify(x.material));
+  const items = all.filter((x) => cached[x.name]?.src !== sourceOf(x));
+
+  const done: Record<string, string> = {};
+  for (const x of all) if (cached[x.name]?.src === sourceOf(x)) done[x.name] = cached[x.name].text;
+  if (!items.length) return done;
+
   const openai = new OpenAI();
   // One request for all of them came back with 73 of 98: the model quietly drops
   // items long before it refuses, and every dropped project fell back to its
@@ -213,14 +296,63 @@ async function fillAll(
     }
   }
 
-  return out;
+  // Third pass: whatever broke a rule that can be checked, re-asked with the
+  // rule it broke quoted back at it. Only the offenders, and only once.
+  const bad = items
+    .map((x) => ({ x, why: out[x.name] ? offences(x.name, out[x.name]) : [] }))
+    .filter((r) => r.why.length);
+  if (bad.length) {
+    try {
+      const res = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        temperature: 0.3,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content: [
+              "Each of these descriptions broke a rule, named against it. Rewrite only to fix that, keeping the facts, the voice, and roughly the length.",
+              "The name of the thing is already printed directly above the description, so it must never begin by repeating it: open with the noun phrase itself or with what it did.",
+              "Never use consultant filler: no enhancing, empowering, leveraging, seamless, robust solution, cutting-edge, state of the art, showcasing, and no closing clause about the value delivered.",
+              SHAPE,
+            ].join(" "),
+          },
+          {
+            role: "user",
+            content: JSON.stringify(
+              bad.map((r, i) => ({ id: i, name: r.x.name, current: out[r.x.name], broke: r.why })),
+            ),
+          },
+        ],
+      });
+      const parsed = JSON.parse(res.choices[0]?.message?.content ?? "{}");
+      if (parsed.rewrites && typeof parsed.rewrites === "object") {
+        for (const [k, v] of Object.entries(parsed.rewrites)) {
+          const r = bad[Number(k)];
+          // only take the retry if it actually fixed what it was asked to fix
+          if (r && typeof v === "string" && v.length <= ceiling && !offences(r.x.name, v).length) {
+            out[r.x.name] = v;
+          }
+        }
+      }
+    } catch {
+      // the text is still true and the right length, just less tidy
+    }
+  }
+
+  // Written once, read back forever after: only an item whose source text
+  // changed is ever computed again.
+  const merged: Record<string, Cached> = { ...cached };
+  for (const x of items) {
+    if (out[x.name]) merged[x.name] = { src: sourceOf(x), text: out[x.name] };
+  }
+  await writeStore(storeAs, merged);
+
+  return { ...done, ...out };
 }
 
 export async function explainProjects(level: Level): Promise<Record<string, string>> {
   const projects = await getAllProjects();
-  const sig = createHash("sha1").update(projects.map((p) => p.name).join("|")).digest("hex").slice(0, 12);
-  const hit = await readCached(level, sig);
-  if (hit) return hit;
 
   // Never buy a rewrite of a list we know is short. When GitHub does not answer
   // the set collapses to the curated projects, which hashes to its own key: the
@@ -246,7 +378,7 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
     },
   }));
 
-  const out = await fillAll(level, list, "project", async (x) => {
+  const out = await fillAll(level, list, "project", level, async (x) => {
     // the top-up gets far more of the readme than the first pass did: it is
     // asked only about the handful that came back short
     const repo = projects.find((p) => p.name === x.name)?.repo;
@@ -254,15 +386,6 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
     return readme ? { ...(x.material as object), readme } : x.material;
   });
 
-  cache.set(blobKey(level, sig), out);
-  if (blobsEnabled() && Object.keys(out).length) {
-    try {
-      const s = await store("explain");
-      await s.setJSON(blobKey(level, sig), out);
-    } catch {
-      // still fine, it just costs the next instance a rewrite
-    }
-  }
   return out;
 }
 
@@ -276,13 +399,7 @@ export async function explainAbout(level: Level): Promise<Record<string, string>
   const { education, timeline, certifications } = await getAboutEntries();
   const entries: Entry[] = [...education, ...timeline, ...certifications];
 
-  const sig = createHash("sha1")
-    .update(entries.map((e) => richToText(e.title)).join("|"))
-    .digest("hex")
-    .slice(0, 12);
-  const key = `about-${level}` as Level;
-  const hit = await readCached(key, sig);
-  if (hit) return hit;
+  const key = `about-${level}`;
 
   const list: Fillable[] = entries.map((e) => ({
     name: richToText(e.title),
@@ -302,15 +419,6 @@ export async function explainAbout(level: Level): Promise<Record<string, string>
     },
   }));
 
-  const out = await fillAll(level, list, "entry");
-  cache.set(blobKey(key, sig), out);
-  if (blobsEnabled() && Object.keys(out).length) {
-    try {
-      const s = await store("explain");
-      await s.setJSON(blobKey(key, sig), out);
-    } catch {
-      // a miss only costs the next instance a rewrite
-    }
-  }
+  const out = await fillAll(level, list, "entry", key);
   return out;
 }

@@ -65,6 +65,8 @@ portfolio/src/content/copy-overrides.json
 portfolio/src/content/copy-baseline.json
 portfolio/src/content/blog-rich/
 portfolio/src/content/project-overrides.json
+# generated descriptions, rebuilt on demand and never committed
+portfolio/src/content/explain-cache/
 portfolio/src/content/blog-overrides.json
 portfolio/src/content/contact-links.json
 portfolio/src/content/reactions.json
