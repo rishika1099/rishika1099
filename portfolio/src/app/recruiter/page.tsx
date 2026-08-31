@@ -5,6 +5,7 @@ import RecruiterEntries from "@/components/RecruiterEntries";
 import PipelineDiagram from "@/components/PipelineDiagram";
 import PipelineLoader from "@/components/PipelineLoader";
 import CaseStudyOpener from "@/components/CaseStudyCard";
+import ProjectActions from "@/components/ProjectActions";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
 import { getPipeline, type Pipeline } from "@/lib/pipeline";
@@ -209,6 +210,7 @@ async function RoleView({
                 {studies[i] && hasContent(studies[i]!) && (
                   <CaseStudyOpener study={studies[i]!} name={p.name} pipeline={pipelines[i]} />
                 )}
+                <ProjectActions name={p.name} />
               </div>
             </div>
             <div className="mt-auto">

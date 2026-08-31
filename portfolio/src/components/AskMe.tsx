@@ -180,7 +180,9 @@ export default function AskMe() {
         aria-label={open ? "close the portfolio guide" : "ask about Rishika"}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        style={{ backgroundColor: `var(--page-accent, ${tint})` }}
+        // the sheet colour, not the accent: the accent was a mid tint of the
+        // same gradient it floats over, so the button sank into the page
+        style={{ backgroundColor: `var(--page-surface, ${tint})` }}
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full px-5 py-3.5 font-body text-sm font-bold text-ink shadow-lg shadow-ink/25 backdrop-blur transition hover:brightness-105"
       >
         <m.span

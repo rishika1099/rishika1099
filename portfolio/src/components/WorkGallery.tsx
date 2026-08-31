@@ -278,6 +278,20 @@ export default function WorkGallery({
     }
   }
 
+  // Arriving from another page with a project in hand: the recruiter cards have
+  // a "find similar" of their own, and nothing there to filter, so they hand the
+  // name over in the URL and the search runs here.
+  useEffect(() => {
+    const name = new URLSearchParams(window.location.search).get("similar");
+    if (!name) return;
+    findSimilar(name);
+    setTimeout(
+      () => document.getElementById("similar-results")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      200,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // The galaxy's popover can also trigger "find similar" from below the grid.
   useEffect(() => {
     const onFind = (e: Event) => {
