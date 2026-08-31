@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import ProjectCard from "@/components/ProjectCard";
 import CaseStudyOpener from "@/components/CaseStudyCard";
 import CaseStudyLoader from "@/components/CaseStudyLoader";
@@ -12,9 +13,13 @@ import type { Pipeline } from "@/lib/pipeline";
  *
  * The card itself is unchanged: same emoji, chips, blurb, links and the two
  * small actions. What hangs under it is the way into the deep dive, where the
- * screenshot and the architecture diagram now live. They were on the card and
- * made it very tall for something a recruiter is scanning; behind the click
- * they are the reward for being interested rather than a wall to get past.
+ * screenshot and the architecture diagram live. They were on the card and made
+ * it very tall for something a recruiter is scanning; behind the click they are
+ * the reward for being interested rather than a wall to get past.
+ *
+ * "find similar" answers here rather than sending the reader to /work. Losing
+ * the role they picked to see three related projects is a bad trade, and the
+ * endpoint already returns everything a card needs to be drawn.
  */
 export default function RecruiterProjects({
   projects,
@@ -29,10 +34,61 @@ export default function RecruiterProjects({
   pipelines: (Pipeline | null)[];
   images: ({ id: string; name: string } | undefined)[];
 }) {
+  const [similarTo, setSimilarTo] = useState<string | null>(null);
+  const [hits, setHits] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  async function findSimilar(name: string) {
+    setSimilarTo(name);
+    setLoading(true);
+    setHits([]);
+    try {
+      const res = await fetch(`/api/related-projects?name=${encodeURIComponent(name)}`);
+      const data = (await res.json()) as { results?: Project[] };
+      setHits(data.results ?? []);
+    } catch {
+      setHits([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (similarTo) {
+    return (
+      <>
+        <div className="mt-5 flex flex-wrap items-center gap-3 rounded-2xl bg-white/50 px-4 py-2.5">
+          <span className="font-body text-sm text-ink-soft">
+            projects like <span className="font-semibold text-ink">{similarTo}</span>
+            {!loading && ` · ${hits.length}`}
+          </span>
+          <button
+            type="button"
+            onClick={() => setSimilarTo(null)}
+            className="ml-auto rounded-full bg-ink/90 px-3 py-1 font-body text-xs font-semibold text-cream transition hover:opacity-90"
+          >
+            ✕ back to the selection
+          </button>
+        </div>
+        {loading ? (
+          <p className="mt-5 font-body text-sm text-ink-soft">looking ✦</p>
+        ) : (
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            {hits.map((h) => (
+              <ProjectCard key={h.name} p={h} blurb={h.blurb} onSimilar={() => findSimilar(h.name)} />
+            ))}
+            {hits.length === 0 && (
+              <p className="font-body text-sm text-ink-soft">nothing close enough to show ✦</p>
+            )}
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <div className="mt-5 grid gap-5 lg:grid-cols-2">
       {projects.map((p, i) => (
-        <ProjectCard key={p.name} p={p} blurb={p.blurb}>
+        <ProjectCard key={p.name} p={p} blurb={p.blurb} onSimilar={() => findSimilar(p.name)}>
           {studies[i] ? (
             <CaseStudyOpener
               study={studies[i]!}
