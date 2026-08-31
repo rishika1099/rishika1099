@@ -4,6 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, m } from "framer-motion";
 
+// The launcher mounts in the root layout, outside the vibe wrapper, so it
+// cannot inherit the ground it is floating over. It reads the accent the page
+// publishes, and falls back to this map for anything not built on PageShell.
+// The map alone had to know every route, and quietly served dawn peach to every
+// page nobody had added to it.
 // tint the launcher to the current page's vibe so it feels integrated, the
 // white ring + shadow keep it visible against the matching background
 function launcherTint(path: string): string {
@@ -175,7 +180,7 @@ export default function AskMe() {
         aria-label={open ? "close the portfolio guide" : "ask about Rishika"}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        style={{ backgroundColor: tint }}
+        style={{ backgroundColor: `var(--page-accent, ${tint})` }}
         className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full px-5 py-3.5 font-body text-sm font-bold text-ink shadow-lg shadow-ink/25 backdrop-blur transition hover:brightness-105"
       >
         <m.span

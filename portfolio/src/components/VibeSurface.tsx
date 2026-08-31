@@ -34,6 +34,27 @@ const SURFACES: Record<Vibe, string> = {
   rainbow: "#fdf7fb",
 };
 
+/**
+ * The same colours a shade stronger, for things that need presence rather than
+ * a reading surface: the ask launcher, a selected pill.
+ */
+const ACCENTS: Record<Vibe, string> = {
+  periwinkle: "#c7c4f2",
+  dawn: "#ffd0b0",
+  lilac: "#d9c2f0",
+  azure: "#bfe0f0",
+  meadow: "#bfe3b0",
+  peach: "#ffd9a8",
+  sunset: "#ffc0a0",
+  rose: "#f7a8bc",
+  twilight: "#d9c2f0",
+  aurora: "#c5e8d5",
+  midnight: "#c7d3f2",
+  honey: "#f5cf8a",
+  koi: "#a9dcd4",
+  rainbow: "#f3d9ee",
+};
+
 /** Ink on a dark sheet has to flip, or it is invisible. */
 const DARK: Vibe[] = ["twilight", "midnight"];
 
@@ -42,9 +63,11 @@ export default function VibeSurface({ vibe }: { vibe: Vibe }) {
     const root = document.documentElement;
     root.style.setProperty("--page-surface", SURFACES[vibe] ?? "#fff8f0");
     root.style.setProperty("--page-surface-ink", DARK.includes(vibe) ? "#f3eefe" : "#4a4a5e");
+    root.style.setProperty("--page-accent", ACCENTS[vibe] ?? "#ffd0b0");
     return () => {
       root.style.removeProperty("--page-surface");
       root.style.removeProperty("--page-surface-ink");
+      root.style.removeProperty("--page-accent");
     };
   }, [vibe]);
   return null;
