@@ -5,7 +5,11 @@ name: Back up site content
 # takes a weekly encrypted snapshot so none of it has a single point of failure.
 #
 # Encrypted because this repo is public and the poems are password-gated.
-# Needs two secrets: ADMIN_KEY and BACKUP_PASSPHRASE.
+#
+# Needs two repository secrets, and will tell you plainly if either is missing:
+#   ADMIN_KEY           the same key the atelier uses, so the export endpoints answer
+#   BACKUP_PASSPHRASE   what the snapshot is encrypted with. Keep it in a password
+#                       manager too: without it the backup is unrecoverable.
 
 on:
   schedule:
@@ -19,11 +23,36 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Both secrets are checked before anything runs, because the failure that
+      # actually happened was a missing ADMIN_KEY surfacing as an error from
+      # inside the node script, several steps in and easy to misread as a bug in
+      # the backup itself. A backup that stops backing up should say so in the
+      # first line of the log.
+      - name: Check the secrets are set
+        env:
+          ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
+          PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          missing=""
+          [ -z "$ADMIN_KEY" ] && missing="$missing ADMIN_KEY"
+          [ -z "$PASSPHRASE" ] && missing="$missing BACKUP_PASSPHRASE"
+          if [ -n "$missing" ]; then
+            echo "Nothing was backed up. These repository secrets are not set:$missing"
+            echo ""
+            echo "Set them once, from a checkout of this repo:"
+            for name in $missing; do echo "  gh secret set $name"; done
+            echo ""
+            echo "ADMIN_KEY is the atelier key. BACKUP_PASSPHRASE is yours to invent,"
+            echo "and belongs in a password manager: it is the only way back in."
+            exit 1
+          fi
+          echo "Both secrets present."
 
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Collect the snapshot
         env:
@@ -35,10 +64,6 @@ jobs:
         env:
           PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
-          if [ -z "$PASSPHRASE" ]; then
-            echo "BACKUP_PASSPHRASE is not set; refusing to commit plaintext poems to a public repo."
-            exit 1
-          fi
           openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt \
             -in /tmp/portfolio-backup.json \
             -out backups/portfolio-backup.json.enc \
@@ -57,4 +82,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add backups/portfolio-backup.json.enc
           git commit -m "Weekly encrypted content backup [skip ci]"
+          # the readme sync bot commits to main too, so land on top of whatever
+          # arrived while this ran rather than failing the whole backup on it
+          git pull --rebase --autostash
           git push
