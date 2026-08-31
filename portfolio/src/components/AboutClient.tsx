@@ -482,7 +482,10 @@ export default function AboutClient({
       <p className="mt-1 font-body text-sm text-ink-soft">
         tap a card to read the details ✦
       </p>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      {/* One after another, not a grid: these are in date order and the stack
+          is what makes that read as a timeline. Research is a grid because
+          those four run in parallel rather than in sequence. */}
+      <div className="mt-5 space-y-4">
         {timeline
           .filter((t) => !isResearchEntry(t))
           .map((t, i) => (
