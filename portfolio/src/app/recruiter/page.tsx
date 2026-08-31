@@ -61,7 +61,7 @@ export default async function Recruiter({
   const t = (k: string) => plain(copy[k], 2000);
 
   return (
-    <PageShell vibe="sage">
+    <PageShell vibe="periwinkle">
       <PageTitle>{t("recruiter.title")} 🌷</PageTitle>
 
       <p className="mt-5 max-w-2xl font-body text-lg leading-relaxed text-ink-soft">
@@ -79,9 +79,9 @@ export default async function Recruiter({
                 key={r}
                 href={`/recruiter?role=${r}`}
                 aria-current={on ? "page" : undefined}
-                // in the page's own sage rather than the site's ink: a dark pill
-                // on a pale green ground read as borrowed from another page
-                style={{ backgroundColor: on ? "#b9cfbc" : "rgba(255,255,255,0.62)" }}
+                // in the page's own periwinkle rather than the site's ink: a
+                // dark pill on a pale ground read as borrowed from another page
+                style={{ backgroundColor: on ? "#c2c0ef" : "rgba(255,255,255,0.62)" }}
                 className={`rounded-full px-5 py-2 font-body text-sm font-semibold transition ${
                   on ? "text-ink shadow-sm ring-1 ring-white/70" : "text-ink-soft hover:text-ink"
                 }`}
@@ -93,14 +93,14 @@ export default async function Recruiter({
         </nav>
         <p className="mt-4 font-body text-sm text-ink-soft">
           <a
-            style={{ backgroundColor: "#cfe3d0" }}
+            style={{ backgroundColor: "#d3d1f5" }}
             className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97]"
             href="/resume"
             download="Rishika_Mamidibathula_Resume.pdf"
           >
             ⬇ download the résumé
           </a>{" "}
-          <Link className="ml-2 underline decoration-[#9ec2a4] decoration-2 underline-offset-4" href="/resume/print">
+          <Link className="ml-2 underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/resume/print">
             or read it as a page
           </Link>
         </p>
@@ -117,7 +117,7 @@ export default async function Recruiter({
       ) : (
         <p className="mt-10 font-body text-ink-soft">
           Or wander{" "}
-          <Link className="underline decoration-[#9ec2a4] decoration-2 underline-offset-4" href="/">
+          <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/">
             the whole site
           </Link>
           , which has everything and rather more colour ✦
@@ -211,7 +211,7 @@ async function RoleView({
         ))}
       </div>
       <p className="mt-5 font-body text-sm text-ink-soft">
-        <Link className="underline decoration-[#9ec2a4] decoration-2 underline-offset-4" href="/work">
+        <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/work">
           all {projects.length} projects →
         </Link>
       </p>
@@ -243,7 +243,7 @@ async function RoleView({
 
       <p className="mt-14 font-body text-sm text-ink-soft">
         This is the short version, for {spec.article}.{" "}
-        <Link className="underline decoration-[#9ec2a4] decoration-2 underline-offset-4" href="/about">
+        <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/about">
           the longer one lives here
         </Link>{" "}
         ✦
@@ -256,7 +256,7 @@ function Out({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <a
       href={href}
-      className="font-semibold text-ink-soft underline decoration-[#9ec2a4] decoration-2 underline-offset-4 transition hover:text-ink"
+      className="font-semibold text-ink-soft underline decoration-[#a9a5e6] decoration-2 underline-offset-4 transition hover:text-ink"
     >
       {children}
     </a>

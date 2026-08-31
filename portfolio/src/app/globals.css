@@ -112,7 +112,7 @@ body {
 }
 
 /* Each page's vibe gives its cards a hover tint that echoes the background */
-.vibe-sage { --card-hover: rgba(232, 239, 231, 0.94); }
+.vibe-periwinkle { --card-hover: rgba(232, 231, 251, 0.94); }
 .vibe-dawn { --card-hover: rgba(255, 222, 205, 0.92); }
 .vibe-lilac { --card-hover: rgba(230, 215, 245, 0.92); }
 .vibe-azure { --card-hover: rgba(207, 232, 243, 0.92); }
