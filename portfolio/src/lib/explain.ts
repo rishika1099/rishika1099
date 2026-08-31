@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import OpenAI from "openai";
 import { richToText } from "@/lib/richHtml";
 import { getAllProjects, reposAreComplete } from "@/lib/github-projects";
+import { getAboutEntries } from "@/lib/aboutData";
+import type { Entry } from "@/data/about";
 import { getReadmeSnippet } from "@/lib/github-readme";
 import { blobsEnabled, store } from "@/lib/blobs";
 
@@ -65,34 +67,30 @@ async function readCached(level: Level, sig: string): Promise<Record<string, str
   return null;
 }
 
-export async function explainProjects(level: Level): Promise<Record<string, string>> {
-  const projects = await getAllProjects();
-  const sig = createHash("sha1").update(projects.map((p) => p.name).join("|")).digest("hex").slice(0, 12);
-  const hit = await readCached(level, sig);
-  if (hit) return hit;
 
-  // Never buy a rewrite of a list we know is short. When GitHub does not answer
-  // the set collapses to the curated projects, which hashes to its own key: the
-  // rewrite would be paid for, cached under a signature nothing else uses, and
-  // paid for again as soon as the full list returns. The cards simply keep the
-  // original blurbs until then.
-  if (!reposAreComplete()) return {};
+/** One thing whose description is being written to fill its card. */
+export interface Fillable {
+  /** what the result is keyed by: a project name, an entry title */
+  name: string;
+  /** the description as it stands */
+  blurb: string;
+  /** everything true about it that the expansion may draw on */
+  material: unknown;
+}
 
+/**
+ * Writes every description in a set to the same shape, so a row of cards has no
+ * one card ending in space. Shared by the project cards and the About entries:
+ * only the material differs, a repo's readme in one case and an entry's own
+ * details in the other.
+ */
+async function fillAll(
+  level: Level,
+  items: Fillable[],
+  noun: string,
+  deepen: (x: Fillable) => Promise<unknown> = async (x) => x.material,
+): Promise<Record<string, string>> {
   const openai = new OpenAI();
-
-  // The material the expansion is allowed to draw on. Without it the model has
-  // only the blurb it is being asked to lengthen, and padding a sentence with
-  // nothing to add is exactly the gibberish this is meant to avoid.
-  const readmes = await Promise.all(projects.map((p) => getReadmeSnippet(p.repo, 900)));
-  const list = projects.map((p, i) => ({
-    name: p.name,
-    blurb: richToText(p.blurb),
-    tags: p.tags,
-    areas: p.categories,
-    domains: p.domains ?? [],
-    readme: readmes[i] || "",
-  }));
-
   // One request for all of them came back with 73 of 98: the model quietly drops
   // items long before it refuses, and every dropped project fell back to its
   // original one-line blurb, which is most of the empty space that was left.
@@ -100,11 +98,11 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
   // name like "Just Ask Coach: NL -> SQL" does not survive the round trip
   // intact either.
   const BATCH = 12;
-  const batches: (typeof list)[] = [];
-  for (let i = 0; i < list.length; i += BATCH) batches.push(list.slice(i, i + BATCH));
+  const batches: Fillable[][] = [];
+  for (let i = 0; i < items.length; i += BATCH) batches.push(items.slice(i, i + BATCH));
 
   const SHAPE =
-    'Return JSON of the exact shape {"rewrites": {"0": "<new description>", "1": "..."}}, one entry for every project you were given, keyed by its "id". Do not omit any.';
+    `Return JSON of the exact shape {"rewrites": {"0": "<new description>", "1": "..."}}, one entry for every ${noun} you were given, keyed by its "id". Do not omit any.`;
 
   const out: Record<string, string> = {};
   const ceiling = Math.round(BAND_HIGH * 1.25);
@@ -161,7 +159,7 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
   // stay short rather than invent, so it comes back under and its card still
   // ends in space. Those are the only ones asked again, with a much larger
   // slice of the readme to draw on.
-  const short = list.filter((x) => {
+  const short = items.filter((x) => {
     const got = out[x.name];
     // missing counts as short: a batch that quietly dropped an item leaves the
     // card on its original one-liner, which looks the same as a failed fill
@@ -169,9 +167,7 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
   });
   if (short.length) {
     try {
-      const deeper = await Promise.all(
-        short.map((x) => getReadmeSnippet(projects.find((p) => p.name === x.name)!.repo, 3000)),
-      );
+      const deeper = await Promise.all(short.map((x) => deepen(x)));
       const again = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         temperature: 0.4,
@@ -194,9 +190,8 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
                 id: i,
                 name: x.name,
                 current: out[x.name] ?? x.blurb,
-                tags: x.tags,
-                areas: x.areas,
-                readme: deeper[i] || x.readme,
+
+                material: deeper[i] || x.material,
               })),
             )}`,
           },
@@ -218,6 +213,47 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
     }
   }
 
+  return out;
+}
+
+export async function explainProjects(level: Level): Promise<Record<string, string>> {
+  const projects = await getAllProjects();
+  const sig = createHash("sha1").update(projects.map((p) => p.name).join("|")).digest("hex").slice(0, 12);
+  const hit = await readCached(level, sig);
+  if (hit) return hit;
+
+  // Never buy a rewrite of a list we know is short. When GitHub does not answer
+  // the set collapses to the curated projects, which hashes to its own key: the
+  // rewrite would be paid for, cached under a signature nothing else uses, and
+  // paid for again as soon as the full list returns. The cards simply keep the
+  // original blurbs until then.
+  if (!reposAreComplete()) return {};
+
+  const openai = new OpenAI();
+
+  // The material the expansion is allowed to draw on. Without it the model has
+  // only the blurb it is being asked to lengthen, and padding a sentence with
+  // nothing to add is exactly the gibberish this is meant to avoid.
+  const readmes = await Promise.all(projects.map((p) => getReadmeSnippet(p.repo, 900)));
+  const list: Fillable[] = projects.map((p, i) => ({
+    name: p.name,
+    blurb: richToText(p.blurb),
+    material: {
+      tags: p.tags,
+      areas: p.categories,
+      domains: p.domains ?? [],
+      readme: readmes[i] || "",
+    },
+  }));
+
+  const out = await fillAll(level, list, "project", async (x) => {
+    // the top-up gets far more of the readme than the first pass did: it is
+    // asked only about the handful that came back short
+    const repo = projects.find((p) => p.name === x.name)?.repo;
+    const readme = repo ? await getReadmeSnippet(repo, 3000) : "";
+    return readme ? { ...(x.material as object), readme } : x.material;
+  });
+
   cache.set(blobKey(level, sig), out);
   if (blobsEnabled() && Object.keys(out).length) {
     try {
@@ -225,6 +261,55 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
       await s.setJSON(blobKey(level, sig), out);
     } catch {
       // still fine, it just costs the next instance a rewrite
+    }
+  }
+  return out;
+}
+
+/**
+ * The same fill for the About cards. A job, a degree or a certificate carries a
+ * one-line note and, behind the click, the details: the material is already
+ * written and already true, so the note can be brought up to the card's height
+ * out of the entry's own words rather than out of a readme.
+ */
+export async function explainAbout(level: Level): Promise<Record<string, string>> {
+  const { education, timeline, certifications } = await getAboutEntries();
+  const entries: Entry[] = [...education, ...timeline, ...certifications];
+
+  const sig = createHash("sha1")
+    .update(entries.map((e) => richToText(e.title)).join("|"))
+    .digest("hex")
+    .slice(0, 12);
+  const key = `about-${level}` as Level;
+  const hit = await readCached(key, sig);
+  if (hit) return hit;
+
+  const list: Fillable[] = entries.map((e) => ({
+    name: richToText(e.title),
+    blurb: richToText(e.note),
+    material: {
+      when: richToText(e.when),
+      place: richToText(e.place),
+      subtitle: e.subtitle ? richToText(e.subtitle) : "",
+      domains: e.domains ?? [],
+      tech: e.tech ?? [],
+      // the bullets or rich block the card opens into: the real substance
+      details: Array.isArray(e.details)
+        ? e.details.map((d) => richToText(d, 1200))
+        : e.details
+          ? richToText(e.details, 4000)
+          : "",
+    },
+  }));
+
+  const out = await fillAll(level, list, "entry");
+  cache.set(blobKey(key, sig), out);
+  if (blobsEnabled() && Object.keys(out).length) {
+    try {
+      const s = await store("explain");
+      await s.setJSON(blobKey(key, sig), out);
+    } catch {
+      // a miss only costs the next instance a rewrite
     }
   }
   return out;

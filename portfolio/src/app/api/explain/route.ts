@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { explainProjects, type Level } from "@/lib/explain";
+import { explainAbout, explainProjects, type Level } from "@/lib/explain";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -13,7 +13,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "explain-unconfigured" }, { status: 503 });
   }
   try {
-    const blurbs = await explainProjects(level as Level);
+    const of = new URL(request.url).searchParams.get("of");
+    const blurbs =
+      of === "about"
+        ? await explainAbout(level as Level)
+        : await explainProjects(level as Level);
     return NextResponse.json({ level, blurbs });
   } catch (err) {
     console.error("explain failed", err);

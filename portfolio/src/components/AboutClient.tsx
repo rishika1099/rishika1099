@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, m } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Carousel } from "@/components/Carousel";
 import PdfThumb from "@/components/PdfThumb";
@@ -246,6 +246,8 @@ function EntryCard({
 }) {
   const [open, setOpen] = useState(false);
   const hasDetails = entryHasDetails(entry.details);
+  const fills = useContext(FilledNotes);
+  const filledNote = fills[richToText(entry.title)] ?? entry.note;
   return (
     <m.div
       initial={{ opacity: 0, x: -16 }}
@@ -326,7 +328,7 @@ function EntryCard({
         <div className={hasDetails ? "pr-9" : ""}>
           <div
             className="rich-passage mt-2 font-body text-sm text-ink-soft"
-            dangerouslySetInnerHTML={{ __html: copyToHtml(entry.note) }}
+            dangerouslySetInnerHTML={{ __html: copyToHtml(filledNote) }}
           />
           {Boolean(entry.domains?.length || entry.tech?.length) && (
             <div className="mt-2.5 flex flex-wrap gap-1.5">
@@ -362,6 +364,11 @@ function EntryCard({
   );
 }
 
+// The card notes, rewritten to the height the cards already are. Empty until
+// the fetch lands, and every card falls back to its own note, so the page is
+// correct before it arrives and merely fuller after.
+const FilledNotes = createContext<Record<string, string>>({});
+
 export default function AboutClient({
   education,
   timeline,
@@ -392,7 +399,24 @@ export default function AboutClient({
     certifications: React.ReactNode;
   };
 }) {
+  // the About cards get the same fill the project cards do, from each entry's
+  // own details rather than from a readme
+  const [noteFills, setNoteFills] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let live = true;
+    fetch("/api/explain?level=default&of=about")
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d: { blurbs?: Record<string, string> }) => {
+        if (live) setNoteFills(d.blurbs ?? {});
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
+
   return (
+    <FilledNotes.Provider value={noteFills}>
     <PageShell vibe="lilac">
       <PageTitle>{title}</PageTitle>
 
@@ -458,7 +482,7 @@ export default function AboutClient({
       <p className="mt-1 font-body text-sm text-ink-soft">
         tap a card to read the details ✦
       </p>
-      <div className="mt-5 space-y-4">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         {timeline
           .filter((t) => !isResearchEntry(t))
           .map((t, i) => (
@@ -498,5 +522,6 @@ export default function AboutClient({
         </>
       )}
     </PageShell>
+    </FilledNotes.Provider>
   );
 }
