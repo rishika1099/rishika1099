@@ -1,9 +1,12 @@
 import Link from "next/link";
 import type { Entry as AboutEntry } from "@/data/about";
+import PageShell from "@/components/PageShell";
+import PageTitle from "@/components/PageTitle";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
+import { categoryStyle, domainColor, domainEmoji, type Domain } from "@/data/projects";
 import {
   ROLES,
   ROLE_SPECS,
@@ -26,22 +29,18 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 /**
- * The quiet cousin of the main site: same material, none of the wandering.
+ * Her site with the volume down, not a different site.
  *
- * Not a resume, and not the pastel site with the colour turned down. It should
- * read like a portfolio built for one question, so it gets the things that make
- * a page feel considered rather than printed: a lot of air, type that is
- * confident about being large, and small tracked-out labels doing the work that
- * headings and horizontal rules would do on a CV.
+ * Same shell, same cards, same pastel chips, same handwritten page title. What
+ * goes is the wandering: no shelves to scroll sideways, no embeddings galaxy,
+ * no explain-like-I'm-five toggle, no thirteen patches to choose between. One
+ * column, one question answered, and everything between the reader and that
+ * answer removed.
  *
- * The palette and the fonts are the site's own, matching the resume page, so
- * this reads as her quiet register rather than a different site.
+ * The first attempt at this was plain, and plain came out looking like a
+ * stranger's resume. Someone who has just read the rest of the site should
+ * recognise this page as the same person's.
  */
-// The same label the resume page uses for its section headings, so the two
-// plain readings of her work look like they came from the same hand.
-const LABEL =
-  "font-body text-xs font-bold uppercase tracking-[0.18em] text-ink-soft";
-
 export default async function Recruiter({
   searchParams,
 }: {
@@ -58,89 +57,71 @@ export default async function Recruiter({
   const t = (k: string) => plain(copy[k], 2000);
 
   return (
-    <div className="min-h-screen bg-cream text-ink">
-      <div className="mx-auto max-w-3xl px-6 py-20 sm:px-8 sm:py-28">
-        <p className={LABEL}>{t("recruiter.title")}</p>
+    <PageShell vibe="lilac">
+      <PageTitle>{t("recruiter.title")} 🌷</PageTitle>
 
-        <h1 className="mt-6 font-body text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
-          Hi, I&rsquo;m
-          <br />
-          <span className="text-twilight">Rishika</span>
-        </h1>
+      <p className="mt-5 max-w-2xl font-body text-lg leading-relaxed text-ink-soft">
+        {role ? t(`recruiter.summary.${role}`) : t("recruiter.intro")}
+      </p>
 
-        <p className="mt-7 max-w-xl font-body text-lg leading-relaxed text-ink-soft sm:text-xl">
-          {role ? t(`recruiter.summary.${role}`) : t("recruiter.intro")}
+      {/* The question. Real links, so a chosen role is a URL she can send. */}
+      <section className="mt-8">
+        <p className="font-body text-sm font-semibold text-ink-soft">{t("recruiter.ask")}</p>
+        <nav className="mt-3 flex flex-wrap gap-2">
+          {ROLES.map((r) => {
+            const on = r === role;
+            return (
+              <Link
+                key={r}
+                href={`/recruiter?role=${r}`}
+                aria-current={on ? "page" : undefined}
+                className={`rounded-full px-5 py-2 font-body text-sm font-semibold transition ${
+                  on
+                    ? "bg-ink text-cream shadow-sm"
+                    : "bg-white/70 text-ink-soft hover:bg-white hover:text-ink"
+                }`}
+              >
+                {ROLE_SPECS[r].label}
+              </Link>
+            );
+          })}
+        </nav>
+      </section>
+
+      {role ? (
+        <RoleView
+          role={role}
+          projects={projects}
+          education={education}
+          timeline={timeline}
+          t={t}
+        />
+      ) : (
+        <p className="mt-10 font-body text-ink-soft">
+          Or wander{" "}
+          <Link className="underline decoration-blush decoration-2 underline-offset-4" href="/">
+            the whole site
+          </Link>
+          , which has everything and rather more colour ✦
         </p>
-
-        {/* The question, and the answer is a URL she can send. */}
-        <section className="mt-12">
-          <p className={LABEL}>{t("recruiter.ask")}</p>
-          <nav className="mt-4 flex flex-wrap gap-2.5">
-            {ROLES.map((r) => {
-              const on = r === role;
-              return (
-                <Link
-                  key={r}
-                  href={`/recruiter?role=${r}`}
-                  aria-current={on ? "page" : undefined}
-                  className={`rounded-full px-5 py-2.5 font-body text-[15px] font-semibold transition ${
-                    on
-                      ? "bg-ink text-cream"
-                      : "bg-white/70 text-ink-soft hover:bg-white hover:text-ink"
-                  }`}
-                >
-                  {ROLE_SPECS[r].label}
-                </Link>
-              );
-            })}
-          </nav>
-        </section>
-
-        {role ? (
-          <RoleView
-            role={role}
-            projects={projects}
-            education={education}
-            timeline={timeline}
-            t={t}
-          />
-        ) : (
-          <p className="mt-16 font-body text-[15px] text-ink-soft">
-            Or read{" "}
-            <Link className="underline decoration-blush decoration-2 underline-offset-4" href="/">
-              the whole site
-            </Link>
-            , which has everything and rather more colour.
-          </p>
-        )}
-
-        <footer
-          className="mt-24 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-ink/20 pt-8 font-body text-[15px] text-ink-soft"
-        >
-          <a className="underline underline-offset-4" href="mailto:rm4318@columbia.edu">
-            rm4318@columbia.edu
-          </a>
-          <a className="underline underline-offset-4" href="https://github.com/rishika1099">
-            GitHub ↗
-          </a>
-          <Link className="underline underline-offset-4" href="/resume">
-            Résumé
-          </Link>
-          <Link className="underline underline-offset-4" href="/">
-            Full site
-          </Link>
-        </footer>
-      </div>
-    </div>
+      )}
+    </PageShell>
   );
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+/** The same heading the About page uses for its sections. */
+function Heading({ children }: { children: React.ReactNode }) {
+  return <h2 className="mt-14 font-body text-2xl font-bold text-ink">{children}</h2>;
+}
+
+function Chip({ label, color }: { label: string; color?: string }) {
   return (
-    <section className="mt-20">
-      <h2 className={`${LABEL} border-b border-ink/20 pb-3`}>{label}</h2>
-      {children}
-    </section>
+    <span
+      style={{ backgroundColor: color ?? "#d8efe2" }}
+      className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
+    >
+      {label}
+    </span>
   );
 }
 
@@ -164,69 +145,110 @@ function RoleView({
 
   return (
     <>
-      <Section label={t("recruiter.heading.projects")}>
-        <ol className="mt-10 space-y-14">
-          {picked.map((p) => (
-            <li key={p.name}>
-              <p className={`${LABEL} text-ink/60`}>{p.categories.join(" · ")}</p>
-              <h3 className="mt-3 font-body text-2xl font-bold tracking-tight">{p.name}</h3>
-              <p className="mt-3 max-w-2xl font-body leading-relaxed text-ink-soft">
-                {plain(p.blurb, 400)}
-              </p>
-              <p className="mt-4 flex flex-wrap gap-x-5 gap-y-1 font-body text-[15px]">
-                {p.repo && <Out href={p.repo}>code</Out>}
-                {p.demo && <Out href={p.demo}>live demo</Out>}
-                {p.article && <Out href={p.article}>write-up</Out>}
-                {p.results && <Out href={p.results}>results</Out>}
-              </p>
-              <Shot project={p} />
-            </li>
-          ))}
-        </ol>
-        <p className="mt-10 font-body text-[15px] text-ink-soft">
-          {picked.length} of {projects.length} projects, chosen for this role.{" "}
-          <Link className="underline decoration-blush decoration-2 underline-offset-4" href="/work">
-            All of them ↗
-          </Link>
-        </p>
-      </Section>
+      <Heading>{t("recruiter.heading.projects")} 🌱</Heading>
+      <p className="mt-1 font-body text-sm text-ink-soft">
+        {picked.length} of {projects.length}, the ones that argue for this role ✦
+      </p>
+      <div className="mt-5 space-y-5">
+        {picked.map((p) => (
+          <article key={p.name} className="rounded-3xl p-6 soft-card">
+            <div className="flex items-start gap-4">
+              <span className="text-3xl">{p.emoji}</span>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-body text-xl font-bold text-ink">{p.name}</h3>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {p.domains?.map((d) => (
+                    <Chip
+                      key={d}
+                      label={`${domainEmoji[d as Domain] ?? "✦"} ${d}`}
+                      color={domainColor[d as Domain]}
+                    />
+                  ))}
+                  {p.categories.map((c) => (
+                    <Chip
+                      key={c}
+                      label={`${categoryStyle[c]?.emoji ?? "✦"} ${c}`}
+                      color={categoryStyle[c]?.color}
+                    />
+                  ))}
+                </div>
+                <p className="mt-3 font-body text-[15px] leading-relaxed text-ink-soft">
+                  {plain(p.blurb, 400)}
+                </p>
+                <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-body text-sm">
+                  {p.repo && <Out href={p.repo}>★ code</Out>}
+                  {p.demo && <Out href={p.demo}>✿ live demo</Out>}
+                  {p.article && <Out href={p.article}>📰 write-up</Out>}
+                  {p.results && <Out href={p.results}>📊 results</Out>}
+                </p>
+              </div>
+            </div>
+            <Shot project={p} />
+          </article>
+        ))}
+      </div>
+      <p className="mt-5 font-body text-sm text-ink-soft">
+        <Link className="underline decoration-blush decoration-2 underline-offset-4" href="/work">
+          all {projects.length} projects →
+        </Link>
+      </p>
 
       {research.length > 0 && (
-        <Section label={t("recruiter.heading.research")}>
-          <ol className="mt-8 space-y-10">
+        <>
+          <Heading>{t("recruiter.heading.research")} 🔬</Heading>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {research.map((e) => (
-              <Entry key={plain(e.title)} e={e} />
+              <EntryCard key={plain(e.title)} e={e} />
             ))}
-          </ol>
-        </Section>
+          </div>
+        </>
       )}
 
-      <Section label={t("recruiter.heading.experience")}>
-        <ol className="mt-8 space-y-10">
-          {jobs.map((e) => (
-            <Entry key={plain(e.title)} e={e} />
-          ))}
-        </ol>
-      </Section>
+      <Heading>{t("recruiter.heading.experience")} 💼</Heading>
+      <div className="mt-5 space-y-4">
+        {jobs.map((e) => (
+          <EntryCard key={plain(e.title)} e={e} />
+        ))}
+      </div>
 
-      <Section label={t("recruiter.heading.education")}>
-        <ol className="mt-8 space-y-10">
-          {education.map((e) => (
-            <Entry key={plain(e.title)} e={e} />
-          ))}
-        </ol>
-      </Section>
+      <Heading>{t("recruiter.heading.education")} 🎓</Heading>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        {education.map((e) => (
+          <EntryCard key={plain(e.title)} e={e} />
+        ))}
+      </div>
 
-      <Section label={t("recruiter.heading.skills")}>
-        <ul className="mt-8 grid gap-x-10 gap-y-3 sm:grid-cols-2">
-          {spec.skills.map((s) => (
-            <li key={s} className="font-body">
-              {s}
-            </li>
-          ))}
-        </ul>
-      </Section>
+      <Heading>{t("recruiter.heading.skills")} 🛠️</Heading>
+      <div className="mt-5 flex flex-wrap gap-2">
+        {spec.skills.map((s) => (
+          <span
+            key={s}
+            className="rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft"
+          >
+            {s}
+          </span>
+        ))}
+      </div>
+
+      <p className="mt-14 font-body text-sm text-ink-soft">
+        This is the short version, for {spec.article}.{" "}
+        <Link className="underline decoration-blush decoration-2 underline-offset-4" href="/about">
+          the longer one lives here
+        </Link>{" "}
+        ✦
+      </p>
     </>
+  );
+}
+
+function Out({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      className="font-semibold text-ink-soft underline decoration-blush decoration-2 underline-offset-4 transition hover:text-ink"
+    >
+      {children}
+    </a>
   );
 }
 
@@ -241,7 +263,7 @@ function RoleView({
 function Shot({ project }: { project: { name: string; image?: { id: string; name: string } } }) {
   if (!project.image) {
     return (
-      <div className="mt-6 flex h-44 items-center justify-center rounded-2xl border border-dashed border-ink/20 bg-white/40">
+      <div className="mt-5 flex h-40 items-center justify-center rounded-2xl border border-dashed border-ink/15 bg-white/40">
         <p className="font-body text-[13px] text-ink-soft/60">
           no picture yet ✦ add one in the atelier
         </p>
@@ -249,7 +271,7 @@ function Shot({ project }: { project: { name: string; image?: { id: string; name
     );
   }
   return (
-    <figure className="mt-6 overflow-hidden rounded-2xl border border-ink/10 bg-white">
+    <figure className="mt-5 overflow-hidden rounded-2xl bg-white/70 ring-1 ring-white/70">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={`/api/attachment/${project.image.id}`}
@@ -262,26 +284,28 @@ function Shot({ project }: { project: { name: string; image?: { id: string; name
   );
 }
 
-function Out({ href, children }: { href: string; children: React.ReactNode }) {
+function EntryCard({ e }: { e: AboutEntry }) {
   return (
-    <a href={href} className="font-semibold underline decoration-blush decoration-2 underline-offset-4">
-      {children} ↗
-    </a>
-  );
-}
-
-function Entry({ e }: { e: AboutEntry }) {
-  return (
-    <li>
-      <p className={LABEL}>{plain(e.when)}</p>
-      <h3 className="mt-2.5 font-body text-xl font-bold tracking-tight">
+    <article className="rounded-3xl p-5 soft-card">
+      <p className="font-body text-sm italic text-ink-soft">{plain(e.when)}</p>
+      <h3 className="mt-0.5 font-body text-lg font-bold text-ink">
         {plain(e.title)}
-        {e.subtitle && <span className="font-medium">, {plain(e.subtitle)}</span>}
+        {e.subtitle && <span className="font-semibold text-ink/80">, {plain(e.subtitle)}</span>}
       </h3>
-      <p className="font-body text-[15px] text-ink-soft">{plain(e.place)}</p>
-      <p className="mt-2.5 max-w-2xl font-body leading-relaxed text-ink-soft">
+      <p className="font-body text-sm font-semibold text-ink-soft">{plain(e.place)}</p>
+      <p className="mt-2 font-body text-[15px] leading-relaxed text-ink-soft">
         {plain(e.note, 500)}
       </p>
-    </li>
+      {Boolean(e.domains?.length || e.tech?.length) && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {e.domains?.map((d) => (
+            <Chip key={d} label={d} color={domainColor[d as Domain]} />
+          ))}
+          {e.tech?.map((c) => (
+            <Chip key={c} label={c} color={categoryStyle[c]?.color} />
+          ))}
+        </div>
+      )}
+    </article>
   );
 }
