@@ -124,13 +124,17 @@ function EntryMark({ entry, hidden }: { entry: Entry; hidden?: boolean }) {
   if (hidden) return null;
   if (!entry.logo || broken) {
     return (
-      <span className="animate-float-med flex h-14 w-14 shrink-0 items-center justify-center text-3xl">
+      <span className="animate-float-med flex min-h-14 w-14 shrink-0 items-center justify-center self-stretch text-3xl">
         {entry.icon}
       </span>
     );
   }
   return (
-    <span className="relative flex h-14 w-14 shrink-0 items-center justify-center">
+    // Stretched to the height of the heading beside it, so the tile runs down to
+    // where the description starts instead of leaving a hole under a 56px
+    // square. The picture stays contained and centred inside it: it is the
+    // tile that fills the space, not a stretched logo.
+    <span className="relative flex min-h-14 w-14 shrink-0 items-center justify-center self-stretch">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={ref}
