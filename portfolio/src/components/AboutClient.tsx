@@ -245,7 +245,12 @@ function EntryCard({
   noMark?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const hasDetails = entryHasDetails(entry.details);
+  const files = entry.attachments ?? [];
+  // Attachments live behind the click now. A row of 72px tiles set the height
+  // of every card beside it, and on a card whose text was already short that
+  // read as one big hole. What is left is a count, so the card still says the
+  // certificate is there.
+  const hasDetails = entryHasDetails(entry.details) || files.length > 0;
   const fills = useContext(FilledNotes);
   const filledNote = fills[richToText(entry.title)] ?? entry.note;
   return (
@@ -351,12 +356,12 @@ function EntryCard({
               ))}
             </div>
           )}
+          {files.length > 0 && (
+            <p className="mt-2.5 font-body text-[11px] font-semibold text-ink-soft/70">
+              📎 {files.length} {files.length === 1 ? "file" : "files"} inside
+            </p>
+          )}
         </div>
-      </div>
-
-      {/* above the overlay, so a tile opens the file it shows */}
-      <div className="relative z-10">
-        <Attachments entry={entry} />
       </div>
 
       {open && hasDetails && <EntryDialog entry={entry} onClose={() => setOpen(false)} />}
