@@ -294,42 +294,41 @@ function EntryCard({
       <div
         className={`relative z-10 w-full text-left ${hasDetails ? "pointer-events-none" : ""}`}
       >
-        {/* Floated, not a flex child. As a row item it reserved a column of its
-            own width for the whole height of the card, which left a tall empty
-            strip beneath it on any card taller than the mark. Floated, the text
-            sits beside it and then flows underneath. */}
-        {!noMark && (
-          <span className="float-left mb-2 mr-4">
-            <EntryMark entry={entry} hidden={noMark} />
-          </span>
-        )}
-        {/* room kept clear on the right for the corner icon, so a title that
-            wraps to the full width never runs underneath it */}
+        {/* The heading stays beside the mark, the prose runs under it.
+            Letting the title itself wrap around a float dropped its last word
+            to the far left below the emoji, dangling under an indented line
+            above it. Only what reads as a paragraph should flow that way. */}
+        <div className="flex gap-4">
+          {!noMark && <EntryMark entry={entry} hidden={noMark} />}
+          {/* room kept clear on the right for the corner icon */}
+          <div className={`min-w-0 flex-1 ${hasDetails ? "pr-9" : ""}`}>
+            <div
+              className="rich-passage font-body text-sm italic text-ink-soft"
+              dangerouslySetInnerHTML={{ __html: copyToHtml(entry.when) }}
+            />
+            <h3
+              className="rich-passage font-body text-lg font-bold text-ink"
+              dangerouslySetInnerHTML={{ __html: copyToHtml(entry.title) }}
+            />
+            {entry.subtitle && (
+              <div
+                className="rich-passage font-body text-base font-semibold text-ink/80"
+                dangerouslySetInnerHTML={{ __html: copyToHtml(entry.subtitle) }}
+              />
+            )}
+            <div
+              className="rich-passage font-body text-sm font-semibold text-ink-soft"
+              dangerouslySetInnerHTML={{ __html: copyToHtml(entry.place) }}
+            />
+          </div>
+        </div>
         <div className={hasDetails ? "pr-9" : ""}>
           <div
-            className="rich-passage font-body text-sm italic text-ink-soft"
-            dangerouslySetInnerHTML={{ __html: copyToHtml(entry.when) }}
-          />
-          <h3
-            className="rich-passage font-body text-lg font-bold text-ink"
-            dangerouslySetInnerHTML={{ __html: copyToHtml(entry.title) }}
-          />
-          {entry.subtitle && (
-            <div
-              className="rich-passage font-body text-base font-semibold text-ink/80"
-              dangerouslySetInnerHTML={{ __html: copyToHtml(entry.subtitle) }}
-            />
-          )}
-          <div
-            className="rich-passage font-body text-sm font-semibold text-ink-soft"
-            dangerouslySetInnerHTML={{ __html: copyToHtml(entry.place) }}
-          />
-          <div
-            className="rich-passage mt-1 font-body text-sm text-ink-soft"
+            className="rich-passage mt-2 font-body text-sm text-ink-soft"
             dangerouslySetInnerHTML={{ __html: copyToHtml(entry.note) }}
           />
           {Boolean(entry.domains?.length || entry.tech?.length) && (
-            <div className="mt-2.5 flex flex-wrap gap-1.5 clear-left">
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
               {entry.domains?.map((d) => (
                 <span
                   key={d}
