@@ -238,8 +238,9 @@ export default function WorkGallery({
   const areaId = (c: string) => "area-" + c.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   // which category sections have been opened into a grid
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({});
-  // the area currently on screen, so one pill reads as "you are here"
-  const [activeArea, setActiveArea] = useState<string>("");
+  // which patch's tab is open. "" means "not chosen yet", which resolves to the
+  // first patch below, so the page always opens on something.
+  const [patch, setPatch] = useState<string>("");
   const [filter, setFilter] = useState<Category | "All">("All");
   const [domain, setDomain] = useState<Domain | "All">("All");
   const [query, setQuery] = useState("");
@@ -369,28 +370,12 @@ export default function WorkGallery({
   const leftovers = grid.filter((p) => !placed.has(p.name));
   if (leftovers.length) sections.push({ category: "More" as Category, items: leftovers });
 
-  // highlight the pill for whichever area is in view, the way the About page's
-  // jump bar does. Marking every area you had opened just accumulated.
-  useEffect(() => {
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>('section[id^="area-"]'));
-    if (!nodes.length) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        // the section filling most of the reading band wins; picking whichever
-        // was simply topmost lagged a section behind while scrolling
-        const best = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (best) setActiveArea(best.target.id);
-      },
-      { rootMargin: "-100px 0px -60% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
-    );
-    nodes.forEach((n) => io.observe(n));
-    return () => io.disconnect();
-    // rebuilt only when the set of sections changes; without a dependency list
-    // every highlight tore the observer down before it could report the next one
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtering, sections.length]);
+  // Which patch is showing. Falls back to the first one so the page always
+  // opens on a real panel, including the first render before anything is picked
+  // and after a filter changes the set of patches out from under the choice.
+  const activePatch =
+    sections.find((sec) => sec.category === patch)?.category ?? sections[0]?.category ?? "";
+
 
   return (
     <>
@@ -612,47 +597,57 @@ export default function WorkGallery({
         </div>
       )}
 
-      {/* A dropdown rather than a row of pills: thirteen areas ran off the edge
-          of the row, so half of them were unreachable without side-scrolling.
-          It reflects the area you are looking at, and picking one jumps there. */}
-      {!filtering && (
-      <div className="sticky top-20 z-30 mt-4 flex justify-center">
-        <label className="flex items-center gap-2 rounded-full px-3 py-1.5 font-body text-sm font-semibold text-ink-soft soft-card">
-          patch
-          <select
-            value={sections.find((sec) => areaId(sec.category) === activeArea)?.category ?? "All"}
-            style={(() => {
-              const here = sections.find((sec) => areaId(sec.category) === activeArea)?.category;
-              return here ? { backgroundColor: categoryStyle[here]?.color } : undefined;
-            })()}
-            onChange={(e) => {
-              const v = e.target.value;
-              const target = v === "All" ? "areas" : areaId(v);
-              document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-            className="rounded-full border border-white/70 bg-white/80 px-4 py-1.5 font-body text-sm font-semibold text-ink outline-none transition focus:border-blush focus:ring-2 focus:ring-blush/40"
-          >
-            <option value="All">All patches</option>
-            {sections.map((sec) => (
-              <option
-                key={sec.category}
-                value={sec.category}
-                style={{ backgroundColor: categoryStyle[sec.category]?.color ?? "#d8efe2" }}
-              >
-                {categoryStyle[sec.category]?.emoji ?? "✦"} {sec.category} ({sec.items.length})
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      )}
+      {/* Tabs, not a stack. Every patch used to render one under the other,
+          which ran the page to 8486px: ten screens of scrolling to reach the
+          last area. The patches sit side by side now and wrap onto a second
+          row rather than scrolling sideways, so none is out of reach.
 
+          Every section still renders; the inactive ones are hidden with the
+          `hidden` attribute rather than dropped from the tree. Hiding costs no
+          height, keeps every project in the HTML for search engines, and makes
+          switching a tab instant instead of a remount. */}
+      {!filtering && (
+        <div className="sticky top-20 z-30 mt-4">
+          <div
+            role="tablist"
+            aria-label="project patches"
+            className="mx-auto flex flex-wrap items-center justify-center gap-1.5 rounded-3xl px-3 py-2 soft-card"
+          >
+            {sections.map((sec) => {
+              const on = sec.category === activePatch;
+              return (
+                <button
+                  key={sec.category}
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  aria-controls={areaId(sec.category)}
+                  onClick={() => setPatch(sec.category)}
+                  style={on ? { backgroundColor: categoryStyle[sec.category]?.color } : undefined}
+                  className={`rounded-full px-3 py-1 font-body text-sm font-semibold transition ${
+                    on ? "text-ink shadow-sm" : "text-ink-soft hover:bg-white/70 hover:text-ink"
+                  }`}
+                >
+                  {categoryStyle[sec.category]?.emoji ?? "\u2726"} {sec.category}{" "}
+                  <span className="font-normal opacity-60">{sec.items.length}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
       {!filtering &&
         sections.map((sec) => {
           // collapsed = a horizontal shelf of the whole area; open = the grid
           const open = !!openCats[sec.category];
           return (
-            <section key={sec.category} id={areaId(sec.category)} className="mt-10 scroll-mt-24">
+            <section
+              key={sec.category}
+              id={areaId(sec.category)}
+              role="tabpanel"
+              hidden={sec.category !== activePatch}
+              className="mt-10 scroll-mt-24"
+            >
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <h2 className="flex items-center gap-2 font-body text-xl font-bold text-ink">
                   <span
