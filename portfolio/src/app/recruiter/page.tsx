@@ -4,9 +4,11 @@ import PageTitle from "@/components/PageTitle";
 import RecruiterEntries from "@/components/RecruiterEntries";
 import PipelineDiagram from "@/components/PipelineDiagram";
 import PipelineLoader from "@/components/PipelineLoader";
+import CaseStudyOpener from "@/components/CaseStudyCard";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
 import { getPipeline, type Pipeline } from "@/lib/pipeline";
+import { getCaseStudy, hasContent } from "@/lib/caseStudies";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
@@ -161,6 +163,8 @@ async function RoleView({
   // Read-only: a cached diagram is drawn, a missing one is fetched by the card
   // itself. Generating here would make a recruiter wait on an LLM call.
   const pipelines = await Promise.all(picked.map((p) => getPipeline(repoSlug(p.repo))));
+  // the deep dive, for the two or three projects that have one written
+  const studies = await Promise.all(picked.map((p) => getCaseStudy(repoSlug(p.repo))));
   const research = researchForRole(timeline.filter(isResearchEntry), role);
   const jobs = timeline.filter((e) => !isResearchEntry(e));
 
@@ -202,6 +206,9 @@ async function RoleView({
                   {p.article && <Out href={p.article}>📰 write-up</Out>}
                   {p.results && <Out href={p.results}>📊 results</Out>}
                 </p>
+                {studies[i] && hasContent(studies[i]!) && (
+                  <CaseStudyOpener study={studies[i]!} name={p.name} />
+                )}
               </div>
             </div>
             <div className="mt-auto">

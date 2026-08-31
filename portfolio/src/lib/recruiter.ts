@@ -10,7 +10,7 @@ import type { Category, Project } from "@/data/projects";
 import type { Entry } from "@/data/about";
 import { richToText } from "@/lib/richHtml";
 
-export const ROLES = ["data-scientist", "ml-engineer", "ai-engineer"] as const;
+export const ROLES = ["data-scientist", "ml-engineer", "ai-engineer", "software-engineer"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const isRole = (v: unknown): v is Role => ROLES.includes(v as Role);
@@ -80,6 +80,27 @@ export const ROLE_SPECS: Record<Role, RoleSpec> = {
       "Deployment",
       "Python",
       "SQL",
+    ],
+  },
+  "software-engineer": {
+    label: "Software Engineer",
+    article: "a Software Engineer",
+    // The one role whose evidence is not a model. Two years shipping at Shell
+    // and a Computer Science degree argue for it more than any single project
+    // does, so the areas are only there to order the projects that exist.
+    areas: ["Cybersecurity", "Internet of Things", "Agentic AI", "Generative AI"],
+    skills: [
+      "Python",
+      "TypeScript",
+      "SQL",
+      "React",
+      "Next.js",
+      "FastAPI",
+      "Docker",
+      "Databricks",
+      "CI/CD",
+      "System design",
+      "Testing",
     ],
   },
   "ai-engineer": {

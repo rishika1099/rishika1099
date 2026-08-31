@@ -165,7 +165,21 @@ function EntryMark({ entry, hidden }: { entry: Entry; hidden?: boolean }) {
  * entry left a column of empty white beside it as tall as its coursework list.
  * A dialog leaves the grid alone and gives the bullets room to be read.
  */
-function EntryDialog({ entry, onClose }: { entry: Entry; onClose: () => void }) {
+function EntryDialog({
+  entry,
+  onClose,
+  surface,
+}: {
+  entry: Entry;
+  onClose: () => void;
+  /**
+   * The sheet's colour. It portals to <body>, outside the vibe wrapper, so it
+   * cannot inherit the page's ground and has to be told: cream on the cream
+   * pages, periwinkle on the recruiter page, where cream read as a beige panel
+   * from somewhere else.
+   */
+  surface?: string;
+}) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -190,7 +204,10 @@ function EntryDialog({ entry, onClose }: { entry: Entry; onClose: () => void }) 
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.18 }}
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-cream p-6 shadow-2xl sm:p-8"
+        style={surface ? { backgroundColor: surface } : undefined}
+        className={`max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-3xl p-6 shadow-2xl sm:p-8 ${
+          surface ? "" : "bg-cream"
+        }`}
       >
         <div className="flex items-start gap-4">
           <EntryMark entry={entry} />
@@ -245,6 +262,7 @@ export default function EntryCard({
   noMark = false,
   showFiles = false,
   showAttachments = false,
+  surface,
 }: {
   entry: Entry;
   i: number;
@@ -261,6 +279,8 @@ export default function EntryCard({
    * behind the click and says so with showFiles instead.
    */
   showAttachments?: boolean;
+  /** the dialog's colour, when the page is not one of the cream ones */
+  surface?: string;
   /** set when the card sits on a shelf rather than in a stack */
   className?: string;
   /** certifications show no mark: no logo, and an emoji adds nothing there */
@@ -397,7 +417,9 @@ export default function EntryCard({
         </div>
       )}
 
-      {open && hasDetails && <EntryDialog entry={entry} onClose={() => setOpen(false)} />}
+      {open && hasDetails && (
+        <EntryDialog entry={entry} onClose={() => setOpen(false)} surface={surface} />
+      )}
     </m.div>
   );
 }

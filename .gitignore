@@ -67,6 +67,8 @@ portfolio/src/content/blog-rich/
 portfolio/src/content/project-overrides.json
 # generated descriptions, rebuilt on demand and never committed
 portfolio/src/content/explain-cache/
+# case studies live in Blobs in production; the local copies are hers to draft
+portfolio/src/content/case-studies/
 portfolio/src/content/blog-overrides.json
 portfolio/src/content/contact-links.json
 portfolio/src/content/reactions.json

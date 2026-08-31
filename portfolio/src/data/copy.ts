@@ -134,6 +134,11 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "summary shown for AI Engineer",
     text: "Data Science MS at Columbia, building LLM systems end to end: retrieval, agents, evaluation harnesses, and the guardrails around them. Research on clinical and human-rights LLM pipelines, and an early production LLM deployment in regulated pharma.",
   },
+  "recruiter.summary.software-engineer": {
+    page: "recruiter",
+    label: "summary shown for Software Engineer",
+    text: "Computer Science degree and two years shipping production software at Shell, now finishing a Data Science MS at Columbia. Comfortable owning a service end to end: the API, the pipeline behind it, the tests, and the deploy that puts it in front of people.",
+  },
   "recruiter.heading.projects": { page: "recruiter", label: "projects heading", text: "Selected projects" },
   "recruiter.heading.research": { page: "recruiter", label: "research heading", text: "Research" },
   "recruiter.heading.experience": { page: "recruiter", label: "experience heading", text: "Experience" },
