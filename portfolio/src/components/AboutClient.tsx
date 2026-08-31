@@ -469,7 +469,7 @@ export default function AboutClient({
       <p className="mt-1 font-body text-sm text-ink-soft">
         tap a card to read the details ✦
       </p>
-      <div className="mt-5 space-y-4">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         {timeline
           .filter((t) => richToText(t.title).includes("Research Assistant"))
           .map((t, i) => (
