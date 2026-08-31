@@ -72,6 +72,33 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   drafted from the README and never estimated or rounded. A hand-written case study always
   wins, and the two live in separate stores so a draft can never overwrite one.
   (`src/lib/caseStudyAuto.ts`, `src/lib/caseStudies.ts`)
+- **Paste a job description, and the page answers it.** The four role buttons are a
+  guess at what a reader wants; a posting is the thing itself. It ranks the projects
+  against it and re-angles her experience toward it. Two details make it honest rather
+  than flattering. **The skills are checked, not claimed**: asked for "the skills this
+  posting asks for that the resume evidences", the model returned Swift, SwiftUI, Core
+  Data and UIKit for an iOS posting, which are the posting's requirements and not her
+  skills, so a skill now survives only if the words carrying its meaning appear in her
+  own material, on both word boundaries (a leading boundary alone let "Swift" through on
+  the strength of "Hey Swiftie"). And **the gaps are reported**: what a posting asks for
+  that her material does not show. An iOS posting claims no skills and names three gaps;
+  a healthcare ML posting keeps Python, PyTorch, LLMs and retrieval systems with none.
+  (`src/lib/tailor.ts`, `src/app/api/tailor/route.ts`)
+- **Re-angling, not relabelling.** Her human-rights LLM research is the closest thing she
+  has to a healthcare LLM role, and read as irrelevant because the subject differs: same
+  pipelines, same evaluation problem, different domain. Each entry's note is rewritten to
+  lead with whatever answers the role, out of what the entry already says. Nothing may be
+  added, so the honest angle is "a two-stage retrieval-augmented LLM framework, scoring
+  defense manufacturers on human-rights due diligence", never "healthcare research", and
+  an entry with no bearing on the role comes back unchanged rather than stretched. The
+  cards do not change: the angled note arrives through the same context the About page
+  already feeds them through. Cached per role, since the four roles are fixed.
+  (`src/lib/angle.ts`)
+- **Embedding a whole posting does not work.** A long posting averages out to a blur: the
+  scores bunched between 0.42 and 0.50 and her flagship clinical work ranked below a
+  loan-status exercise for a clinical AI job. The model reduces the posting to its
+  technical line first and the search runs on that, which is both better and faster
+  (6.5s to 3.1s).
 - **Generated once, then never again.** Everything above is cached **per item** against a
   hash of the source it was generated from, not per set. Keying a whole set under one hash
   meant publishing a single repo changed the signature and threw away all 98 rewrites to
@@ -155,7 +182,10 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   alphabetically put "Car Price Prediction" above the KV-cache work. The role lives in the
   URL so a chosen view is a link she can send, the page is `noindex` so it does not compete
   with the real pages, and the résumé is downloadable from the top. It uses the *same*
-  project and entry cards the Work and About pages use, not copies of them.
+  project and entry cards the Work and About pages use, not copies of them. There is also
+  a box to paste the posting itself, which filters the same page rather than producing a
+  second one, and re-angles her experience toward what it asks for. Work, research and
+  education are visible before any role is picked, since they do not depend on one.
 - **One surface per page.** Dialogs portal to `<body>`, outside the page's vibe wrapper, so
   they cannot inherit the ground they were opened from and were hardcoded cream everywhere.
   Each page now publishes its own colour on the root element and anything rendered outside

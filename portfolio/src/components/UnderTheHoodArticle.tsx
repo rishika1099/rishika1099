@@ -323,6 +323,12 @@ export default function UnderTheHoodArticle({
           {slot("tour.fit.cache")}
         </Section>
 
+        <Section id="match" emoji="🔎" title="Answering a job posting">
+          <Concept>{slot("tour.match.concept")}</Concept>
+          {slot("tour.match.honest")}
+          {slot("tour.match.angle")}
+        </Section>
+
         <Section id="engineering" emoji="🛠️" title="The engineering around it">
           <ul className="ml-5 list-disc space-y-2">
             <li>{slot("tour.eng.b1")}</li>
