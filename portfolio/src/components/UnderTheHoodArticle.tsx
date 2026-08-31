@@ -314,6 +314,15 @@ export default function UnderTheHoodArticle({
           </ul>
         </Section>
 
+        <Section id="fit" emoji="📐" title="Writing to fit a card">
+          <Concept>{slot("tour.fit.concept")}</Concept>
+          {slot("tour.fit.body")}
+          {slot("tour.fit.rules")}
+          {slot("tour.fit.pipeline")}
+          {slot("tour.fit.case")}
+          {slot("tour.fit.cache")}
+        </Section>
+
         <Section id="engineering" emoji="🛠️" title="The engineering around it">
           <ul className="ml-5 list-disc space-y-2">
             <li>{slot("tour.eng.b1")}</li>

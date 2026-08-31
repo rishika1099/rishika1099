@@ -36,8 +36,10 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   into an intuitive relevance %. *Eval:* each result shows its relevance score.
   (`src/lib/search.ts`, `src/app/api/search-projects/route.ts`)
 - **"More like this" project suggestions.** Each project card has a "find similar" action
-  that filters the grid down to its nearest neighbors by **embedding cosine similarity**,
-  reusing the cached project vectors (no query embedding needed).
+  that narrows the page to its nearest neighbors by **embedding cosine similarity**, reusing
+  the cached project vectors (no query embedding needed). It answers in place on whichever
+  page you are reading, and coming back returns you to where you were standing rather than
+  to the top.
   (`src/lib/search.ts` `relatedProjects`, `src/app/api/related-projects/route.ts`)
 - **Embeddings galaxy.** An interactive 2D map of every project: each is embedded, then
   projected to 2D with a hand-rolled **PCA** (via the n×n Gram matrix) on a graph-paper grid.
@@ -48,6 +50,35 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 - **ELI5 / expert toggle.** A toggle on the Work tab rewrites every project blurb for the
   chosen audience (a curious 10-year-old, or a senior ML engineer) in one batched, cached
   `gpt-4o-mini` call. (`src/lib/explain.ts`, `src/app/api/explain/route.ts`)
+- **Descriptions written to fit the card.** Cards in a row are all as tall as the wordiest
+  one, so a short blurb leaves a visible hole. Every description is rewritten to a shared
+  shape (two sentences, 16 to 20 words each) grounded in the project's own README, or, for
+  the About cards, in the entry's own details. Asking for a character count does not work
+  (told "150 to 185 characters" the model landed 7 of 79 inside the band), but asking for a
+  shape gets the length as a side effect: spread fell from 149 characters to 70, and the
+  median gap above the buttons from 74px to 32px. It is told to leave a description short
+  rather than invent something to fill with, and the rules it kept breaking (opening by
+  restating the project's own name, consultant filler like "leveraging" and "seamless") are
+  checked in code afterwards, with the offenders re-asked and the retry only accepted if it
+  actually fixed the violation. (`src/lib/explain.ts`)
+- **Pipeline diagrams, drawn not uploaded.** Nobody screenshots ninety-eight repos, but a
+  README usually describes a pipeline and a pipeline draws well. The stages are read out of
+  each README once and rendered as inline SVG in the same pastels the chips use, so it is in
+  the HTML with no client JavaScript and no chart library. A README with no pipeline in it
+  caches the empty answer and shows nothing, because an absent picture beats an invented
+  one. (`src/lib/pipeline.ts`, `src/components/PipelineDiagram.tsx`)
+- **Case studies drafted from the repo.** Every project on the recruiter page opens into a
+  deep dive: the problem, how it works, what it found, and up to four headline numbers,
+  drafted from the README and never estimated or rounded. A hand-written case study always
+  wins, and the two live in separate stores so a draft can never overwrite one.
+  (`src/lib/caseStudyAuto.ts`, `src/lib/caseStudies.ts`)
+- **Generated once, then never again.** Everything above is cached **per item** against a
+  hash of the source it was generated from, not per set. Keying a whole set under one hash
+  meant publishing a single repo changed the signature and threw away all 98 rewrites to
+  gain one card. Now a new project costs one project: cold 5.9s, warm 0.295s and byte
+  identical, and one new repo rebuilds exactly one entry. Netlify Blobs in production, a
+  gitignored file in dev, where without it every restart re-paid for the lot.
+  (`src/lib/genCache.ts`)
 - **Ask-my-portfolio chatbot (RAG).** A floating "ask about me" widget answers questions
   grounded in a knowledge base built from the bio, education, experience, research,
   **every project's GitHub README** (fetched and cleaned), and her **Substack posts** (pulled
@@ -106,12 +137,31 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   with dots showing where you are and `show all as a grid` to open it out. A project
   appears under **every** area it belongs to, so an IoT intrusion detector shows up under
   Internet of Things, Computer Vision and Cybersecurity alike. A "patch" menu jumps between
-  areas and follows your scroll; the domain menu filters across areas and offers a way back.
+  areas; the domain menu filters across areas and offers a way back. The areas are **tabs**
+  rather than a stack: twelve of them rendered one under the other ran the page to 8486px,
+  ten screens to reach the last, and side by side they fit in 3322px. Every panel still
+  renders, hidden rather than unmounted, so the projects stay in the HTML for search.
   Areas and domains each carry their own emoji and tint, used identically on the chips, the
   headings and the menus. Then the embeddings galaxy.
 - **Project cards:** code + live demo, plus optional 📊 results-dashboard and 📰 article
   (Substack) links, freely editable tags (anything, not just the built-in taxonomy), and
   inline first-page previews for PDF attachments.
+- **Recruiter mode (`/recruiter`):** the same material with the volume down, for someone
+  hiring for one specific role. It asks which of four roles (Data Scientist, ML Engineer,
+  AI Engineer, Software Engineer) and then shows only what argues for it: selected projects,
+  research, experience, education and skills. Relevance decides which projects are eligible;
+  whether she wrote a project up decides the order among them, weighted far above the area
+  tags, because dozens of small experiments carry a generic tag and a tie broken
+  alphabetically put "Car Price Prediction" above the KV-cache work. The role lives in the
+  URL so a chosen view is a link she can send, the page is `noindex` so it does not compete
+  with the real pages, and the résumé is downloadable from the top. It uses the *same*
+  project and entry cards the Work and About pages use, not copies of them.
+- **One surface per page.** Dialogs portal to `<body>`, outside the page's vibe wrapper, so
+  they cannot inherit the ground they were opened from and were hardcoded cream everywhere.
+  Each page now publishes its own colour on the root element and anything rendered outside
+  it (entry dialogs, the case-study modal, the floating ask launcher) reads
+  `var(--page-surface)`. The same dialog paints periwinkle on the recruiter page and lilac
+  on About, with no props passed. (`src/components/VibeSurface.tsx`)
 - **Writing room (Blog):** three doors, Technical Blogs (Markdown + Substack posts pulled
   and tagged automatically by embedding similarity), Poems (password-gated and **re-locking
   on every refresh**, with AI art + mood
