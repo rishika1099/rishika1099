@@ -18,6 +18,8 @@ export interface ProjectOverride {
   results?: string; // HTML dashboard link
   article?: string; // Substack link
   emoji?: string; // hand-picked, overriding the keyword-guessed one
+  /** a screenshot or diagram, by attachment id */
+  image?: { id: string; name: string } | null;
 }
 
 export type OverrideMap = Record<string, ProjectOverride>; // key: repo slug (lowercase)
@@ -90,6 +92,15 @@ export async function saveProjectOverride(slug: string, o: ProjectOverride): Pro
       else delete next[k];
     }
   }
+  // The picture is merged here as well as whitelisted in the route: this
+  // function keeps its own field-by-field list, so a field named in only one of
+  // the two places is accepted by the API and then silently dropped on the way
+  // to the store. Passing null clears it.
+  if (o.image !== undefined) {
+    if (o.image && o.image.id) next.image = o.image;
+    else delete next.image;
+  }
+
   if (Object.keys(next).length === 0) delete map[slug];
   else map[slug] = next;
   await writeAll(map);

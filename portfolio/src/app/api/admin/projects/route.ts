@@ -36,11 +36,24 @@ export async function GET(request: Request) {
         results: p.results ?? "",
         article: p.article ?? "",
         emoji: p.emoji ?? "",
+        image: p.image ?? null,
         repo: p.repo,
         overridden: Object.keys(overrides[slug] ?? {}),
       };
     }),
   });
+}
+
+// An id from the attachment store plus its name, or nothing. Whitelisted like
+// every other field: anything not named here is dropped on save.
+function readImage(v: unknown): { id: string; name: string } | null | undefined {
+  // undefined means "not mentioned, leave it alone"; null means "remove it"
+  if (v === null) return null;
+  const o = v as Record<string, unknown> | null;
+  if (!o || typeof o !== "object") return undefined;
+  const id = typeof o.id === "string" ? o.id : "";
+  if (!/^[a-z0-9]+$/i.test(id)) return undefined;
+  return { id, name: typeof o.name === "string" ? o.name.slice(0, 200) : "image" };
 }
 
 const strArr = (v: unknown) =>
@@ -66,6 +79,7 @@ export async function POST(request: Request) {
       article: typeof body.article === "string" ? body.article.trim() : undefined,
       // a couple of characters is plenty for an emoji, and stops a stray paste
       emoji: typeof body.emoji === "string" ? body.emoji.trim().slice(0, 8) : undefined,
+      image: readImage(body.image),
     };
     await saveProjectOverride(slug, o);
     return NextResponse.json({ ok: true });

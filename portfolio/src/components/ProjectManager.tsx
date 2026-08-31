@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import FileDrop from "@/components/FileDrop";
 import { adminApi } from "@/components/editing";
 import TagPicker from "@/components/TagPicker";
 import InkEditor from "@/components/InkEditor";
@@ -27,6 +28,7 @@ interface AdminProject {
   results: string;
   article: string;
   emoji: string;
+  image: { id: string; name: string } | null;
   repo: string;
   overridden: string[];
 }
@@ -66,6 +68,25 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
     router.refresh();
   }
 
+  async function uploadImage(file: File): Promise<{ id: string; name: string } | null> {
+    try {
+      const dataBase64 = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+      const meta = await api<{ id: string; name: string; kind: string }>("/api/admin/attachments", {
+        method: "POST",
+        body: JSON.stringify({ name: file.name, mime: file.type, dataBase64 }),
+      });
+      // a pdf is a fine attachment elsewhere, but not a picture of the project
+      return meta && meta.kind === "image" ? { id: meta.id, name: meta.name } : null;
+    } catch {
+      return null;
+    }
+  }
+
   async function saveForm() {
     if (!form) return;
     setMsg("saving…");
@@ -82,6 +103,7 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
           results: form.results,
           article: form.article,
           emoji: form.emoji,
+          image: form.image,
         }),
       });
       setOpen(null);

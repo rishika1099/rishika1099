@@ -48,6 +48,13 @@ export interface Project {
    * for a recruiter should lead with.
    */
   curated?: boolean;
+  /**
+   * A screenshot of the live thing, or a diagram of how it works. Uploaded in
+   * the atelier and served from the attachment store, the same way an About
+   * entry's certificate is. Shown on the recruiter page, where one picture of a
+   * running app argues better than another paragraph.
+   */
+  image?: { id: string; name: string };
 }
 
 const gh = (slug: string) => `https://github.com/rishika1099/${slug}`;
