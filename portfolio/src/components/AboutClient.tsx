@@ -237,6 +237,7 @@ function EntryCard({
   className = "",
   noMark = false,
   showFiles = false,
+  showAttachments = false,
 }: {
   entry: Entry;
   i: number;
@@ -247,6 +248,12 @@ function EntryCard({
    * thing to stack.
    */
   showFiles?: boolean;
+  /**
+   * Put the files on the card itself. Certifications do: the certificate is
+   * the point of the entry, so showing it is worth the height. Work keeps its
+   * behind the click and says so with showFiles instead.
+   */
+  showAttachments?: boolean;
   /** set when the card sits on a shelf rather than in a stack */
   className?: string;
   /** certifications show no mark: no logo, and an emoji adds nothing there */
@@ -371,6 +378,13 @@ function EntryCard({
           )}
         </div>
       </div>
+
+      {showAttachments && (
+        // above the overlay, so a tile opens the file it shows
+        <div className="relative z-10">
+          <Attachments entry={entry} />
+        </div>
+      )}
 
       {open && hasDetails && <EntryDialog entry={entry} onClose={() => setOpen(false)} />}
     </m.div>
@@ -531,7 +545,14 @@ export default function AboutClient({
           <div className="mt-5">
             <Carousel label="certification">
               {certifications.map((e, i) => (
-                <EntryCard key={e.title} entry={e} i={i} noMark className="w-[21rem] shrink-0 snap-start" />
+                <EntryCard
+                  key={e.title}
+                  entry={e}
+                  i={i}
+                  noMark
+                  showAttachments
+                  className="w-[21rem] shrink-0 snap-start"
+                />
               ))}
             </Carousel>
           </div>
