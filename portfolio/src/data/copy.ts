@@ -111,8 +111,8 @@ export const copyDefaults: Record<string, CopyBlock> = {
   },
   "recruiter.title": {
     page: "recruiter",
-    label: "page title",
-    text: "For recruiters",
+    label: "page title (the emoji is part of it, change it here)",
+    text: "For recruiters 🤝",
   },
   "recruiter.ask": {
     page: "recruiter",

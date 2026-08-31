@@ -79,7 +79,9 @@ export default async function Recruiter({
 
   return (
     <PageShell vibe="periwinkle">
-      <PageTitle>{t("recruiter.title")} 🌷</PageTitle>
+      {/* the emoji lives in the copy, so it can be changed from /recruiter/edit
+          rather than here */}
+      <PageTitle>{t("recruiter.title")}</PageTitle>
 
       <p className="mt-5 max-w-2xl font-body text-lg leading-relaxed text-ink-soft">
         {role ? t(`recruiter.summary.${role}`) : t("recruiter.intro")}
