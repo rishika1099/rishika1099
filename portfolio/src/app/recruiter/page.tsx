@@ -6,10 +6,12 @@ import PipelineDiagram from "@/components/PipelineDiagram";
 import PipelineLoader from "@/components/PipelineLoader";
 import CaseStudyOpener from "@/components/CaseStudyCard";
 import ProjectActions from "@/components/ProjectActions";
+import CaseStudyLoader from "@/components/CaseStudyLoader";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
 import { getPipeline, type Pipeline } from "@/lib/pipeline";
 import { getCaseStudy, hasContent } from "@/lib/caseStudies";
+import { getAutoCaseStudy } from "@/lib/caseStudyAuto";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
@@ -164,8 +166,18 @@ async function RoleView({
   // Read-only: a cached diagram is drawn, a missing one is fetched by the card
   // itself. Generating here would make a recruiter wait on an LLM call.
   const pipelines = await Promise.all(picked.map((p) => getPipeline(repoSlug(p.repo))));
-  // the deep dive, for the two or three projects that have one written
-  const studies = await Promise.all(picked.map((p) => getCaseStudy(repoSlug(p.repo))));
+  // Authored first, then whatever has been drafted from the repo. Read-only in
+  // both cases: anything missing is asked for by the card itself, so the page
+  // never waits on a model call.
+  const studies = await Promise.all(
+    picked.map(async (p) => {
+      const slug = repoSlug(p.repo);
+      const written = await getCaseStudy(slug);
+      if (written && hasContent(written)) return written;
+      const drafted = await getAutoCaseStudy(slug);
+      return drafted && hasContent(drafted) ? drafted : null;
+    }),
+  );
   const research = researchForRole(timeline.filter(isResearchEntry), role);
   const jobs = timeline.filter((e) => !isResearchEntry(e));
 
@@ -207,8 +219,14 @@ async function RoleView({
                   {p.article && <Out href={p.article}>📰 write-up</Out>}
                   {p.results && <Out href={p.results}>📊 results</Out>}
                 </p>
-                {studies[i] && hasContent(studies[i]!) && (
+                {studies[i] ? (
                   <CaseStudyOpener study={studies[i]!} name={p.name} pipeline={pipelines[i]} />
+                ) : (
+                  <CaseStudyLoader
+                    slug={repoSlug(p.repo)}
+                    name={p.name}
+                    pipeline={pipelines[i]}
+                  />
                 )}
                 <ProjectActions name={p.name} />
               </div>
