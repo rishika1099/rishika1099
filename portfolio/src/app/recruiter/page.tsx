@@ -3,6 +3,7 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import RecruiterEntries from "@/components/RecruiterEntries";
 import RecruiterProjects from "@/components/RecruiterProjects";
+import JobMatch from "@/components/JobMatch";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
 import { buildPipeline, getPipeline } from "@/lib/pipeline";
@@ -121,6 +122,8 @@ export default async function Recruiter({
           </Link>
         </p>
       </section>
+
+      <JobMatch label={t("recruiter.jd.label")} hint={t("recruiter.jd.hint")} />
 
       {role ? (
         <RoleView

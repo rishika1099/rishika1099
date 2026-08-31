@@ -144,6 +144,16 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "summary shown for Software Engineer",
     text: "Computer Science degree and two years shipping production software at Shell, now finishing a Data Science MS at Columbia. Comfortable owning a service end to end: the API, the pipeline behind it, the tests, and the deploy that puts it in front of people.",
   },
+  "recruiter.jd.label": {
+    page: "recruiter",
+    label: "job-description box heading",
+    text: "Or tell me what you're looking for 🔎",
+  },
+  "recruiter.jd.hint": {
+    page: "recruiter",
+    label: "job-description box hint",
+    text: "Paste the posting and this page answers it: the parts of her experience that match, the projects closest to it, and honestly, what it asks for that she has not done.",
+  },
   "recruiter.heading.projects": { page: "recruiter", label: "projects heading", text: "Selected projects" },
   "recruiter.heading.research": { page: "recruiter", label: "research heading", text: "Research" },
   "recruiter.heading.experience": { page: "recruiter", label: "experience heading", text: "Experience" },

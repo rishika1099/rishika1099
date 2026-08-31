@@ -13,6 +13,8 @@ export interface SearchHit {
   categories: string[];
   domains?: string[];
   score: number; // cosine similarity, 0..1
+  /** whether she wrote this project up, for callers that rank on more than cosine */
+  curated?: boolean;
 }
 
 function projectText(p: Project, readme = ""): string {
@@ -61,6 +63,7 @@ function toHit(p: Project, score: number): SearchHit {
     categories: p.categories,
     domains: p.domains,
     score: Number(score.toFixed(3)),
+    curated: !!p.curated,
   };
 }
 
