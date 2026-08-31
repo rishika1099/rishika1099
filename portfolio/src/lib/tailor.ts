@@ -17,6 +17,8 @@ import { categorizeAll, getAllProjects } from "@/lib/github-projects";
 import { richToText } from "@/lib/richHtml";
 import { getResumeTex } from "@/lib/resumeSource";
 import { parseResumeTex } from "@/lib/resumeTex";
+import { getAboutEntries } from "@/lib/aboutData";
+import { skillAreas } from "@/data/about";
 
 /** Long enough for a real posting, short enough to stay cheap. */
 export const MAX_JD = 6000;
@@ -55,14 +57,26 @@ const strip = (s: string) =>
 
 
 /**
- * Everything she can truthfully claim, as one searchable blob: the resume, and
- * the projects she wrote up.
+ * Everything she can truthfully claim, as one searchable blob.
+ *
+ * The resume and the written-up projects are not all of it. A skill can be
+ * evidenced by a certification she holds or a course she finished, and those
+ * live on the About page rather than in the resume: checking only the resume
+ * dropped skills she can genuinely claim, which is the same failure as claiming
+ * ones she cannot, pointed the other way.
  */
-function evidenceOf(flat: TailoredEntry[], skillLines: string[], projects: string[]): string {
+function evidenceOf(
+  flat: TailoredEntry[],
+  skillLines: string[],
+  projects: string[],
+  about: string[],
+): string {
   return [
     ...flat.map((e) => `${e.title} ${e.meta} ${e.bullets.join(" ")}`),
     ...skillLines,
     ...projects,
+    ...about,
+    ...skillAreas,
   ]
     .join(" ")
     .toLowerCase();
@@ -105,7 +119,11 @@ function keepEvidenced(skills: string[], evidence: string): string[] {
 export async function tailorTo(jd: string): Promise<Tailored> {
   const posting = jd.slice(0, MAX_JD);
 
-  const [tex, allProjects] = await Promise.all([getResumeTex(), getAllProjects()]);
+  const [tex, allProjects, aboutEntries] = await Promise.all([
+    getResumeTex(),
+    getAllProjects(),
+    getAboutEntries(),
+  ]);
   const sections = parseResumeTex(tex);
 
   // The projects she wrote up, as evidence the resume itself does not carry.
@@ -114,6 +132,24 @@ export async function tailorTo(jd: string): Promise<Tailored> {
   const written = allProjects
     .filter((p) => p.curated)
     .map((p) => `${p.name}: ${richToText(p.blurb, 180)}`);
+
+  // certifications, degrees and roles, with the details behind them: a Udemy
+  // course is evidence of a skill the resume never mentions
+  const about = [
+    ...aboutEntries.education,
+    ...aboutEntries.timeline,
+    ...aboutEntries.certifications,
+  ].map((e) =>
+    [
+      richToText(e.title),
+      richToText(e.subtitle ?? ""),
+      richToText(e.place),
+      richToText(e.note, 300),
+      Array.isArray(e.details) ? e.details.map((d) => richToText(d, 300)).join(" ") : richToText(e.details ?? "", 600),
+      (e.tech ?? []).join(" "),
+      (e.domains ?? []).join(" "),
+    ].join(" "),
+  );
 
   // Flattened and numbered, because the model answers with indices. It cannot
   // hand back an entry that does not exist.
@@ -222,7 +258,7 @@ export async function tailorTo(jd: string): Promise<Tailored> {
       summary: str(o.summary),
       entries,
       // checked against her own material, never taken on the model's word
-      skills: keepEvidenced(list(o.skills, 14), evidenceOf(flat, skillLines, written)).slice(0, 10),
+      skills: keepEvidenced(list(o.skills, 14), evidenceOf(flat, skillLines, written, about)).slice(0, 10),
       gaps: list(o.gaps, 3),
       projects,
     };
