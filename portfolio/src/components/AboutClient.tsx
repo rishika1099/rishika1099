@@ -277,7 +277,7 @@ function EntryCard({
       data-carousel-item
       className={`group relative rounded-3xl p-5 soft-card transition duration-200 ${className} ${
         hasDetails ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-lg" : ""
-      }`}
+      } ${showAttachments ? "flex flex-col" : ""}`}
     >
       {/* The whole card opens it, not just the corner icon. The button sits
           under the content and the content lets clicks through, so a file tile
@@ -380,8 +380,12 @@ function EntryCard({
       </div>
 
       {showAttachments && (
-        // above the overlay, so a tile opens the file it shows
-        <div className="relative z-10">
+        // Above the overlay, so a tile opens the file it shows, and at the foot
+        // of the card. Every card in a shelf is as tall as the wordiest one, so
+        // a shorter one has slack to put somewhere: above the certificate it
+        // reads as spacing, below it reads as the card having run out. The
+        // project cards pin their buttons the same way.
+        <div className="relative z-10 mt-auto">
           <Attachments entry={entry} />
         </div>
       )}
