@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ProjectCard from "@/components/ProjectCard";
 import CaseStudyOpener from "@/components/CaseStudyCard";
 import CaseStudyLoader from "@/components/CaseStudyLoader";
@@ -37,8 +37,12 @@ export default function RecruiterProjects({
   const [similarTo, setSimilarTo] = useState<string | null>(null);
   const [hits, setHits] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
+  // where the reader was standing when they asked, so going back returns them
+  // there rather than to the top of a page they had already scrolled through
+  const returnTo = useRef(0);
 
   async function findSimilar(name: string) {
+    if (!similarTo) returnTo.current = window.scrollY;
     setSimilarTo(name);
     setLoading(true);
     setHits([]);
@@ -63,7 +67,13 @@ export default function RecruiterProjects({
           </span>
           <button
             type="button"
-            onClick={() => setSimilarTo(null)}
+            onClick={() => {
+              setSimilarTo(null);
+              // after the grid is back, not before
+              requestAnimationFrame(() =>
+                requestAnimationFrame(() => window.scrollTo({ top: returnTo.current })),
+              );
+            }}
             className="ml-auto rounded-full bg-ink/90 px-3 py-1 font-body text-xs font-semibold text-cream transition hover:opacity-90"
           >
             ✕ back to the selection

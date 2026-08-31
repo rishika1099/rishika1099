@@ -59,7 +59,14 @@ export default function WorkGallery({
 
 
   // Narrow the grid to the projects most similar to `name`, like a filter.
+  // Where the reader was standing when they asked. The similar view replaces
+  // the shelves, so clearing it re-expands the page under a scroll position
+  // that no longer means anything, and they land back at the top having lost
+  // the patch they were reading.
+  const returnTo = useRef(0);
+
   async function findSimilar(name: string) {
+    returnTo.current = window.scrollY;
     setQuery("");
     setSimilarTo(name);
     setSimilarLoading(true);
@@ -275,7 +282,14 @@ export default function WorkGallery({
             </h2>
             <button
               type="button"
-              onClick={() => setSimilarTo(null)}
+              onClick={() => {
+                setSimilarTo(null);
+                // after the shelves are back, not before: restoring against the
+                // short layout would clamp to its height
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() => window.scrollTo({ top: returnTo.current })),
+                );
+              }}
               className="rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft transition hover:bg-white"
             >
               ← show all
