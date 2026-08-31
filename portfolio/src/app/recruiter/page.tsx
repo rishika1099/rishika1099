@@ -2,8 +2,7 @@ import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import RecruiterEntries from "@/components/RecruiterEntries";
-import RecruiterProjects from "@/components/RecruiterProjects";
-import JobMatch from "@/components/JobMatch";
+import RecruiterView from "@/components/RecruiterView";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
 import { buildPipeline, getPipeline } from "@/lib/pipeline";
@@ -123,8 +122,6 @@ export default async function Recruiter({
         </p>
       </section>
 
-      <JobMatch label={t("recruiter.jd.label")} hint={t("recruiter.jd.hint")} />
-
       {role ? (
         <RoleView
           role={role}
@@ -194,18 +191,19 @@ async function RoleView({
   const jobs = timeline.filter((e) => !isResearchEntry(e));
 
   return (
-    <>
-      <Heading>{t("recruiter.heading.projects")} 🌱</Heading>
-      <p className="mt-1 font-body text-sm text-ink-soft">
-        {picked.length} of {projects.length}, the ones that argue for this role ✦
-      </p>
-      <RecruiterProjects
-        projects={picked}
-        slugs={picked.map((p) => repoSlug(p.repo))}
-        studies={studies}
-        pipelines={pipelines}
-        images={picked.map((p) => p.image)}
-      />
+    <RecruiterView
+      projects={picked}
+      slugs={picked.map((p) => repoSlug(p.repo))}
+      studies={studies}
+      pipelines={pipelines}
+      images={picked.map((p) => p.image)}
+      skills={spec.skills}
+      projectsLabel={t("recruiter.heading.projects")}
+      projectsHint={`${picked.length} of ${projects.length}, the ones that argue for this role ✦`}
+      skillsLabel={t("recruiter.heading.skills")}
+      jdLabel={t("recruiter.jd.label")}
+      jdHint={t("recruiter.jd.hint")}
+    >
       <p className="mt-5 font-body text-sm text-ink-soft">
         <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/work">
           all {projects.length} projects →
@@ -224,27 +222,7 @@ async function RoleView({
 
       <Heading>{t("recruiter.heading.education")} 🎓</Heading>
       <RecruiterEntries entries={education} />
-
-      <Heading>{t("recruiter.heading.skills")} 🛠️</Heading>
-      <div className="mt-5 flex flex-wrap gap-2">
-        {spec.skills.map((s) => (
-          <span
-            key={s}
-            className="rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft"
-          >
-            {s}
-          </span>
-        ))}
-      </div>
-
-      <p className="mt-14 font-body text-sm text-ink-soft">
-        This is the short version, for {spec.article}.{" "}
-        <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/about">
-          the longer one lives here
-        </Link>{" "}
-        ✦
-      </p>
-    </>
+    </RecruiterView>
   );
 }
 
