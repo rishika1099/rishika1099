@@ -15,13 +15,24 @@ const AUDIENCE: Record<Level, string> = {
     "a senior ML engineer or technical recruiter: precise and concrete, name the methods, models, and any metrics, no fluff",
 };
 
-// Cards in a shelf are all as tall as the wordiest one, so a short description
-// leaves a hole above the buttons. Rather than shrink the card, every
-// description is written to the length of the longest, which is the one setting
-// the height: same line count, no hole. The floor keeps a card that genuinely
-// has little to say from being padded up to the target with nothing.
-const MIN_TARGET = 150;
-const MAX_TARGET = 340;
+// Cards in a row are all as tall as the wordiest one, so a description shorter
+// than that leaves a hole above the buttons.
+//
+// Writing everything up to the length of the longest does not work: the small
+// experiment repos have a couple of lines of readme between them, and telling a
+// model to reach 250 characters on that material is asking it to invent. They
+// stayed short, the wordy ones got wordier, and the hole got bigger.
+//
+// So the band is set to what nearly every project can actually support, and the
+// wordy ones come down to meet it. Condensing is safe in a way that padding is
+// not: it is choosing among facts that are already true, where padding has to
+// manufacture new ones. About four lines in a card.
+// Two substantial sentences land around 210 to 280 characters. Set to 185 the
+// ceiling threw away nearly every rewrite for being too long and the cards fell
+// back to the one-line originals, which looked exactly like the feature not
+// working. The band follows the shape now, rather than fighting it.
+const BAND_LOW = 190;
+const BAND_HIGH = 250;
 
 // Rewrites are cached per (project set, level): one LLM call per level, ever.
 //
@@ -82,65 +93,85 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
     readme: readmes[i] || "",
   }));
 
-  // the description already setting the height of every card
-  const target = Math.min(
-    MAX_TARGET,
-    Math.max(MIN_TARGET, ...list.map((x) => x.blurb.length)),
-  );
+  // One request for all of them came back with 73 of 98: the model quietly drops
+  // items long before it refuses, and every dropped project fell back to its
+  // original one-line blurb, which is most of the empty space that was left.
+  // Small batches, in parallel, keyed by position rather than by name, since a
+  // name like "Just Ask Coach: NL -> SQL" does not survive the round trip
+  // intact either.
+  const BATCH = 12;
+  const batches: (typeof list)[] = [];
+  for (let i = 0; i < list.length; i += BATCH) batches.push(list.slice(i, i + BATCH));
 
-  const res = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    temperature: 0.4,
-    response_format: { type: "json_object" },
-    messages: [
-      {
-        role: "system",
-        content:
-          [
-            "Rewrite each project description for the given audience.",
-            `Every description must be between ${Math.round(target * 0.92)} and ${target} characters. This is a hard ceiling as well as a floor: they sit in a row of equal-height cards, so a short one leaves its card visibly empty and a long one makes every card in the row taller. Count before you answer.`,
-            "Reach that length with real detail drawn from the project's own readme, tags, areas and domains: what it actually does, what it is built with, what it found. Never pad with filler, restatement, or adjectives, and never invent a fact that is not in the material you were given. If a project genuinely has too little material, leave it short rather than making something up.",
-            "Keep every fact truthful. Do not use em dashes or en dashes.",
-            "These describe one person's own projects on her portfolio. Write in the third person about the work itself: never \"the team\", \"we\", or \"I\", and never address the reader as \"you\" or \"your\".",
-            "Return JSON of the exact shape {\"rewrites\": {\"<project name>\": \"<new description>\"}} using the project names verbatim as keys.",
-          ].join(" "),
-      },
-      {
-        role: "user",
-        content: `Audience: ${AUDIENCE[level]}\n\nProjects:\n${JSON.stringify(list)}`,
-      },
-    ],
-  });
+  const SHAPE =
+    'Return JSON of the exact shape {"rewrites": {"0": "<new description>", "1": "..."}}, one entry for every project you were given, keyed by its "id". Do not omit any.';
 
-  let out: Record<string, string> = {};
-  try {
-    const parsed = JSON.parse(res.choices[0]?.message?.content ?? "{}");
-    if (parsed.rewrites && typeof parsed.rewrites === "object") {
-      const ceiling = Math.round(target * 1.15);
-      for (const [k, v] of Object.entries(parsed.rewrites)) {
-        // A rewrite that ignored the ceiling would set the height for every
-        // card in the row, which is the problem this exists to solve. Counting
-        // characters is not something the model reliably does, so the limit is
-        // enforced here too: past it, her own wording stands.
-        if (typeof v === "string" && v.length <= ceiling) out[k] = v;
+  const out: Record<string, string> = {};
+  const ceiling = Math.round(BAND_HIGH * 1.25);
+
+  const results = await Promise.all(
+    batches.map(async (batch) => {
+      const res = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        temperature: 0.4,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content: [
+              "Rewrite each project description for the given audience.",
+              // Asking for a character count does not work: told "150 to 185
+              // characters" the model condensed everything to a median of 116
+              // and landed 7 of 79 inside the band. It cannot count. A shape it
+              // can follow gets the length as a side effect.
+              "Never open by restating the project's name: the card already carries it as a heading, and \"Folio: Clinical Multimodal RAG is a...\" spends a fifth of the space saying nothing. Open with the noun phrase itself (\"A multimodal medical-record companion that...\") or with what it did (\"Benchmarked KIVI quantization...\").",
+              "Write exactly two full sentences for each. The first says what the project is and what it is built with. The second says what it does, measures, or found. Each sentence must be 16 to 20 words: not 12, not 25. They sit in a row of equal-height cards, so an uneven one leaves its card visibly empty.",
+              "Expand a short one with real detail from its readme, tags and areas. Condense a long one by keeping what is most concrete, the numbers and the named methods first, and dropping the rest: never truncate it mid-thought, and never lose the thing the project actually is.",
+              "Reach that length with real detail drawn from the project's own readme, tags, areas and domains. Never pad with filler, restatement, or adjectives, and never invent a fact that is not in the material you were given. If a project genuinely has too little material, write one honest sentence rather than making a second one up.",
+              "Keep every fact truthful. Do not use em dashes or en dashes. Never reach the length with consultant filler: no \"enhancing\", \"empowering\", \"leveraging\", \"seamless\", \"robust solution\", or a closing clause about the value it delivers.",
+              "These describe one person's own projects on her portfolio. Write in the third person about the work itself: never \"the team\", \"we\", or \"I\", and never address the reader as \"you\" or \"your\".",
+              SHAPE,
+            ].join(" "),
+          },
+          {
+            role: "user",
+            content: `Audience: ${AUDIENCE[level]}\n\nProjects:\n${JSON.stringify(
+              batch.map((x, i) => ({ id: i, ...x })),
+            )}`,
+          },
+        ],
+      });
+      const parsed = JSON.parse(res.choices[0]?.message?.content ?? "{}");
+      const got: Record<string, string> = {};
+      if (parsed.rewrites && typeof parsed.rewrites === "object") {
+        for (const [k, v] of Object.entries(parsed.rewrites)) {
+          const item = batch[Number(k)];
+          // A rewrite that ignored the ceiling would set the height for every
+          // card in the row, which is the problem this exists to solve.
+          if (item && typeof v === "string" && v.length <= ceiling) got[item.name] = v;
+        }
       }
-    }
-  } catch {
-    out = {};
-  }
+      return got;
+    }),
+  ).catch(() => [] as Record<string, string>[]);
 
-  // Second pass: the gap, measured. The first call is told the target, but a
-  // project whose readme is thin is told to stay short rather than invent, so
-  // it comes back well under and its card still ends in space. Those are the
-  // only ones asked again, with a much larger slice of the readme to draw on.
-  // One extra call, only when it is needed, and cached with the rest.
+  for (const got of results) Object.assign(out, got);
+
+  // Second pass: the gap, measured. A project whose readme is thin is told to
+  // stay short rather than invent, so it comes back under and its card still
+  // ends in space. Those are the only ones asked again, with a much larger
+  // slice of the readme to draw on.
   const short = list.filter((x) => {
     const got = out[x.name];
-    return got && got.length < target * 0.85;
+    // missing counts as short: a batch that quietly dropped an item leaves the
+    // card on its original one-liner, which looks the same as a failed fill
+    return !got || got.length < BAND_LOW * 0.9;
   });
   if (short.length) {
     try {
-      const deeper = await Promise.all(short.map((x) => getReadmeSnippet(projects.find((p) => p.name === x.name)!.repo, 3000)));
+      const deeper = await Promise.all(
+        short.map((x) => getReadmeSnippet(projects.find((p) => p.name === x.name)!.repo, 3000)),
+      );
       const again = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         temperature: 0.4,
@@ -148,23 +179,21 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
         messages: [
           {
             role: "system",
-            content:
-              [
-                "Each of these descriptions came back shorter than its card needs, leaving the card visibly empty under the text.",
-                `Extend each one to between ${Math.round(target * 0.92)} and ${target} characters using the fuller readme now provided: name what it actually does, what it is built with, and what it measured or found. Do not exceed ${target}.`,
-                "Do not pad, restate, or add adjectives, and do not invent anything absent from the readme. If the readme still does not support the length, return the description unchanged rather than making something up.",
-                "Keep the existing wording and voice, and keep extending in it. Third person, no \"the team\", \"we\", or \"you\". No em dashes or en dashes.",
-                "Return JSON {\"rewrites\": {\"<project name>\": \"<new description>\"}} with the names verbatim.",
-              ].join(" "),
+            content: [
+              "Each of these descriptions came back shorter than its card needs, leaving the card visibly empty under the text.",
+              "Rewrite each as exactly two full sentences of 12 to 22 words each, using the fuller readme now provided: what it is and what it is built with, then what it does, measures, or found.",
+              "Do not pad, restate, or add adjectives, and do not invent anything absent from the readme. If the readme still does not support a second sentence, return the description unchanged rather than making one up.",
+              "Keep the existing wording and voice. Third person, no \"the team\", \"we\", or \"you\". No em dashes or en dashes.",
+              SHAPE,
+            ].join(" "),
           },
           {
             role: "user",
             content: `Audience: ${AUDIENCE[level]}\n\nProjects:\n${JSON.stringify(
               short.map((x, i) => ({
+                id: i,
                 name: x.name,
-                current: out[x.name],
-                currentLength: out[x.name].length,
-                targetLength: target,
+                current: out[x.name] ?? x.blurb,
                 tags: x.tags,
                 areas: x.areas,
                 readme: deeper[i] || x.readme,
@@ -176,14 +205,11 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
       const parsed2 = JSON.parse(again.choices[0]?.message?.content ?? "{}");
       if (parsed2.rewrites && typeof parsed2.rewrites === "object") {
         for (const [k, v] of Object.entries(parsed2.rewrites)) {
+          const item = short[Number(k)];
           // only ever accept a longer one: the top-up must not shrink a card
-          if (
-            typeof v === "string" &&
-            out[k] &&
-            v.length > out[k].length &&
-            v.length <= Math.round(target * 1.15)
-          )
-            out[k] = v;
+          if (item && typeof v === "string" && v.length > out[item.name].length && v.length <= ceiling) {
+            out[item.name] = v;
+          }
         }
       }
     } catch {

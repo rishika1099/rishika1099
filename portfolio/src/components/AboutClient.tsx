@@ -362,17 +362,6 @@ function EntryCard({
   );
 }
 
-// One section of the page, shown only when its tab is open. Hidden rather than
-// unmounted: the headings and cards stay in the HTML for search engines and for
-// anyone landing on /about#research, and switching tabs costs no remount.
-function Panel({ id, tab, children }: { id: string; tab: string; children: React.ReactNode }) {
-  return (
-    <div role="tabpanel" aria-labelledby={id} hidden={tab !== id}>
-      {children}
-    </div>
-  );
-}
-
 export default function AboutClient({
   education,
   timeline,
@@ -403,19 +392,6 @@ export default function AboutClient({
     certifications: React.ReactNode;
   };
 }) {
-  // which section is open. A shared /about#research should still land there, so
-  // the hash wins on arrival and whenever it changes.
-  const [tab, setTab] = useState("education");
-  useEffect(() => {
-    const fromHash = () => {
-      const id = window.location.hash.slice(1);
-      if (["education", "skills", "work", "research", "certifications"].includes(id)) setTab(id);
-    };
-    fromHash();
-    window.addEventListener("hashchange", fromHash);
-    return () => window.removeEventListener("hashchange", fromHash);
-  }, []);
-
   return (
     <PageShell vibe="lilac">
       <PageTitle>{title}</PageTitle>
@@ -442,8 +418,6 @@ export default function AboutClient({
       </div>
 
       <SectionNav
-        value={tab}
-        onSelect={setTab}
         sections={[
           { id: "education", label: navLabels.education },
           { id: "skills", label: navLabels.skills },
@@ -456,7 +430,6 @@ export default function AboutClient({
       />
 
       {/* Education */}
-      <Panel id="education" tab={tab}>
       <h2 id="education" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.education}
       </h2>
@@ -469,10 +442,7 @@ export default function AboutClient({
         ))}
       </div>
 
-      </Panel>
-
       {/* Skills */}
-      <Panel id="skills" tab={tab}>
       <h2 id="skills" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.skills}
       </h2>
@@ -481,10 +451,7 @@ export default function AboutClient({
       </p>
       <SkillGraph />
 
-      </Panel>
-
       {/* Jobs */}
-      <Panel id="work" tab={tab}>
       <h2 id="work" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.work}
       </h2>
@@ -499,10 +466,7 @@ export default function AboutClient({
           ))}
       </div>
 
-      </Panel>
-
       {/* Research */}
-      <Panel id="research" tab={tab}>
       <h2 id="research" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
         {heads.research}
       </h2>
@@ -517,11 +481,9 @@ export default function AboutClient({
           ))}
       </div>
 
-      </Panel>
-
       {/* Certifications & short courses (only when there are any) */}
       {certifications.length > 0 && (
-        <Panel id="certifications" tab={tab}>
+        <>
           <h2 id="certifications" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">{heads.certifications}</h2>
           {/* A shelf rather than a stack: six of these ran to 1344px, a quarter
               of the whole page and more than work or research took. Same
@@ -533,7 +495,7 @@ export default function AboutClient({
               ))}
             </Carousel>
           </div>
-        </Panel>
+        </>
       )}
     </PageShell>
   );

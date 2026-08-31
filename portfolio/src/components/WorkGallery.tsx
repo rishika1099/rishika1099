@@ -70,6 +70,10 @@ function Links({ p }: { p: Pick<Project, "repo" | "demo" | "results" | "article"
   );
 }
 
+const TAB_LABEL: Record<string, string> = {
+  "High Performance Machine Learning": "High Performance ML",
+};
+
 function DomainChips({ domains }: { domains?: Domain[] }) {
   if (!domains?.length) return null;
   return (
@@ -611,14 +615,24 @@ export default function WorkGallery({
           switching a tab instant instead of a remount. */}
       {!filtering && (
         <div className="sticky top-20 z-30 mt-4">
+          {/* The area's own pastel chip, the same one the cards below wear, so
+              the bar speaks the site's language rather than a second one.
+
+              Twelve of these took three rows on the first attempt, which was a
+              max-w-3xl cap on the tray rather than the chips: given the full
+              column they settle into two. */}
           <div
             role="tablist"
             aria-label="project patches"
-            className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-1.5 rounded-[1.75rem] border border-white/60 bg-white/55 px-3 py-2.5 backdrop-blur-md"
+            className="mx-auto flex flex-wrap items-center justify-center gap-1 rounded-[1.75rem] border border-white/60 bg-white/60 px-2.5 py-2 backdrop-blur-md"
           >
             {sections.map((sec) => {
               const on = sec.category === activePatch;
               const color = categoryStyle[sec.category]?.color ?? "#d8efe2";
+              // one name is long enough on its own to push the last chip onto a
+              // third row. Shortened on the chip only; the section heading it
+              // opens still reads in full.
+              const label = TAB_LABEL[sec.category] ?? sec.category;
               return (
                 <button
                   key={sec.category}
@@ -627,20 +641,19 @@ export default function WorkGallery({
                   aria-selected={on}
                   aria-controls={areaId(sec.category)}
                   onClick={() => setPatch(sec.category)}
-                  // the same pastel chip the cards use for this area, so the bar
-                  // reads as the site's own language. Unpicked ones are washed
-                  // toward white rather than made transparent, which would take
-                  // the label's contrast down with the fill.
+                  // unpicked chips are washed toward white rather than made
+                  // transparent, which would take the label's contrast down
+                  // along with the fill
                   style={{
-                    backgroundColor: on ? color : `color-mix(in srgb, ${color} 38%, white)`,
+                    backgroundColor: on ? color : `color-mix(in srgb, ${color} 34%, white)`,
                   }}
-                  className={`rounded-full px-3 py-1 font-body text-[13px] transition ${
+                  className={`rounded-full px-2 py-1 font-body text-xs transition ${
                     on
                       ? "font-bold text-ink shadow-sm ring-1 ring-ink/10"
                       : "font-semibold text-ink/70 hover:text-ink hover:shadow-sm"
                   }`}
                 >
-                  {categoryStyle[sec.category]?.emoji ?? "\u2726"} {sec.category}{" "}
+                  {categoryStyle[sec.category]?.emoji ?? "\u2726"} {label}{" "}
                   <span className="font-normal opacity-55">{sec.items.length}</span>
                 </button>
               );
