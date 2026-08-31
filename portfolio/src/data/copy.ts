@@ -154,6 +154,26 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "job-description box hint",
     text: "Paste the posting and this page answers it: the parts of her experience that match, the projects closest to it, and honestly, what it asks for that she has not done.",
   },
+  "recruiter.skills.data-scientist": {
+    page: "recruiter",
+    label: "skills shown for Data Scientist (one per line or comma separated)",
+    text: "Causal inference, Experimentation, A/B testing, Statistical modeling, Predictive modeling, Explainability, Fairness auditing, Python, R, SQL",
+  },
+  "recruiter.skills.ml-engineer": {
+    page: "recruiter",
+    label: "skills shown for Machine Learning Engineer (one per line or comma separated)",
+    text: "Model training, Evaluation, Deep learning, PyTorch, Inference optimisation, Quantisation, CUDA, Triton, Computer vision, Pipelines, Deployment, Python, SQL",
+  },
+  "recruiter.skills.ai-engineer": {
+    page: "recruiter",
+    label: "skills shown for AI Engineer (one per line or comma separated)",
+    text: "LLM systems, RAG, Agent orchestration, Evaluation harnesses, Guardrails, Prompt engineering, Context engineering, NLP, Python, TypeScript",
+  },
+  "recruiter.skills.software-engineer": {
+    page: "recruiter",
+    label: "skills shown for Software Engineer (one per line or comma separated)",
+    text: "Python, TypeScript, SQL, React, Next.js, FastAPI, Docker, Databricks, CI/CD, System design, Testing",
+  },
   "recruiter.heading.projects": { page: "recruiter", label: "projects heading", text: "Selected projects" },
   "recruiter.heading.research": { page: "recruiter", label: "research heading", text: "Research" },
   "recruiter.heading.experience": { page: "recruiter", label: "experience heading", text: "Experience" },

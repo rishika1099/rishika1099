@@ -12,6 +12,7 @@ import PageTitle from "@/components/PageTitle";
 import InkEditor from "@/components/InkEditor";
 import ProjectManager from "@/components/ProjectManager";
 import CaseStudyManager from "@/components/CaseStudyManager";
+import GeneratedManager from "@/components/GeneratedManager";
 import { RichPostManager, AutoPostManager } from "@/components/BlogManagers";
 import AboutEntriesManager from "@/components/AboutEntriesManager";
 import ContactManager from "@/components/ContactManager";
@@ -582,6 +583,9 @@ function EditRoom() {
               </div>
               <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
                 <CaseStudyManager keyVal={key} />
+              </div>
+              <div className="mt-6 rounded-3xl p-5 soft-card sm:p-6">
+                <GeneratedManager keyVal={key} />
               </div>
             </>
           )}

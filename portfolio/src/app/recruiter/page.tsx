@@ -192,6 +192,14 @@ async function RoleView({
   t: (k: string) => string;
 }) {
   const spec = ROLE_SPECS[role];
+  // Editable in the atelier: the skills are public copy, not a constant. The
+  // code's list is the default, and whatever she writes wins. Split on commas
+  // or newlines so either way of typing a list works.
+  const skills =
+    t(`recruiter.skills.${role}`)
+      .split(/[\n,]+/)
+      .map((x) => x.trim())
+      .filter(Boolean) || spec.skills;
   const picked = projectsForRole(projects, role);
   // Same bargain as the case studies: drawn now if it can be, under the same
   // deadline, rather than appearing a few seconds after the reader arrived.
@@ -243,7 +251,7 @@ async function RoleView({
       studies={studies}
       pipelines={pipelines}
       images={picked.map((p) => p.image)}
-      skills={spec.skills}
+      skills={skills.length ? skills : spec.skills}
       projectsLabel={t("recruiter.heading.projects")}
       projectsHint={`${picked.length} of ${projects.length}, the ones that argue for this role ✦`}
       skillsLabel={t("recruiter.heading.skills")}

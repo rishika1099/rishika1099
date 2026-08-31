@@ -48,6 +48,10 @@ export default function CaseStudyManager({ keyVal }: { keyVal: string }) {
   }
 
   useEffect(() => {
+    // Loading once on mount, which is what this rule is warning about in
+    // general and is the right thing here: there is no external system to
+    // synchronise, only a list to fetch before anything can be shown.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh().catch(() => setMsg("could not load"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

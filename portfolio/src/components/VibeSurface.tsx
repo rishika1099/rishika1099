@@ -19,6 +19,7 @@ import type { Vibe } from "@/components/Scenery";
  */
 const SURFACES: Record<Vibe, string> = {
   periwinkle: "#eeedfb",
+  bluebell: "#eef3fc",
   dawn: "#fff1e8",
   lilac: "#f4eefb",
   azure: "#eef7fb",
@@ -40,6 +41,7 @@ const SURFACES: Record<Vibe, string> = {
  */
 const ACCENTS: Record<Vibe, string> = {
   periwinkle: "#c7c4f2",
+  bluebell: "#bcd3f2",
   dawn: "#ffd0b0",
   lilac: "#d9c2f0",
   azure: "#bfe0f0",

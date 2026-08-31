@@ -88,3 +88,33 @@ export async function writeStore(name: string, all: Record<string, Cached>) {
     // dev convenience only
   }
 }
+
+/** How many items a store holds, for the atelier to report. */
+export async function countStore(name: string): Promise<number> {
+  return Object.keys(await readStore(name)).length;
+}
+
+/**
+ * Throw a store away, so the next reader regenerates it.
+ *
+ * The cache rebuilds itself when the source text changes, which covers being
+ * out of date. It does not cover being badly written, and that is what this is
+ * for: her judgement, not a hash.
+ */
+export async function clearStore(name: string): Promise<void> {
+  memory.delete(name);
+  if (blobsEnabled()) {
+    try {
+      const s = await store("explain");
+      await s.delete(storeKey(name));
+    } catch {
+      // nothing cached is not a failure to clear
+    }
+    return;
+  }
+  try {
+    fs.rmSync(localFile(name), { force: true });
+  } catch {
+    // same
+  }
+}
