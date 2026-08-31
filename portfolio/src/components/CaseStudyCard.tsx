@@ -19,11 +19,14 @@ export default function CaseStudyOpener({
   study,
   name,
   pipeline,
+  image,
 }: {
   study: CaseStudy;
   name: string;
   /** the stages read out of the repo, drawn as the architecture at a glance */
   pipeline?: Pipeline | null;
+  /** a screenshot of it running, if she has uploaded one */
+  image?: { id: string; name: string };
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -41,6 +44,7 @@ export default function CaseStudyOpener({
           study={study}
           name={name}
           pipeline={pipeline}
+          image={image}
           onClose={() => setOpen(false)}
         />
       )}
@@ -52,11 +56,13 @@ function CaseStudyDialog({
   study,
   name,
   pipeline,
+  image,
   onClose,
 }: {
   study: CaseStudy;
   name: string;
   pipeline?: Pipeline | null;
+  image?: { id: string; name: string };
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -118,6 +124,19 @@ function CaseStudyDialog({
               </div>
             ))}
           </div>
+        )}
+
+        {image && (
+          <figure className="mt-6 overflow-hidden rounded-2xl bg-white/70 ring-1 ring-white/70">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/api/attachment/${image.id}`}
+              alt={`${name} screenshot`}
+              loading="lazy"
+              decoding="async"
+              className="w-full"
+            />
+          </figure>
         )}
 
         {pipeline && (

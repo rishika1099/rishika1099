@@ -17,10 +17,12 @@ export default function CaseStudyLoader({
   slug,
   name,
   pipeline,
+  image,
 }: {
   slug: string;
   name: string;
   pipeline?: Pipeline | null;
+  image?: { id: string; name: string };
 }) {
   const [study, setStudy] = useState<CaseStudy | null>(null);
 
@@ -36,5 +38,5 @@ export default function CaseStudyLoader({
   }, [slug]);
 
   if (!study) return null;
-  return <CaseStudyOpener study={study} name={name} pipeline={pipeline} />;
+  return <CaseStudyOpener study={study} name={name} pipeline={pipeline} image={image} />;
 }

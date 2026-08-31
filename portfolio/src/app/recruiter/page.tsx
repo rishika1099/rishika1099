@@ -2,20 +2,15 @@ import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import RecruiterEntries from "@/components/RecruiterEntries";
-import PipelineDiagram from "@/components/PipelineDiagram";
-import PipelineLoader from "@/components/PipelineLoader";
-import CaseStudyOpener from "@/components/CaseStudyCard";
-import ProjectActions from "@/components/ProjectActions";
-import CaseStudyLoader from "@/components/CaseStudyLoader";
+import RecruiterProjects from "@/components/RecruiterProjects";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
-import { getPipeline, type Pipeline } from "@/lib/pipeline";
+import { getPipeline } from "@/lib/pipeline";
 import { getCaseStudy, hasContent } from "@/lib/caseStudies";
 import { getAutoCaseStudy } from "@/lib/caseStudyAuto";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
-import { categoryStyle, domainColor, domainEmoji, type Domain } from "@/data/projects";
 import {
   ROLES,
   ROLE_SPECS,
@@ -132,22 +127,6 @@ export default async function Recruiter({
   );
 }
 
-/** The same heading the About page uses for its sections. */
-function Heading({ children }: { children: React.ReactNode }) {
-  return <h2 className="mt-14 font-body text-2xl font-bold text-ink">{children}</h2>;
-}
-
-function Chip({ label, color }: { label: string; color?: string }) {
-  return (
-    <span
-      style={{ backgroundColor: color ?? "#d8efe2" }}
-      className="rounded-full px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink"
-    >
-      {label}
-    </span>
-  );
-}
-
 async function RoleView({
   role,
   projects,
@@ -187,56 +166,13 @@ async function RoleView({
       <p className="mt-1 font-body text-sm text-ink-soft">
         {picked.length} of {projects.length}, the ones that argue for this role ✦
       </p>
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        {picked.map((p, i) => (
-          <article key={p.name} className="flex flex-col rounded-3xl p-6 soft-card">
-            <div className="flex items-start gap-4">
-              <span className="text-3xl">{p.emoji}</span>
-              <div className="min-w-0 flex-1">
-                <h3 className="font-body text-xl font-bold text-ink">{p.name}</h3>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {p.domains?.map((d) => (
-                    <Chip
-                      key={d}
-                      label={`${domainEmoji[d as Domain] ?? "✦"} ${d}`}
-                      color={domainColor[d as Domain]}
-                    />
-                  ))}
-                  {p.categories.map((c) => (
-                    <Chip
-                      key={c}
-                      label={`${categoryStyle[c]?.emoji ?? "✦"} ${c}`}
-                      color={categoryStyle[c]?.color}
-                    />
-                  ))}
-                </div>
-                <p className="mt-3 font-body text-[15px] leading-relaxed text-ink-soft">
-                  {plain(p.blurb, 400)}
-                </p>
-                <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-body text-sm">
-                  {p.repo && <Out href={p.repo}>★ code</Out>}
-                  {p.demo && <Out href={p.demo}>✿ live demo</Out>}
-                  {p.article && <Out href={p.article}>📰 write-up</Out>}
-                  {p.results && <Out href={p.results}>📊 results</Out>}
-                </p>
-                {studies[i] ? (
-                  <CaseStudyOpener study={studies[i]!} name={p.name} pipeline={pipelines[i]} />
-                ) : (
-                  <CaseStudyLoader
-                    slug={repoSlug(p.repo)}
-                    name={p.name}
-                    pipeline={pipelines[i]}
-                  />
-                )}
-                <ProjectActions name={p.name} />
-              </div>
-            </div>
-            <div className="mt-auto">
-              <Shot project={p} pipeline={pipelines[i]} slug={repoSlug(p.repo)} />
-            </div>
-          </article>
-        ))}
-      </div>
+      <RecruiterProjects
+        projects={picked}
+        slugs={picked.map((p) => repoSlug(p.repo))}
+        studies={studies}
+        pipelines={pipelines}
+        images={picked.map((p) => p.image)}
+      />
       <p className="mt-5 font-body text-sm text-ink-soft">
         <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/work">
           all {projects.length} projects →
@@ -279,16 +215,11 @@ async function RoleView({
   );
 }
 
-function Out({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a
-      href={href}
-      className="font-semibold text-ink-soft underline decoration-[#a9a5e6] decoration-2 underline-offset-4 transition hover:text-ink"
-    >
-      {children}
-    </a>
-  );
+/** The same heading the About page uses for its sections. */
+function Heading({ children }: { children: React.ReactNode }) {
+  return <h2 className="mt-14 font-body text-2xl font-bold text-ink">{children}</h2>;
 }
+
 
 /**
  * A screenshot of the running thing, or a diagram of how it works: on this page
@@ -298,31 +229,3 @@ function Out({ href, children }: { href: string; children: React.ReactNode }) {
  * picture yet says so, which is the reminder to go and add one; a blank space
  * would just look like the layout breathing.
  */
-function Shot({
-  project,
-  pipeline,
-  slug,
-}: {
-  project: { name: string; image?: { id: string; name: string } };
-  pipeline: Pipeline | null;
-  slug: string;
-}) {
-  // an uploaded picture always wins: she chose it
-  if (project.image) {
-    return (
-      <figure className="mt-5 overflow-hidden rounded-2xl bg-white/70 ring-1 ring-white/70">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`/api/attachment/${project.image.id}`}
-          alt={`${project.name} screenshot`}
-          loading="lazy"
-          decoding="async"
-          className="w-full"
-        />
-      </figure>
-    );
-  }
-  if (pipeline) return <PipelineDiagram pipeline={pipeline} label={project.name} />;
-  // nothing cached yet: the card asks for one itself, so the page never waits
-  return <PipelineLoader slug={slug} name={project.name} />;
-}
