@@ -1,9 +1,13 @@
 import Link from "next/link";
-import type { Entry as AboutEntry } from "@/data/about";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
+import RecruiterEntries from "@/components/RecruiterEntries";
+import PipelineDiagram from "@/components/PipelineDiagram";
+import PipelineLoader from "@/components/PipelineLoader";
 import { getAllProjects } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
+import { getPipeline, type Pipeline } from "@/lib/pipeline";
+import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
 import { categoryStyle, domainColor, domainEmoji, type Domain } from "@/data/projects";
@@ -57,7 +61,7 @@ export default async function Recruiter({
   const t = (k: string) => plain(copy[k], 2000);
 
   return (
-    <PageShell vibe="lilac">
+    <PageShell vibe="sage">
       <PageTitle>{t("recruiter.title")} 🌷</PageTitle>
 
       <p className="mt-5 max-w-2xl font-body text-lg leading-relaxed text-ink-soft">
@@ -75,10 +79,11 @@ export default async function Recruiter({
                 key={r}
                 href={`/recruiter?role=${r}`}
                 aria-current={on ? "page" : undefined}
+                // in the page's own sage rather than the site's ink: a dark pill
+                // on a pale green ground read as borrowed from another page
+                style={{ backgroundColor: on ? "#b9cfbc" : "rgba(255,255,255,0.62)" }}
                 className={`rounded-full px-5 py-2 font-body text-sm font-semibold transition ${
-                  on
-                    ? "bg-ink text-cream shadow-sm"
-                    : "bg-white/70 text-ink-soft hover:bg-white hover:text-ink"
+                  on ? "text-ink shadow-sm ring-1 ring-white/70" : "text-ink-soft hover:text-ink"
                 }`}
               >
                 {ROLE_SPECS[r].label}
@@ -86,6 +91,19 @@ export default async function Recruiter({
             );
           })}
         </nav>
+        <p className="mt-4 font-body text-sm text-ink-soft">
+          <a
+            style={{ backgroundColor: "#cfe3d0" }}
+            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97]"
+            href="/resume"
+            download="Rishika_Mamidibathula_Resume.pdf"
+          >
+            ⬇ download the résumé
+          </a>{" "}
+          <Link className="ml-2 underline decoration-[#9ec2a4] decoration-2 underline-offset-4" href="/resume/print">
+            or read it as a page
+          </Link>
+        </p>
       </section>
 
       {role ? (
@@ -99,7 +117,7 @@ export default async function Recruiter({
       ) : (
         <p className="mt-10 font-body text-ink-soft">
           Or wander{" "}
-          <Link className="underline decoration-blush decoration-2 underline-offset-4" href="/">
+          <Link className="underline decoration-[#9ec2a4] decoration-2 underline-offset-4" href="/">
             the whole site
           </Link>
           , which has everything and rather more colour ✦
@@ -125,7 +143,7 @@ function Chip({ label, color }: { label: string; color?: string }) {
   );
 }
 
-function RoleView({
+async function RoleView({
   role,
   projects,
   education,
@@ -140,6 +158,9 @@ function RoleView({
 }) {
   const spec = ROLE_SPECS[role];
   const picked = projectsForRole(projects, role);
+  // Read-only: a cached diagram is drawn, a missing one is fetched by the card
+  // itself. Generating here would make a recruiter wait on an LLM call.
+  const pipelines = await Promise.all(picked.map((p) => getPipeline(repoSlug(p.repo))));
   const research = researchForRole(timeline.filter(isResearchEntry), role);
   const jobs = timeline.filter((e) => !isResearchEntry(e));
 
@@ -149,9 +170,9 @@ function RoleView({
       <p className="mt-1 font-body text-sm text-ink-soft">
         {picked.length} of {projects.length}, the ones that argue for this role ✦
       </p>
-      <div className="mt-5 space-y-5">
-        {picked.map((p) => (
-          <article key={p.name} className="rounded-3xl p-6 soft-card">
+      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+        {picked.map((p, i) => (
+          <article key={p.name} className="flex flex-col rounded-3xl p-6 soft-card">
             <div className="flex items-start gap-4">
               <span className="text-3xl">{p.emoji}</span>
               <div className="min-w-0 flex-1">
@@ -183,12 +204,14 @@ function RoleView({
                 </p>
               </div>
             </div>
-            <Shot project={p} />
+            <div className="mt-auto">
+              <Shot project={p} pipeline={pipelines[i]} slug={repoSlug(p.repo)} />
+            </div>
           </article>
         ))}
       </div>
       <p className="mt-5 font-body text-sm text-ink-soft">
-        <Link className="underline decoration-blush decoration-2 underline-offset-4" href="/work">
+        <Link className="underline decoration-[#9ec2a4] decoration-2 underline-offset-4" href="/work">
           all {projects.length} projects →
         </Link>
       </p>
@@ -196,27 +219,15 @@ function RoleView({
       {research.length > 0 && (
         <>
           <Heading>{t("recruiter.heading.research")} 🔬</Heading>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            {research.map((e) => (
-              <EntryCard key={plain(e.title)} e={e} />
-            ))}
-          </div>
+          <RecruiterEntries entries={research} />
         </>
       )}
 
       <Heading>{t("recruiter.heading.experience")} 💼</Heading>
-      <div className="mt-5 space-y-4">
-        {jobs.map((e) => (
-          <EntryCard key={plain(e.title)} e={e} />
-        ))}
-      </div>
+      <RecruiterEntries entries={jobs} columns={1} showFiles />
 
       <Heading>{t("recruiter.heading.education")} 🎓</Heading>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        {education.map((e) => (
-          <EntryCard key={plain(e.title)} e={e} />
-        ))}
-      </div>
+      <RecruiterEntries entries={education} />
 
       <Heading>{t("recruiter.heading.skills")} 🛠️</Heading>
       <div className="mt-5 flex flex-wrap gap-2">
@@ -232,7 +243,7 @@ function RoleView({
 
       <p className="mt-14 font-body text-sm text-ink-soft">
         This is the short version, for {spec.article}.{" "}
-        <Link className="underline decoration-blush decoration-2 underline-offset-4" href="/about">
+        <Link className="underline decoration-[#9ec2a4] decoration-2 underline-offset-4" href="/about">
           the longer one lives here
         </Link>{" "}
         ✦
@@ -245,7 +256,7 @@ function Out({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <a
       href={href}
-      className="font-semibold text-ink-soft underline decoration-blush decoration-2 underline-offset-4 transition hover:text-ink"
+      className="font-semibold text-ink-soft underline decoration-[#9ec2a4] decoration-2 underline-offset-4 transition hover:text-ink"
     >
       {children}
     </a>
@@ -260,52 +271,31 @@ function Out({ href, children }: { href: string; children: React.ReactNode }) {
  * picture yet says so, which is the reminder to go and add one; a blank space
  * would just look like the layout breathing.
  */
-function Shot({ project }: { project: { name: string; image?: { id: string; name: string } } }) {
-  if (!project.image) {
+function Shot({
+  project,
+  pipeline,
+  slug,
+}: {
+  project: { name: string; image?: { id: string; name: string } };
+  pipeline: Pipeline | null;
+  slug: string;
+}) {
+  // an uploaded picture always wins: she chose it
+  if (project.image) {
     return (
-      <div className="mt-5 flex h-40 items-center justify-center rounded-2xl border border-dashed border-ink/15 bg-white/40">
-        <p className="font-body text-[13px] text-ink-soft/60">
-          no picture yet ✦ add one in the atelier
-        </p>
-      </div>
+      <figure className="mt-5 overflow-hidden rounded-2xl bg-white/70 ring-1 ring-white/70">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/api/attachment/${project.image.id}`}
+          alt={`${project.name} screenshot`}
+          loading="lazy"
+          decoding="async"
+          className="w-full"
+        />
+      </figure>
     );
   }
-  return (
-    <figure className="mt-5 overflow-hidden rounded-2xl bg-white/70 ring-1 ring-white/70">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={`/api/attachment/${project.image.id}`}
-        alt={`${project.name} screenshot`}
-        loading="lazy"
-        decoding="async"
-        className="w-full"
-      />
-    </figure>
-  );
-}
-
-function EntryCard({ e }: { e: AboutEntry }) {
-  return (
-    <article className="rounded-3xl p-5 soft-card">
-      <p className="font-body text-sm italic text-ink-soft">{plain(e.when)}</p>
-      <h3 className="mt-0.5 font-body text-lg font-bold text-ink">
-        {plain(e.title)}
-        {e.subtitle && <span className="font-semibold text-ink/80">, {plain(e.subtitle)}</span>}
-      </h3>
-      <p className="font-body text-sm font-semibold text-ink-soft">{plain(e.place)}</p>
-      <p className="mt-2 font-body text-[15px] leading-relaxed text-ink-soft">
-        {plain(e.note, 500)}
-      </p>
-      {Boolean(e.domains?.length || e.tech?.length) && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {e.domains?.map((d) => (
-            <Chip key={d} label={d} color={domainColor[d as Domain]} />
-          ))}
-          {e.tech?.map((c) => (
-            <Chip key={c} label={c} color={categoryStyle[c]?.color} />
-          ))}
-        </div>
-      )}
-    </article>
-  );
+  if (pipeline) return <PipelineDiagram pipeline={pipeline} label={project.name} />;
+  // nothing cached yet: the card asks for one itself, so the page never waits
+  return <PipelineLoader slug={slug} name={project.name} />;
 }

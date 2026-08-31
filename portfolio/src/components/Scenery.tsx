@@ -3,6 +3,7 @@
 import { m } from "framer-motion";
 
 export type Vibe =
+  | "sage"
   | "dawn"
   | "lilac"
   | "azure"
@@ -20,6 +21,10 @@ export type Vibe =
 // A soft-pastel arc from sunrise blues through golden hour to a sunset rose,
 // one distinct gradient per page (twilight stays dark for the poem room).
 const gradients: Record<Vibe, string> = {
+  // Recruiter mode, and nothing else: a cool paper sage, deliberately unlike
+  // every other page so a reader who lands here can tell at a glance they are
+  // in the short version rather than the wandering one.
+  sage: "from-[#e8efe7] via-[#f2f2ec] to-[#dfe8e6]",
   dawn: "from-sky via-lavender/60 to-dawn",
   lilac: "from-lavender via-petal/40 to-sky/50",
   azure: "from-sky via-cream to-mint/50",

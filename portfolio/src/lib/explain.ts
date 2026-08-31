@@ -1,13 +1,10 @@
-import { createHash } from "node:crypto";
-import fs from "node:fs";
-import path from "node:path";
 import OpenAI from "openai";
 import { richToText } from "@/lib/richHtml";
 import { getAllProjects, reposAreComplete } from "@/lib/github-projects";
 import { getAboutEntries } from "@/lib/aboutData";
 import type { Entry } from "@/data/about";
 import { getReadmeSnippet } from "@/lib/github-readme";
-import { blobsEnabled, store } from "@/lib/blobs";
+import { readStore, srcHash, writeStore, type Cached } from "@/lib/genCache";
 
 export type Level = "default" | "eli5" | "expert";
 
@@ -38,86 +35,6 @@ const AUDIENCE: Record<Level, string> = {
 const BAND_LOW = 190;
 const BAND_HIGH = 250;
 
-// Rewrites are cached per item, not per set.
-//
-// Keying the whole set by one hash meant publishing a single repo changed the
-// signature and threw away all 98 rewrites, paying to rebuild every one of them
-// to gain a card. Each description is stored against a hash of what it was
-// written from, so a new project costs one small batch and everything already
-// written is read back untouched. Nothing is ever computed twice for the same
-// source text.
-//
-// The in-process Map alone was not enough. Each serverless instance starts with
-// an empty one, so most visitors were paying the full rewrite: ~27s of waiting
-// after clicking a toggle, and a fresh API bill each time. Persisting to Blobs
-// makes it computed once and instant thereafter, the same way poem art works.
-// The key includes a hash of the project set, so publishing a repo invalidates
-// it on its own rather than serving a stale list.
-const cache = new Map<string, Record<string, Cached>>();
-
-const LOCAL_CACHE = (level: string) =>
-  path.join(process.cwd(), "src/content/explain-cache", `${level}.json`);
-
-// v3: one blob per level holding every item, keyed by name, each with the hash
-// of the source it came from. Earlier versions stored a whole set under one
-// signature and are not readable as this shape.
-const storeKey = (level: string) => `explain-v3-${level}`;
-
-const srcHash = (s: string) => createHash("sha1").update(s).digest("hex").slice(0, 12);
-
-interface Cached {
-  /** hash of the description and material this was written from */
-  src: string;
-  text: string;
-}
-
-async function readStore(level: string): Promise<Record<string, Cached>> {
-  const local = cache.get(level);
-  if (local) return local;
-  if (blobsEnabled()) {
-    try {
-      const s = await store("explain");
-      const raw = (await s.get(storeKey(level), { type: "json" })) as Record<string, Cached> | null;
-      if (raw) {
-        cache.set(level, raw);
-        return raw;
-      }
-    } catch {
-      // a cache miss must never break the toggle
-    }
-  } else {
-    // dev has no Blobs, and without this every restart re-paid for all of them
-    try {
-      const raw = fs.readFileSync(LOCAL_CACHE(level), "utf8");
-      const parsed = JSON.parse(raw) as Record<string, Cached>;
-      cache.set(level, parsed);
-      return parsed;
-    } catch {
-      // not written yet
-    }
-  }
-  return {};
-}
-
-async function writeStore(level: string, all: Record<string, Cached>) {
-  cache.set(level, all);
-  if (blobsEnabled()) {
-    try {
-      const s = await store("explain");
-      await s.setJSON(storeKey(level), all);
-    } catch {
-      // still fine, it just costs the next instance a rewrite
-    }
-    return;
-  }
-  try {
-    fs.mkdirSync(path.dirname(LOCAL_CACHE(level)), { recursive: true });
-    fs.writeFileSync(LOCAL_CACHE(level), JSON.stringify(all, null, 2));
-  } catch {
-    // dev convenience only
-  }
-}
-
 /** One thing whose description is being written to fill its card. */
 export interface Fillable {
   /** what the result is keyed by: a project name, an entry title */
@@ -128,12 +45,6 @@ export interface Fillable {
   material: unknown;
 }
 
-/**
- * Writes every description in a set to the same shape, so a row of cards has no
- * one card ending in space. Shared by the project cards and the About entries:
- * only the material differs, a repo's readme in one case and an entry's own
- * details in the other.
- */
 // A prompt is a request, not a guarantee: "never open by restating the name"
 // and the ban on consultant filler both slipped through often enough to reach
 // the page. What matters is checked here, where it either holds or it does not.
