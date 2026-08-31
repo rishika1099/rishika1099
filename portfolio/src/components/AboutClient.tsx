@@ -292,16 +292,20 @@ function EntryCard({
         </span>
       )}
       <div
-        className={`relative z-10 flex w-full flex-col gap-3 text-left sm:flex-row sm:gap-4 ${
-          hasDetails ? "pointer-events-none" : ""
-        }`}
+        className={`relative z-10 w-full text-left ${hasDetails ? "pointer-events-none" : ""}`}
       >
-        {/* On a phone the mark sits above the text so the blurb gets the full
-            width; from 640px up it is a plain row again. */}
-        <EntryMark entry={entry} hidden={noMark} />
+        {/* Floated, not a flex child. As a row item it reserved a column of its
+            own width for the whole height of the card, which left a tall empty
+            strip beneath it on any card taller than the mark. Floated, the text
+            sits beside it and then flows underneath. */}
+        {!noMark && (
+          <span className="float-left mb-2 mr-4">
+            <EntryMark entry={entry} hidden={noMark} />
+          </span>
+        )}
         {/* room kept clear on the right for the corner icon, so a title that
             wraps to the full width never runs underneath it */}
-        <div className={`flex-1 ${hasDetails ? "pr-9" : ""}`}>
+        <div className={hasDetails ? "pr-9" : ""}>
           <div
             className="rich-passage font-body text-sm italic text-ink-soft"
             dangerouslySetInnerHTML={{ __html: copyToHtml(entry.when) }}
@@ -325,7 +329,7 @@ function EntryCard({
             dangerouslySetInnerHTML={{ __html: copyToHtml(entry.note) }}
           />
           {Boolean(entry.domains?.length || entry.tech?.length) && (
-            <div className="mt-2.5 flex flex-wrap gap-1.5">
+            <div className="mt-2.5 flex flex-wrap gap-1.5 clear-left">
               {entry.domains?.map((d) => (
                 <span
                   key={d}
