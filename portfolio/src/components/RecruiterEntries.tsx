@@ -3,8 +3,6 @@
 import EntryCard from "@/components/EntryCard";
 import type { Entry } from "@/data/about";
 
-/** the page's own periwinkle, a shade lighter, so the sheet belongs to it */
-const SURFACE = "#eeedfb";
 
 /**
  * The About cards, on the recruiter page. A thin client boundary so a server
@@ -34,7 +32,6 @@ export default function RecruiterEntries({
           i={i}
           showFiles={showFiles}
           showAttachments={showAttachments}
-          surface={SURFACE}
         />
       ))}
     </div>

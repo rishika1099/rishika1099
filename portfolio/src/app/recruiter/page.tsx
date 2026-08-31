@@ -207,7 +207,7 @@ async function RoleView({
                   {p.results && <Out href={p.results}>📊 results</Out>}
                 </p>
                 {studies[i] && hasContent(studies[i]!) && (
-                  <CaseStudyOpener study={studies[i]!} name={p.name} />
+                  <CaseStudyOpener study={studies[i]!} name={p.name} pipeline={pipelines[i]} />
                 )}
               </div>
             </div>

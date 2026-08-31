@@ -13,6 +13,7 @@ export default async function Home() {
       name2={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.name2"]) }} />}
       greeting={<span dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.greeting"]) }} />}
       intro={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.intro"]) }} />}
+      recruiterLine={<span dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.recruiter"]) }} />}
       tabBlurbs={Object.fromEntries(
         ["about", "work", "blog", "contact"].map((k) => [
           k,

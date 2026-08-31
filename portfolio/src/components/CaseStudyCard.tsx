@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import type { CaseStudy } from "@/lib/caseStudies";
+import PipelineDiagram from "@/components/PipelineDiagram";
+import type { Pipeline } from "@/lib/pipeline";
 
 /**
  * The deep dive on a project, opened from its card.
@@ -13,14 +15,15 @@ import type { CaseStudy } from "@/lib/caseStudies";
  * click the card, read the whole thing, close it, still here.
  */
 
-const SURFACE = "#eeedfb";
-
 export default function CaseStudyOpener({
   study,
   name,
+  pipeline,
 }: {
   study: CaseStudy;
   name: string;
+  /** the stages read out of the repo, drawn as the architecture at a glance */
+  pipeline?: Pipeline | null;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -33,7 +36,14 @@ export default function CaseStudyOpener({
       >
         ⤢ read the case study
       </button>
-      {open && <CaseStudyDialog study={study} name={name} onClose={() => setOpen(false)} />}
+      {open && (
+        <CaseStudyDialog
+          study={study}
+          name={name}
+          pipeline={pipeline}
+          onClose={() => setOpen(false)}
+        />
+      )}
     </>
   );
 }
@@ -41,10 +51,12 @@ export default function CaseStudyOpener({
 function CaseStudyDialog({
   study,
   name,
+  pipeline,
   onClose,
 }: {
   study: CaseStudy;
   name: string;
+  pipeline?: Pipeline | null;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -71,7 +83,8 @@ function CaseStudyDialog({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ backgroundColor: SURFACE }}
+        // the ground of whatever page opened it, published by PageShell
+        style={{ backgroundColor: "var(--page-surface, #fff8f0)" }}
         className="max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-3xl p-6 shadow-2xl sm:p-8"
       >
         <div className="flex items-start justify-between gap-4">
@@ -105,6 +118,13 @@ function CaseStudyDialog({
               </div>
             ))}
           </div>
+        )}
+
+        {pipeline && (
+          <section className="mt-6">
+            <h3 className="font-body text-base font-bold text-ink">Architecture</h3>
+            <PipelineDiagram pipeline={pipeline} label={name} />
+          </section>
         )}
 
         {study.body && (

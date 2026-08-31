@@ -104,6 +104,11 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "photography.title": { page: "photography", label: "page title", text: "photography 📷" },
   // Recruiter mode: a plain, one-scroll reading of the same material for
   // someone hiring for one specific role.
+  "home.recruiter": {
+    page: "home",
+    label: "the line pointing recruiters at the short version",
+    text: "Hiring? There's a shorter version of all this →",
+  },
   "recruiter.title": {
     page: "recruiter",
     label: "page title",

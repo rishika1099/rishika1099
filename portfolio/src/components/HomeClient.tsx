@@ -17,6 +17,7 @@ export default function HomeClient({
   name2,
   greeting,
   intro,
+  recruiterLine,
   tabBlurbs,
   tabIcons,
   resumeSlot,
@@ -26,6 +27,8 @@ export default function HomeClient({
   name2: React.ReactNode;
   greeting: React.ReactNode;
   intro: React.ReactNode;
+  /** the line pointing someone hiring at /recruiter */
+  recruiterLine?: React.ReactNode;
   /** the four landing-card blurbs, keyed about/work/blog/contact */
   tabBlurbs: Record<string, React.ReactNode>;
   /** the four landing-card emojis, keyed about/work/blog/contact */
@@ -129,6 +132,16 @@ export default function HomeClient({
             className="mx-auto mt-6 max-w-xl font-body text-base text-ink-soft sm:text-lg"
           >
             {intro}
+            {recruiterLine && (
+              <p className="mt-4">
+                <Link
+                  href="/recruiter"
+                  className="inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
+                >
+                  {recruiterLine}
+                </Link>
+              </p>
+            )}
           </m.div>
         </div>
       </div>

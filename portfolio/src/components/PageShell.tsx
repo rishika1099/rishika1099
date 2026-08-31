@@ -1,4 +1,5 @@
 import Scenery, { type Vibe } from "./Scenery";
+import VibeSurface from "./VibeSurface";
 
 /**
  * The frame every page sits in.
@@ -22,6 +23,7 @@ export default function PageShell({
   return (
     <div className={`relative min-h-screen vibe-${vibe}`}>
       <Scenery vibe={vibe} />
+      <VibeSurface vibe={vibe} />
       <div className={`page-rise mx-auto max-w-5xl px-5 pb-24 pt-10 sm:px-8 ${className}`}>
         {children}
       </div>
