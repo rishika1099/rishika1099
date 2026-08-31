@@ -291,9 +291,12 @@ export default function WorkGallery({
   }, []);
 
   // Fetch the rewritten blurbs once per level (cached after first fetch).
+  // "default" is fetched too: it is her own wording expanded to the length the
+  // cards are already sized to, so the shorter ones stop leaving a hole. Until
+  // it arrives the original blurb shows, which is the same text, just shorter.
   useEffect(() => {
-    if (level === "default" || rewrites[level]) return;
-    setExplaining(true);
+    if (rewrites[level]) return;
+    if (level !== "default") setExplaining(true);
     fetch(`/api/explain?level=${level}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d: { blurbs?: Record<string, string> }) =>
@@ -304,7 +307,7 @@ export default function WorkGallery({
   }, [level, rewrites]);
 
   const blurbFor = (p: { name: string; blurb: string }) =>
-    level === "default" ? p.blurb : rewrites[level]?.[p.name] ?? p.blurb;
+    rewrites[level]?.[p.name] ?? p.blurb;
 
   useEffect(() => {
     const q = query.trim();
@@ -443,7 +446,7 @@ export default function WorkGallery({
                     <ScoreBadge score={p.score} />
                   </div>
                   <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-                  <CardBody p={p} blurb={p.blurb} />
+                  <CardBody p={p} blurb={blurbFor(p)} />
                 </m.article>
               ))}
             </AnimatePresence>
@@ -611,10 +614,11 @@ export default function WorkGallery({
           <div
             role="tablist"
             aria-label="project patches"
-            className="mx-auto flex flex-wrap items-center justify-center gap-1.5 rounded-3xl px-3 py-2 soft-card"
+            className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-1.5 rounded-[1.75rem] border border-white/60 bg-white/55 px-3 py-2.5 backdrop-blur-md"
           >
             {sections.map((sec) => {
               const on = sec.category === activePatch;
+              const color = categoryStyle[sec.category]?.color ?? "#d8efe2";
               return (
                 <button
                   key={sec.category}
@@ -623,13 +627,21 @@ export default function WorkGallery({
                   aria-selected={on}
                   aria-controls={areaId(sec.category)}
                   onClick={() => setPatch(sec.category)}
-                  style={on ? { backgroundColor: categoryStyle[sec.category]?.color } : undefined}
-                  className={`rounded-full px-3 py-1 font-body text-sm font-semibold transition ${
-                    on ? "text-ink shadow-sm" : "text-ink-soft hover:bg-white/70 hover:text-ink"
+                  // the same pastel chip the cards use for this area, so the bar
+                  // reads as the site's own language. Unpicked ones are washed
+                  // toward white rather than made transparent, which would take
+                  // the label's contrast down with the fill.
+                  style={{
+                    backgroundColor: on ? color : `color-mix(in srgb, ${color} 38%, white)`,
+                  }}
+                  className={`rounded-full px-3 py-1 font-body text-[13px] transition ${
+                    on
+                      ? "font-bold text-ink shadow-sm ring-1 ring-ink/10"
+                      : "font-semibold text-ink/70 hover:text-ink hover:shadow-sm"
                   }`}
                 >
                   {categoryStyle[sec.category]?.emoji ?? "\u2726"} {sec.category}{" "}
-                  <span className="font-normal opacity-60">{sec.items.length}</span>
+                  <span className="font-normal opacity-55">{sec.items.length}</span>
                 </button>
               );
             })}

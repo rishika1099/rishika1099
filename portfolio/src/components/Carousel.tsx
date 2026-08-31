@@ -13,18 +13,10 @@ import { useEffect, useRef, useState } from "react";
 export function Carousel({
   children,
   label = "item",
-  fitHeight = false,
 }: {
   children: React.ReactNode;
   /** what the dots announce, e.g. "project" or "certification" */
   label?: string;
-  /**
-   * Let each card end where its content ends, instead of stretching every card
-   * to match the tallest. A single card with an attachment was adding ~100px of
-   * empty space to the bottom of every card beside it. Project shelves hold
-   * evenly-sized cards and still look better squared off, so this is opt-in.
-   */
-  fitHeight?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [at, setAt] = useState(0);
@@ -100,9 +92,7 @@ export function Carousel({
     <div className="relative">
       <div
         ref={ref}
-        className={`flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-          fitHeight ? "items-start" : ""
-        }`}
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </div>

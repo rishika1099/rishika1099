@@ -6,7 +6,7 @@ export const maxDuration = 30;
 
 export async function GET(request: Request) {
   const level = new URL(request.url).searchParams.get("level");
-  if (level !== "eli5" && level !== "expert") {
+  if (level !== "eli5" && level !== "expert" && level !== "default") {
     return NextResponse.json({ error: "bad-level" }, { status: 400 });
   }
   if (!process.env.OPENAI_API_KEY) {

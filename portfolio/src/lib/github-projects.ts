@@ -183,6 +183,15 @@ interface GhRepo {
 let repoCache: { at: number; repos: GhRepo[] } | null = null;
 const REPO_TTL_MS = 5 * 60 * 1000;
 
+// Whether the last repo fetch actually reached GitHub. Unauthenticated calls are
+// capped at 60/hour per IP, so a cold instance can easily be handed nothing and
+// fall back to the curated list alone. Callers that key a cache on the project
+// set need to know the difference between "she has these projects" and "GitHub
+// did not answer", or they cache a half list under its own key and pay to build
+// it again the moment the full one comes back.
+let reposComplete = false;
+export const reposAreComplete = () => reposComplete;
+
 async function fetchRepos(): Promise<GhRepo[]> {
   if (repoCache && Date.now() - repoCache.at < REPO_TTL_MS) return repoCache.repos;
   try {
@@ -193,12 +202,15 @@ async function fetchRepos(): Promise<GhRepo[]> {
     if (res.ok) {
       const repos = (await res.json()) as GhRepo[];
       repoCache = { at: Date.now(), repos };
+      reposComplete = true;
       return repos;
     }
   } catch {
     // offline / rate-limited: fall back to whatever we last saw, else curated only
   }
-  return repoCache?.repos ?? [];
+  if (repoCache) return repoCache.repos;
+  reposComplete = false;
+  return [];
 }
 
 export async function getAllProjects(): Promise<Project[]> {
