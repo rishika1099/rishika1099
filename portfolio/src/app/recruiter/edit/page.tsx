@@ -21,6 +21,7 @@ const HEADINGS = [
   { id: "recruiter.heading.experience", label: "experience" },
   { id: "recruiter.heading.education", label: "education" },
   { id: "recruiter.heading.skills", label: "skills" },
+  { id: "recruiter.heading.resume", label: "résumé lines (shown only for a posting)" },
 ];
 
 function Editor({ keyVal }: { keyVal: string }) {

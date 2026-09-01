@@ -154,6 +154,11 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "job-description box hint (one line, it sits under the bar)",
     text: "read, then matched against her projects and skills, gaps and all \u2726",
   },
+  "recruiter.heading.resume": {
+    page: "recruiter",
+    label: "heading over the resume lines a posting selects",
+    text: "From the résumé",
+  },
   "recruiter.jd.placeholder": {
     page: "recruiter",
     label: "job-description box placeholder (kept short: it is one line)",

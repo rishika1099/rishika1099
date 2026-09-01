@@ -32,6 +32,7 @@ export default function RecruiterView({
   jdLabel,
   jdHint,
   jdPlaceholder,
+  resumeLabel,
   picker,
   children,
 }: {
@@ -49,6 +50,7 @@ export default function RecruiterView({
   jdLabel: string;
   jdHint: string;
   jdPlaceholder: string;
+  resumeLabel: string;
   /** the role picker, placed beside the posting box rather than above it */
   picker: React.ReactNode;
   /** work, research and education: constant, whatever the posting says */
@@ -160,6 +162,40 @@ export default function RecruiterView({
         </section>
         <div className="mt-5">{picker}</div>
       </div>
+
+      {/* The lines of the resume this posting actually calls for.
+          
+          Deliberately the bullets and not the jobs: the jobs are already down
+          the page under Experience and Research, and repeating them here would
+          make the page say everything twice. What is not anywhere else is which
+          three lines out of a job answer this particular posting, which is the
+          whole of what the model was asked to choose. */}
+      {filtering && match!.entries.length > 0 && (
+        <section className="mt-12">
+          <h2 className="font-body text-2xl font-bold text-ink">{resumeLabel} 📄</h2>
+          <div className="mt-5 space-y-6">
+            {match!.entries.map((e, i) => (
+              <div key={`${e.title}-${i}`}>
+                <p className="font-body text-sm font-semibold text-ink">{e.title}</p>
+                {e.meta && <p className="font-body text-xs text-ink-soft/80">{e.meta}</p>}
+                <ul className="mt-2 space-y-1.5">
+                  {e.bullets.map((b, j) => (
+                    <li
+                      key={j}
+                      className="flex gap-2 font-body text-sm leading-relaxed text-ink-soft"
+                    >
+                      <span aria-hidden className="text-ink-soft/50">
+                        ✦
+                      </span>
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {(filtering || projects.length > 0) && (
         <>
