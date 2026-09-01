@@ -83,7 +83,7 @@ export default async function Recruiter({
   // places: paired with the posting box on the landing view, and standing on
   // its own once a role has already answered it.
   const picker = (
-    <section className="rounded-3xl p-4 soft-card sm:p-5">
+    <section>
       <p className="font-body text-sm font-semibold text-ink">{t("recruiter.ask")}</p>
       <nav className="mt-3 flex flex-wrap gap-2">
         {ROLES.map((r) => {

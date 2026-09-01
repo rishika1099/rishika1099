@@ -95,9 +95,9 @@ export default function RecruiterView({
           recruiter met a column of controls and had to scroll to reach anything
           that answered them. Paired, the whole ask fits in about the height the
           posting box alone used to take. */}
-      <div className="mt-7 grid gap-4 md:grid-cols-2">
+      <div className="mt-7 grid gap-x-10 gap-y-7 md:grid-cols-2">
         {picker}
-        <section className="rounded-3xl p-4 soft-card sm:p-5">
+        <section>
           <p className="font-body text-sm font-semibold text-ink">{jdLabel}</p>
           {/* Laid out the way the work page lays out its search: the bar, then
               one thin line under it saying what it does. The explanation used to
