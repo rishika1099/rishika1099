@@ -31,6 +31,7 @@ export default function RecruiterView({
   skillsLabel,
   jdLabel,
   jdHint,
+  picker,
   children,
 }: {
   projects: Project[];
@@ -46,6 +47,8 @@ export default function RecruiterView({
   skillsLabel: string;
   jdLabel: string;
   jdHint: string;
+  /** the role picker, placed beside the posting box rather than above it */
+  picker: React.ReactNode;
   /** work, research and education: constant, whatever the posting says */
   children: React.ReactNode;
 }) {
@@ -85,54 +88,61 @@ export default function RecruiterView({
 
   return (
     <>
-      {/* the posting: another way of asking the same question the buttons ask */}
-      <section className="mt-8 rounded-3xl p-4 soft-card sm:p-5">
-        <p className="font-body text-sm font-semibold text-ink">{jdLabel}</p>
-        <p className="mt-1 font-body text-xs text-ink-soft">{jdHint}</p>
-        <textarea
-          value={jd}
-          onChange={(e) => setJd(e.target.value)}
-          rows={3}
-          placeholder="Paste the job description: what the company does, and what the role needs."
-          className="mt-3 w-full resize-y rounded-2xl border border-white/70 bg-white/80 px-4 py-3 font-body text-sm leading-relaxed text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
-        />
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={run}
-            disabled={!jd.trim() || state === "working"}
-            style={{ backgroundColor: "#c2c0ef" }}
-            className="rounded-full px-5 py-2 font-body text-sm font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97] disabled:opacity-50"
-          >
-            {state === "working" ? "reading it ✦" : "match this posting"}
-          </button>
-          {filtering && (
+      {/* Two ways of asking the same question, side by side rather than stacked.
+          Stacked they filled the screen before a single piece of work, so a
+          recruiter met a column of controls and had to scroll to reach anything
+          that answered them. Paired, the whole ask fits in about the height the
+          posting box alone used to take. */}
+      <div className="mt-7 grid gap-4 md:grid-cols-2">
+        {picker}
+        <section className="rounded-3xl p-4 soft-card sm:p-5">
+          <p className="font-body text-sm font-semibold text-ink">{jdLabel}</p>
+          <p className="mt-1 font-body text-xs text-ink-soft">{jdHint}</p>
+          <textarea
+            value={jd}
+            onChange={(e) => setJd(e.target.value)}
+            rows={3}
+            placeholder="Paste the job description: what the company does, and what the role needs."
+            className="mt-3 w-full resize-y rounded-2xl border border-white/70 bg-white/80 px-4 py-3 font-body text-sm leading-relaxed text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
+          />
+          <div className="mt-3 flex flex-wrap items-center gap-3">
             <button
               type="button"
-              onClick={() => {
-                setMatch(null);
-                setJd("");
-              }}
-              className="font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
+              onClick={run}
+              disabled={!jd.trim() || state === "working"}
+              style={{ backgroundColor: "#c2c0ef" }}
+              className="rounded-full px-5 py-2 font-body text-sm font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97] disabled:opacity-50"
             >
-              ✕ clear
+              {state === "working" ? "reading it ✦" : "match this posting"}
             </button>
+            {filtering && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMatch(null);
+                  setJd("");
+                }}
+                className="font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
+              >
+                ✕ clear
+              </button>
+            )}
+            {state === "error" && (
+              <span className="font-body text-xs text-ink-soft">that did not work. try again?</span>
+            )}
+          </div>
+          {match?.summary && (
+            <p className="mt-4 max-w-2xl font-body text-[15px] leading-relaxed text-ink-soft">
+              {match.summary}
+            </p>
           )}
-          {state === "error" && (
-            <span className="font-body text-xs text-ink-soft">that did not work. try again?</span>
+          {match && match.gaps.length > 0 && (
+            <p className="mt-2 font-body text-xs text-ink-soft/70">
+              not evidenced here: {match.gaps.join(" · ")}
+            </p>
           )}
-        </div>
-        {match?.summary && (
-          <p className="mt-4 max-w-2xl font-body text-[15px] leading-relaxed text-ink-soft">
-            {match.summary}
-          </p>
-        )}
-        {match && match.gaps.length > 0 && (
-          <p className="mt-2 font-body text-xs text-ink-soft/70">
-            not evidenced here: {match.gaps.join(" · ")}
-          </p>
-        )}
-      </section>
+        </section>
+      </div>
 
       {(filtering || projects.length > 0) && (
         <>

@@ -77,57 +77,66 @@ export default async function Recruiter({
   ]);
   const t = (k: string) => plain(copy[k], 2000);
 
+  // The question. Real links, so a chosen role is a URL she can send.
+  //
+  // Held as a value rather than written inline, because it belongs in two
+  // places: paired with the posting box on the landing view, and standing on
+  // its own once a role has already answered it.
+  const picker = (
+    <section className="rounded-3xl p-4 soft-card sm:p-5">
+      <p className="font-body text-sm font-semibold text-ink">{t("recruiter.ask")}</p>
+      <nav className="mt-3 flex flex-wrap gap-2">
+        {ROLES.map((r) => {
+          const on = r === role;
+          return (
+            <Link
+              key={r}
+              href={`/recruiter?role=${r}`}
+              aria-current={on ? "page" : undefined}
+              // in the page's own periwinkle rather than the site's ink: a
+              // dark pill on a pale ground read as borrowed from another page
+              style={{ backgroundColor: on ? "#c2c0ef" : "rgba(255,255,255,0.62)" }}
+              className={`rounded-full px-5 py-2 font-body text-sm font-semibold transition ${
+                on ? "text-ink shadow-sm ring-1 ring-white/70" : "text-ink-soft hover:text-ink"
+              }`}
+            >
+              {ROLE_SPECS[r].label}
+            </Link>
+          );
+        })}
+      </nav>
+      {/* a flex row rather than a sentence, so the second link wraps as a whole
+          phrase on a narrow screen instead of leaving "page" on its own line */}
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-body text-sm text-ink-soft">
+        <a
+          style={{ backgroundColor: "#d3d1f5" }}
+          className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97]"
+          href="/resume"
+          download="Rishika_Mamidibathula_Resume.pdf"
+        >
+          ⬇ download the résumé
+        </a>
+        <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/resume/print">
+          or read it as a page
+        </Link>
+      </div>
+    </section>
+  );
+
   return (
     <PageShell vibe="periwinkle">
       {/* the emoji lives in the copy, so it can be changed from /recruiter/edit
           rather than here */}
       <PageTitle>{t("recruiter.title")}</PageTitle>
 
-      <p className="mt-5 max-w-2xl font-body text-lg leading-relaxed text-ink-soft">
+      <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-ink-soft sm:text-lg">
         {role ? t(`recruiter.summary.${role}`) : t("recruiter.intro")}
       </p>
-
-      {/* The question. Real links, so a chosen role is a URL she can send. */}
-      <section className="mt-8">
-        <p className="font-body text-sm font-semibold text-ink-soft">{t("recruiter.ask")}</p>
-        <nav className="mt-3 flex flex-wrap gap-2">
-          {ROLES.map((r) => {
-            const on = r === role;
-            return (
-              <Link
-                key={r}
-                href={`/recruiter?role=${r}`}
-                aria-current={on ? "page" : undefined}
-                // in the page's own periwinkle rather than the site's ink: a
-                // dark pill on a pale ground read as borrowed from another page
-                style={{ backgroundColor: on ? "#c2c0ef" : "rgba(255,255,255,0.62)" }}
-                className={`rounded-full px-5 py-2 font-body text-sm font-semibold transition ${
-                  on ? "text-ink shadow-sm ring-1 ring-white/70" : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                {ROLE_SPECS[r].label}
-              </Link>
-            );
-          })}
-        </nav>
-        <p className="mt-4 font-body text-sm text-ink-soft">
-          <a
-            style={{ backgroundColor: "#d3d1f5" }}
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97]"
-            href="/resume"
-            download="Rishika_Mamidibathula_Resume.pdf"
-          >
-            ⬇ download the résumé
-          </a>{" "}
-          <Link className="ml-2 underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/resume/print">
-            or read it as a page
-          </Link>
-        </p>
-      </section>
 
       {role ? (
         <RoleView
           role={role}
+          picker={picker}
           projects={projects}
           education={education}
           timeline={timeline}
@@ -138,6 +147,7 @@ export default async function Recruiter({
         // reading, and the posting box is the other way of asking the question,
         // so it has to be here too rather than behind a role.
         <RecruiterView
+          picker={picker}
           projects={[]}
           slugs={[]}
           studies={[]}
@@ -182,12 +192,14 @@ export default async function Recruiter({
 
 async function RoleView({
   role,
+  picker,
   projects,
   education,
   timeline,
   t,
 }: {
   role: Role;
+  picker: React.ReactNode;
   projects: Awaited<ReturnType<typeof getAllProjects>>;
   education: Awaited<ReturnType<typeof getAboutEntries>>["education"];
   timeline: Awaited<ReturnType<typeof getAboutEntries>>["timeline"];
@@ -247,6 +259,7 @@ async function RoleView({
 
   return (
     <RecruiterView
+      picker={picker}
       angles={angles}
       projects={picked}
       slugs={picked.map((p) => repoSlug(p.repo))}
