@@ -74,13 +74,18 @@ jobs:
 
       - name: Commit if it changed
         run: |
-          if git diff --quiet -- backups/; then
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Staged before the check, because `git diff` cannot see a file that is
+          # not tracked yet. On the first backup the snapshot is brand new, so
+          # the check found no diff, said nothing had changed and exited green
+          # having committed nothing: a backup job that reported success every
+          # week while the repository held no backup at all.
+          git add backups/portfolio-backup.json.enc
+          if git diff --cached --quiet -- backups/; then
             echo "Nothing changed since the last backup."
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add backups/portfolio-backup.json.enc
           git commit -m "Weekly encrypted content backup [skip ci]"
           # the readme sync bot commits to main too, so land on top of whatever
           # arrived while this ran rather than failing the whole backup on it
