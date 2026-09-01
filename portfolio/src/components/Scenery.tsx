@@ -4,7 +4,6 @@ import { m } from "framer-motion";
 
 export type Vibe =
   | "periwinkle"
-  | "bluebell"
   | "dawn"
   | "lilac"
   | "azure"
@@ -27,13 +26,6 @@ const gradients: Record<Vibe, string> = {
   // a glance they are in the short version rather than the wandering one. Cooler
   // and more saturated than lilac, which drifts pink through petal.
   periwinkle: "from-[#d6d4f4] via-[#e7e6fb] to-[#bfcdf0]",
-  // Home, and only home: blue at the top running down through periwinkle into
-  // pink, rather than the pale sky-to-peach it used to wear.
-  //
-  // The blue is a measured choice, not a taste one. At #8fb6e8 the greeting sat
-  // at 2.33:1 against it, which is unreadable; this lighter blue puts the ink at
-  // 5.43:1 while still reading as blue rather than as the old sky.
-  bluebell: "from-[#b3d0f1] via-[#cbc4ec] to-[#f7c4d9]",
   dawn: "from-sky via-lavender/60 to-dawn",
   lilac: "from-lavender via-petal/40 to-sky/50",
   azure: "from-sky via-cream to-mint/50",

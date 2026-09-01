@@ -39,7 +39,7 @@ export default function HomeClient({
   portraitOverlay?: React.ReactNode;
 }) {
   return (
-    <PageShell vibe="bluebell" className="flex min-h-[86vh] flex-col justify-center">
+    <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
       {/* Hero: portrait on the left, name + words on the right */}
       <div className="flex flex-col items-center gap-8 text-center md:flex-row md:gap-14">
         {/* greeting leads on mobile (above the photo) */}
