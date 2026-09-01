@@ -14,14 +14,21 @@
 const BASE = process.env.EVAL_BASE ?? "http://localhost:3000";
 
 // Grounded questions: expect a specific source + a fact in the answer.
+//
+// `source` accepts a list, and any one of them counts as the right document.
+// The titles here are hers to edit from the atelier, and when she renamed the
+// degrees and the ACS internship this eval went red on three questions whose
+// answers were all still correct: the retriever had found the right entry, the
+// fixture was just describing it by its old name. Listing both wordings means a
+// rename shows up as an answer that got worse, not as a string that went stale.
 const grounded = [
   { q: "What did Rishika do at Shell?", source: "Software Engineer", any: ["forecast", "23%", "databricks"] },
   { q: "Tell me about her clinical LLM research.", source: "Clinical LLM", any: ["clinical", "notes", "phenotyp", "cardiac"] },
-  { q: "What was her GPA at Columbia?", source: "M.S. in Data Science", any: ["3.87"] },
-  { q: "Where did she do her undergrad?", source: "B.Tech", any: ["vit", "vellore"] },
+  { q: "What was her GPA at Columbia?", source: ["Master of Science", "M.S. in Data Science"], any: ["3.87"] },
+  { q: "Where did she do her undergrad?", source: ["Bachelor of Technology", "B.Tech"], any: ["vit", "vellore"] },
   { q: "What is the KV-Cache project about?", source: "KV-Cache", any: ["quantiz", "compress", "decod", "throughput"] },
   { q: "Did she work on anything about human rights?", source: "Human Rights", any: ["due diligence", "defense", "manufactur", "un"] },
-  { q: "What did she build for child welfare?", source: "Data Science Intern", any: ["risk", "fairness", "explainable"] },
+  { q: "What did she build for child welfare?", source: ["Predictive Analytics Intern", "Child Welfare", "Data Science Intern"], any: ["risk", "fairness", "explainable"] },
   { q: "What are her main skill areas?", source: "Skills", any: ["causal", "generative", "machine learning", "nlp"] },
   { q: "Tell me about the Federal Eagle project.", source: "Federal Eagle", any: ["legal", "agent", "rag"] },
   { q: "What did she do at Novartis?", source: "Technical Analyst Intern", any: ["clinical-trial", "sentiment", "summar", "carbon"] },
@@ -54,12 +61,17 @@ console.log("\n=== grounded questions ===\n");
 for (const t of grounded) {
   const { answer, sources } = await ask(t.q);
   const a = lc(answer);
-  const gotSource = (sources ?? []).some((s) => lc(s.title).includes(lc(t.source)));
+  const wants = Array.isArray(t.source) ? t.source : [t.source];
+  const titles = (sources ?? []).map((s) => s.title ?? "");
+  const gotSource = titles.some((title) => wants.some((w) => lc(title).includes(lc(w))));
   const gotFact = t.any.some((k) => a.includes(lc(k)));
   if (gotSource) retrievalHits++;
   if (gotFact) answerHits++;
   console.log(`Q: ${t.q}`);
-  console.log(`   retrieval: ${gotSource ? "✓" : "✗"} (want "${t.source}")   fact: ${gotFact ? "✓" : "✗"}`);
+  console.log(`   retrieval: ${gotSource ? "✓" : "✗"} (want ${wants.map((w) => `"${w}"`).join(" or ")})   fact: ${gotFact ? "✓" : "✗"}`);
+  // what it did retrieve, so a miss is one line to read rather than an
+  // investigation: usually the entry is there under a name nobody updated here
+  if (!gotSource) console.log(`   got: ${titles.map((x) => `"${x}"`).join(", ") || "(nothing)"}`);
   console.log(`   A: ${answer.slice(0, 160)}${answer.length > 160 ? "…" : ""}\n`);
 }
 
