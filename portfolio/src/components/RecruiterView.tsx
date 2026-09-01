@@ -90,19 +90,13 @@ export default function RecruiterView({
 
   return (
     <>
-      {/* One under the other, both full width. Side by side halved the bar, and
-          the bar is the thing being copied from the work page, where it runs the
-          width of the page. Stacking cost nothing here: once the cards came off,
-          the two together are shorter than the posting box alone used to be. */}
-      <div className="mt-7 space-y-7">
-        {picker}
+      {/* Laid out exactly like the work page's search: the bar, one thin line
+          under it saying what it does, then a labelled row of pills. The bar
+          leads because it is the more precise of the two ways to ask, and the
+          roles are the shortcut for anyone without a posting to hand. */}
+      <div className="mt-7">
         <section>
-          <p className="font-body text-sm font-semibold text-ink">{jdLabel}</p>
-          {/* Laid out the way the work page lays out its search: the bar, then
-              one thin line under it saying what it does. The explanation used to
-              sit above the field in full, two lines of it, which made the ask
-              read as instructions to get through rather than a box to type in. */}
-          <div className="relative mt-2">
+          <div className="relative">
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg">
               🔍
             </span>
@@ -124,6 +118,10 @@ export default function RecruiterView({
             />
           </div>
           <p className="mt-2 font-body text-xs text-ink-soft/80">{jdHint}</p>
+          {/* nothing typed yet means nothing to run: the button appears with the
+              first keystroke, so the resting page is the bar and the pills and
+              no third control asking to be pressed */}
+          {(jd.trim() || state !== "idle") && (
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -150,6 +148,7 @@ export default function RecruiterView({
               <span className="font-body text-xs text-ink-soft">that did not work. try again?</span>
             )}
           </div>
+          )}
           {match?.summary && (
             <p className="mt-4 max-w-2xl font-body text-[15px] leading-relaxed text-ink-soft">
               {match.summary}
@@ -161,6 +160,7 @@ export default function RecruiterView({
             </p>
           )}
         </section>
+        <div className="mt-5">{picker}</div>
       </div>
 
       {(filtering || projects.length > 0) && (

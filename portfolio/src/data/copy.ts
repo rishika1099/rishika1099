@@ -116,8 +116,8 @@ export const copyDefaults: Record<string, CopyBlock> = {
   },
   "recruiter.ask": {
     page: "recruiter",
-    label: "the question above the three role buttons",
-    text: "Which role are you hiring for?",
+    label: "the label before the role pills (it sits on their row)",
+    text: "hiring for:",
   },
   "recruiter.intro": {
     page: "recruiter",
@@ -157,7 +157,7 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "recruiter.jd.placeholder": {
     page: "recruiter",
     label: "job-description box placeholder (kept short: it is one line)",
-    text: "paste a posting, or say what the role needs\u2026",
+    text: "search by job description",
   },
   "recruiter.skills.data-scientist": {
     page: "recruiter",

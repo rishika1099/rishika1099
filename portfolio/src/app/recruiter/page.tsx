@@ -84,8 +84,11 @@ export default async function Recruiter({
   // its own once a role has already answered it.
   const picker = (
     <section>
-      <p className="font-body text-sm font-semibold text-ink">{t("recruiter.ask")}</p>
-      <nav className="mt-3 flex flex-wrap gap-2">
+      {/* label and pills on one row, the way the work page labels its explain
+          modes: "hiring for:" then the four roles. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="font-body text-sm text-ink-soft">{t("recruiter.ask")}</p>
+        <nav className="flex flex-wrap gap-2">
         {ROLES.map((r) => {
           const on = r === role;
           return (
@@ -104,7 +107,8 @@ export default async function Recruiter({
             </Link>
           );
         })}
-      </nav>
+        </nav>
+      </div>
       {/* a flex row rather than a sentence, so the second link wraps as a whole
           phrase on a narrow screen instead of leaving "page" on its own line */}
       <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-body text-sm text-ink-soft">
