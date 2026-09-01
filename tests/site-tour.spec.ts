@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 // A walk through every public feature of the site. One pass does two jobs: it
 // asserts each feature still works (so a bad deploy fails loudly) and it is
@@ -10,6 +10,33 @@ import { test, expect, type Page } from "@playwright/test";
 
 /** Let an animation settle so the recording reads clearly. */
 const beat = async (page: Page, ms = 900) => page.waitForTimeout(ms);
+
+/**
+ * The text as it settles, not as it first paints.
+ *
+ * The card descriptions are rewritten to fill the card, and on a cold cache
+ * that rewrite lands a moment after the page does. Snapshotting too early
+ * captures the raw readme line, and the round trip below then compares the
+ * filled version against a string the page will never show again: the run that
+ * caught this was waiting for an intruder-detection blurb that had been
+ * rewritten while the test was reading it.
+ */
+async function settled(locator: Locator, quietFor = 1500, timeout = 60_000) {
+  const started = Date.now();
+  let last = await locator.innerText();
+  let lastChange = Date.now();
+  while (Date.now() - started < timeout) {
+    await locator.page().waitForTimeout(300);
+    const now = await locator.innerText();
+    if (now !== last) {
+      last = now;
+      lastChange = Date.now();
+    } else if (Date.now() - lastChange >= quietFor) {
+      break;
+    }
+  }
+  return last;
+}
 
 test("public feature tour", async ({ page }) => {
   await test.step("home", async () => {
@@ -50,14 +77,14 @@ test("public feature tour", async ({ page }) => {
     // compare the blurb itself, not the whole card: the name, chips and links
     // never change, so comparing them only adds noise
     const blurb = page.locator("article").first().locator("p, span.rich-passage").first();
-    const original = await blurb.innerText();
+    const original = await settled(blurb);
     await page.getByRole("button", { name: /i'm 5/i }).click();
     // one batched rewrite for every project; the first ever call for a given
     // project set is a real LLM round trip before it is cached for good
     await expect.poll(async () => blurb.innerText(), { timeout: 90_000 }).not.toBe(original);
     await beat(page, 1200);
     await page.getByRole("button", { name: /default/i }).click();
-    await expect.poll(async () => blurb.innerText(), { timeout: 20_000 }).toBe(original);
+    await expect.poll(async () => blurb.innerText(), { timeout: 30_000 }).toBe(original);
     await beat(page);
   });
 
@@ -72,11 +99,14 @@ test("public feature tour", async ({ page }) => {
     await beat(page, 1200);
   });
 
-  await test.step("the patch menu jumps between areas", async () => {
-    const patch = page.getByLabel("patch");
-    await expect(patch).toBeVisible();
-    await patch.selectOption("Computer Vision");
-    await expect(page.locator("#area-computer-vision")).toBeInViewport();
+  await test.step("the patch tabs jump between areas", async () => {
+    // this was a <select> until the areas became tabs, one panel at a time
+    const tabs = page.getByRole("tablist");
+    await expect(tabs).toBeVisible();
+    const cv = page.getByRole("tab", { name: /computer vision/i });
+    await cv.click();
+    await expect(cv).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator("#area-computer-vision")).toBeVisible();
     await beat(page, 1400);
   });
 
@@ -89,7 +119,11 @@ test("public feature tour", async ({ page }) => {
     await expect(clear).toBeVisible();
     await beat(page, 1200);
     await clear.click();
-    await expect(page.locator('section[id^="area-"]').first()).toBeVisible();
+    // The grouped view comes back: the tabs return and the selected area shows
+    // its shelf. Not the first section in the DOM, which is only the first tab:
+    // an earlier step selected Computer Vision, and one panel shows at a time.
+    await expect(page.getByRole("tablist")).toBeVisible();
+    await expect(page.locator('section[id^="area-"]:visible').first()).toBeVisible();
     await beat(page);
   });
 
@@ -107,15 +141,22 @@ test("public feature tour", async ({ page }) => {
 
   await test.step("ask-my-portfolio chatbot answers with sources", async () => {
     await page.getByRole("button", { name: /ask about (me|rishika)/i }).click();
-    const box = page.getByRole("textbox").last();
+    // Scoped to the chat panel, not the page. The answer has to be found inside
+    // the thing that answered: matching page-wide picked up a project blurb
+    // containing the word "forecast", found it hidden behind the panel, and
+    // waited 45 seconds for a card to become visible. Naming the input also
+    // means a panel that failed to open is a clear failure rather than a test
+    // that quietly types its question into the project-idea box instead.
+    const box = page.getByLabel(/ask about Rishika/i);
+    const chat = page.locator("div.z-50").filter({ has: box });
     await box.click();
     await box.pressSequentially("What did she build at Shell?", { delay: 40 });
     await box.press("Enter");
     // streamed answer: wait for real prose rather than a fixed sleep
     await expect
-      .poll(async () => (await page.locator("body").innerText()).length, { timeout: 45_000 })
+      .poll(async () => (await chat.innerText()).length, { timeout: 45_000 })
       .toBeGreaterThan(0);
-    await expect(page.getByText(/Shell|forecast|Databricks/i).first()).toBeVisible({
+    await expect(chat.getByText(/Shell|forecast|Databricks/i).first()).toBeVisible({
       timeout: 45_000,
     });
     await beat(page, 2000);
