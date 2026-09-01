@@ -99,13 +99,11 @@ export default function RecruiterView({
         {picker}
         <section className="rounded-3xl p-4 soft-card sm:p-5">
           <p className="font-body text-sm font-semibold text-ink">{jdLabel}</p>
-          <p className="mt-1 font-body text-xs text-ink-soft">{jdHint}</p>
-          {/* One line, the same bar the work page searches with, rather than the
-              three-row box this used to be. A posting pasted into it still goes
-              in whole: the field scrolls, and nothing is truncated before it
-              reaches the model. Enter runs it, so the button is a second way in
-              rather than the only one. */}
-          <div className="relative mt-3">
+          {/* Laid out the way the work page lays out its search: the bar, then
+              one thin line under it saying what it does. The explanation used to
+              sit above the field in full, two lines of it, which made the ask
+              read as instructions to get through rather than a box to type in. */}
+          <div className="relative mt-2">
             <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg">
               🔍
             </span>
@@ -126,6 +124,7 @@ export default function RecruiterView({
               className="w-full rounded-full border border-white/70 bg-white/80 py-3 pl-11 pr-4 font-body text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-[#a9a5e6] focus:ring-2 focus:ring-[#c2c0ef]/50"
             />
           </div>
+          <p className="mt-2 font-body text-xs text-ink-soft/80">{jdHint}</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <button
               type="button"

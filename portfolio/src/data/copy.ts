@@ -151,8 +151,8 @@ export const copyDefaults: Record<string, CopyBlock> = {
   },
   "recruiter.jd.hint": {
     page: "recruiter",
-    label: "job-description box hint",
-    text: "Paste the posting and this page answers it: the parts of her experience that match, the projects closest to it, and honestly, what it asks for that she has not done.",
+    label: "job-description box hint (one line, it sits under the bar)",
+    text: "read, then matched against her projects and skills, gaps and all \u2726",
   },
   "recruiter.jd.placeholder": {
     page: "recruiter",
