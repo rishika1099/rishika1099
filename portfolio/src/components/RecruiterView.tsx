@@ -90,12 +90,11 @@ export default function RecruiterView({
 
   return (
     <>
-      {/* Two ways of asking the same question, side by side rather than stacked.
-          Stacked they filled the screen before a single piece of work, so a
-          recruiter met a column of controls and had to scroll to reach anything
-          that answered them. Paired, the whole ask fits in about the height the
-          posting box alone used to take. */}
-      <div className="mt-7 grid gap-x-10 gap-y-7 md:grid-cols-2">
+      {/* One under the other, both full width. Side by side halved the bar, and
+          the bar is the thing being copied from the work page, where it runs the
+          width of the page. Stacking cost nothing here: once the cards came off,
+          the two together are shorter than the posting box alone used to be. */}
+      <div className="mt-7 space-y-7">
         {picker}
         <section>
           <p className="font-body text-sm font-semibold text-ink">{jdLabel}</p>
