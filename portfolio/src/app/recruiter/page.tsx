@@ -77,6 +77,26 @@ export default async function Recruiter({
   ]);
   const t = (k: string) => plain(copy[k], 2000);
 
+  // Straight under the title, where someone who only wants the PDF can take it
+  // without reading past the rest of the page.
+  // A flex row rather than a sentence, so the second link wraps as a whole
+  // phrase on a narrow screen instead of leaving "page" on its own line.
+  const resumeLinks = (
+    <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-body text-sm text-ink-soft">
+      <a
+        style={{ backgroundColor: "#d3d1f5" }}
+        className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97]"
+        href="/resume"
+        download="Rishika_Mamidibathula_Resume.pdf"
+      >
+        ⬇ download the résumé
+      </a>
+      <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/resume/print">
+        or read it as a page
+      </Link>
+    </div>
+  );
+
   // The question. Real links, so a chosen role is a URL she can send.
   //
   // Held as a value rather than written inline, because it belongs in two
@@ -88,7 +108,10 @@ export default async function Recruiter({
           modes: "hiring for:" then the four roles. */}
       <div className="flex flex-wrap items-center gap-2">
         <p className="font-body text-sm text-ink-soft">{t("recruiter.ask")}</p>
-        <nav className="flex flex-wrap gap-2">
+        {/* `contents` dissolves the nav's own box, so the four links sit on the
+            label's row as siblings. Nested, the nav was one wide flex item that
+            could not fit beside the label and dropped to a line of its own. */}
+        <nav className="contents">
         {ROLES.map((r) => {
           const on = r === role;
           return (
@@ -99,7 +122,7 @@ export default async function Recruiter({
               // in the page's own periwinkle rather than the site's ink: a
               // dark pill on a pale ground read as borrowed from another page
               style={{ backgroundColor: on ? "#c2c0ef" : "rgba(255,255,255,0.62)" }}
-              className={`rounded-full px-5 py-2 font-body text-sm font-semibold transition ${
+              className={`rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
                 on ? "text-ink shadow-sm ring-1 ring-white/70" : "text-ink-soft hover:text-ink"
               }`}
             >
@@ -109,21 +132,6 @@ export default async function Recruiter({
         })}
         </nav>
       </div>
-      {/* a flex row rather than a sentence, so the second link wraps as a whole
-          phrase on a narrow screen instead of leaving "page" on its own line */}
-      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-body text-sm text-ink-soft">
-        <a
-          style={{ backgroundColor: "#d3d1f5" }}
-          className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97]"
-          href="/resume"
-          download="Rishika_Mamidibathula_Resume.pdf"
-        >
-          ⬇ download the résumé
-        </a>
-        <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/resume/print">
-          or read it as a page
-        </Link>
-      </div>
     </section>
   );
 
@@ -132,6 +140,8 @@ export default async function Recruiter({
       {/* the emoji lives in the copy, so it can be changed from /recruiter/edit
           rather than here */}
       <PageTitle>{t("recruiter.title")}</PageTitle>
+
+      {resumeLinks}
 
       <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-ink-soft sm:text-lg">
         {role ? t(`recruiter.summary.${role}`) : t("recruiter.intro")}

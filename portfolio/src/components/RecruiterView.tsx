@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RecruiterProjects from "@/components/RecruiterProjects";
 import type { Project } from "@/data/projects";
 import type { CaseStudy } from "@/lib/caseStudies";
@@ -58,23 +58,41 @@ export default function RecruiterView({
   const [state, setState] = useState<"idle" | "working" | "error">("idle");
   const [match, setMatch] = useState<Tailored | null>(null);
 
-  async function run() {
-    if (!jd.trim()) return;
-    setState("working");
-    try {
-      const res = await fetch("/api/tailor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jd }),
-      });
-      if (!res.ok) throw new Error();
-      const d = (await res.json()) as { tailored?: Tailored };
-      setMatch(d.tailored ?? null);
-      setState("idle");
-    } catch {
-      setState("error");
-    }
-  }
+  // Live, the way the work page searches: no button, the page answers as you
+  // type and stops answering when the field is emptied.
+  //
+  // The wait is longer than that page's 450ms because each run here is a model
+  // call rather than a vector lookup, so it holds out for a real pause before
+  // spending one. An in-flight request is aborted when the text changes again,
+  // so a slow answer to half a sentence cannot land on top of a newer one.
+  useEffect(() => {
+    const q = jd.trim();
+    // emptying the field is handled where it happens, in the change handler:
+    // clearing state from inside an effect cascades a second render
+    if (!q) return;
+    const ctrl = new AbortController();
+    const timer = setTimeout(async () => {
+      setState("working");
+      try {
+        const res = await fetch("/api/tailor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jd: q }),
+          signal: ctrl.signal,
+        });
+        if (!res.ok) throw new Error();
+        const d = (await res.json()) as { tailored?: Tailored };
+        setMatch(d.tailored ?? null);
+        setState("idle");
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") setState("error");
+      }
+    }, 900);
+    return () => {
+      clearTimeout(timer);
+      ctrl.abort();
+    };
+  }, [jd]);
 
   const filtering = !!match;
   // a matched project is a search hit: the card reads the same fields
@@ -103,11 +121,14 @@ export default function RecruiterView({
             <input
               type="search"
               value={jd}
-              onChange={(e) => setJd(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  run();
+              onChange={(e) => {
+                const next = e.target.value;
+                setJd(next);
+                // an emptied field means no question was asked, so the answer
+                // to the last one goes with it
+                if (!next.trim()) {
+                  setMatch(null);
+                  setState("idle");
                 }
               }}
               placeholder={jdPlaceholder}
@@ -117,38 +138,15 @@ export default function RecruiterView({
               className="w-full rounded-full border border-white/70 bg-white/80 py-3 pl-11 pr-4 font-body text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-[#a9a5e6] focus:ring-2 focus:ring-[#c2c0ef]/50"
             />
           </div>
-          <p className="mt-2 font-body text-xs text-ink-soft/80">{jdHint}</p>
-          {/* nothing typed yet means nothing to run: the button appears with the
-              first keystroke, so the resting page is the bar and the pills and
-              no third control asking to be pressed */}
-          {(jd.trim() || state !== "idle") && (
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={run}
-              disabled={!jd.trim() || state === "working"}
-              style={{ backgroundColor: "#c2c0ef" }}
-              className="rounded-full px-5 py-2 font-body text-sm font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97] disabled:opacity-50"
-            >
-              {state === "working" ? "reading it ✦" : "match this posting"}
-            </button>
-            {filtering && (
-              <button
-                type="button"
-                onClick={() => {
-                  setMatch(null);
-                  setJd("");
-                }}
-                className="font-body text-xs font-semibold text-ink-soft/80 transition hover:text-ink"
-              >
-                ✕ clear
-              </button>
-            )}
-            {state === "error" && (
-              <span className="font-body text-xs text-ink-soft">that did not work. try again?</span>
-            )}
-          </div>
-          )}
+          {/* the one line under the bar carries the status too, so nothing
+              shifts when it starts reading */}
+          <p className="mt-2 font-body text-xs text-ink-soft/80">
+            {state === "working"
+              ? "reading it ✦"
+              : state === "error"
+                ? "that did not work. try again?"
+                : jdHint}
+          </p>
           {match?.summary && (
             <p className="mt-4 max-w-2xl font-body text-[15px] leading-relaxed text-ink-soft">
               {match.summary}
