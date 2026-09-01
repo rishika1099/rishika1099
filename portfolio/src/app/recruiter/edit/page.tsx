@@ -32,6 +32,7 @@ function Editor({ keyVal }: { keyVal: string }) {
       "recruiter.ask",
       "recruiter.jd.label",
       "recruiter.jd.hint",
+      "recruiter.jd.placeholder",
       "home.recruiter",
       ...ROLES.flatMap((r) => [`recruiter.summary.${r.id}`, `recruiter.skills.${r.id}`]),
       ...HEADINGS.map((h) => h.id),
@@ -54,6 +55,7 @@ function Editor({ keyVal }: { keyVal: string }) {
           {box("recruiter.ask", "font-body text-sm text-ink-soft")}
           {box("recruiter.jd.label", "font-body text-sm text-ink-soft")}
           {box("recruiter.jd.hint", "font-body text-sm text-ink-soft")}
+          {box("recruiter.jd.placeholder", "font-body text-sm text-ink-soft")}
         </div>
       </section>
 

@@ -31,6 +31,7 @@ export default function RecruiterView({
   skillsLabel,
   jdLabel,
   jdHint,
+  jdPlaceholder,
   picker,
   children,
 }: {
@@ -47,6 +48,7 @@ export default function RecruiterView({
   skillsLabel: string;
   jdLabel: string;
   jdHint: string;
+  jdPlaceholder: string;
   /** the role picker, placed beside the posting box rather than above it */
   picker: React.ReactNode;
   /** work, research and education: constant, whatever the posting says */
@@ -98,13 +100,32 @@ export default function RecruiterView({
         <section className="rounded-3xl p-4 soft-card sm:p-5">
           <p className="font-body text-sm font-semibold text-ink">{jdLabel}</p>
           <p className="mt-1 font-body text-xs text-ink-soft">{jdHint}</p>
-          <textarea
-            value={jd}
-            onChange={(e) => setJd(e.target.value)}
-            rows={3}
-            placeholder="Paste the job description: what the company does, and what the role needs."
-            className="mt-3 w-full resize-y rounded-2xl border border-white/70 bg-white/80 px-4 py-3 font-body text-sm leading-relaxed text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
-          />
+          {/* One line, the same bar the work page searches with, rather than the
+              three-row box this used to be. A posting pasted into it still goes
+              in whole: the field scrolls, and nothing is truncated before it
+              reaches the model. Enter runs it, so the button is a second way in
+              rather than the only one. */}
+          <div className="relative mt-3">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg">
+              🔍
+            </span>
+            <input
+              type="search"
+              value={jd}
+              onChange={(e) => setJd(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  run();
+                }
+              }}
+              placeholder={jdPlaceholder}
+              aria-label={jdLabel}
+              // the page's own periwinkle on focus, not the site's blush: a pink
+              // ring on this ground reads as borrowed from another page
+              className="w-full rounded-full border border-white/70 bg-white/80 py-3 pl-11 pr-4 font-body text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-[#a9a5e6] focus:ring-2 focus:ring-[#c2c0ef]/50"
+            />
+          </div>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <button
               type="button"

@@ -154,6 +154,11 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "job-description box hint",
     text: "Paste the posting and this page answers it: the parts of her experience that match, the projects closest to it, and honestly, what it asks for that she has not done.",
   },
+  "recruiter.jd.placeholder": {
+    page: "recruiter",
+    label: "job-description box placeholder (kept short: it is one line)",
+    text: "paste a posting, or say what the role needs\u2026",
+  },
   "recruiter.skills.data-scientist": {
     page: "recruiter",
     label: "skills shown for Data Scientist (one per line or comma separated)",

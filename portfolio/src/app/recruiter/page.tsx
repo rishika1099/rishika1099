@@ -160,6 +160,7 @@ export default async function Recruiter({
           skillsLabel={t("recruiter.heading.skills")}
           jdLabel={t("recruiter.jd.label")}
           jdHint={t("recruiter.jd.hint")}
+          jdPlaceholder={t("recruiter.jd.placeholder")}
         >
           <Heading>{t("recruiter.heading.research")} 🔬</Heading>
           <RecruiterEntries entries={timeline.filter(isResearchEntry)} />
@@ -272,6 +273,7 @@ async function RoleView({
       skillsLabel={t("recruiter.heading.skills")}
       jdLabel={t("recruiter.jd.label")}
       jdHint={t("recruiter.jd.hint")}
+      jdPlaceholder={t("recruiter.jd.placeholder")}
     >
       <p className="mt-5 font-body text-sm text-ink-soft">
         <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/work">
