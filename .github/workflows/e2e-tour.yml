@@ -6,7 +6,7 @@ name: Site tour (smoke tests + demo reel)
 
 on:
   schedule:
-    - cron: "30 6 * * 1" # Mondays, 06:30 UTC
+    - cron: "30 6 1 * *" # the 1st of the month, 06:30 UTC
   workflow_dispatch:
     inputs:
       site_url:

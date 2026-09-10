@@ -3,13 +3,13 @@ name: Chatbot eval
 # The README and the under-the-hood tour both claim 100% retrieval, answer, and
 # refusal accuracy. The knowledge base is rebuilt from every project README and
 # Substack post, so those numbers can drift as new work is published and quietly
-# leave a false claim on the profile. This re-measures them weekly.
+# leave a false claim on the profile. This re-measures them monthly.
 #
 # Runs against the deployed site, so it needs no API key of its own.
 
 on:
   schedule:
-    - cron: "0 7 * * 1" # Mondays, 07:00 UTC
+    - cron: "0 7 1 * *" # the 1st of the month, 07:00 UTC, after the tour
   workflow_dispatch:
     inputs:
       floor:
@@ -54,7 +54,7 @@ jobs:
               repo: context.repo.repo,
               title: 'Chatbot eval slipped below the floor',
               body: [
-                'The weekly chatbot eval failed, so the accuracy quoted in the README',
+                'The monthly chatbot eval failed, so the accuracy quoted in the README',
                 'and the under-the-hood tour may no longer be true.',
                 '',
                 '```',
