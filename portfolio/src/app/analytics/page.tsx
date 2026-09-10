@@ -195,7 +195,7 @@ export default function StatsPage() {
     setBusy(true);
     setErr("");
     try {
-      const res = await fetch(`/api/stats?key=${encodeURIComponent(k)}`);
+      const res = await fetch(`/api/analytics?key=${encodeURIComponent(k)}`);
       if (res.status === 401) {
         setErr("that's not the key 🌙");
         localStorage.removeItem("stats-key");
@@ -491,7 +491,7 @@ export default function StatsPage() {
             <button
               onClick={async () => {
                 if (!confirm("Reset all analytics counters to zero?")) return;
-                await fetch(`/api/stats?key=${encodeURIComponent(key)}`, { method: "DELETE" });
+                await fetch(`/api/analytics?key=${encodeURIComponent(key)}`, { method: "DELETE" });
                 load(key);
               }}
               className="rounded-full bg-white/10 px-4 py-1.5 font-body text-xs font-semibold text-cream/80 transition hover:bg-white/20"

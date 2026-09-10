@@ -20,7 +20,7 @@ function launcherTint(path: string): string {
   if (path.startsWith("/blog/poems")) return "#d9c2f0"; // twilight (light pill on dark)
   if (path.startsWith("/blog")) return "#ffd9a8"; // peach
   if (path.startsWith("/contact")) return "#f7a8bc"; // rose
-  if (path.startsWith("/stats")) return "#c7d3f2"; // midnight (moonlit periwinkle)
+  if (path.startsWith("/analytics")) return "#c7d3f2"; // midnight (moonlit periwinkle)
   return "#ffd0b0"; // dawn (home, /now + fallback)
 }
 

@@ -48,7 +48,7 @@ function beacon(url: string, payload: unknown) {
 export default function VisitPing() {
   const pathname = usePathname();
   useEffect(() => {
-    if (!pathname || pathname.startsWith("/stats")) return;
+    if (!pathname || pathname.startsWith("/analytics")) return;
     // don't count the owner's own device (or anyone who opted out)
     try {
       if (

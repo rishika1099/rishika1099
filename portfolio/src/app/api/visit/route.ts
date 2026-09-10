@@ -55,8 +55,8 @@ export async function POST(request: Request) {
     } catch {
       // beacon without a body: count it against the root
     }
-    // never log the private stats page
-    if (path.startsWith("/stats")) return NextResponse.json({ ok: true });
+    // never log the private analytics page
+    if (path.startsWith("/analytics")) return NextResponse.json({ ok: true });
 
     const { country, city } = geoFromHeaders(request.headers);
     const { device, browser, os } = parseUA(ua);
