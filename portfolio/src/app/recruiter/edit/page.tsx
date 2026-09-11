@@ -1,19 +1,18 @@
 "use client";
 
-// In-place editor for the recruiter page: every line it says, and the four
-// skill lists, which are copy rather than constants precisely so they can be
+// In-place editor for the recruiter page: every line it says, and each role's
+// skill list, which are copy rather than constants precisely so they can be
 // edited here rather than in the source.
 
 import PageShell from "@/components/PageShell";
 import { AdminGate } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
+import { ROLES as ROLE_IDS, ROLE_SPECS } from "@/lib/recruiter";
 
-const ROLES = [
-  { id: "data-scientist", label: "Data Scientist" },
-  { id: "ml-engineer", label: "Machine Learning Engineer" },
-  { id: "ai-engineer", label: "AI Engineer" },
-  { id: "software-engineer", label: "Software Engineer" },
-];
+// Read from the same list the page renders its pills from. This used to be its
+// own hand-kept copy, so a role added to the page had no summary or skills to
+// edit here until someone remembered to add it twice.
+const ROLES = ROLE_IDS.map((id) => ({ id, label: ROLE_SPECS[id].label }));
 
 const HEADINGS = [
   { id: "recruiter.heading.projects", label: "projects" },

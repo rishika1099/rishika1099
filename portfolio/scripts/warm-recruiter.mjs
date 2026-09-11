@@ -13,8 +13,6 @@
 // happens to leave the cache full.
 
 const base = (process.argv[2] || "https://rishika-m.com").replace(/\/$/, "");
-const ROLES = ["data-scientist", "ml-engineer", "ai-engineer", "software-engineer"];
-
 const slugOf = (repo) => (repo || "").split("/").pop()?.toLowerCase() ?? "";
 
 async function main() {
@@ -24,9 +22,12 @@ async function main() {
     process.exit(1);
   }
   const { byRole } = await res.json();
+  // the roles come from the site, not a list kept here: a hand-kept copy is how
+  // a new role ends up on the page with nothing warmed behind it
+  const roles = Object.keys(byRole ?? {});
 
-  const slugs = [...new Set(ROLES.flatMap((r) => (byRole?.[r] ?? []).map(slugOf)))].filter(Boolean);
-  console.log(`warming ${slugs.length} projects across ${ROLES.length} roles\n`);
+  const slugs = [...new Set(roles.flatMap((r) => (byRole?.[r] ?? []).map(slugOf)))].filter(Boolean);
+  console.log(`warming ${slugs.length} projects across ${roles.length} roles\n`);
 
   let drawn = 0;
   let written = 0;

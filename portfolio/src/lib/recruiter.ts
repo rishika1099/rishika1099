@@ -10,7 +10,7 @@ import type { Category, Project } from "@/data/projects";
 import type { Entry } from "@/data/about";
 import { richToText } from "@/lib/richHtml";
 
-export const ROLES = ["data-scientist", "ml-engineer", "ai-engineer", "software-engineer"] as const;
+export const ROLES = ["data-scientist", "ml-engineer", "ai-engineer", "software-engineer", "fde"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const isRole = (v: unknown): v is Role => ROLES.includes(v as Role);
@@ -101,6 +101,36 @@ export const ROLE_SPECS: Record<Role, RoleSpec> = {
       "CI/CD",
       "System design",
       "Testing",
+    ],
+  },
+  fde: {
+    label: "Forward Deployed Engineer",
+    article: "a Forward Deployed Engineer",
+    // The job is taking a working system into someone else's problem and making
+    // it hold up there, so the evidence is applied work that shipped to real
+    // users rather than any one technique. The areas lead with the systems she
+    // built for other people to use; curated and demoed projects still win the
+    // ordering, which is right here, since a demo is exactly what this role
+    // gets asked for.
+    areas: ["Agentic AI", "Generative AI", "Predictive Analysis", "Internet of Things", "Machine Learning"],
+    // Every one of these is in her entries: delivery owned end to end at Shell,
+    // Power BI, Power Apps and Power Automate across Shell and Novartis, drug
+    // codes joined across two regional systems, and LLM work in regulated pharma
+    // and clinical settings.
+    skills: [
+      "End-to-end delivery",
+      "Stakeholder communication",
+      "Data integration",
+      "Workflow automation",
+      "LLM systems",
+      "RAG",
+      "Evaluation",
+      "Regulated environments",
+      "Databricks",
+      "Power Platform",
+      "Python",
+      "SQL",
+      "TypeScript",
     ],
   },
   "ai-engineer": {
