@@ -163,27 +163,40 @@ export default function HomeClient({
         ))}
       </m.div>
 
-      {/* a peek at the living /now page */}
+      {/* a peek at the living /now page, and the way in for someone hiring.
+
+          Lined up with the tiles above rather than simply centred. Centred,
+          the two buttons were different widths, so the gap between them sat
+          9px off the gap between Work and Blog, and the row looked slightly
+          wrong without anything being obviously so. Now they share a width
+          (a grid column sizes to the wider one) and the tiles' 16px gap, so
+          their inner edges land exactly on Work's right edge and Blog's left.
+          Stacked on a phone, where the tiles are two across and two buttons
+          side by side would not fit. */}
       <m.div
         initial={{ y: 10 }}
         animate={{ y: 0 }}
         transition={{ delay: 0.95 }}
-        className="mt-6 flex flex-wrap items-center justify-center gap-3"
+        className="mt-6 flex justify-center"
       >
-        <Link
-          href="/now"
-          className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow-sm backdrop-blur transition hover:bg-white hover:text-ink"
+        <div
+          className={`grid max-w-full grid-cols-1 gap-3 ${recruiterLine ? "sm:grid-cols-2 sm:gap-4" : ""}`}
         >
-          🧭 check what i&apos;m working on now →
-        </Link>
-        {recruiterLine && (
           <Link
-            href="/recruiter"
-            className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow-sm backdrop-blur transition hover:bg-white hover:text-ink"
+            href="/now"
+            className="inline-flex items-center justify-center gap-1.5 rounded-full bg-white/70 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow-sm backdrop-blur transition hover:bg-white hover:text-ink"
           >
-            {recruiterLine}
+            🧭 check what i&apos;m working on now →
           </Link>
-        )}
+          {recruiterLine && (
+            <Link
+              href="/recruiter"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-white/70 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow-sm backdrop-blur transition hover:bg-white hover:text-ink"
+            >
+              {recruiterLine}
+            </Link>
+          )}
+        </div>
       </m.div>
     </PageShell>
   );
