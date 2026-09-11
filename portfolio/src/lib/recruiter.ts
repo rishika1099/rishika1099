@@ -10,7 +10,14 @@ import type { Category, Project } from "@/data/projects";
 import type { Entry } from "@/data/about";
 import { richToText } from "@/lib/richHtml";
 
-export const ROLES = ["data-scientist", "ml-engineer", "ai-engineer", "software-engineer", "fde"] as const;
+export const ROLES = [
+  "data-scientist",
+  "ml-engineer",
+  "ai-engineer",
+  "software-engineer",
+  "fde",
+  "ai-pm",
+] as const;
 export type Role = (typeof ROLES)[number];
 
 export const isRole = (v: unknown): v is Role => ROLES.includes(v as Role);
@@ -31,6 +38,18 @@ interface RoleSpec {
    * single bubble with a list inside it rather than three things she knows.
    */
   skills: string[];
+  /**
+   * Projects this role shows first, by repo name, in this order, before the
+   * area ranking fills whatever room is left.
+   *
+   * For a role whose evidence is a kind of work rather than a technical area.
+   * Product work is filed under whatever the product is built with, so the
+   * area ranking cannot find it: the product projects are uncurated and tagged
+   * Machine Learning like dozens of experiments, and ranked by area they lose
+   * every slot to the flagship AI work. A repo that has been renamed or removed
+   * is skipped, and the ranking takes its place.
+   */
+  pinned?: string[];
 }
 
 export const ROLE_SPECS: Record<Role, RoleSpec> = {
@@ -133,6 +152,45 @@ export const ROLE_SPECS: Record<Role, RoleSpec> = {
       "TypeScript",
     ],
   },
+  "ai-pm": {
+    label: "AI Product Manager",
+    article: "an AI Product Manager",
+    // What the evidence supports, and no more: product sense, and the ability
+    // to build the product herself. Each discovery doc says in her own words
+    // that nothing has been validated with a real user yet, and there is no PM
+    // title, team or roadmap behind it, which is why this is AI Product Manager
+    // rather than Product Manager.
+    areas: ["Generative AI", "Agentic AI", "Predictive Analysis", "Machine Learning"],
+    // Discovery with a job to be done, a metric fixed before the results, a
+    // decision memo, launch criteria, and three of them live.
+    pinned: [
+      "redress",
+      "before-you-sign",
+      "email-lift-readout",
+      "eval-kit",
+      "demo-triage",
+      "dsi-course-evaluation-website",
+    ],
+    // Each is in those repositories: jobs-to-be-done discovery docs, a
+    // pre-registered primary metric with Holm-corrected tests, a decision memo,
+    // a readiness report with customer-set targets, the incumbent tools a
+    // renter has today, and the protected-class proxies taken out of Redress.
+    skills: [
+      "Product discovery",
+      "Jobs to be done",
+      "Success metrics",
+      "Experiment design",
+      "A/B testing",
+      "Decision memos",
+      "Launch readiness",
+      "Competitive analysis",
+      "Responsible AI",
+      "LLM products",
+      "Evaluation",
+      "Python",
+      "SQL",
+    ],
+  },
   "ai-engineer": {
     label: "AI Engineer",
     article: "an AI Engineer",
@@ -162,8 +220,17 @@ export const ROLE_SPECS: Record<Role, RoleSpec> = {
  * area tags alone cannot tell a flagship from a weekend experiment.
  */
 export function projectsForRole(projects: Project[], role: Role, limit = 6): Project[] {
-  const { areas } = ROLE_SPECS[role];
+  const { areas, pinned = [] } = ROLE_SPECS[role];
+  const slug = (p: Project) => (p.repo || "").split("/").pop()?.toLowerCase() ?? "";
+  const bySlug = new Map(projects.map((p) => [slug(p), p]));
+  const first = pinned
+    .map((name) => bySlug.get(name.toLowerCase()))
+    .filter((p): p is Project => !!p)
+    .slice(0, limit);
+  const taken = new Set(first.map(slug));
+
   const scored = projects
+    .filter((p) => !taken.has(slug(p)))
     .map((p) => {
       let score = 0;
       for (const c of p.categories) {
@@ -186,7 +253,7 @@ export function projectsForRole(projects: Project[], role: Role, limit = 6): Pro
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score || a.p.name.localeCompare(b.p.name));
 
-  return scored.slice(0, limit).map((x) => x.p);
+  return [...first, ...scored.slice(0, limit - first.length).map((x) => x.p)];
 }
 
 /** Research entries whose areas overlap the role, strongest first. */

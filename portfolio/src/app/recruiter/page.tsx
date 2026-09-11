@@ -106,7 +106,10 @@ export default async function Recruiter({
     <section>
       {/* label and pills on one row, the way the work page labels its explain
           modes: "hiring for:" then the four roles. */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Six roles and the label have to share one line at the 960px the page
+          is capped at. At 14px text with 16px padding they needed 1060px, so
+          the pills run a size smaller rather than any role losing its name. */}
+      <div className="flex flex-wrap items-center gap-1.5">
         <p className="font-body text-sm text-ink-soft">{t("recruiter.ask")}</p>
         {/* `contents` dissolves the nav's own box, so the four links sit on the
             label's row as siblings. Nested, the nav was one wide flex item that
@@ -122,7 +125,7 @@ export default async function Recruiter({
               // in the page's own periwinkle rather than the site's ink: a
               // dark pill on a pale ground read as borrowed from another page
               style={{ backgroundColor: on ? "#c2c0ef" : "rgba(255,255,255,0.62)" }}
-              className={`rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
+              className={`rounded-full px-3 py-1.5 font-body text-[13px] font-semibold transition ${
                 on ? "text-ink shadow-sm ring-1 ring-white/70" : "text-ink-soft hover:text-ink"
               }`}
             >

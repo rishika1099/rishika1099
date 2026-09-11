@@ -151,6 +151,11 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "summary shown for Forward Deployed Engineer",
     text: "Two years at Shell deploying forecasting pipelines across 12 business units, with the predictions landing in front of executives in Power BI and Power Apps. Since then, LLM systems that take manual work off the people doing it: drug-code mapping in regulated pharma at Novartis, and clinical chart abstraction and human-rights review at Columbia.",
   },
+  "recruiter.summary.ai-pm": {
+    page: "recruiter",
+    label: "summary shown for AI Product Manager",
+    text: "Builds the product and the case for it: discovery that starts from the job to be done, a success metric fixed before the results, and a decision at the end. Three AI products live, among them a refund-first complaint queue for banks and a lease check for NYC renters, plus the readout of a 64,000-customer email experiment.",
+  },
   "recruiter.jd.label": {
     page: "recruiter",
     label: "job-description box heading",
@@ -195,6 +200,11 @@ export const copyDefaults: Record<string, CopyBlock> = {
     page: "recruiter",
     label: "skills shown for Forward Deployed Engineer (one per line or comma separated)",
     text: "End-to-end delivery, Stakeholder communication, Data integration, Workflow automation, LLM systems, RAG, Evaluation, Regulated environments, Databricks, Power Platform, Python, SQL, TypeScript",
+  },
+  "recruiter.skills.ai-pm": {
+    page: "recruiter",
+    label: "skills shown for AI Product Manager (one per line or comma separated)",
+    text: "Product discovery, Jobs to be done, Success metrics, Experiment design, A/B testing, Decision memos, Launch readiness, Competitive analysis, Responsible AI, LLM products, Evaluation, Python, SQL",
   },
   "recruiter.heading.projects": { page: "recruiter", label: "projects heading", text: "Selected projects" },
   "recruiter.heading.research": { page: "recruiter", label: "research heading", text: "Research" },
