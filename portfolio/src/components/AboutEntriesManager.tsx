@@ -270,7 +270,7 @@ export default function AboutEntriesManager({
   section,
 }: {
   keyVal: string;
-  section: "education" | "work" | "research" | "certifications";
+  section: "education" | "teaching" | "work" | "research" | "certifications";
 }) {
   const api = adminApi(keyVal);
   const router = useRouter();
@@ -278,6 +278,7 @@ export default function AboutEntriesManager({
   const [work, setWork] = useState<KEntry[]>([]);
   const [research, setResearch] = useState<KEntry[]>([]);
   const [certifications, setCertifications] = useState<KEntry[]>([]);
+  const [teaching, setTeaching] = useState<KEntry[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -294,12 +295,13 @@ export default function AboutEntriesManager({
   }
 
   useEffect(() => {
-    api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about")
+    api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[]; teaching?: Entry[] }>("/api/admin/about")
       .then((d) => {
         setEducation(d.education.map(keyed));
         setWork(d.timeline.filter((e) => !isResearchEntry(e)).map(keyed));
         setResearch(d.timeline.filter(isResearchEntry).map(keyed));
         setCertifications((d.certifications ?? []).map(keyed));
+        setTeaching((d.teaching ?? []).map(keyed));
       })
       .catch(() => setMsg("couldn't load, refresh?"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -308,6 +310,8 @@ export default function AboutEntriesManager({
   const list =
     section === "education"
       ? education ?? []
+      : section === "teaching"
+        ? teaching
       : section === "work"
         ? work
         : section === "research"
@@ -316,6 +320,8 @@ export default function AboutEntriesManager({
   const setList =
     section === "education"
       ? setEducation
+      : section === "teaching"
+        ? setTeaching
       : section === "work"
         ? setWork
         : section === "research"
@@ -339,6 +345,7 @@ export default function AboutEntriesManager({
             ...research.map((e) => stampSection(e, "research")),
           ],
           certifications,
+          teaching,
         }),
       });
       router.refresh();
@@ -370,7 +377,7 @@ export default function AboutEntriesManager({
     // This clears the whole About record, not just the section on screen. The
     // old wording said "the About {section} entries", which is how a revert in
     // one tab took the certifications with it.
-    const counts = `${education?.length ?? 0} education, ${work.length} work, ${research.length} research, ${certifications.length} certifications`;
+    const counts = `${education?.length ?? 0} education, ${work.length} work, ${research.length} research, ${certifications.length} certifications, ${teaching.length} teaching`;
     if (
       !confirm(
         `Revert ALL About entries, every section, not just ${section}?\n\n` +
@@ -380,11 +387,12 @@ export default function AboutEntriesManager({
     )
       return;
     await api("/api/admin/about", { method: "DELETE" });
-    const d = await api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[] }>("/api/admin/about");
+    const d = await api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[]; teaching?: Entry[] }>("/api/admin/about");
     setEducation(d.education.map(keyed));
     setWork(d.timeline.filter((e) => !isResearchEntry(e)).map(keyed));
     setResearch(d.timeline.filter(isResearchEntry).map(keyed));
     setCertifications((d.certifications ?? []).map(keyed));
+    setTeaching((d.teaching ?? []).map(keyed));
     setMsg("reverted ✓");
   }
 

@@ -14,6 +14,7 @@ export default function AboutClient({
   education,
   timeline,
   certifications = [],
+  teaching = [],
   bioHtml,
   title,
   heads,
@@ -22,6 +23,7 @@ export default function AboutClient({
   education: Entry[];
   timeline: Entry[];
   certifications?: Entry[];
+  teaching?: Entry[];
   bioHtml: string;
   title: React.ReactNode;
   navLabels: {
@@ -30,6 +32,7 @@ export default function AboutClient({
     work: string;
     research: string;
     certifications: string;
+    teaching: string;
   };
   heads: {
     education: React.ReactNode;
@@ -38,6 +41,7 @@ export default function AboutClient({
     work: React.ReactNode;
     research: React.ReactNode;
     certifications: React.ReactNode;
+    teaching: React.ReactNode;
   };
 }) {
   // the About cards get the same fill the project cards do, from each entry's
@@ -85,6 +89,7 @@ export default function AboutClient({
       <SectionNav
         sections={[
           { id: "education", label: navLabels.education },
+          ...(teaching.length ? [{ id: "teaching", label: navLabels.teaching }] : []),
           { id: "skills", label: navLabels.skills },
           { id: "work", label: navLabels.work },
           { id: "research", label: navLabels.research },
@@ -106,6 +111,21 @@ export default function AboutClient({
           <EntryCard key={e.title} entry={e} i={i} showAttachments />
         ))}
       </div>
+
+      {/* Teaching: the courses she has TA'd, right under the degrees they sit
+          beside. Two-up like the degrees, and only when there are any. */}
+      {teaching.length > 0 && (
+        <>
+          <h2 id="teaching" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
+            {heads.teaching}
+          </h2>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {teaching.map((e, i) => (
+              <EntryCard key={e.title} entry={e} i={i} />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Skills */}
       <h2 id="skills" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">

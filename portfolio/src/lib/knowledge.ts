@@ -14,6 +14,7 @@ export type ChunkKind =
   | "experience"
   | "research"
   | "education"
+  | "teaching"
   | "project"
   | "writing";
 
@@ -30,8 +31,13 @@ function clean(s: string): string {
 }
 
 function entryText(e: Entry): string {
-  // fields may now hold ink-editor HTML; strip to plain text for the bot
-  const head = `${richToText(e.title)} at ${richToText(e.place)} (${richToText(e.when)}). ${richToText(e.note, 800)}`;
+  // fields may now hold ink-editor HTML; strip to plain text for the bot.
+  // The subtitle is part of the name: since the degrees were split it carries
+  // the major ("Data Science"), and on a teaching card it is the only field
+  // that says she was the TA, so leaving it out told the bot she had taken a
+  // course she was in fact teaching.
+  const sub = e.subtitle ? `, ${richToText(e.subtitle)}` : "";
+  const head = `${richToText(e.title)}${sub} at ${richToText(e.place)} (${richToText(e.when)}). ${richToText(e.note, 800)}`;
   const details = richToText(detailsToHtml(e.details), 1500);
   return clean(`${head} ${details}`);
 }
@@ -62,7 +68,7 @@ export async function buildKnowledge(): Promise<Chunk[]> {
   });
 
   // entries may be edited via the secret /edit room; use the merged view
-  const { education, timeline } = await getAboutEntries();
+  const { education, timeline, teaching } = await getAboutEntries();
 
   for (const e of education) {
     const title = richToText(e.title);
@@ -70,6 +76,20 @@ export async function buildKnowledge(): Promise<Chunk[]> {
       id: `edu:${title}`,
       title,
       kind: "education",
+      text: entryText(e),
+      href: "/about",
+    });
+  }
+
+  // named for what she did rather than for the course, so a question about
+  // teaching finds these and a question about NLP does not mistake a course
+  // she taught for one of her own projects
+  for (const e of teaching) {
+    const title = `Teaching Assistant: ${richToText(e.title)}`;
+    chunks.push({
+      id: `teach:${richToText(e.title)}`,
+      title,
+      kind: "teaching",
       text: entryText(e),
       href: "/about",
     });

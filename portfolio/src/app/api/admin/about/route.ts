@@ -84,6 +84,7 @@ export async function POST(request: Request) {
       education?: unknown[];
       timeline?: unknown[];
       certifications?: unknown[];
+      teaching?: unknown[];
       promote?: boolean;
     };
     // "make these the default": pin what is live now so revert lands here
@@ -96,13 +97,25 @@ export async function POST(request: Request) {
     }
     const education = body.education.map(cleanEntry).filter((e): e is Entry => e !== null);
     const timeline = body.timeline.map(cleanEntry).filter((e): e is Entry => e !== null);
-    const certifications = Array.isArray(body.certifications)
-      ? body.certifications.map(cleanEntry).filter((e): e is Entry => e !== null)
-      : [];
+
+    // A section the request does not mention is kept as it is, not emptied.
+    //
+    // Every editor posts the whole About set, so a section added after an
+    // editor was written is simply absent from what that editor sends. Reading
+    // absence as "empty" is how one revert erased the certifications, and a new
+    // teaching section would have gone the same way the first time anything
+    // older saved: the about edit room, the atelier, or a tab left open from
+    // before this deploy. An explicit empty array still clears a section; only
+    // silence is taken to mean "leave it".
+    const current = await getAboutEntries();
+    const keep = (v: unknown[] | undefined, stored: Entry[]) =>
+      Array.isArray(v) ? v.map(cleanEntry).filter((e): e is Entry => e !== null) : stored;
+    const certifications = keep(body.certifications, current.certifications);
+    const teaching = keep(body.teaching, current.teaching);
     if (!education.length || !timeline.length) {
       return NextResponse.json({ error: "entries need at least a title" }, { status: 400 });
     }
-    await saveAboutEntries({ education, timeline, certifications });
+    await saveAboutEntries({ education, timeline, certifications, teaching });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });

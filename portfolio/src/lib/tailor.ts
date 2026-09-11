@@ -137,11 +137,13 @@ export async function tailorTo(jd: string): Promise<Tailored> {
     .map((p) => `${p.name}: ${richToText(p.blurb, 180)}`);
 
   // certifications, degrees and roles, with the details behind them: a Udemy
-  // course is evidence of a skill the resume never mentions
+  // course is evidence of a skill the resume never mentions, and so is a course
+  // she teaches, which is stronger evidence than one she took
   const about = [
     ...aboutEntries.education,
     ...aboutEntries.timeline,
     ...aboutEntries.certifications,
+    ...aboutEntries.teaching,
   ].map((e) =>
     [
       richToText(e.title),

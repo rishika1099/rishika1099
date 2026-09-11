@@ -137,6 +137,50 @@ export const timeline: Entry[] = [
 // the /about/edit room.
 export const certifications: Entry[] = [];
 
+// Courses she has taught as a TA, listed with what each covers, in the same
+// "**Topics:**" form the degree cards use for coursework. Taken from the
+// courses' own pages rather than written from memory: the NLP schedule is
+// Hewitt's lecture list, the policy course its directory description.
+//
+// These are the defaults. A saved About override that predates this section
+// falls back to them rather than to an empty list, so they appear without a
+// write to the live data, and once she edits the section in the atelier the
+// saved copy takes over.
+export const teaching: Entry[] = [
+  {
+    icon: "💬",
+    when: "Fall 2026",
+    title: "Natural Language Processing",
+    subtitle: "Teaching Assistant, COMS 4705",
+    place:
+      'Columbia University, taught by <a href="https://www.cs.columbia.edu/~johnhew/coms4705/index.html" target="_blank" rel="noopener noreferrer">John Hewitt</a>',
+    note: "From tokenization and transformers through RLHF, agents and interpretability.",
+    details: [
+      "**Foundations:** language modeling, tokenization, and representation learning, from architectures to how they learn.",
+      "**Transformers:** self-attention, GPUs and parallelizable architectures, pretraining, and finetuning and sampling.",
+      "**Alignment and agents:** instruction following and RLHF, RLVR and agent alignment, and retrieval and tools.",
+      "**Evaluation and responsibility:** tasks and evaluation, experimental design, AI safety, bias, fairness and privacy, and interpretability and analysis.",
+      "**Also:** building a machine translation system, diffusion models, and the history of NLP.",
+    ],
+    tech: ["NLP", "Generative AI", "Deep Learning"],
+  },
+  {
+    icon: "🏛️",
+    when: "Spring 2026",
+    title: "Artificial Intelligence for Public Policy",
+    subtitle: "Teaching Assistant",
+    place: "Columbia University, Data Science Institute",
+    note: "AI fundamentals for policy students, and how to turn a policy problem into an AI solution.",
+    details: [
+      "**Foundations:** the fundamentals of AI, and the mathematical and programming principles behind common machine learning algorithms for prediction, classification and clustering.",
+      "**In practice:** applications of AI across business, non-profits and government, and its implications for the future of governance.",
+      "**Concept to Implementation:** student groups identify a public policy problem, work through the data and algorithmic considerations, and propose an AI-driven solution.",
+    ],
+    tech: ["Machine Learning"],
+    domains: ["Public Sector"],
+  },
+];
+
 export const education: Entry[] = [
   {
     icon: "🦁",

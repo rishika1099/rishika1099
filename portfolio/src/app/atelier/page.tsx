@@ -73,6 +73,7 @@ const CLUSTERS = [
   ["photos", "📷 photos", "#ffc0a0"],
   ["work", "💼 work", "#cdeac0"],
   ["education", "🎓 education", "#e6d7f5"],
+  ["teaching", "🍎 teaching", "#f9cfc4"],
   ["research", "🔬 research", "#c5e8d5"],
   ["certifications", "📜 certifications", "#efd9b0"],
   ["contact", "💌 contact", "#f7b7c9"],
@@ -603,6 +604,7 @@ function EditRoom() {
           {tab === "photos" && <PhotosTab keyVal={key} />}
           {tab === "work" && <AboutEntriesManager keyVal={key} section="work" />}
           {tab === "education" && <AboutEntriesManager keyVal={key} section="education" />}
+          {tab === "teaching" && <AboutEntriesManager keyVal={key} section="teaching" />}
           {tab === "research" && <AboutEntriesManager keyVal={key} section="research" />}
           {tab === "certifications" && <AboutEntriesManager keyVal={key} section="certifications" />}
           {tab === "contact" && (
