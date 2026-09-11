@@ -58,6 +58,22 @@ Rules:
 - Do not use em dashes or en dashes; use commas, colons, or separate sentences.
 - You do not have access to her private poems or photos, so do not claim to.`;
 
+// The date the answer is being given on, stated rather than left for the model
+// to assume. Without it the bot has no way to tell what is current: asked about
+// her teaching it said she "will be" the TA for a course she was teaching that
+// very semester, because "Fall 2026" reads as the future to a model that does
+// not know it is autumn 2026. Computed per request, not once at module load.
+function systemPrompt(now = new Date()): string {
+  const today = now.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "America/New_York",
+  });
+  return `${SYSTEM}
+- Today is ${today}. Use it to tell present from past. A role running to "present" is current. Semesters are Spring (January to May), Summer (June to August) and Fall (September to December), and one is current only if today falls inside it: otherwise it has finished or has not started. Describe what is current in the present tense and what has finished in the past tense.`;
+}
+
 // Follow-up questions often lean on pronouns ("a demo of it?"), so retrieval
 // embeds a little recent conversation alongside the question to keep the
 // referent, while the raw question still goes to the model as-is.
@@ -67,6 +83,41 @@ function retrievalText(question: string, history: Turn[]): string {
   const lastUser = [...recent].reverse().find((t) => t.role === "user")?.text ?? "";
   const lastBot = [...recent].reverse().find((t) => t.role === "bot")?.text ?? "";
   return [lastUser, lastBot.slice(0, 300), question].filter(Boolean).join("\n");
+}
+
+// Semester months, zero-based: Spring Jan to May, Summer Jun to Aug, Fall Sep to Dec.
+const TERMS: Record<string, [number, number]> = { spring: [0, 4], summer: [5, 7], fall: [8, 11] };
+
+/**
+ * Label each semester in a passage with whether it is happening now.
+ *
+ * Telling the model the date was not enough. Given "Spring 2026" and "Fall
+ * 2026" on a September morning, it said three times out of three that she was
+ * currently teaching the finished spring course and would be teaching the one
+ * she was in the middle of. A semester name is the one date form on the site
+ * that needs arithmetic to place, and the model does not do it reliably, so it
+ * is done here instead and the answer is handed over as a word.
+ *
+ * Applied as the context is assembled, per question, and deliberately not when
+ * the index is built: the index is cached for as long as the server instance
+ * lives, so a status baked in there would still say "current" after the
+ * semester had ended.
+ */
+function withTermStatus(text: string, now = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "numeric",
+  }).formatToParts(now);
+  const year = Number(parts.find((p) => p.type === "year")?.value);
+  const month = Number(parts.find((p) => p.type === "month")?.value) - 1;
+  const today = year * 12 + month;
+  return text.replace(/\b(Spring|Summer|Fall) (\d{4})\b/g, (whole, term: string, y: string) => {
+    const [from, to] = TERMS[term.toLowerCase()];
+    const status =
+      today < Number(y) * 12 + from ? "upcoming" : today > Number(y) * 12 + to ? "finished" : "current";
+    return `${whole}, ${status} semester`;
+  });
 }
 
 // Retrieve the top-k chunks for a question and build the prompt context + sources.
@@ -82,7 +133,7 @@ async function retrieve(openai: OpenAI, question: string, k: number, history: Tu
     .sort((a, b) => b.score - a.score)
     .slice(0, k);
   const context = ranked
-    .map((r, i) => `[${i + 1}] (${r.c.kind}) ${r.c.title}\n${r.c.text}`)
+    .map((r, i) => `[${i + 1}] (${r.c.kind}) ${r.c.title}\n${withTermStatus(r.c.text)}`)
     .join("\n\n");
   const sources: Source[] = ranked.map((r) => ({
     title: r.c.title,
@@ -148,7 +199,7 @@ export async function* answerStream(
     temperature: 0.3,
     stream: true,
     messages: [
-      { role: "system", content: SYSTEM },
+      { role: "system", content: systemPrompt() },
       ...historyMessages(history),
       { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` },
     ],
@@ -179,7 +230,7 @@ export async function answerQuestion(
     model: "gpt-4o-mini",
     temperature: 0.3,
     messages: [
-      { role: "system", content: SYSTEM },
+      { role: "system", content: systemPrompt() },
       ...historyMessages(history),
       { role: "user", content: `Context:\n${context}\n\nQuestion: ${question}` },
     ],
