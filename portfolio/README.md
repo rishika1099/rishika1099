@@ -92,7 +92,7 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   defense manufacturers on human-rights due diligence", never "healthcare research", and
   an entry with no bearing on the role comes back unchanged rather than stretched. The
   cards do not change: the angled note arrives through the same context the About page
-  already feeds them through. Cached per role, since the four roles are fixed.
+  already feeds them through. Cached per role, since the roles are a fixed set.
   (`src/lib/angle.ts`)
 - **Embedding a whole posting does not work.** A long posting averages out to a blur: the
   scores bunched between 0.42 and 0.50 and her flagship clinical work ranked below a
@@ -155,7 +155,7 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   twinkling sparkles, and a synced card-hover tint. The active nav tab tints to match the
   page it leads to.
 - **Home:** flower-framed portrait, animated cursive name, quick links.
-- **About:** expandable education/work/research/certification cards, a sticky jump bar
+- **About:** expandable education/teaching/work/research/certification cards, a sticky jump bar
   linking straight to each section (and `#research` style deep links), and the skills
   network graph.
 - **Work:** semantic search box + ELI5/expert toggle + featured blooms, then every project
@@ -174,8 +174,9 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   (Substack) links, freely editable tags (anything, not just the built-in taxonomy), and
   inline first-page previews for PDF attachments.
 - **Recruiter mode (`/recruiter`):** the same material with the volume down, for someone
-  hiring for one specific role. It asks which of four roles (Data Scientist, ML Engineer,
-  AI Engineer, Software Engineer) and then shows only what argues for it: selected projects,
+  hiring for one specific role. It asks which of six roles (Data Scientist, ML Engineer,
+  AI Engineer, Software Engineer, Forward Deployed Engineer, AI Product Manager) and then
+  shows only what argues for it: the résumé lines that role calls for, selected projects,
   research, experience, education and skills. Relevance decides which projects are eligible;
   whether she wrote a project up decides the order among them, weighted far above the area
   tags, because dozens of small experiments carry a generic tag and a tie broken
@@ -185,7 +186,14 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   project and entry cards the Work and About pages use, not copies of them. There is also
   a box to paste the posting itself, which filters the same page rather than producing a
   second one, and re-angles her experience toward what it asks for. Work, research and
-  education are visible before any role is picked, since they do not depend on one.
+  education are visible before any role is picked, since they do not depend on one. The
+  résumé lines are selection and never writing: the model picks her real entries and
+  bullets by index, so it cannot return a line she did not write, and they are chosen once
+  per role and kept, with a posting's picks replacing a tile's until the box is cleared.
+  One role names its projects outright instead of ranking them by area, because product
+  work is filed under whatever it is built with: those projects carry a generic Machine
+  Learning tag like dozens of experiments, so ranking by area handed every slot to the
+  flagship AI work. (`src/lib/resumePicks.ts`)
 - **One surface per page.** Dialogs portal to `<body>`, outside the page's vibe wrapper, so
   they cannot inherit the ground they were opened from and were hardcoded cream everywhere.
   Each page now publishes its own colour on the root element and anything rendered outside
