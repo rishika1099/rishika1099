@@ -210,6 +210,7 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "recruiter.heading.research": { page: "recruiter", label: "research heading", text: "Research" },
   "recruiter.heading.experience": { page: "recruiter", label: "experience heading", text: "Experience" },
   "recruiter.heading.education": { page: "recruiter", label: "education heading", text: "Education" },
+  "recruiter.heading.teaching": { page: "recruiter", label: "teaching heading", text: "Teaching" },
   "recruiter.heading.skills": { page: "recruiter", label: "skills heading", text: "Skills" },
   "contact.title": { page: "contact", label: "page title", text: "let's say hello 💌" },
   "contact.form.title": { page: "contact", label: "message form heading", text: "send me a message 💌" },

@@ -19,6 +19,7 @@ const HEADINGS = [
   { id: "recruiter.heading.research", label: "research" },
   { id: "recruiter.heading.experience", label: "experience" },
   { id: "recruiter.heading.education", label: "education" },
+  { id: "recruiter.heading.teaching", label: "teaching" },
   { id: "recruiter.heading.skills", label: "skills" },
   { id: "recruiter.heading.resume", label: "résumé lines (shown only for a posting)" },
 ];

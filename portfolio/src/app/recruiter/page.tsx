@@ -71,7 +71,7 @@ export default async function Recruiter({
   const { role: raw } = await searchParams;
   const role: Role | null = isRole(raw) ? raw : null;
 
-  const [projects, { education, timeline }, copy] = await Promise.all([
+  const [projects, { education, timeline, teaching }, copy] = await Promise.all([
     getAllProjects(),
     getAboutEntries(),
     getCopy(),
@@ -157,6 +157,7 @@ export default async function Recruiter({
           picker={picker}
           projects={projects}
           education={education}
+          teaching={teaching}
           timeline={timeline}
           t={t}
         />
@@ -194,6 +195,13 @@ export default async function Recruiter({
 
           <Heading>{t("recruiter.heading.education")} 🎓</Heading>
           <RecruiterEntries entries={education} />
+
+          {teaching.length > 0 && (
+            <>
+              <Heading>{t("recruiter.heading.teaching")} 🍎</Heading>
+              <RecruiterEntries entries={teaching} />
+            </>
+          )}
         </RecruiterView>
       )}
 
@@ -215,6 +223,7 @@ async function RoleView({
   picker,
   projects,
   education,
+  teaching,
   timeline,
   t,
 }: {
@@ -222,6 +231,7 @@ async function RoleView({
   picker: React.ReactNode;
   projects: Awaited<ReturnType<typeof getAllProjects>>;
   education: Awaited<ReturnType<typeof getAboutEntries>>["education"];
+  teaching: Awaited<ReturnType<typeof getAboutEntries>>["teaching"];
   timeline: Awaited<ReturnType<typeof getAboutEntries>>["timeline"];
   t: (k: string) => string;
 }) {
@@ -319,6 +329,13 @@ async function RoleView({
 
       <Heading>{t("recruiter.heading.education")} 🎓</Heading>
       <RecruiterEntries entries={education} />
+
+      {teaching.length > 0 && (
+        <>
+          <Heading>{t("recruiter.heading.teaching")} 🍎</Heading>
+          <RecruiterEntries entries={teaching} />
+        </>
+      )}
     </RecruiterView>
   );
 }
