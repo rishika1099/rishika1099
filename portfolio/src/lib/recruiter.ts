@@ -47,7 +47,10 @@ interface RoleSpec {
    * area ranking cannot find it: the product projects are uncurated and tagged
    * Machine Learning like dozens of experiments, and ranked by area they lose
    * every slot to the flagship AI work. A repo that has been renamed or removed
-   * is skipped, and the ranking takes its place.
+   * is skipped and the ranking takes its place, which fails safely but quietly:
+   * all six were pinned under their old names and renamed the same evening, so
+   * the role quietly showed the flagship AI work instead and looked merely
+   * wrong rather than broken. An unresolved pin is logged for that reason.
    */
   pinned?: string[];
 }
@@ -164,11 +167,11 @@ export const ROLE_SPECS: Record<Role, RoleSpec> = {
     // Discovery with a job to be done, a metric fixed before the results, a
     // decision memo, launch criteria, and three of them live.
     pinned: [
-      "redress",
-      "before-you-sign",
-      "email-lift-readout",
-      "eval-kit",
-      "demo-triage",
+      "bank-complaint-refund-queue",
+      "nyc-rental-building-record-check",
+      "email-campaign-ab-test-readout",
+      "ai-intent-router-eval-kit",
+      "robot-demo-failure-triage",
       "dsi-course-evaluation-website",
     ],
     // Each is in those repositories: jobs-to-be-done discovery docs, a
@@ -223,6 +226,12 @@ export function projectsForRole(projects: Project[], role: Role, limit = 6): Pro
   const { areas, pinned = [] } = ROLE_SPECS[role];
   const slug = (p: Project) => (p.repo || "").split("/").pop()?.toLowerCase() ?? "";
   const bySlug = new Map(projects.map((p) => [slug(p), p]));
+  const missing = pinned.filter((name) => !bySlug.has(name.toLowerCase()));
+  if (missing.length) {
+    console.warn(
+      `[recruiter] ${role}: pinned project not found, check for a rename: ${missing.join(", ")}`,
+    );
+  }
   const first = pinned
     .map((name) => bySlug.get(name.toLowerCase()))
     .filter((p): p is Project => !!p)
