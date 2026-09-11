@@ -20,7 +20,13 @@ password manager**, not only in GitHub secrets: without it this file is
 unrecoverable, which is rather the point.
 
 Each snapshot carries a `counts` census (poems, copy blocks, photos, projects,
-résumé length), so a backup that suddenly shrinks is visible in the commit diff.
+résumé length), which you can read once you have decrypted it.
+
+`.content-sha256` beside it fingerprints that content, with the timestamp left
+out, and decides whether a week's backup is committed at all. The encrypted file
+cannot answer that question: openssl salts at random, so identical content
+encrypts differently every time. A hash rather than the content itself, because
+this repository is public.
 
 ## Not included
 

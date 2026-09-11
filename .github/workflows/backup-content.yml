@@ -58,6 +58,7 @@ jobs:
         env:
           ADMIN_KEY: ${{ secrets.ADMIN_KEY }}
           BACKUP_OUT: /tmp/portfolio-backup.json
+          BACKUP_HASH_OUT: ${{ github.workspace }}/backups/.content-sha256
         run: node scripts/backup-content.mjs
 
       - name: Encrypt it
@@ -81,11 +82,16 @@ jobs:
           # the check found no diff, said nothing had changed and exited green
           # having committed nothing: a backup job that reported success every
           # week while the repository held no backup at all.
-          git add backups/portfolio-backup.json.enc
-          if git diff --cached --quiet -- backups/; then
-            echo "Nothing changed since the last backup."
+          # The fingerprint decides, not the encrypted file. openssl salts at
+          # random, so identical content encrypts differently every run, and the
+          # job committed 144KB every week whether or not a word had changed.
+          git add backups/.content-sha256
+          if git diff --cached --quiet -- backups/.content-sha256; then
+            echo "The site's content is unchanged since the last backup; keeping that snapshot."
+            git restore --staged backups/ || true
             exit 0
           fi
+          git add backups/portfolio-backup.json.enc
           git commit -m "Weekly encrypted content backup [skip ci]"
           # the readme sync bot commits to main too, so land on top of whatever
           # arrived while this ran rather than failing the whole backup on it
