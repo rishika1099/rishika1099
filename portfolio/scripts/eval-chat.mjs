@@ -31,7 +31,7 @@ const grounded = [
   { q: "What did she build for child welfare?", source: ["Predictive Analytics Intern", "Child Welfare", "Data Science Intern"], any: ["risk", "fairness", "explainable"] },
   { q: "What are her main skill areas?", source: "Skills", any: ["causal", "generative", "machine learning", "nlp"] },
   { q: "Tell me about the Federal Eagle project.", source: "Federal Eagle", any: ["legal", "agent", "rag"] },
-  { q: "What did she do at Novartis?", source: "Technical Analyst Intern", any: ["clinical-trial", "sentiment", "summar", "carbon"] },
+  { q: "What did she do at Novartis?", source: "Technical Analyst Intern", any: ["clinical trial", "sentiment", "summar", "carbon", "net zero", "drug identifier"] },
 ];
 
 // Out-of-scope: should defer/refuse, not invent an answer.
@@ -53,6 +53,11 @@ async function ask(question) {
 }
 
 const lc = (s) => s.toLowerCase();
+// Hyphens and spaces count as the same. The Novartis fixture wanted
+// "clinical-trial" while her entry says "clinical trial documents", so a
+// correct answer failed on punctuation whenever the model wrote it the way
+// she did, roughly two runs in five.
+const norm = (s) => lc(s).replace(/[-\u2010\u2011]/g, " ");
 
 let retrievalHits = 0;
 let answerHits = 0;
@@ -64,7 +69,7 @@ for (const t of grounded) {
   const wants = Array.isArray(t.source) ? t.source : [t.source];
   const titles = (sources ?? []).map((s) => s.title ?? "");
   const gotSource = titles.some((title) => wants.some((w) => lc(title).includes(lc(w))));
-  const gotFact = t.any.some((k) => a.includes(lc(k)));
+  const gotFact = t.any.some((k) => norm(a).includes(norm(k)));
   if (gotSource) retrievalHits++;
   if (gotFact) answerHits++;
   console.log(`Q: ${t.q}`);
