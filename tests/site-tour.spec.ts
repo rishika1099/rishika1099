@@ -148,7 +148,13 @@ test("public feature tour", async ({ page }) => {
     // means a panel that failed to open is a clear failure rather than a test
     // that quietly types its question into the project-idea box instead.
     const box = page.getByLabel(/ask about Rishika/i);
-    const chat = page.locator("div.z-50").filter({ has: box });
+    // by role now that the panel is a dialog, falling back to the old handle
+    // so this passes against a deploy made before that
+    const chat = page
+      .getByRole("dialog")
+      .filter({ has: box })
+      .or(page.locator("div.z-50").filter({ has: box }))
+      .first();
     await box.click();
     await box.pressSequentially("What did she build at Shell?", { delay: 40 });
     await box.press("Enter");

@@ -202,6 +202,8 @@ export default function AskMe() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 240, damping: 24 }}
+            role="dialog"
+            aria-label="portfolio guide"
             className="fixed bottom-24 right-5 z-50 flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[1.75rem] border border-white/70 bg-cream/95 shadow-2xl backdrop-blur"
           >
             <div className="flex items-center gap-2 border-b border-ink/10 bg-white/60 px-4 py-3">
