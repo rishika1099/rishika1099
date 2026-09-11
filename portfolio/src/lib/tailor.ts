@@ -119,6 +119,34 @@ function keepEvidenced(skills: string[], evidence: string): string[] {
   });
 }
 
+/**
+ * The resume as numbered entries with numbered bullets, plus its skills lines.
+ *
+ * Shared by the posting match and the per-role picks. Both ask a model to
+ * choose from this list by index, and the same numbering on both sides is what
+ * guarantees neither can hand back a line she did not write.
+ */
+export function flattenResume(sections: ReturnType<typeof parseResumeTex>): {
+  flat: TailoredEntry[];
+  skillLines: string[];
+} {
+  const flat: TailoredEntry[] = [];
+  for (const s of sections) {
+    for (const e of s.entries) {
+      flat.push({
+        section: strip(s.title),
+        title: strip(e.left),
+        meta: [strip(e.subLeft ?? ""), strip(e.right), strip(e.subRight ?? "")]
+          .filter(Boolean)
+          .join(" · "),
+        bullets: e.bullets.map(strip).filter(Boolean),
+      });
+    }
+  }
+  const skillLines = sections.flatMap((s) => s.lines.map(strip)).filter(Boolean);
+  return { flat, skillLines };
+}
+
 export async function tailorTo(jd: string): Promise<Tailored> {
   const posting = jd.slice(0, MAX_JD);
 
@@ -158,20 +186,7 @@ export async function tailorTo(jd: string): Promise<Tailored> {
 
   // Flattened and numbered, because the model answers with indices. It cannot
   // hand back an entry that does not exist.
-  const flat: TailoredEntry[] = [];
-  for (const s of sections) {
-    for (const e of s.entries) {
-      flat.push({
-        section: strip(s.title),
-        title: strip(e.left),
-        meta: [strip(e.subLeft ?? ""), strip(e.right), strip(e.subRight ?? "")]
-          .filter(Boolean)
-          .join(" · "),
-        bullets: e.bullets.map(strip).filter(Boolean),
-      });
-    }
-  }
-  const skillLines = sections.flatMap((s) => s.lines.map(strip)).filter(Boolean);
+  const { flat, skillLines } = flattenResume(sections);
 
   if (!process.env.OPENAI_API_KEY || !flat.length) {
     return { summary: "", entries: [], skills: [], gaps: [], projects: [], angles: {} };

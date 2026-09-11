@@ -9,6 +9,7 @@ import { buildPipeline, getPipeline } from "@/lib/pipeline";
 import { getCaseStudy, hasContent } from "@/lib/caseStudies";
 import { buildAutoCaseStudy, getAutoCaseStudy } from "@/lib/caseStudyAuto";
 import { angleEntries } from "@/lib/angle";
+import { resumeForRole } from "@/lib/resumePicks";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
@@ -270,16 +271,22 @@ async function RoleView({
   // the closest thing she has to a healthcare LLM job, and should not read as
   // irrelevant just because the subject differs. Cached per role, since the
   // four roles are fixed, and under the same deadline as everything else.
-  const angles =
-    (await withDeadline(
+  //
+  // And the resume lines this role calls for, chosen the way a pasted
+  // posting's are. The two run at once, so neither adds its wait to the other.
+  const [angles, resumePicks] = await Promise.all([
+    withDeadline(
       angleEntries([...jobs, ...research, ...education], spec.article, `role-${role}`),
       DRAFT_MS,
-    )) ?? {};
+    ).then((a) => a ?? {}),
+    withDeadline(resumeForRole(role), DRAFT_MS).then((r) => r ?? []),
+  ]);
 
   return (
     <RecruiterView
       picker={picker}
       angles={angles}
+      resumePicks={resumePicks}
       projects={picked}
       slugs={picked.map((p) => repoSlug(p.repo))}
       studies={studies}

@@ -21,6 +21,7 @@ const STORES = [
   { id: "pipelines", label: "pipeline diagrams" },
   { id: "case-studies-auto", label: "drafted case studies" },
   { id: "angles", label: "experience re-angled per role" },
+  { id: "resume-picks", label: "résumé lines chosen per role" },
 ];
 
 function guard(request: Request): NextResponse | null {

@@ -47,6 +47,16 @@ async function main() {
 
   console.log(`\n${drawn}/${slugs.length} have a diagram, ${written}/${slugs.length} a case study.`);
   console.log("the ones without are repos whose readme does not support one, which is fine.");
+
+  // the resume lines each role shows, chosen now rather than by the first
+  // recruiter to click that role
+  console.log(`\nchoosing resume lines for ${roles.length} roles`);
+  for (const r of roles) {
+    const d = await fetch(`${base}/api/resume-picks?role=${r}`).then((x) => x.json()).catch(() => ({}));
+    const entries = d?.entries ?? [];
+    const lines = entries.reduce((a, e) => a + e.bullets.length, 0);
+    console.log(`  ${r.padEnd(20)} ${entries.length ? `${entries.length} entries, ${lines} lines` : "none"}`);
+  }
 }
 
 main().catch((err) => {
