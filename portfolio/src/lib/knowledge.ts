@@ -5,6 +5,7 @@ import { richToText } from "@/lib/richHtml";
 import { isResearchEntry } from "@/lib/aboutSections";
 import { detailsToHtml } from "@/lib/copyRender";
 import { getAllProjects } from "@/lib/github-projects";
+import { ROLES, ROLE_SPECS } from "@/lib/recruiter";
 import { getReadmeSnippet } from "@/lib/github-readme";
 import { getSubstackChunks } from "@/lib/substack";
 
@@ -66,6 +67,32 @@ export async function buildKnowledge(): Promise<Chunk[]> {
     text: `Rishika works across these areas: ${skillAreas.join(", ")}.`,
     href: "/about",
   });
+
+  // What the recruiter page says she is, for each role it offers.
+  //
+  // Without these the bot answered "has she done any product management work?"
+  // by reading her job titles and concluding she had done none, while the page
+  // was making that exact case a couple of clicks away. Her own words either
+  // way: these are the copy blocks she edits, not a claim written here.
+  for (const r of ROLES) {
+    const summary = richToText(copyMap[`recruiter.summary.${r}`] ?? "", 900);
+    if (!summary) continue;
+    const skills =
+      richToText(copyMap[`recruiter.skills.${r}`] ?? "", 400) || ROLE_SPECS[r].skills.join(", ");
+    chunks.push({
+      id: `role:${r}`,
+      title: `The case for hiring her as ${ROLE_SPECS[r].article}`,
+      kind: "experience",
+      // Said outright, because the first version had the bot answering "yes,
+      // she has experience as an AI Product Manager", which a recruiter would
+      // read as a job title she has held. It is the argument her page makes
+      // from the work she has actually done, and the bot should say so.
+      text: clean(
+        `This is the case Rishika's portfolio makes for hiring her as ${ROLE_SPECS[r].article}, not a job title she has held. ${summary} Skills she offers for this: ${skills}.`,
+      ),
+      href: `/recruiter?role=${r}`,
+    });
+  }
 
   // entries may be edited via the secret /edit room; use the merged view
   const { education, timeline, teaching } = await getAboutEntries();

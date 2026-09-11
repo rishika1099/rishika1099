@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import OpenAI from "openai";
 import { buildKnowledge, type Chunk } from "@/lib/knowledge";
 
@@ -39,7 +40,13 @@ let cache: { key: string; chunks: Chunk[]; vectors: number[][] } | null = null;
 
 async function getCorpus(openai: OpenAI) {
   const chunks = await buildKnowledge();
-  const key = chunks.map((c) => c.id).join("|");
+  // Keyed on what the chunks say, not on which ones exist. Keyed by id alone,
+  // editing an About card or a project blurb changed nothing the bot could
+  // see: the set of ids was identical, so the cached text and vectors were
+  // kept and the edit did not reach it until a card was added or renamed.
+  const key = createHash("sha1")
+    .update(chunks.map((c) => `${c.id}\u0000${c.title}\u0000${c.text}`).join("|"))
+    .digest("hex");
   if (!cache || cache.key !== key) {
     const emb = await openai.embeddings.create({
       model: "text-embedding-3-small",
