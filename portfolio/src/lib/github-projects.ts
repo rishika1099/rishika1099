@@ -201,9 +201,22 @@ export const reposAreComplete = () => reposComplete;
 async function fetchRepos(): Promise<GhRepo[]> {
   if (repoCache && Date.now() - repoCache.at < REPO_TTL_MS) return repoCache.repos;
   try {
+    // Authenticated when GITHUB_TOKEN is set, which is worth doing: without it
+    // GitHub allows 60 calls an hour per IP, shared with everything else on
+    // that address, and a refusal here is silent. The catch below keeps the
+    // last list it saw, so a rate-limited refresh does not empty the site, it
+    // quietly serves an older one: a cache twelve days stale was how this was
+    // noticed, with new repositories missing from the roles that pin them.
+    const token = process.env.GITHUB_TOKEN;
     const res = await fetch(
       `https://api.github.com/users/${GH_USER}/repos?per_page=100&sort=updated`,
-      { headers: { Accept: "application/vnd.github+json" }, next: { revalidate: 3600 } },
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        next: { revalidate: 3600 },
+      },
     );
     if (res.ok) {
       const repos = (await res.json()) as GhRepo[];
