@@ -153,7 +153,7 @@ export const teaching: Entry[] = [
     title: "Natural Language Processing",
     subtitle: "Teaching Assistant, COMS 4705",
     place:
-      'Columbia University, taught by <a href="https://www.cs.columbia.edu/~johnhew/coms4705/index.html" target="_blank" rel="noopener noreferrer">John Hewitt</a>',
+      'Columbia University, Computer Science, taught by <a href="https://www.cs.columbia.edu/~johnhew/coms4705/index.html" target="_blank" rel="noopener noreferrer">John Hewitt</a>',
     note: "From tokenization and transformers through RLHF, agents and interpretability.",
     details: [
       "**Foundations:** language modeling, tokenization, and representation learning, from architectures to how they learn.",
@@ -169,7 +169,7 @@ export const teaching: Entry[] = [
     when: "Spring 2026",
     title: "Artificial Intelligence for Public Policy",
     subtitle: "Teaching Assistant",
-    place: "Columbia University, Data Science Institute",
+    place: "Columbia University, School of International and Public Affairs (SIPA)",
     note: "AI fundamentals for policy students, and how to turn a policy problem into an AI solution.",
     details: [
       "**Foundations:** the fundamentals of AI, and the mathematical and programming principles behind common machine learning algorithms for prediction, classification and clustering.",
@@ -190,7 +190,7 @@ export const education: Entry[] = [
     note: "GPA 3.87, focus on machine learning, LLM systems, and causal inference.",
     details: [
       "**Coursework:** Applied Deep Learning, LLM-based Generative AI Systems, Causal Inference, High Performance Machine Learning, Machine Learning, Statistical Inference and Modelling, Exploratory Data Analysis and Visualization, and Agentic AI.",
-      "Teaching Assistant for Artificial Intelligence for Public Policy at the Data Science Institute.",
+      "Teaching Assistant for Artificial Intelligence for Public Policy at SIPA.",
       "DSI Student Council, Communications & Professional Resources.",
       "Research assistant on two LLM projects: clinical phenotyping and human-rights evaluation.",
     ],
