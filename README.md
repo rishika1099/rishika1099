@@ -379,6 +379,7 @@ achievements = {
 | [Agent-Deadlock-Detector](https://github.com/rishika1099/Agent-Deadlock-Detector) | Debug multi-agent systems like distributed systems: happens-before graphs and deadlock/livelock/lost-update detection | Python | ![Agentic AI](https://img.shields.io/badge/Agentic_AI-5E35B1?style=flat-square) |
 | [Agent-Memory-Contradiction-Benchmark](https://github.com/rishika1099/Agent-Memory-Contradiction-Benchmark) | An agent memory layer benchmarked on facts that change: contradiction resolution and recency vs naive similarity | JavaScript | ![Agentic AI](https://img.shields.io/badge/Agentic_AI-5E35B1?style=flat-square) |
 | [Tokenizer-Cost-Across-Languages](https://github.com/rishika1099/Tokenizer-Cost-Across-Languages) | A little experiment on GitHub | JavaScript | ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) |
+| [NYC-Rental-Building-Record-Check](https://github.com/rishika1099/NYC-Rental-Building-Record-Check) | Look up an NYC building's official housing record before signing a lease: violations, complaints, bedbugs and evictions from NYC Open Data, compared per apartment with similar buildings, summarized in plain English. | TypeScript | ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) |
 
 ---
 
@@ -466,6 +467,10 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 | [Distilled-Model-Audit](https://github.com/rishika1099/Distilled-Model-Audit) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Random-Seed-False-Positive-Rate](https://github.com/rishika1099/Random-Seed-False-Positive-Rate) | A little experiment on GitHub | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 | [Validation-Set-Early-Stopping-Cost](https://github.com/rishika1099/Validation-Set-Early-Stopping-Cost) | A little experiment on GitHub | JavaScript | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Email-Campaign-AB-Test-Readout](https://github.com/rishika1099/Email-Campaign-AB-Test-Readout) | A product experiment readout on a real randomized email test of 64,000 customers: soundness checks, effects with intervals, who each email works for, and a decision. | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [AI-Intent-Router-Eval-Kit](https://github.com/rishika1099/AI-Intent-Router-Eval-Kit) | A reusable harness and readiness report for deciding whether an intent router is safe to launch: in-scope accuracy, false accepts, wrongful declines and cost, at every setting. | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Bank-Complaint-Refund-Queue](https://github.com/rishika1099/Bank-Complaint-Refund-Queue) | A complaint queue for bank complaints teams: ranks CFPB complaints by how likely each is to end with money returned, explains every score, and writes an analyst brief with Claude. | Python | ![Finance](https://img.shields.io/badge/Finance-43A047?style=flat-square) ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
+| [Robot-Demo-Failure-Triage](https://github.com/rishika1099/Robot-Demo-Failure-Triage) | Ranks real robot teleoperation episodes (DROID) by how likely each is a failed demonstration, from the arm's motion alone, so a reviewer watches the likely failures first. | Python | ![Machine Learning](https://img.shields.io/badge/Machine_Learning-F57C00?style=flat-square) |
 
 ---
 
