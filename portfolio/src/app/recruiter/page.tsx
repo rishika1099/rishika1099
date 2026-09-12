@@ -10,6 +10,11 @@ import { getCaseStudy, hasContent } from "@/lib/caseStudies";
 import { buildAutoCaseStudy, getAutoCaseStudy } from "@/lib/caseStudyAuto";
 import { angleEntries } from "@/lib/angle";
 import { resumeForRole } from "@/lib/resumePicks";
+import { arrangeForRole } from "@/lib/resumeArrange";
+import { getResumeTex } from "@/lib/resumeSource";
+import { parseResumeTex } from "@/lib/resumeTex";
+import ResumeSheet from "@/components/ResumeSheet";
+import ResumePreview from "@/components/ResumePreview";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
@@ -145,7 +150,11 @@ export default async function Recruiter({
           rather than here */}
       <PageTitle>{t("recruiter.title")}</PageTitle>
 
-      {resumeLinks}
+      {/* Only before a role is chosen. Once one is, the resume itself is on the
+          page below, with its own download beneath it, and a link up here
+          saying "click for the resume" would be pointing at something the
+          reader can already read. */}
+      {!role && resumeLinks}
 
       <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-ink-soft sm:text-lg">
         {role ? t(`recruiter.summary.${role}`) : t("recruiter.intro")}
@@ -292,11 +301,27 @@ async function RoleView({
     withDeadline(resumeForRole(role), DRAFT_MS).then((r) => r ?? []),
   ]);
 
+  // The resume itself, arranged for this role: the entries it calls for first,
+  // and inside them the lines it calls for first. Nothing dropped, nothing
+  // rewritten, so it is her resume and not a version of it.
+  const arranged = arrangeForRole(parseResumeTex(await getResumeTex()), resumePicks);
+
   return (
     <RecruiterView
       picker={picker}
       angles={angles}
-      resumePicks={resumePicks}
+      resumePreview={
+        arranged.length ? (
+          <ResumePreview
+            moreLabel={t("recruiter.resume.more")}
+            lessLabel={t("recruiter.resume.less")}
+            downloadLabel={t("recruiter.resume.download")}
+            pageLabel={t("recruiter.resume.page")}
+          >
+            <ResumeSheet sections={arranged} />
+          </ResumePreview>
+        ) : null
+      }
       projects={picked}
       slugs={picked.map((p) => repoSlug(p.repo))}
       studies={studies}

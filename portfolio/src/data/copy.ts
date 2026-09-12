@@ -166,6 +166,26 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "job-description box hint (one line, it sits under the bar)",
     text: "read, then matched against her projects and skills, gaps and all \u2726",
   },
+  "recruiter.resume.more": {
+    page: "recruiter",
+    label: "button under the resume preview, to open it fully",
+    text: "read the whole résumé",
+  },
+  "recruiter.resume.less": {
+    page: "recruiter",
+    label: "button that collapses the resume preview again",
+    text: "show less",
+  },
+  "recruiter.resume.download": {
+    page: "recruiter",
+    label: "download link under the resume preview",
+    text: "⬇ download the PDF",
+  },
+  "recruiter.resume.page": {
+    page: "recruiter",
+    label: "link to the full-page resume, under the preview",
+    text: "or open it as a page",
+  },
   "recruiter.heading.resume": {
     page: "recruiter",
     label: "heading over the resume lines a posting selects",

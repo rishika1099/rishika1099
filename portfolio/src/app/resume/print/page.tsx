@@ -3,7 +3,8 @@ import { getAboutEntries } from "@/lib/aboutData";
 import { getContactLinks } from "@/lib/contactLinks";
 import { getCopy } from "@/lib/siteCopy";
 import { getResumeTex } from "@/lib/resumeSource";
-import { parseResumeTex, type ResumeSection } from "@/lib/resumeTex";
+import { parseResumeTex } from "@/lib/resumeTex";
+import ResumeSheet from "@/components/ResumeSheet";
 import { copyToHtml, detailsToHtml, hasDetails } from "@/lib/copyRender";
 import PrintButtons from "@/components/PrintButtons";
 import type { Entry } from "@/data/about";
@@ -14,63 +15,6 @@ export const metadata = { title: "Resume" };
 
 const HEADING =
   "border-b border-ink/20 pb-1 font-body text-xs font-bold uppercase tracking-[0.18em] text-ink-soft";
-
-/** The real resume, rendered from the same .tex the PDF is compiled from. */
-function TexSection({ section }: { section: ResumeSection }) {
-  return (
-    <section className="mt-8 print:mt-6">
-      <h2 className={HEADING} dangerouslySetInnerHTML={{ __html: section.title }} />
-      {section.lines.length > 0 && (
-        <div className="mt-3 space-y-1">
-          {section.lines.map((l, i) => (
-            <p
-              key={i}
-              className="font-body text-sm text-ink [&_strong]:font-bold"
-              dangerouslySetInnerHTML={{ __html: l }}
-            />
-          ))}
-        </div>
-      )}
-      {section.entries.length > 0 && (
-        <div className="mt-4 space-y-5 print:space-y-4">
-          {section.entries.map((e, i) => (
-            <div key={i} className="entry">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                <h3
-                  className="font-body text-[15px] font-bold text-ink"
-                  dangerouslySetInnerHTML={{ __html: e.left }}
-                />
-                <span
-                  className="font-body text-xs italic text-ink-soft [&_a]:underline [&_a]:decoration-blush/60"
-                  dangerouslySetInnerHTML={{ __html: e.right }}
-                />
-              </div>
-              {(e.subLeft || e.subRight) && (
-                <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                  <p
-                    className="font-body text-sm italic text-ink-soft"
-                    dangerouslySetInnerHTML={{ __html: e.subLeft ?? "" }}
-                  />
-                  <span
-                    className="font-body text-xs italic text-ink-soft"
-                    dangerouslySetInnerHTML={{ __html: e.subRight ?? "" }}
-                  />
-                </div>
-              )}
-              {e.bullets.length > 0 && (
-                <ul className="mt-1.5 list-disc space-y-1 pl-5 font-body text-sm text-ink">
-                  {e.bullets.map((b, j) => (
-                    <li key={j} dangerouslySetInnerHTML={{ __html: b }} />
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
 
 /** Fallback: the About timeline, used only if the resume source won't parse. */
 function AboutSection({ title, entries }: { title: string; entries: Entry[] }) {
@@ -151,7 +95,7 @@ export default async function ResumePrintPage() {
         </header>
 
         {sections.length > 0 ? (
-          sections.map((s, i) => <TexSection key={i} section={s} />)
+          <ResumeSheet sections={sections} />
         ) : (
           <>
             <AboutSection title="Experience" entries={timeline} />

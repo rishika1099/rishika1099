@@ -5,7 +5,7 @@ import RecruiterProjects from "@/components/RecruiterProjects";
 import type { Project } from "@/data/projects";
 import type { CaseStudy } from "@/lib/caseStudies";
 import type { Pipeline } from "@/lib/pipeline";
-import type { Tailored, TailoredEntry } from "@/lib/tailor";
+import type { Tailored } from "@/lib/tailor";
 import type { Angles } from "@/lib/angle";
 import { FilledNotes } from "@/components/EntryCard";
 
@@ -26,7 +26,7 @@ export default function RecruiterView({
   images,
   skills,
   angles,
-  resumePicks = [],
+  resumePreview,
   projectsLabel,
   projectsHint,
   skillsLabel,
@@ -45,8 +45,8 @@ export default function RecruiterView({
   skills: string[];
   /** each entry's note re-angled toward the role, keyed by title */
   angles: Angles;
-  /** the resume lines chosen for the selected role, until a posting replaces them */
-  resumePicks?: TailoredEntry[];
+  /** the whole resume, arranged for the selected role, rendered on the server */
+  resumePreview?: React.ReactNode;
   projectsLabel: string;
   projectsHint: string;
   skillsLabel: string;
@@ -110,9 +110,12 @@ export default function RecruiterView({
   // same context the About page uses, so nothing about the card changes: only
   // which note it is handed.
   const shownAngles = filtering && Object.keys(match!.angles).length ? match!.angles : angles;
-  // A posting's lines beat the role's, the same way its angles do: the posting
-  // is the more exact version of the question the tile asks.
-  const shownResume = filtering ? match!.entries : resumePicks;
+  // A tile shows the resume itself, arranged for it. A posting shows the lines
+  // it asked for instead: those are chosen in the browser, after the page was
+  // rendered, so the arranged sheet cannot be rebuilt for them here, and the
+  // lines are the more exact answer to a posting anyway.
+  const showPicks = filtering && match!.entries.length > 0;
+  const showPreview = !filtering && !!resumePreview;
 
   return (
     <>
@@ -176,11 +179,13 @@ export default function RecruiterView({
           make the page say everything twice. What is not anywhere else is which
           three lines out of a job answer this particular posting, which is the
           whole of what the model was asked to choose. */}
-      {shownResume.length > 0 && (
+      {(showPicks || showPreview) && (
         <section className="mt-12">
           <h2 className="font-body text-2xl font-bold text-ink">{resumeLabel} 📄</h2>
+          {showPreview && <div className="mt-5">{resumePreview}</div>}
+          {showPicks && (
           <div className="mt-5 space-y-6">
-            {shownResume.map((e, i) => (
+            {match!.entries.map((e, i) => (
               <div key={`${e.title}-${i}`}>
                 <p className="font-body text-sm font-semibold text-ink">{e.title}</p>
                 {e.meta && <p className="font-body text-xs text-ink-soft/80">{e.meta}</p>}
@@ -200,6 +205,7 @@ export default function RecruiterView({
               </div>
             ))}
           </div>
+          )}
         </section>
       )}
 
