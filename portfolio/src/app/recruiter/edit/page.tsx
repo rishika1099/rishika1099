@@ -14,6 +14,11 @@ import { ROLES as ROLE_IDS, ROLE_SPECS } from "@/lib/recruiter";
 // edit here until someone remembered to add it twice.
 const ROLES = ROLE_IDS.map((id) => ({ id, label: ROLE_SPECS[id].label }));
 
+// the email form, then the email it sends, in the order they are met
+const EMAIL_FORM = ["open", "placeholder", "anyrole", "jd", "send", "sending", "note", "sent", "bademail", "limit", "error"];
+const EMAIL_BODY = ["subject", "intro", "attached", "highlights", "pagebutton", "printbutton", "signoff", "footer"];
+const EMAIL_KEYS = [...EMAIL_FORM, ...EMAIL_BODY];
+
 const HEADINGS = [
   { id: "recruiter.heading.projects", label: "projects" },
   { id: "recruiter.heading.research", label: "research" },
@@ -38,6 +43,7 @@ function Editor({ keyVal }: { keyVal: string }) {
       "recruiter.resume.less",
       "recruiter.resume.download",
       "recruiter.resume.page",
+      ...EMAIL_KEYS.map((k) => `recruiter.email.${k}`),
       "home.recruiter",
       ...ROLES.flatMap((r) => [`recruiter.summary.${r.id}`, `recruiter.skills.${r.id}`]),
       ...HEADINGS.map((h) => h.id),
@@ -65,6 +71,24 @@ function Editor({ keyVal }: { keyVal: string }) {
           {box("recruiter.resume.less", "font-body text-sm text-ink-soft")}
           {box("recruiter.resume.download", "font-body text-sm text-ink-soft")}
           {box("recruiter.resume.page", "font-body text-sm text-ink-soft")}
+        </div>
+      </section>
+
+      <section className="mt-6 rounded-3xl p-5 soft-card">
+        <h2 className="font-body text-sm font-bold text-ink">the résumé by email: the form</h2>
+        <div className="mt-2 space-y-2">
+          {EMAIL_FORM.map((k) => (
+            <div key={k}>{box(`recruiter.email.${k}`, "font-body text-sm text-ink-soft")}</div>
+          ))}
+        </div>
+        <h2 className="mt-5 font-body text-sm font-bold text-ink">the email it sends</h2>
+        <p className="mt-1 font-body text-[11px] text-ink-soft/70">
+          the subject and the heading over the chosen lines get the role added after them
+        </p>
+        <div className="mt-2 space-y-2">
+          {EMAIL_BODY.map((k) => (
+            <div key={k}>{box(`recruiter.email.${k}`, "font-body text-sm text-ink-soft")}</div>
+          ))}
         </div>
       </section>
 

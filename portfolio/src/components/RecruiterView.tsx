@@ -8,6 +8,7 @@ import type { Pipeline } from "@/lib/pipeline";
 import type { Tailored } from "@/lib/tailor";
 import type { Angles } from "@/lib/angle";
 import { FilledNotes } from "@/components/EntryCard";
+import ResumeByEmail, { type ResumeEmailCopy } from "@/components/ResumeByEmail";
 
 /**
  * The role's page, with a job description able to re-aim it.
@@ -35,6 +36,9 @@ export default function RecruiterView({
   jdPlaceholder,
   resumeLabel,
   picker,
+  role = null,
+  roleOptions,
+  emailCopy,
   children,
 }: {
   projects: Project[];
@@ -56,6 +60,10 @@ export default function RecruiterView({
   resumeLabel: string;
   /** the role picker, placed beside the posting box rather than above it */
   picker: React.ReactNode;
+  /** the role being viewed, if any, which the email form starts on */
+  role?: string | null;
+  roleOptions: { id: string; label: string }[];
+  emailCopy: ResumeEmailCopy;
   /** work, research and education: constant, whatever the posting says */
   children: React.ReactNode;
 }) {
@@ -170,6 +178,10 @@ export default function RecruiterView({
           )}
         </section>
         <div className="mt-5">{picker}</div>
+        {/* under the question it answers: which version, and where to send it */}
+        <div className="mt-4">
+          <ResumeByEmail role={role} roles={roleOptions} posting={jd.trim()} copy={emailCopy} />
+        </div>
       </div>
 
       {/* The lines of the resume this posting, or this role, actually calls for.

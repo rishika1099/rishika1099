@@ -193,7 +193,12 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   One role names its projects outright instead of ranking them by area, because product
   work is filed under whatever it is built with: those projects carry a generic Machine
   Learning tag like dozens of experiments, so ranking by area handed every slot to the
-  flagship AI work. (`src/lib/resumePicks.ts`)
+  flagship AI work. (`src/lib/resumePicks.ts`) A recruiter can also have the résumé
+  emailed to them: the PDF attached, led by the lines their role or pasted posting calls
+  for, sent from `resume@rishika-m.com` through Resend with replies going to her, and a
+  note of each request sent to her. A hidden field, a minimum time on the form and daily
+  caps per visitor, per address and overall keep it from being used to send mail to
+  strangers. (`src/lib/resumeEmail.ts`)
 - **One surface per page.** Dialogs portal to `<body>`, outside the page's vibe wrapper, so
   they cannot inherit the ground they were opened from and were hardcoded cream everywhere.
   Each page now publishes its own colour on the root element and anything rendered outside
@@ -279,6 +284,8 @@ Environment variables live in `.env.local` (never committed). See `.env.example`
 - `OPENAI_API_KEY` — required for search, the chatbot, and media generation.
 - `GITHUB_TOKEN` — optional; lifts GitHub's unauthenticated rate limit when the chatbot
   fetches project READMEs. A scopeless classic token is enough.
+- `RESEND_API_KEY`: sends the résumé from the recruiter page. A sending-only key for
+  the verified `rishika-m.com` domain; without it, local dev logs the email instead.
 - `NETLIFY_SITE_ID` / `NETLIFY_AUTH_TOKEN` — used by `npm run sync`.
 
 > Poems and photos are intentionally kept out of Git. Generated art, captions, clusters,

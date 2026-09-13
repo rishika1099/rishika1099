@@ -198,6 +198,101 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "job-description box placeholder (kept short: it is one line)",
     text: "search by job description",
   },
+  "recruiter.email.open": {
+    page: "recruiter",
+    label: "email form: the link that opens it",
+    text: "✉ or have the résumé emailed to you",
+  },
+  "recruiter.email.placeholder": {
+    page: "recruiter",
+    label: "email form: address box placeholder",
+    text: "your email",
+  },
+  "recruiter.email.anyrole": {
+    page: "recruiter",
+    label: "email form: the role menu's 'no role' choice",
+    text: "any role",
+  },
+  "recruiter.email.jd": {
+    page: "recruiter",
+    label: "email form: job description box placeholder",
+    text: "paste the job description too, if you like, and the email leads with the lines it asks for",
+  },
+  "recruiter.email.send": {
+    page: "recruiter",
+    label: "email form: send button",
+    text: "send it ✦",
+  },
+  "recruiter.email.sending": {
+    page: "recruiter",
+    label: "email form: while it sends",
+    text: "sending ✦",
+  },
+  "recruiter.email.note": {
+    page: "recruiter",
+    label: "email form: the line under it (say that you get a copy)",
+    text: "Sent from resume@rishika-m.com with the PDF attached. Rishika gets a note of the request, posting included, so she can follow up.",
+  },
+  "recruiter.email.sent": {
+    page: "recruiter",
+    label: "email form: once it has sent",
+    text: "sent ✦ it should reach your inbox in a minute (worth a peek in spam, just in case)",
+  },
+  "recruiter.email.bademail": {
+    page: "recruiter",
+    label: "email form: when the address looks wrong",
+    text: "that address does not look quite right",
+  },
+  "recruiter.email.limit": {
+    page: "recruiter",
+    label: "email form: when a daily cap is reached",
+    text: "that is as many as this form sends today, but the PDF is still a click away ✦",
+  },
+  "recruiter.email.error": {
+    page: "recruiter",
+    label: "email form: when sending fails",
+    text: "that did not send. try again, or grab the PDF instead?",
+  },
+  "recruiter.email.subject": {
+    page: "recruiter",
+    label: "résumé email: subject (the role is added after it)",
+    text: "Rishika Mamidibathula's résumé",
+  },
+  "recruiter.email.intro": {
+    page: "recruiter",
+    label: "résumé email: opening line",
+    text: "Hi, and thank you for stopping by my portfolio!",
+  },
+  "recruiter.email.attached": {
+    page: "recruiter",
+    label: "résumé email: the line about the attachment",
+    text: "My résumé is attached as a PDF. Below are the parts of it most worth your time.",
+  },
+  "recruiter.email.highlights": {
+    page: "recruiter",
+    label: "résumé email: heading over the chosen lines (the role is added after it)",
+    text: "Where to start",
+  },
+  "recruiter.email.pagebutton": {
+    page: "recruiter",
+    label: "résumé email: button to the recruiter page",
+    text: "see it on my site",
+  },
+  "recruiter.email.printbutton": {
+    page: "recruiter",
+    label: "résumé email: button to the résumé as a page",
+    text: "read the résumé as a page",
+  },
+  "recruiter.email.signoff": {
+    page: "recruiter",
+    label: "résumé email: sign-off",
+    text: "I would love to hear more about the role. Reply to this email and it comes straight to me.\n\nRishika",
+  },
+  "recruiter.email.footer": {
+    page: "recruiter",
+    label: "résumé email: small print at the bottom",
+    text: "You are getting this because this address asked for Rishika's résumé at rishika-m.com. If that was not you, you can ignore it: nothing else will be sent.",
+  },
   "recruiter.skills.data-scientist": {
     page: "recruiter",
     label: "skills shown for Data Scientist (one per line or comma separated)",

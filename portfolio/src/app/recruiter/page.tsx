@@ -15,6 +15,7 @@ import { getResumeTex } from "@/lib/resumeSource";
 import { parseResumeTex } from "@/lib/resumeTex";
 import ResumeSheet from "@/components/ResumeSheet";
 import ResumePreview from "@/components/ResumePreview";
+import type { ResumeEmailCopy } from "@/components/ResumeByEmail";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
 import { isResearchEntry } from "@/lib/aboutSections";
@@ -103,6 +104,22 @@ export default async function Recruiter({
     </div>
   );
 
+  // The email form's words, all copy blocks, editable from /recruiter/edit.
+  const roleOptions = ROLES.map((r) => ({ id: r, label: ROLE_SPECS[r].label }));
+  const emailCopy = {
+    open: t("recruiter.email.open"),
+    placeholder: t("recruiter.email.placeholder"),
+    anyRole: t("recruiter.email.anyrole"),
+    jd: t("recruiter.email.jd"),
+    send: t("recruiter.email.send"),
+    sending: t("recruiter.email.sending"),
+    note: t("recruiter.email.note"),
+    sent: t("recruiter.email.sent"),
+    badEmail: t("recruiter.email.bademail"),
+    limit: t("recruiter.email.limit"),
+    error: t("recruiter.email.error"),
+  };
+
   // The question. Real links, so a chosen role is a URL she can send.
   //
   // Held as a value rather than written inline, because it belongs in two
@@ -164,6 +181,8 @@ export default async function Recruiter({
         <RoleView
           role={role}
           picker={picker}
+          roleOptions={roleOptions}
+          emailCopy={emailCopy}
           projects={projects}
           education={education}
           teaching={teaching}
@@ -176,6 +195,8 @@ export default async function Recruiter({
         // so it has to be here too rather than behind a role.
         <RecruiterView
           picker={picker}
+          roleOptions={roleOptions}
+          emailCopy={emailCopy}
           projects={[]}
           slugs={[]}
           studies={[]}
@@ -230,6 +251,8 @@ export default async function Recruiter({
 async function RoleView({
   role,
   picker,
+  roleOptions,
+  emailCopy,
   projects,
   education,
   teaching,
@@ -238,6 +261,8 @@ async function RoleView({
 }: {
   role: Role;
   picker: React.ReactNode;
+  roleOptions: { id: string; label: string }[];
+  emailCopy: ResumeEmailCopy;
   projects: Awaited<ReturnType<typeof getAllProjects>>;
   education: Awaited<ReturnType<typeof getAboutEntries>>["education"];
   teaching: Awaited<ReturnType<typeof getAboutEntries>>["teaching"];
@@ -309,6 +334,9 @@ async function RoleView({
   return (
     <RecruiterView
       picker={picker}
+      role={role}
+      roleOptions={roleOptions}
+      emailCopy={emailCopy}
       angles={angles}
       resumePreview={
         arranged.length ? (

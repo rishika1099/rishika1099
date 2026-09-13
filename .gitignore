@@ -73,6 +73,8 @@ portfolio/src/content/blog-overrides.json
 portfolio/src/content/contact-links.json
 portfolio/src/content/reactions.json
 portfolio/src/content/guestbook.json
+# the email form's daily counts (fingerprints only), Blobs on deploy
+portfolio/src/content/resume-email-limits.json
 portfolio/src/content/files/
 # entry attachments (certificate images / diploma PDFs) uploaded via /edit
 portfolio/src/content/attachments/
