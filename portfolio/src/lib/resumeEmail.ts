@@ -18,7 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
-import { blobsEnabled, store } from "@/lib/blobs";
+import { blobsEnabled } from "@/lib/blobs";
 import { readFileKind } from "@/lib/files";
 import { getResumeTex } from "@/lib/resumeSource";
 import { parseResumeTex } from "@/lib/resumeTex";
@@ -65,12 +65,19 @@ const fingerprint = (v: string) =>
     .digest("hex")
     .slice(0, 16);
 
+// Read-your-writes for the counters. The default store reads can trail a write
+// by up to a minute, which is long enough to send a burst straight past a cap.
+async function limitsStore() {
+  const { getStore } = await import("@netlify/blobs");
+  return getStore({ name: "resume-email", consistency: "strong" });
+}
+
 async function readCounts(): Promise<Counts> {
   const fresh: Counts = { day: today(), visitors: {}, recipients: {}, total: 0 };
   try {
     let raw: string | null = null;
     if (blobsEnabled()) {
-      raw = ((await (await store("resume-email")).get(LIMITS_KEY, { type: "text" })) as string | null) ?? null;
+      raw = ((await (await limitsStore()).get(LIMITS_KEY, { type: "text" })) as string | null) ?? null;
     } else if (fs.existsSync(LOCAL_LIMITS)) {
       raw = fs.readFileSync(LOCAL_LIMITS, "utf8");
     }
@@ -84,7 +91,7 @@ async function readCounts(): Promise<Counts> {
 
 async function writeCounts(c: Counts) {
   if (blobsEnabled()) {
-    await (await store("resume-email")).setJSON(LIMITS_KEY, c);
+    await (await limitsStore()).setJSON(LIMITS_KEY, c);
   } else {
     fs.writeFileSync(LOCAL_LIMITS, JSON.stringify(c, null, 2));
   }
@@ -252,6 +259,8 @@ function recruiterText(o: {
 async function send(body: Record<string, unknown>): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
+    // on the live site a missing key is a failure, never a quiet "sent"
+    if (blobsEnabled()) return false;
     // local dev has no key: show what would have gone, and carry on
     console.log(
       "[resume-email] no RESEND_API_KEY, not sent:",

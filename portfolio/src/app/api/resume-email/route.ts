@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { EMAIL_RE, sendResume, takeSlot } from "@/lib/resumeEmail";
 import { MAX_JD } from "@/lib/tailor";
 import { isRole } from "@/lib/recruiter";
+import { blobsEnabled } from "@/lib/blobs";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -18,7 +19,9 @@ const MIN_FORM_MS = 1500;
  * worked, so a script learns nothing from trying.
  */
 export async function POST(request: Request) {
-  if (!process.env.RESEND_API_KEY && process.env.NETLIFY) {
+  // NETLIFY is a build-time variable and may be absent when the function runs;
+  // the Blobs context is always there on the live site
+  if (!process.env.RESEND_API_KEY && blobsEnabled()) {
     return NextResponse.json({ error: "unconfigured" }, { status: 503 });
   }
   try {
@@ -32,7 +35,9 @@ export async function POST(request: Request) {
     if (
       BOT_RE.test(request.headers.get("user-agent") ?? "") ||
       body.website ||
-      (typeof body.elapsed === "number" && body.elapsed < MIN_FORM_MS)
+      // the form always sends it, so a request without it did not come from the form
+      typeof body.elapsed !== "number" ||
+      body.elapsed < MIN_FORM_MS
     ) {
       return NextResponse.json({ ok: true });
     }
