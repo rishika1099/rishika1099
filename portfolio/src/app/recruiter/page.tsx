@@ -15,7 +15,6 @@ import { getResumeTex } from "@/lib/resumeSource";
 import { parseResumeTex } from "@/lib/resumeTex";
 import ResumeSheet from "@/components/ResumeSheet";
 import ResumePreview from "@/components/ResumePreview";
-import EmailResumeLink from "@/components/EmailResumeLink";
 import type { ResumeEmailCopy } from "@/components/ResumeByEmail";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
@@ -85,26 +84,20 @@ export default async function Recruiter({
   ]);
   const t = (k: string) => plain(copy[k], 2000);
 
-  // Straight under the title, where someone who only wants the PDF can take it
-  // without reading past the rest of the page.
-  // A flex row rather than a sentence, so the second link wraps as a whole
-  // phrase on a narrow screen instead of leaving "page" on its own line.
-  const resumeLinks = (
-    <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-body text-sm text-ink-soft">
-      <a
-        style={{ backgroundColor: "#d3d1f5" }}
-        className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-semibold text-ink ring-1 ring-white/70 transition hover:brightness-[0.97]"
-        href="/resume"
-        download="Rishika_Mamidibathula_Resume.pdf"
+  // The resume in its window, with its download, page and inbox links under it.
+  // Before a role is picked it is the resume as she wrote it; a role hands it
+  // over already arranged.
+  const resumeWindow = (sections: ReturnType<typeof parseResumeTex>) =>
+    sections.length ? (
+      <ResumePreview
+        downloadLabel={t("recruiter.resume.download")}
+        pageLabel={t("recruiter.resume.page")}
+        emailLabel={t("recruiter.email.link")}
       >
-        ⬇ download the résumé
-      </a>
-      <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/resume/print">
-        or read it as a page
-      </Link>
-      <EmailResumeLink label={t("recruiter.email.link")} />
-    </div>
-  );
+        <ResumeSheet sections={sections} />
+      </ResumePreview>
+    ) : null;
+  const asWritten = role ? [] : parseResumeTex(await getResumeTex());
 
   // The email form's words, all copy blocks, editable from /recruiter/edit.
   const emailCopy = {
@@ -169,12 +162,6 @@ export default async function Recruiter({
           rather than here */}
       <PageTitle>{t("recruiter.title")}</PageTitle>
 
-      {/* Only before a role is chosen. Once one is, the resume itself is on the
-          page below, with its own download beneath it, and a link up here
-          saying "click for the resume" would be pointing at something the
-          reader can already read. */}
-      {!role && resumeLinks}
-
       <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-ink-soft sm:text-lg">
         {role ? t(`recruiter.summary.${role}`) : t("recruiter.intro")}
       </p>
@@ -184,6 +171,7 @@ export default async function Recruiter({
           role={role}
           picker={picker}
           emailCopy={emailCopy}
+          resumeWindow={resumeWindow}
           projects={projects}
           education={education}
           teaching={teaching}
@@ -197,6 +185,7 @@ export default async function Recruiter({
         <RecruiterView
           picker={picker}
           emailCopy={emailCopy}
+          resumePreview={resumeWindow(asWritten)}
           projects={[]}
           slugs={[]}
           studies={[]}
@@ -252,6 +241,7 @@ async function RoleView({
   role,
   picker,
   emailCopy,
+  resumeWindow,
   projects,
   education,
   teaching,
@@ -261,6 +251,7 @@ async function RoleView({
   role: Role;
   picker: React.ReactNode;
   emailCopy: ResumeEmailCopy;
+  resumeWindow: (sections: ReturnType<typeof parseResumeTex>) => React.ReactNode;
   projects: Awaited<ReturnType<typeof getAllProjects>>;
   education: Awaited<ReturnType<typeof getAboutEntries>>["education"];
   teaching: Awaited<ReturnType<typeof getAboutEntries>>["teaching"];
@@ -336,17 +327,7 @@ async function RoleView({
       roleLabel={spec.label}
       emailCopy={emailCopy}
       angles={angles}
-      resumePreview={
-        arranged.length ? (
-          <ResumePreview
-            downloadLabel={t("recruiter.resume.download")}
-            pageLabel={t("recruiter.resume.page")}
-            emailLabel={t("recruiter.email.link")}
-          >
-            <ResumeSheet sections={arranged} />
-          </ResumePreview>
-        ) : null
-      }
+      resumePreview={resumeWindow(arranged)}
       projects={picked}
       slugs={picked.map((p) => repoSlug(p.repo))}
       studies={studies}
