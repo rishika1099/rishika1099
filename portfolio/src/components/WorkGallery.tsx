@@ -19,10 +19,6 @@ import {
   type Project,
 } from "@/data/projects";
 
-const TAB_LABEL: Record<string, string> = {
-  "High Performance Machine Learning": "High Performance ML",
-};
-
 export default function WorkGallery({
   projects,
   categories,
@@ -454,10 +450,6 @@ export default function WorkGallery({
             {sections.map((sec) => {
               const on = sec.category === activePatch;
               const color = categoryStyle[sec.category]?.color ?? "#d8efe2";
-              // one name is long enough on its own to push the last chip onto a
-              // third row. Shortened on the chip only; the section heading it
-              // opens still reads in full.
-              const label = TAB_LABEL[sec.category] ?? sec.category;
               return (
                 <button
                   key={sec.category}
@@ -478,7 +470,7 @@ export default function WorkGallery({
                       : "font-semibold text-ink/70 hover:text-ink hover:shadow-sm"
                   }`}
                 >
-                  {categoryStyle[sec.category]?.emoji ?? "\u2726"} {label}{" "}
+                  {categoryStyle[sec.category]?.emoji ?? "\u2726"} {sec.category}{" "}
                   <span className="font-normal opacity-55">{sec.items.length}</span>
                 </button>
               );
