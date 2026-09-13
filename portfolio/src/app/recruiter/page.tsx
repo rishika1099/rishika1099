@@ -341,8 +341,6 @@ async function RoleView({
       resumePreview={
         arranged.length ? (
           <ResumePreview
-            moreLabel={t("recruiter.resume.more")}
-            lessLabel={t("recruiter.resume.less")}
             downloadLabel={t("recruiter.resume.download")}
             pageLabel={t("recruiter.resume.page")}
           >

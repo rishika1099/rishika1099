@@ -39,8 +39,6 @@ function Editor({ keyVal }: { keyVal: string }) {
       "recruiter.jd.label",
       "recruiter.jd.hint",
       "recruiter.jd.placeholder",
-      "recruiter.resume.more",
-      "recruiter.resume.less",
       "recruiter.resume.download",
       "recruiter.resume.page",
       ...EMAIL_KEYS.map((k) => `recruiter.email.${k}`),
@@ -67,8 +65,6 @@ function Editor({ keyVal }: { keyVal: string }) {
           {box("recruiter.jd.label", "font-body text-sm text-ink-soft")}
           {box("recruiter.jd.hint", "font-body text-sm text-ink-soft")}
           {box("recruiter.jd.placeholder", "font-body text-sm text-ink-soft")}
-          {box("recruiter.resume.more", "font-body text-sm text-ink-soft")}
-          {box("recruiter.resume.less", "font-body text-sm text-ink-soft")}
           {box("recruiter.resume.download", "font-body text-sm text-ink-soft")}
           {box("recruiter.resume.page", "font-body text-sm text-ink-soft")}
         </div>
