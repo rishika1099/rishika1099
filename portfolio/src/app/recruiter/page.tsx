@@ -10,7 +10,7 @@ import { getCaseStudy, hasContent } from "@/lib/caseStudies";
 import { buildAutoCaseStudy, getAutoCaseStudy } from "@/lib/caseStudyAuto";
 import { angleEntries } from "@/lib/angle";
 import { resumeForRole } from "@/lib/resumePicks";
-import { arrangeForRole } from "@/lib/resumeArrange";
+import { arrangeForRole, projectsForRole as resumeProjectsForRole } from "@/lib/resumeArrange";
 import { getResumeTex } from "@/lib/resumeSource";
 import { parseResumeTex } from "@/lib/resumeTex";
 import ResumeSheet from "@/components/ResumeSheet";
@@ -314,10 +314,15 @@ async function RoleView({
     withDeadline(resumeForRole(role), DRAFT_MS).then((r) => r ?? []),
   ]);
 
-  // The resume itself, arranged for this role: the entries it calls for first,
-  // and inside them the lines it calls for first. Nothing dropped, nothing
-  // rewritten, so it is her resume and not a version of it.
-  const arranged = arrangeForRole(parseResumeTex(await getResumeTex()), resumePicks);
+  // The resume, as this role's version of it. Projects takes the projects this
+  // role's cards lead with, since three fixed projects made every role's resume
+  // look alike. Then everything is ordered by the role's picks: the entries it
+  // calls for first, and inside them the lines it calls for first. Every line
+  // is still hers, from the resume or from the project's own card.
+  const arranged = arrangeForRole(
+    resumeProjectsForRole(parseResumeTex(await getResumeTex()), picked),
+    resumePicks,
+  );
 
   return (
     <RecruiterView
