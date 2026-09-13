@@ -16,6 +16,7 @@ export type ChunkKind =
   | "research"
   | "education"
   | "teaching"
+  | "volunteering"
   | "project"
   | "writing";
 
@@ -95,7 +96,7 @@ export async function buildKnowledge(): Promise<Chunk[]> {
   }
 
   // entries may be edited via the secret /edit room; use the merged view
-  const { education, timeline, teaching } = await getAboutEntries();
+  const { education, timeline, teaching, volunteering } = await getAboutEntries();
 
   for (const e of education) {
     const title = richToText(e.title);
@@ -117,6 +118,19 @@ export async function buildKnowledge(): Promise<Chunk[]> {
       id: `teach:${richToText(e.title)}`,
       title,
       kind: "teaching",
+      text: entryText(e),
+      href: "/about",
+    });
+  }
+
+  // titled as volunteering, so a question about her council or the employee
+  // networks finds them and none of them reads as a job she was paid for
+  for (const e of volunteering) {
+    const title = `Volunteering: ${richToText(e.title)}`;
+    chunks.push({
+      id: `vol:${richToText(e.title)}`,
+      title,
+      kind: "volunteering",
       text: entryText(e),
       href: "/about",
     });

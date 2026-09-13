@@ -15,6 +15,7 @@ export default function AboutClient({
   timeline,
   certifications = [],
   teaching = [],
+  volunteering = [],
   bioHtml,
   title,
   heads,
@@ -24,6 +25,7 @@ export default function AboutClient({
   timeline: Entry[];
   certifications?: Entry[];
   teaching?: Entry[];
+  volunteering?: Entry[];
   bioHtml: string;
   title: React.ReactNode;
   navLabels: {
@@ -33,6 +35,7 @@ export default function AboutClient({
     research: string;
     certifications: string;
     teaching: string;
+    volunteering: string;
   };
   heads: {
     education: React.ReactNode;
@@ -42,6 +45,7 @@ export default function AboutClient({
     research: React.ReactNode;
     certifications: React.ReactNode;
     teaching: React.ReactNode;
+    volunteering: React.ReactNode;
   };
 }) {
   // the About cards get the same fill the project cards do, from each entry's
@@ -96,6 +100,7 @@ export default function AboutClient({
           ...(certifications.length
             ? [{ id: "certifications", label: navLabels.certifications }]
             : []),
+          ...(volunteering.length ? [{ id: "volunteering", label: navLabels.volunteering }] : []),
         ]}
       />
 
@@ -185,6 +190,30 @@ export default function AboutClient({
                   i={i}
                   noMark
                   showAttachments
+                  className="w-[21rem] shrink-0 snap-start"
+                />
+              ))}
+            </Carousel>
+          </div>
+        </>
+      )}
+
+      {/* Volunteering: the same shelf as the certifications, and only when
+          there is something on it. Marks stay on here, since the council, the
+          networks and the NGO are who the entry is about, but files stay
+          behind the click: a picture on one card set the height of all five. */}
+      {volunteering.length > 0 && (
+        <>
+          <h2 id="volunteering" className="mt-12 scroll-mt-32 font-body text-2xl font-bold text-ink">
+            {heads.volunteering}
+          </h2>
+          <div className="mt-5">
+            <Carousel label="volunteer role">
+              {volunteering.map((e, i) => (
+                <EntryCard
+                  key={e.title}
+                  entry={e}
+                  i={i}
                   className="w-[21rem] shrink-0 snap-start"
                 />
               ))}

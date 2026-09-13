@@ -155,7 +155,7 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   twinkling sparkles, and a synced card-hover tint. The active nav tab tints to match the
   page it leads to.
 - **Home:** flower-framed portrait, animated cursive name, quick links.
-- **About:** expandable education/teaching/work/research/certification cards, a sticky jump bar
+- **About:** expandable education/teaching/work/research/certification/volunteering cards, a sticky jump bar
   linking straight to each section (and `#research` style deep links), and the skills
   network graph.
 - **Work:** semantic search box + ELI5/expert toggle + featured blooms, then every project

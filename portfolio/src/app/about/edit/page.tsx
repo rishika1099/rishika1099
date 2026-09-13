@@ -43,6 +43,7 @@ const ABOUT_COPY = [
   "about.heading.research",
   "about.heading.certifications",
   "about.heading.teaching",
+  "about.heading.volunteering",
 ] as const;
 
 const fileToBase64 = (file: File) =>
@@ -279,6 +280,7 @@ function Editor({ keyVal }: { keyVal: string }) {
   const [research, setResearch] = useState<KEntry[]>([]);
   const [certifications, setCertifications] = useState<KEntry[]>([]);
   const [teaching, setTeaching] = useState<KEntry[]>([]);
+  const [volunteering, setVolunteering] = useState<KEntry[]>([]);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -297,7 +299,7 @@ function Editor({ keyVal }: { keyVal: string }) {
 
   useEffect(() => {
     Promise.all([
-      api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[]; teaching?: Entry[] }>("/api/admin/about"),
+      api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[]; teaching?: Entry[]; volunteering?: Entry[] }>("/api/admin/about"),
       api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
     ])
       .then(([about, copy]) => {
@@ -306,6 +308,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         setResearch(about.timeline.filter(isResearchEntry).map(keyed));
         setCertifications((about.certifications ?? []).map(keyed));
         setTeaching((about.teaching ?? []).map(keyed));
+        setVolunteering((about.volunteering ?? []).map(keyed));
         setBio(copyToHtml(copy.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
         const cm: Record<string, string> = {};
         for (const id of ABOUT_COPY) cm[id] = copy.blocks.find((b) => b.id === id)?.text ?? "";
@@ -331,6 +334,7 @@ function Editor({ keyVal }: { keyVal: string }) {
             ],
             certifications,
             teaching,
+            volunteering,
           }),
         }),
         api("/api/admin/copy", {
@@ -364,6 +368,7 @@ function Editor({ keyVal }: { keyVal: string }) {
             ],
             certifications,
             teaching,
+            volunteering,
           }),
         }),
         api("/api/admin/copy", {
@@ -411,7 +416,7 @@ function Editor({ keyVal }: { keyVal: string }) {
     await api("/api/admin/about", { method: "DELETE" });
     await api(`/api/admin/copy?ids=${encodeURIComponent(COPY_IDS.join(","))}`, { method: "DELETE" });
     const [about, copyRes] = await Promise.all([
-      api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[]; teaching?: Entry[] }>("/api/admin/about"),
+      api<{ education: Entry[]; timeline: Entry[]; certifications?: Entry[]; teaching?: Entry[]; volunteering?: Entry[] }>("/api/admin/about"),
       api<{ blocks: { id: string; text: string }[] }>("/api/admin/copy"),
     ]);
     setEducation(about.education.map(keyed));
@@ -419,6 +424,7 @@ function Editor({ keyVal }: { keyVal: string }) {
     setResearch(about.timeline.filter(isResearchEntry).map(keyed));
     setCertifications((about.certifications ?? []).map(keyed));
     setTeaching((about.teaching ?? []).map(keyed));
+    setVolunteering((about.volunteering ?? []).map(keyed));
     setBio(copyToHtml(copyRes.blocks.find((b) => b.id === "about.bio")?.text ?? ""));
     const cm: Record<string, string> = {};
     for (const id of ABOUT_COPY) cm[id] = copyRes.blocks.find((b) => b.id === id)?.text ?? "";
@@ -556,6 +562,12 @@ function Editor({ keyVal }: { keyVal: string }) {
         "short courses, nanodegrees, certifications, attach the certificate as a picture or PDF",
         certifications,
         setCertifications,
+      )}
+      {section(
+        "about.heading.volunteering",
+        "councils, employee networks and causes, newest first",
+        volunteering,
+        setVolunteering,
       )}
     </>
   );

@@ -10,6 +10,7 @@ import {
   certifications as repoCertifications,
   education as repoEducation,
   teaching as repoTeaching,
+  volunteering as repoVolunteering,
   timeline as repoTimeline,
   type Entry,
 } from "@/data/about";
@@ -24,6 +25,9 @@ export interface AboutEntries {
   // it reads back as the repo's entries, not as [], which is the difference
   // between a new section appearing and a new section being erased on arrival
   teaching: Entry[];
+  // councils, networks and causes (added after teaching, and read back the
+  // same way: an override that predates it gets the repo's entries)
+  volunteering: Entry[];
 }
 
 const KEY = "overrides";
@@ -37,9 +41,13 @@ const LOCAL_BASELINE = path.join(process.cwd(), "src/content/about-baseline.json
 
 // only education + timeline are required; certifications is optional for
 // backward compatibility with overrides saved before it existed
-function sane(
-  v: unknown,
-): v is { education: Entry[]; timeline: Entry[]; certifications?: Entry[]; teaching?: Entry[] } {
+function sane(v: unknown): v is {
+  education: Entry[];
+  timeline: Entry[];
+  certifications?: Entry[];
+  teaching?: Entry[];
+  volunteering?: Entry[];
+} {
   const o = v as AboutEntries;
   return !!o && Array.isArray(o.education) && Array.isArray(o.timeline);
 }
@@ -61,6 +69,7 @@ async function read(blobKey: string, localFile: string): Promise<AboutEntries | 
           timeline: parsed.timeline,
           certifications: Array.isArray(parsed.certifications) ? parsed.certifications : [],
           teaching: Array.isArray(parsed.teaching) ? parsed.teaching : repoTeaching,
+          volunteering: Array.isArray(parsed.volunteering) ? parsed.volunteering : repoVolunteering,
         };
       }
     }
@@ -75,7 +84,13 @@ export async function getAboutEntries(): Promise<AboutEntries> {
   return (
     (await read(KEY, LOCAL_FILE)) ??
     (await read(BASELINE_KEY, LOCAL_BASELINE)) ??
-    { education: repoEducation, timeline: repoTimeline, certifications: repoCertifications, teaching: repoTeaching }
+    {
+      education: repoEducation,
+      timeline: repoTimeline,
+      certifications: repoCertifications,
+      teaching: repoTeaching,
+      volunteering: repoVolunteering,
+    }
   );
 }
 
@@ -83,7 +98,13 @@ export async function getAboutEntries(): Promise<AboutEntries> {
 export async function getAboutDefaults(): Promise<AboutEntries> {
   return (
     (await read(BASELINE_KEY, LOCAL_BASELINE)) ??
-    { education: repoEducation, timeline: repoTimeline, certifications: repoCertifications, teaching: repoTeaching }
+    {
+      education: repoEducation,
+      timeline: repoTimeline,
+      certifications: repoCertifications,
+      teaching: repoTeaching,
+      volunteering: repoVolunteering,
+    }
   );
 }
 

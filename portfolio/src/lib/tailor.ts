@@ -172,6 +172,7 @@ export async function tailorTo(jd: string): Promise<Tailored> {
     ...aboutEntries.timeline,
     ...aboutEntries.certifications,
     ...aboutEntries.teaching,
+    ...aboutEntries.volunteering,
   ].map((e) =>
     [
       richToText(e.title),

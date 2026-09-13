@@ -85,6 +85,7 @@ export async function POST(request: Request) {
       timeline?: unknown[];
       certifications?: unknown[];
       teaching?: unknown[];
+      volunteering?: unknown[];
       promote?: boolean;
     };
     // "make these the default": pin what is live now so revert lands here
@@ -112,10 +113,11 @@ export async function POST(request: Request) {
       Array.isArray(v) ? v.map(cleanEntry).filter((e): e is Entry => e !== null) : stored;
     const certifications = keep(body.certifications, current.certifications);
     const teaching = keep(body.teaching, current.teaching);
+    const volunteering = keep(body.volunteering, current.volunteering);
     if (!education.length || !timeline.length) {
       return NextResponse.json({ error: "entries need at least a title" }, { status: 400 });
     }
-    await saveAboutEntries({ education, timeline, certifications, teaching });
+    await saveAboutEntries({ education, timeline, certifications, teaching, volunteering });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });

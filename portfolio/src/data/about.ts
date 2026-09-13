@@ -181,6 +181,82 @@ export const teaching: Entry[] = [
   },
 ];
 
+// Volunteering: councils, employee networks and causes she has given time to,
+// newest first. Worded from her own LinkedIn entries.
+//
+// The marks are the logos already uploaded to the live About cards (Columbia,
+// Shell and VIT), so these arrive with them. Where a logo is missing, as in
+// local dev, the card shows its emoji instead.
+//
+// Like teaching, a saved override from before this section reads back as these
+// defaults, so they appear on deploy without a write to the live data.
+export const volunteering: Entry[] = [
+  {
+    icon: "🗳️",
+    when: "Sep 2025 to present",
+    title: "Student Council Voting Member",
+    place: "Data Science Institute, Columbia University",
+    logo: { id: "2e443c9a61524e7ea361", name: "columbia.jpg", kind: "image" },
+    note: "A voting member of the DSI student council, in its Communications & Professional Resources and Social departments. Connects students with internships, research openings, networking events and career resources.",
+    details: [
+      "Promoting council initiatives across the DSI community.",
+      "Helping students stay informed, build meaningful connections, and make the most of their time at Columbia.",
+      // written as HTML throughout: a string holding a tag is not run through
+      // the **bold** shorthand, so the label would have shown its asterisks
+      '<strong>Built for it:</strong> the <a href="https://dsi-course-evaluation.streamlit.app/" target="_blank" rel="noopener noreferrer">DSI Course Evaluation website</a>, a course decision dashboard for Columbia MSDS students.',
+    ],
+  },
+  {
+    icon: "🌈",
+    when: "Aug 2023 to Jul 2025",
+    title: "LGBTQIA+ Volunteer",
+    place: "Shell",
+    logo: { id: "61df9f8a39744f9eacfb", name: "Color-Shell-Logo.jpg", kind: "image" },
+    note: "A member of Shell's LGBTQ+ network, promoting inclusivity across the organization. Helped organize events, workshops and discussions for LGBTQ+ employees, and worked for policies that represented diverse perspectives.",
+    details: [
+      "Helped organize events, workshops and discussions that made Shell a more supportive place for LGBTQ+ employees.",
+      "Worked to make policies and practices inclusive and representative of diverse perspectives.",
+      "Part of building an open, welcoming culture at Shell.",
+    ],
+  },
+  {
+    icon: "♿",
+    when: "Aug 2023 to Jul 2025",
+    title: "enABLE Networks Volunteer",
+    place: "Shell",
+    logo: { id: "61df9f8a39744f9eacfb", name: "Color-Shell-Logo.jpg", kind: "image" },
+    note: "Part of Shell's enABLE network, raising awareness of the needs of employees with disabilities. Helped organize events on accessibility challenges, and advocated for policies that gave colleagues the support they needed.",
+    details: [
+      "Helped organize events and initiatives that improved understanding of accessibility challenges.",
+      "Advocated for policies and practices that gave employees with disabilities the resources and support they needed.",
+      "Part of making Shell a more accessible and supportive workplace for everyone.",
+    ],
+  },
+  {
+    icon: "🙋",
+    when: "Jul 2020 to Jun 2023",
+    title: "Program Representative",
+    place: "Vellore Institute of Technology",
+    logo: { id: "e11a9fb7d5494af699f1", name: "vit.jpeg", kind: "image" },
+    note: "Three years as the link between the students and faculty of her program. Resolved academic concerns quickly, shared feedback that shaped the curriculum, mentored junior students and organized events for the cohort.",
+    details: [
+      "Kept communication open between students and faculty, and resolved academic concerns quickly.",
+      "Shared student feedback to improve the curriculum, and mentored junior students.",
+      "Organized events that brought the program together and built a strong sense of community.",
+    ],
+  },
+  {
+    icon: "🌱",
+    when: "Aug 2020 to Apr 2021",
+    title: "Student Assistant",
+    place: "Ayuda NGO",
+    note: "Volunteered on initiatives for underprivileged children and marginalized communities, helping organize community outreach programs, fundraising efforts and awareness campaigns.",
+    details: [
+      "Helped organize community outreach programs, fundraising efforts and awareness campaigns.",
+    ],
+  },
+];
+
 export const education: Entry[] = [
   {
     icon: "🦁",
@@ -190,8 +266,6 @@ export const education: Entry[] = [
     note: "GPA 3.87, focus on machine learning, LLM systems, and causal inference.",
     details: [
       "**Coursework:** Applied Deep Learning, LLM-based Generative AI Systems, Causal Inference, High Performance Machine Learning, Machine Learning, Statistical Inference and Modelling, Exploratory Data Analysis and Visualization, and Agentic AI.",
-      "Teaching Assistant for Artificial Intelligence for Public Policy at SIPA.",
-      "DSI Student Council, Communications & Professional Resources.",
       "Research assistant on two LLM projects: clinical phenotyping and human-rights evaluation.",
     ],
   },
@@ -202,7 +276,7 @@ export const education: Entry[] = [
     place: "Vellore Institute of Technology (VIT)",
     note: "4.0/4.0 GPA · graduated ranked 7th of ~200 (top 4%).",
     details: [
-      "Merit Scholarship recipient and Program Representative, 2019 to 2023.",
+      "Merit Scholarship recipient, 2019 to 2023.",
       "**Data Science coursework:** Artificial Intelligence, Machine Learning, Deep Learning, Natural Language Processing, Image Processing, Predictive Analytics, Business Intelligence and Analytics, and Social and Information Networks.",
       "**Computer Science coursework:** Data Structures and Algorithms, Object-Oriented Programming, Database Management Systems, Operating Systems, Computer Architecture, Theory of Computation and Compiler Design, Network and Communication, Internet Programming and Web Technologies, Internet of Things, and Cryptography and Network Security.",
       "**Mathematics coursework:** Calculus, Applied Linear Algebra, Discrete Mathematics and Graph Theory, Statistics, and Differential Equations.",

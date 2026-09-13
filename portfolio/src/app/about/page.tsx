@@ -11,7 +11,7 @@ export const metadata = { title: "About" };
 export const dynamic = "force-dynamic";
 
 export default async function About() {
-  const [{ education, timeline, certifications, teaching }, copy] = await Promise.all([
+  const [{ education, timeline, certifications, teaching, volunteering }, copy] = await Promise.all([
     getAboutEntries(),
     getCopy(),
   ]);
@@ -21,6 +21,7 @@ export default async function About() {
       timeline={timeline}
       certifications={certifications}
       teaching={teaching}
+      volunteering={volunteering}
       bioHtml={copyToHtml(copy["about.bio"])}
       title={<RichText html={copyToHtml(copy["about.title"])} />}
       navLabels={{
@@ -30,6 +31,7 @@ export default async function About() {
         research: richToText(copy["about.nav.research"], 40) || "🔬 research",
         certifications: richToText(copy["about.nav.certifications"], 40) || "📜 certifications",
         teaching: richToText(copy["about.nav.teaching"], 40) || "🍎 teaching",
+        volunteering: richToText(copy["about.nav.volunteering"], 40) || "🤝 volunteering",
       }}
       heads={{
         education: <RichText html={copyToHtml(copy["about.heading.education"])} />,
@@ -39,6 +41,7 @@ export default async function About() {
         research: <RichText html={copyToHtml(copy["about.heading.research"])} />,
         certifications: <RichText html={copyToHtml(copy["about.heading.certifications"])} />,
         teaching: <RichText html={copyToHtml(copy["about.heading.teaching"])} />,
+        volunteering: <RichText html={copyToHtml(copy["about.heading.volunteering"])} />,
       }}
     />
   );
