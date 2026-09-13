@@ -203,16 +203,6 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "email form: address box placeholder",
     text: "your email",
   },
-  "recruiter.email.anyrole": {
-    page: "recruiter",
-    label: "email form: the role menu's 'no role' choice",
-    text: "any role",
-  },
-  "recruiter.email.jd": {
-    page: "recruiter",
-    label: "email form: job description box placeholder",
-    text: "paste the job description too, if you like, and the email leads with the lines it asks for",
-  },
   "recruiter.email.send": {
     page: "recruiter",
     label: "email form: send button",
@@ -222,6 +212,21 @@ export const copyDefaults: Record<string, CopyBlock> = {
     page: "recruiter",
     label: "email form: while it sends",
     text: "sending ✦",
+  },
+  "recruiter.email.forposting": {
+    page: "recruiter",
+    label: "email form: which version goes, when the job description bar has something in it",
+    text: "sends the version matched to the job description above",
+  },
+  "recruiter.email.forrole": {
+    page: "recruiter",
+    label: "email form: which version goes, on a role ({role} becomes the role's name)",
+    text: "sends the {role} version",
+  },
+  "recruiter.email.forall": {
+    page: "recruiter",
+    label: "email form: which version goes, before a role or job description is chosen",
+    text: "sends the whole résumé. Pick a role or search by job description above to tailor it",
   },
   "recruiter.email.note": {
     page: "recruiter",

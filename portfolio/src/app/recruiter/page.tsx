@@ -107,14 +107,14 @@ export default async function Recruiter({
   );
 
   // The email form's words, all copy blocks, editable from /recruiter/edit.
-  const roleOptions = ROLES.map((r) => ({ id: r, label: ROLE_SPECS[r].label }));
   const emailCopy = {
     open: t("recruiter.email.open"),
     placeholder: t("recruiter.email.placeholder"),
-    anyRole: t("recruiter.email.anyrole"),
-    jd: t("recruiter.email.jd"),
     send: t("recruiter.email.send"),
     sending: t("recruiter.email.sending"),
+    forPosting: t("recruiter.email.forposting"),
+    forRole: t("recruiter.email.forrole"),
+    forAll: t("recruiter.email.forall"),
     note: t("recruiter.email.note"),
     sent: t("recruiter.email.sent"),
     badEmail: t("recruiter.email.bademail"),
@@ -183,7 +183,6 @@ export default async function Recruiter({
         <RoleView
           role={role}
           picker={picker}
-          roleOptions={roleOptions}
           emailCopy={emailCopy}
           projects={projects}
           education={education}
@@ -197,7 +196,6 @@ export default async function Recruiter({
         // so it has to be here too rather than behind a role.
         <RecruiterView
           picker={picker}
-          roleOptions={roleOptions}
           emailCopy={emailCopy}
           projects={[]}
           slugs={[]}
@@ -253,7 +251,6 @@ export default async function Recruiter({
 async function RoleView({
   role,
   picker,
-  roleOptions,
   emailCopy,
   projects,
   education,
@@ -263,7 +260,6 @@ async function RoleView({
 }: {
   role: Role;
   picker: React.ReactNode;
-  roleOptions: { id: string; label: string }[];
   emailCopy: ResumeEmailCopy;
   projects: Awaited<ReturnType<typeof getAllProjects>>;
   education: Awaited<ReturnType<typeof getAboutEntries>>["education"];
@@ -337,7 +333,7 @@ async function RoleView({
     <RecruiterView
       picker={picker}
       role={role}
-      roleOptions={roleOptions}
+      roleLabel={spec.label}
       emailCopy={emailCopy}
       angles={angles}
       resumePreview={

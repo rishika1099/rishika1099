@@ -6,10 +6,12 @@ import { OPEN_RESUME_EMAIL } from "@/components/EmailResumeLink";
 export interface ResumeEmailCopy {
   open: string;
   placeholder: string;
-  anyRole: string;
-  jd: string;
   send: string;
   sending: string;
+  forPosting: string;
+  /** "{role}" is replaced with the role's name */
+  forRole: string;
+  forAll: string;
   note: string;
   sent: string;
   badEmail: string;
@@ -21,28 +23,27 @@ export interface ResumeEmailCopy {
  * "Email me the resume", for the recruiter who files things rather than reads
  * them on the spot.
  *
- * Folded to one line until asked for, so it does not crowd the question above
- * it. It opens already set to the role being viewed and holding whatever was
- * typed into the posting bar, since both are the answer to "which version", and
- * someone who has just told the page what they are hiring for should not have to
- * tell it again.
+ * It asks for an address and nothing else. Which version to send is already
+ * answered at the top of the page, by the role pill that is lit and whatever is
+ * in the posting bar, so it sends that. The first version had its own role menu
+ * and posting box, which asked the reader the page's question a second time.
+ * One line under the address says which version is going, so nobody has to
+ * guess what the page understood.
  */
 export default function ResumeByEmail({
   role,
-  roles,
+  roleLabel,
   posting,
   copy,
 }: {
   role: string | null;
-  roles: { id: string; label: string }[];
-  /** what is in the posting bar right now */
+  roleLabel: string | null;
+  /** what is in the posting bar right now; it wins over the role, as it does on the page */
   posting: string;
   copy: ResumeEmailCopy;
 }) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
-  const [chosen, setChosen] = useState(role ?? "");
-  const [jd, setJd] = useState("");
   const [trap, setTrap] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "email" | "limit" | "error">("idle");
   const openedAt = useRef(0);
@@ -50,8 +51,6 @@ export default function ResumeByEmail({
 
   const openForm = () => {
     openedAt.current = Date.now();
-    setChosen(role ?? "");
-    setJd(posting);
     setOpen(true);
     // after the form has rendered, so there is a box to focus
     setTimeout(() => emailBox.current?.focus({ preventScroll: true }), 350);
@@ -66,7 +65,6 @@ export default function ResumeByEmail({
     return () => window.removeEventListener(OPEN_RESUME_EMAIL, onOpen);
   });
 
-  // the same pale field the posting bar uses, so the form reads as part of it
   const field =
     "rounded-full border border-white/70 bg-white/80 px-4 py-2.5 font-body text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-[#a9a5e6] focus:ring-2 focus:ring-[#c2c0ef]/50";
 
@@ -86,8 +84,13 @@ export default function ResumeByEmail({
     return <p className="font-body text-sm font-semibold text-ink">{copy.sent}</p>;
   }
 
+  const version = posting
+    ? copy.forPosting
+    : roleLabel
+      ? copy.forRole.replace("{role}", roleLabel)
+      : copy.forAll;
   const status =
-    state === "email" ? copy.badEmail : state === "limit" ? copy.limit : state === "error" ? copy.error : copy.note;
+    state === "email" ? copy.badEmail : state === "limit" ? copy.limit : state === "error" ? copy.error : null;
 
   return (
     <form
@@ -101,8 +104,8 @@ export default function ResumeByEmail({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               email,
-              role: chosen || null,
-              jd,
+              role,
+              jd: posting,
               website: trap,
               elapsed: Date.now() - openedAt.current,
             }),
@@ -115,7 +118,7 @@ export default function ResumeByEmail({
         }
       }}
     >
-      <div className="flex flex-wrap gap-2">
+      <div className="flex max-w-xl flex-wrap gap-2">
         <input
           ref={emailBox}
           type="email"
@@ -127,19 +130,6 @@ export default function ResumeByEmail({
           aria-label={copy.placeholder}
           className={`min-w-[13rem] flex-1 ${field}`}
         />
-        <select
-          value={chosen}
-          onChange={(e) => setChosen(e.target.value)}
-          aria-label="role"
-          className={`${field} pr-8`}
-        >
-          <option value="">{copy.anyRole}</option>
-          {roles.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.label}
-            </option>
-          ))}
-        </select>
         <button
           type="submit"
           disabled={state === "sending"}
@@ -149,15 +139,6 @@ export default function ResumeByEmail({
           {state === "sending" ? copy.sending : copy.send}
         </button>
       </div>
-      <textarea
-        value={jd}
-        onChange={(e) => setJd(e.target.value)}
-        rows={2}
-        maxLength={6000}
-        placeholder={copy.jd}
-        aria-label={copy.jd}
-        className={`mt-2 w-full resize-y !rounded-2xl ${field}`}
-      />
       {/* People never see this, so people never fill it in. */}
       <input
         type="text"
@@ -169,7 +150,9 @@ export default function ResumeByEmail({
         name="website"
         className="absolute -left-[9999px] h-px w-px opacity-0"
       />
-      <p className="mt-2 font-body text-xs text-ink-soft/80">{status}</p>
+      {/* which version is going, or what went wrong */}
+      <p className="mt-2 font-body text-xs text-ink-soft">{status ?? version}</p>
+      <p className="mt-0.5 font-body text-xs text-ink-soft/70">{copy.note}</p>
     </form>
   );
 }

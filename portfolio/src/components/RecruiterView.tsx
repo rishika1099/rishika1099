@@ -37,7 +37,7 @@ export default function RecruiterView({
   resumeLabel,
   picker,
   role = null,
-  roleOptions,
+  roleLabel = null,
   emailCopy,
   children,
 }: {
@@ -62,7 +62,8 @@ export default function RecruiterView({
   picker: React.ReactNode;
   /** the role being viewed, if any, which the email form starts on */
   role?: string | null;
-  roleOptions: { id: string; label: string }[];
+  /** its name, for the line under the email form saying which version goes */
+  roleLabel?: string | null;
   emailCopy: ResumeEmailCopy;
   /** work, research and education: constant, whatever the posting says */
   children: React.ReactNode;
@@ -180,7 +181,7 @@ export default function RecruiterView({
         <div className="mt-5">{picker}</div>
         {/* under the question it answers: which version, and where to send it */}
         <div id="email-resume" className="mt-4 scroll-mt-32">
-          <ResumeByEmail role={role} roles={roleOptions} posting={jd.trim()} copy={emailCopy} />
+          <ResumeByEmail role={role} roleLabel={roleLabel} posting={jd.trim()} copy={emailCopy} />
         </div>
       </div>
 
