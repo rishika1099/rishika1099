@@ -179,7 +179,7 @@ export default function RecruiterView({
         </section>
         <div className="mt-5">{picker}</div>
         {/* under the question it answers: which version, and where to send it */}
-        <div className="mt-4">
+        <div id="email-resume" className="mt-4 scroll-mt-32">
           <ResumeByEmail role={role} roles={roleOptions} posting={jd.trim()} copy={emailCopy} />
         </div>
       </div>

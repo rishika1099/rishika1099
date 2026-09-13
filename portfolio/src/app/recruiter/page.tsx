@@ -15,6 +15,7 @@ import { getResumeTex } from "@/lib/resumeSource";
 import { parseResumeTex } from "@/lib/resumeTex";
 import ResumeSheet from "@/components/ResumeSheet";
 import ResumePreview from "@/components/ResumePreview";
+import EmailResumeLink from "@/components/EmailResumeLink";
 import type { ResumeEmailCopy } from "@/components/ResumeByEmail";
 import { repoSlug } from "@/lib/projectOverrides";
 import { getCopy } from "@/lib/siteCopy";
@@ -101,6 +102,7 @@ export default async function Recruiter({
       <Link className="underline decoration-[#a9a5e6] decoration-2 underline-offset-4" href="/resume/print">
         or read it as a page
       </Link>
+      <EmailResumeLink label={t("recruiter.email.link")} />
     </div>
   );
 
@@ -343,6 +345,7 @@ async function RoleView({
           <ResumePreview
             downloadLabel={t("recruiter.resume.download")}
             pageLabel={t("recruiter.resume.page")}
+            emailLabel={t("recruiter.email.link")}
           >
             <ResumeSheet sections={arranged} />
           </ResumePreview>

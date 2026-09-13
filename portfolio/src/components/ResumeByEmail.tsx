@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { OPEN_RESUME_EMAIL } from "@/components/EmailResumeLink";
 
 export interface ResumeEmailCopy {
   open: string;
@@ -45,6 +46,25 @@ export default function ResumeByEmail({
   const [trap, setTrap] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "email" | "limit" | "error">("idle");
   const openedAt = useRef(0);
+  const emailBox = useRef<HTMLInputElement>(null);
+
+  const openForm = () => {
+    openedAt.current = Date.now();
+    setChosen(role ?? "");
+    setJd(posting);
+    setOpen(true);
+    // after the form has rendered, so there is a box to focus
+    setTimeout(() => emailBox.current?.focus({ preventScroll: true }), 350);
+  };
+
+  // opened from the "send to inbox" links beside the downloads, too
+  useEffect(() => {
+    const onOpen = () => {
+      if (!open) openForm();
+    };
+    window.addEventListener(OPEN_RESUME_EMAIL, onOpen);
+    return () => window.removeEventListener(OPEN_RESUME_EMAIL, onOpen);
+  });
 
   // the same pale field the posting bar uses, so the form reads as part of it
   const field =
@@ -54,12 +74,7 @@ export default function ResumeByEmail({
     return (
       <button
         type="button"
-        onClick={() => {
-          openedAt.current = Date.now();
-          setChosen(role ?? "");
-          setJd(posting);
-          setOpen(true);
-        }}
+        onClick={openForm}
         className="font-body text-sm text-ink-soft underline decoration-[#a9a5e6] decoration-2 underline-offset-4 transition hover:text-ink"
       >
         {copy.open}
@@ -102,6 +117,7 @@ export default function ResumeByEmail({
     >
       <div className="flex flex-wrap gap-2">
         <input
+          ref={emailBox}
           type="email"
           required
           autoComplete="email"

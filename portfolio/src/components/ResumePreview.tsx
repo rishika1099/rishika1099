@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EmailResumeLink from "@/components/EmailResumeLink";
 
 /**
  * The resume on the page, rather than a link to it.
@@ -14,10 +15,12 @@ export default function ResumePreview({
   children,
   downloadLabel,
   pageLabel,
+  emailLabel,
 }: {
   children: React.ReactNode;
   downloadLabel: string;
   pageLabel: string;
+  emailLabel: string;
 }) {
   return (
     <div>
@@ -47,6 +50,7 @@ export default function ResumePreview({
         >
           {pageLabel}
         </Link>
+        <EmailResumeLink label={emailLabel} />
       </div>
     </div>
   );

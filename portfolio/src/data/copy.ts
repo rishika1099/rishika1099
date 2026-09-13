@@ -188,6 +188,11 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "job-description box placeholder (kept short: it is one line)",
     text: "search by job description",
   },
+  "recruiter.email.link": {
+    page: "recruiter",
+    label: "email form: the link beside the download links",
+    text: "✉ send to inbox",
+  },
   "recruiter.email.open": {
     page: "recruiter",
     label: "email form: the link that opens it",
