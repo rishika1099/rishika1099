@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { OPEN_RESUME_EMAIL } from "@/components/EmailResumeLink";
 
 export interface ResumeEmailCopy {
-  open: string;
   placeholder: string;
   send: string;
   sending: string;
@@ -22,6 +21,9 @@ export interface ResumeEmailCopy {
 /**
  * "Email me the resume", for the recruiter who files things rather than reads
  * them on the spot.
+ *
+ * Always open. Folded behind a line of text it was easy to miss, and an address
+ * box is what says "you can have this emailed" at a glance.
  *
  * It asks for an address and nothing else. Which version to send is already
  * answered at the top of the page, by the role pill that is lit and whatever is
@@ -42,43 +44,24 @@ export default function ResumeByEmail({
   posting: string;
   copy: ResumeEmailCopy;
 }) {
-  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [trap, setTrap] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "email" | "limit" | "error">("idle");
   const openedAt = useRef(0);
   const emailBox = useRef<HTMLInputElement>(null);
 
-  const openForm = () => {
-    openedAt.current = Date.now();
-    setOpen(true);
-    // after the form has rendered, so there is a box to focus
-    setTimeout(() => emailBox.current?.focus({ preventScroll: true }), 350);
-  };
-
-  // opened from the "send to inbox" links beside the downloads, too
+  // The time on the form is counted from when the page arrived, since the box
+  // is there from the start. The "send to inbox" links beside the downloads
+  // bring it into view, and this puts the cursor in it once they have.
   useEffect(() => {
-    const onOpen = () => {
-      if (!open) openForm();
-    };
+    openedAt.current = Date.now();
+    const onOpen = () => setTimeout(() => emailBox.current?.focus({ preventScroll: true }), 450);
     window.addEventListener(OPEN_RESUME_EMAIL, onOpen);
     return () => window.removeEventListener(OPEN_RESUME_EMAIL, onOpen);
-  });
+  }, []);
 
   const field =
     "rounded-full border border-white/70 bg-white/80 px-4 py-2.5 font-body text-sm text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-[#a9a5e6] focus:ring-2 focus:ring-[#c2c0ef]/50";
-
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={openForm}
-        className="font-body text-sm text-ink-soft underline decoration-[#a9a5e6] decoration-2 underline-offset-4 transition hover:text-ink"
-      >
-        {copy.open}
-      </button>
-    );
-  }
 
   if (state === "sent") {
     return <p className="font-body text-sm font-semibold text-ink">{copy.sent}</p>;

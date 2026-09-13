@@ -101,7 +101,6 @@ export default async function Recruiter({
 
   // The email form's words, all copy blocks, editable from /recruiter/edit.
   const emailCopy = {
-    open: t("recruiter.email.open"),
     placeholder: t("recruiter.email.placeholder"),
     send: t("recruiter.email.send"),
     sending: t("recruiter.email.sending"),

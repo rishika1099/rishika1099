@@ -193,20 +193,15 @@ export const copyDefaults: Record<string, CopyBlock> = {
     label: "email form: the link beside the download links",
     text: "✉ send to inbox",
   },
-  "recruiter.email.open": {
-    page: "recruiter",
-    label: "email form: the link that opens it",
-    text: "✉ or have the résumé emailed to you",
-  },
   "recruiter.email.placeholder": {
     page: "recruiter",
     label: "email form: address box placeholder",
-    text: "your email",
+    text: "✉ your email",
   },
   "recruiter.email.send": {
     page: "recruiter",
     label: "email form: send button",
-    text: "send it ✦",
+    text: "email me the résumé ✦",
   },
   "recruiter.email.sending": {
     page: "recruiter",

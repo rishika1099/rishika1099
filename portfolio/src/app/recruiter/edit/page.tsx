@@ -15,7 +15,7 @@ import { ROLES as ROLE_IDS, ROLE_SPECS } from "@/lib/recruiter";
 const ROLES = ROLE_IDS.map((id) => ({ id, label: ROLE_SPECS[id].label }));
 
 // the email form, then the email it sends, in the order they are met
-const EMAIL_FORM = ["link", "open", "placeholder", "send", "sending", "forposting", "forrole", "forall", "note", "sent", "bademail", "limit", "error"];
+const EMAIL_FORM = ["link", "placeholder", "send", "sending", "forposting", "forrole", "forall", "note", "sent", "bademail", "limit", "error"];
 const EMAIL_BODY = ["subject", "intro", "attached", "highlights", "pagebutton", "printbutton", "signoff", "footer"];
 const EMAIL_KEYS = [...EMAIL_FORM, ...EMAIL_BODY];
 
