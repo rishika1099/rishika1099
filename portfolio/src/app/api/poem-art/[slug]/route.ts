@@ -20,7 +20,10 @@ export async function GET(
       headers: {
         "Content-Type": "image/png",
         // short cache (not immutable) so re-generated / restored art shows soon
-        "Cache-Control": "public, max-age=60, stale-while-revalidate=86400",
+        // Private: this is behind the poem password. "public" let a shared cache
+        // (Netlify's CDN) keep a copy and hand it to someone without the cookie.
+        "Cache-Control": "private, max-age=300",
+        Vary: "Cookie",
       },
     });
   } catch (err) {
