@@ -28,6 +28,7 @@ import { ROLE_SPECS, plain, type Role } from "@/lib/recruiter";
 import { getCopy } from "@/lib/siteCopy";
 import { getContactLinks } from "@/lib/contactLinks";
 import { SITE_URL } from "@/lib/siteUrl";
+import { sendEmail } from "@/lib/mail";
 
 export const FROM = "Rishika Mamidibathula <resume@rishika-m.com>";
 const FALLBACK_TO_HER = "rm4318@columbia.edu";
@@ -256,27 +257,6 @@ function recruiterText(o: {
 
 // ---------------------------------------------------------------- sending
 
-async function send(body: Record<string, unknown>): Promise<boolean> {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    // on the live site a missing key is a failure, never a quiet "sent"
-    if (blobsEnabled()) return false;
-    // local dev has no key: show what would have gone, and carry on
-    console.log(
-      "[resume-email] no RESEND_API_KEY, not sent:",
-      JSON.stringify({ ...body, html: "(html)", attachments: body.attachments ? "(pdf)" : undefined }, null, 2),
-    );
-    return true;
-  }
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) console.error("[resume-email] resend refused", res.status, await res.text().catch(() => ""));
-  return res.ok;
-}
-
 export async function sendResume(req: {
   to: string;
   role: Role | null;
@@ -312,7 +292,7 @@ export async function sendResume(req: {
     attachedLine: t("recruiter.email.attached"),
   };
 
-  const sent = await send({
+  const sent = await sendEmail({
     from: FROM,
     to: [req.to],
     reply_to: her,
@@ -320,7 +300,7 @@ export async function sendResume(req: {
     html: recruiterHtml(parts),
     text: recruiterText(parts),
     ...(pdf ? { attachments: [pdf] } : {}),
-  });
+  }, "resume-email");
   if (!sent) return false;
 
   // Her copy. A failure here is logged and nothing more: the recruiter already
@@ -352,7 +332,7 @@ export async function sendResume(req: {
   ]
     .filter(Boolean)
     .join("\n");
-  const noted = await send({
+  const noted = await sendEmail({
     from: FROM,
     to: [her],
     reply_to: req.to,

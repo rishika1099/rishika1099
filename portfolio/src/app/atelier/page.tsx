@@ -9,6 +9,7 @@ import FileDrop from "@/components/FileDrop";
 import { useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
+import OwnerLogin from "@/components/OwnerLogin";
 import InkEditor from "@/components/InkEditor";
 import ProjectManager from "@/components/ProjectManager";
 import CaseStudyManager from "@/components/CaseStudyManager";
@@ -471,28 +472,7 @@ function EditRoom() {
   const initialTab = (tabParam && CLUSTER_IDS.includes(tabParam as ClusterId)
     ? tabParam
     : "titles") as ClusterId;
-  const [key, setKey] = useState("");
-  const [entered, setEntered] = useState(false);
-  const [err, setErr] = useState("");
   const [tab, setTab] = useState<ClusterId>(initialTab);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("admin-key");
-    if (saved) {
-      setKey(saved);
-      setEntered(true);
-    }
-  }, []);
-
-  async function tryKey(k: string) {
-    setErr("");
-    const res = await fetch("/api/admin/poems", { headers: { "x-admin-key": k } });
-    if (res.status === 401) return setErr("that's not the key 🌙");
-    if (res.status === 503) return setErr("ADMIN_KEY isn't configured on this deploy yet.");
-    if (!res.ok) return setErr("something wobbled, try again?");
-    localStorage.setItem("admin-key", k);
-    setEntered(true);
-  }
 
   return (
     <PageShell vibe="koi">
@@ -503,29 +483,8 @@ function EditRoom() {
         </p>
       </div>
 
-      {!entered ? (
-        <>
-          <form
-            className="mx-auto mt-8 flex max-w-md gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (key.trim()) tryKey(key.trim());
-            }}
-          >
-            <input
-              type="password"
-              value={key}
-              onChange={(e) => setKey(e.target.value)}
-              placeholder="the key"
-              className={field}
-            />
-            <button type="submit" className={btnDark}>
-              open
-            </button>
-          </form>
-          {err && <p className="mt-3 text-center font-body text-sm text-rose-500">{err}</p>}
-        </>
-      ) : (
+      <OwnerLogin scope="admin" storageKey="admin-key">
+        {(key, signOut) => (
         <div className="mx-auto mt-8 max-w-3xl">
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-wrap gap-2">
@@ -564,11 +523,7 @@ function EditRoom() {
               </button>
               <button
                 className={btnSoft}
-                onClick={() => {
-                  localStorage.removeItem("admin-key");
-                  setEntered(false);
-                  setKey("");
-                }}
+                onClick={signOut}
               >
                 lock up 🔒
               </button>
@@ -616,7 +571,8 @@ function EditRoom() {
             </>
           )}
         </div>
-      )}
+        )}
+      </OwnerLogin>
     </PageShell>
   );
 }

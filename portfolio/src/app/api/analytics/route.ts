@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import { clearStats, readJourneys, readStats } from "@/lib/analytics";
 import { getAllReactions } from "@/lib/reactions";
+import { hasScope } from "@/lib/adminAuth";
 
 export const runtime = "nodejs";
 
+// A stats session (or, on her machine, the key in a header): never the key in
+// the address, where it would sit in logs and browser history.
 function denyIfBadKey(request: Request): NextResponse | null {
-  const key = new URL(request.url).searchParams.get("key") ?? "";
-  const expected = process.env.STATS_KEY;
-  if (!expected) return NextResponse.json({ error: "stats-unconfigured" }, { status: 503 });
-  if (key !== expected) return NextResponse.json({ error: "nope" }, { status: 401 });
+  if (!process.env.STATS_KEY && !process.env.ADMIN_KEY) {
+    return NextResponse.json({ error: "stats-unconfigured" }, { status: 503 });
+  }
+  if (!hasScope(request, "stats")) return NextResponse.json({ error: "nope" }, { status: 401 });
   return null;
 }
 

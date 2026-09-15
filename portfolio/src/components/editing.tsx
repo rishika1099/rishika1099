@@ -3,11 +3,16 @@
 // Shared pieces for in-place page editing: the key gate, a sticky save bar,
 // and a textarea that dresses up as the page's own typography.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import OwnerLogin from "@/components/OwnerLogin";
 import PageShell from "@/components/PageShell";
 import type { Vibe } from "@/components/Scenery";
 
-/** Key gate: renders children only once the admin key is known-good. */
+/**
+ * The edit rooms' door: the owner login (the key, then an emailed code on the
+ * live site; the key alone on her machine). Renders children once open, with
+ * the value their requests send.
+ */
 export function AdminGate({
   children,
   vibe,
@@ -15,57 +20,12 @@ export function AdminGate({
   children: (key: string) => React.ReactNode;
   vibe?: Vibe;
 }) {
-  const [key, setKey] = useState("");
-  const [entered, setEntered] = useState(false);
-  const [err, setErr] = useState("");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("admin-key");
-    if (saved) {
-      setKey(saved);
-      setEntered(true);
-    }
-  }, []);
-
-  async function tryKey(k: string) {
-    setErr("");
-    const res = await fetch("/api/admin/copy", { headers: { "x-admin-key": k } });
-    if (res.status === 401) return setErr("that's not the key 🌙");
-    if (res.status === 503) return setErr("ADMIN_KEY isn't configured on this deploy yet.");
-    if (!res.ok) return setErr("something wobbled, try again?");
-    localStorage.setItem("admin-key", k);
-    setEntered(true);
-  }
-
-  if (entered) return <>{children(key)}</>;
-  const gate = (
-    <>
-      <form
-        className="mx-auto mt-8 flex max-w-md gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (key.trim()) tryKey(key.trim());
-        }}
-      >
-        <input
-          type="password"
-          value={key}
-          onChange={(e) => setKey(e.target.value)}
-          placeholder="the key"
-          className="w-full rounded-full border border-white/70 bg-white/80 px-5 py-2.5 font-body text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
-        />
-        <button
-          type="submit"
-          className="rounded-full bg-ink px-6 py-2.5 font-body font-semibold text-cream transition hover:opacity-90"
-        >
-          open
-        </button>
-      </form>
-      {err && <p className="mt-3 text-center font-body text-sm text-rose-500">{err}</p>}
-    </>
-  );
   // pages that render their own shell only after unlock still get a backdrop
-  return vibe ? <PageShell vibe={vibe}>{gate}</PageShell> : gate;
+  return (
+    <OwnerLogin scope="admin" storageKey="admin-key" shell={vibe ? (door) => <PageShell vibe={vibe}>{door}</PageShell> : undefined}>
+      {(key) => children(key)}
+    </OwnerLogin>
+  );
 }
 
 /** Sticky bar with save / revert / view, shown while editing a page in place. */

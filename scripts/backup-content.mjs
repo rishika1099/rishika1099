@@ -15,17 +15,22 @@ import { createHash } from "node:crypto";
 import { writeFileSync } from "node:fs";
 
 const SITE = process.env.SITE_URL || "https://rishika-m.com";
+// The live site does not take the atelier key on its own any more (it emails a
+// code), so a job with no inbox signs its requests with ADMIN_API_TOKEN. The
+// key is still accepted for a site running on her own machine.
+const TOKEN = process.env.ADMIN_API_TOKEN;
 const KEY = process.env.ADMIN_KEY;
 const OUT = process.env.BACKUP_OUT || "/tmp/portfolio-backup.json";
 const HASH_OUT = process.env.BACKUP_HASH_OUT || "backups/.content-sha256";
 
-if (!KEY) {
-  console.error("ADMIN_KEY is required (the export endpoints are key-gated).");
+if (!TOKEN && !KEY) {
+  console.error("ADMIN_API_TOKEN is required (the export endpoints are owner-only).");
   process.exit(1);
 }
+const auth = TOKEN ? { Authorization: `Bearer ${TOKEN}` } : { "x-admin-key": KEY };
 
 async function grab(path, label) {
-  const res = await fetch(`${SITE}${path}`, { headers: { "x-admin-key": KEY } });
+  const res = await fetch(`${SITE}${path}`, { headers: auth });
   if (!res.ok) throw new Error(`${label}: HTTP ${res.status}`);
   const text = await res.text();
   console.log(`  ${label}: ${(text.length / 1024).toFixed(1)} KB`);

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAllProjects } from "@/lib/github-projects";
 import { getContactLinks } from "@/lib/contactLinks";
 import { getBlogPosts } from "@/lib/content";
+import { hasScope } from "@/lib/adminAuth";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -45,10 +46,7 @@ async function check(url: string, source: string): Promise<Result> {
 // Private link checker (STATS_KEY): scans the site's outbound links (project
 // repos/demos, contact links, blog posts) and reports any that are broken.
 export async function GET(request: Request) {
-  const key = new URL(request.url).searchParams.get("key") ?? "";
-  const expected = process.env.STATS_KEY;
-  if (!expected) return NextResponse.json({ error: "unconfigured" }, { status: 503 });
-  if (key !== expected) return NextResponse.json({ error: "nope" }, { status: 401 });
+  if (!hasScope(request, "stats")) return NextResponse.json({ error: "nope" }, { status: 401 });
 
   const [projects, contact, posts] = await Promise.all([
     getAllProjects(),

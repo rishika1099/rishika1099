@@ -1,12 +1,14 @@
 "use client";
 
 // Private analytics room: aggregate visitors, traffic sources, devices, custom
-// conversion events, Core Web Vitals, and the chatbot question log. Gated by
-// STATS_KEY. All aggregate + non-identifying, nothing here is public.
+// conversion events, Core Web Vitals, and the chatbot question log. Behind the
+// owner login (STATS_KEY or ADMIN_KEY, then an emailed code on the live site).
+// All aggregate + non-identifying, nothing here is public.
 
 import { useEffect, useState } from "react";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
+import OwnerLogin from "@/components/OwnerLogin";
 import type { LoggedQuestion, VisitStats } from "@/lib/analytics";
 
 type Reactions = Record<string, { heart: number; sparkle: number }>;
@@ -162,7 +164,23 @@ interface LinkResult {
 }
 
 export default function StatsPage() {
-  const [key, setKey] = useState("");
+  return (
+    <PageShell vibe="midnight">
+      <div className="text-center">
+        <PageTitle className="text-cream">the night garden 🌙</PageTitle>
+        <p className="mt-3 font-body text-base text-cream/70">nothing blooms here without a key ✦</p>
+      </div>
+      <OwnerLogin scope="stats" storageKey="stats-key" dark>
+        {(key, signOut) => <StatsRoom keyVal={key} signOut={signOut} />}
+      </OwnerLogin>
+    </PageShell>
+  );
+}
+
+// the key goes in a header, on her machine; live, the session cookie is what counts
+const statsHeaders = (k: string) => ({ "x-stats-key": k });
+
+function StatsRoom({ keyVal: key, signOut }: { keyVal: string; signOut: () => void }) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -172,7 +190,7 @@ export default function StatsPage() {
   async function checkLinks(k: string) {
     setLinksBusy(true);
     try {
-      const res = await fetch(`/api/link-check?key=${encodeURIComponent(k)}`);
+      const res = await fetch("/api/link-check", { headers: statsHeaders(k) });
       const d = await res.json();
       setLinks(d.results ?? []);
     } catch {
@@ -183,11 +201,7 @@ export default function StatsPage() {
   }
 
   useEffect(() => {
-    const saved = localStorage.getItem("stats-key");
-    if (saved) {
-      setKey(saved);
-      load(saved);
-    }
+    load(key);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -195,10 +209,10 @@ export default function StatsPage() {
     setBusy(true);
     setErr("");
     try {
-      const res = await fetch(`/api/analytics?key=${encodeURIComponent(k)}`);
+      const res = await fetch("/api/analytics", { headers: statsHeaders(k) });
       if (res.status === 401) {
-        setErr("that's not the key 🌙");
-        localStorage.removeItem("stats-key");
+        // the session ran out (or the saved key changed): back to the door
+        signOut();
         return;
       }
       if (res.status === 503) {
@@ -207,7 +221,6 @@ export default function StatsPage() {
       }
       if (!res.ok) throw new Error(String(res.status));
       setStats((await res.json()) as Stats);
-      localStorage.setItem("stats-key", k);
     } catch {
       setErr("couldn't load stats, try again?");
     } finally {
@@ -223,36 +236,8 @@ export default function StatsPage() {
   const returnPct = visitors ? Math.round((v!.returningVisitors / visitors) * 100) : 0;
 
   return (
-    <PageShell vibe="midnight">
-      <div className="text-center">
-        <PageTitle className="text-cream">the night garden 🌙</PageTitle>
-        <p className="mt-3 font-body text-base text-cream/70">nothing blooms here without a key ✦</p>
-      </div>
-
-      {!stats && (
-        <form
-          className="mx-auto mt-8 flex max-w-md gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (key.trim()) load(key.trim());
-          }}
-        >
-          <input
-            type="password"
-            value={key}
-            onChange={(e) => setKey(e.target.value)}
-            placeholder="the key"
-            className="w-full rounded-full border border-white/20 bg-white/10 px-5 py-2.5 font-body text-cream outline-none placeholder:text-cream/40 focus:border-blush/60"
-          />
-          <button
-            type="submit"
-            disabled={busy}
-            className="rounded-full bg-blush/80 px-6 py-2.5 font-body font-semibold text-ink transition hover:bg-blush disabled:opacity-50"
-          >
-            {busy ? "…" : "open"}
-          </button>
-        </form>
-      )}
+    <>
+      {!stats && busy && <p className="mt-8 text-center font-body text-sm text-cream/60">opening ✦</p>}
       {err && <p className="mt-3 text-center font-body text-sm text-blush">{err}</p>}
 
       {stats && v && (
@@ -488,19 +473,27 @@ export default function StatsPage() {
               updated {v.updatedAt ? new Date(v.updatedAt).toLocaleString() : "never"} · aggregate-only,
               no IPs or identifiers, no consent banner needed · your own device isn&apos;t counted
             </p>
+            <div className="flex gap-2">
+            <button
+              onClick={signOut}
+              className="rounded-full bg-white/10 px-4 py-1.5 font-body text-xs font-semibold text-cream/80 transition hover:bg-white/20"
+            >
+              lock up 🔒
+            </button>
             <button
               onClick={async () => {
                 if (!confirm("Reset all analytics counters to zero?")) return;
-                await fetch(`/api/analytics?key=${encodeURIComponent(key)}`, { method: "DELETE" });
+                await fetch("/api/analytics", { method: "DELETE", headers: statsHeaders(key) });
                 load(key);
               }}
               className="rounded-full bg-white/10 px-4 py-1.5 font-body text-xs font-semibold text-cream/80 transition hover:bg-white/20"
             >
               reset stats
             </button>
+            </div>
           </div>
         </>
       )}
-    </PageShell>
+    </>
   );
 }

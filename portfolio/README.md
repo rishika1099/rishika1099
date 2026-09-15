@@ -286,6 +286,14 @@ Environment variables live in `.env.local` (never committed). See `.env.example`
   fetches project READMEs. A scopeless classic token is enough.
 - `RESEND_API_KEY`: sends the résumé from the recruiter page. A sending-only key for
   the verified `rishika-m.com` domain; without it, local dev logs the email instead.
+- `ADMIN_KEY`: the key to the atelier and edit rooms. On the live site the key only
+  starts the login: it emails a six-digit code, and the code opens a day-long session
+  cookie. On your own machine the key alone works.
+- `ADMIN_EMAIL`: optional; where login codes go (defaults to the contact address).
+- `ADMIN_API_TOKEN`: a long random token for jobs that cannot read an inbox, such as
+  the weekly backup, sent as `Authorization: Bearer`. Unset means no token is accepted.
+- `SESSION_SECRET`: signs the poem and owner session cookies. Changing it, or either
+  key, signs everyone out.
 - `NETLIFY_SITE_ID` / `NETLIFY_AUTH_TOKEN` — used by `npm run sync`.
 
 > Poems and photos are intentionally kept out of Git. Generated art, captions, clusters,
