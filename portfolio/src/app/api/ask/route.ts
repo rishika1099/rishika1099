@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { answerQuestion, answerStream, type Turn } from "@/lib/rag";
 import { recordQuestion } from "@/lib/analytics";
+import { allowVisitor } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -40,6 +41,10 @@ export async function POST(request: Request) {
   if (question.length > 500) question = question.slice(0, 500);
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json({ error: "ask-unconfigured" }, { status: 503 });
+  }
+  // every answer is a paid model call: generous for a person, a wall for a script
+  if (!(await allowVisitor(request, "ask", 40, 1500, 24 * 3600))) {
+    return NextResponse.json({ error: "busy" }, { status: 429 });
   }
 
   // Private question log (what visitors actually ask), must never break asking.

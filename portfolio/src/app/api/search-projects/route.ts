@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { searchProjects } from "@/lib/search";
 import { recordSearch } from "@/lib/analytics";
+import { allowVisitor } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,10 @@ export async function GET(request: Request) {
 
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json({ error: "search-unconfigured" }, { status: 503 });
+  }
+  // each query is embedded by a paid model; the search box fires as people type
+  if (!(await allowVisitor(request, "search", 300, 6000, 24 * 3600))) {
+    return NextResponse.json({ error: "busy" }, { status: 429 });
   }
   try {
     // log the phrase people searched for (the words only, tied to nobody)

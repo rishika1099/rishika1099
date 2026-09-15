@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { MAX_JD, tailorTo } from "@/lib/tailor";
+import { allowVisitor } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -21,6 +22,10 @@ export async function POST(request: Request) {
     // No floor. "healthcare llm" is a perfectly good thing to type, and telling
     // someone their question is too short is a worse answer than a broad one.
     if (!posting) return NextResponse.json({ error: "empty" }, { status: 400 });
+    // it runs as someone types, so the allowance is wide; a script still meets it
+    if (!(await allowVisitor(request, "tailor", 60, 800, 24 * 3600))) {
+      return NextResponse.json({ error: "busy" }, { status: 429 });
+    }
     return NextResponse.json({ tailored: await tailorTo(posting.slice(0, MAX_JD)) });
   } catch (err) {
     console.error("tailor failed", err);

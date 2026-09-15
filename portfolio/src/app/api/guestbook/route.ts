@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addGuestEntry, listGuestbook } from "@/lib/guestbook";
+import { allowVisitor } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
@@ -17,6 +18,9 @@ export async function POST(request: Request) {
     const body = (await request.json()) as { name?: string; message?: string; website?: string };
     // honeypot: real people never fill a hidden "website" field
     if (body.website) return NextResponse.json({ ok: true });
+    if (!(await allowVisitor(request, "guestbook", 5, 100, 24 * 3600))) {
+      return NextResponse.json({ error: "busy" }, { status: 429 });
+    }
     const message = (body.message ?? "").trim();
     if (message.length < 2) {
       return NextResponse.json({ error: "message required" }, { status: 400 });

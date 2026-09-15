@@ -114,6 +114,15 @@ export default function AskMe() {
         );
         return;
       }
+      if (res.status === 429) {
+        setMessages((m) =>
+          withLastBot(m, (b) => ({
+            ...b,
+            text: "I've answered a lot of questions today! Try again tomorrow, or say hello through the contact page ✦",
+          })),
+        );
+        return;
+      }
       if (!res.ok || !res.body) throw new Error(String(res.status));
 
       const reader = res.body.getReader();

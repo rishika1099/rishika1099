@@ -61,7 +61,9 @@ export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
         body: JSON.stringify({ name, message, website }),
       });
       const d = await r.json();
-      if (d.entry) {
+      if (r.status === 429) {
+        setMsg("the guestbook has had a lot of notes from here today, come back tomorrow? 🌸");
+      } else if (d.entry) {
         setEntries((cur) => [d.entry, ...(cur ?? [])]);
         setName("");
         setMessage("");

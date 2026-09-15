@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkPassword, createToken, POEM_COOKIE, cookieOptions } from "@/lib/auth";
+import { allowVisitor } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   let password = "";
@@ -14,6 +15,15 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, error: "The poem garden isn't configured yet." },
       { status: 503 }
+    );
+  }
+
+  // Counted before the check, so right and wrong guesses cost the same: without
+  // this, a short password could be walked through word by word.
+  if (!(await allowVisitor(request, "unlock", 10, 200, 3600))) {
+    return NextResponse.json(
+      { ok: false, error: "That's a lot of guesses. Rest a little and try again in an hour ✦" },
+      { status: 429 },
     );
   }
 
