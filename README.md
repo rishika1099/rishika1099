@@ -48,7 +48,10 @@ const rishika = {
     "RA: Clinical LLM & Phenotyping @ Columbia Irving Medical Center 🏥",
     "RA: LLM Risk Modeling @ Columbia GSAS 🌍"
   ],
-  teaching: "TA: Artificial Intelligence for Public Policy @ Columbia DSI 🎓",
+  teaching: [
+    "TA: Natural Language Processing (COMS 4705) @ Columbia Computer Science 💬",
+    "TA: Artificial Intelligence for Public Policy @ Columbia SIPA 🏛️"
+  ],
   interests: [
     "Healthcare AI",
     "Deep Learning",
@@ -190,12 +193,35 @@ Built an automated **Human Rights Due Diligence scoring framework** for **27 def
 
 ## 🎓 Teaching Experience
 
-### 📚 Columbia University Data Science Institute | Teaching Assistant
-**Sep 2025 - Present** | 📍 New York, NY
+### 💬 Columbia University, Computer Science | Teaching Assistant: Natural Language Processing (COMS 4705)
+**Fall 2026** | 📍 New York, NY
 
 ```python
-teaching = {
-    "course": "Artificial Intelligence for Public Policy",
+nlp_course = {
+    "taught_by": "John Hewitt",
+    "topics": [
+        "Language modeling, tokenization, and representation learning",
+        "Transformers: self-attention, pretraining, finetuning, and sampling",
+        "Alignment and agents: instruction following, RLHF, RLVR, retrieval and tools",
+        "Evaluation and responsibility: experimental design, AI safety, bias, interpretability"
+    ],
+    "responsibilities": [
+        "Hold office hours and mentor students through assignments",
+        "Grade assignments and exams"
+    ]
+}
+```
+
+### 🏛️ Columbia University, School of International and Public Affairs | Teaching Assistant: Artificial Intelligence for Public Policy
+**Spring 2026** | 📍 New York, NY
+
+```python
+policy_course = {
+    "topics": [
+        "AI fundamentals, and the math and programming behind prediction, classification, and clustering",
+        "Applications across business, non-profits, and government, and what they mean for governance",
+        "Concept to implementation: student groups take a policy problem to an AI-driven proposal"
+    ],
     "responsibilities": [
         "Grade assignments and exams",
         "Hold office hours and mentor students",
@@ -215,12 +241,12 @@ teaching = {
 
 ## 🤝 Volunteer Experience
 
-### 🏛️ Columbia University Data Science Institute | Student Council: Communications & Professional Resources
+### 🗳️ Columbia University Data Science Institute | Student Council: Voting Member
 **Sep 2025 - Present** | 📍 New York, NY
 
 ```python
 council = {
-    "role": "Communications & Professional Resources",
+    "role": "Communications & Professional Resources, and Social",
     "responsibilities": [
         "Curate and share career resources, internship opportunities, and industry events for the Columbia MSDS community",
         "Coordinate communications between students, faculty, and external partners",
@@ -232,6 +258,58 @@ council = {
         "description": "Student dashboard for Columbia MSDS course reviews with live Google Sheets data, personalized rankings, AI-summarized review deep dives, and course recommendations",
         "stack": ["Python", "Google Sheets API", "LLMs"]
     }
+}
+```
+
+### 🌈 Shell | LGBTQIA+ Volunteer
+**Aug 2023 - Jul 2025** | 📍 Bengaluru, India
+
+```python
+lgbtq_network = {
+    "responsibilities": [
+        "Organize events, workshops, and discussions for LGBTQ+ employees",
+        "Raise awareness of LGBTQ+ issues across the organization",
+        "Push for policies and practices that represent diverse perspectives"
+    ]
+}
+```
+
+### ♿ Shell | enABLE Networks Volunteer
+**Aug 2023 - Jul 2025** | 📍 Bengaluru, India
+
+```python
+enable_network = {
+    "responsibilities": [
+        "Organize events and initiatives on accessibility challenges",
+        "Raise awareness of the needs of employees with disabilities",
+        "Advocate for policies that give colleagues the resources and support they need"
+    ]
+}
+```
+
+### 🙋 Vellore Institute of Technology | Program Representative
+**Jul 2020 - Jun 2023** | 📍 Vellore, India
+
+```python
+program_representative = {
+    "responsibilities": [
+        "Connect students and faculty, and resolve academic concerns quickly",
+        "Share feedback that shaped the curriculum, and mentor junior students",
+        "Organize events that brought the program together"
+    ]
+}
+```
+
+### 🌱 Ayuda NGO | Student Assistant
+**Aug 2020 - Apr 2021** | 📍 Vellore, India
+
+```python
+ayuda = {
+    "focus": "Underprivileged children and marginalized communities",
+    "responsibilities": [
+        "Help organize community outreach programs",
+        "Support fundraising efforts and awareness campaigns"
+    ]
 }
 ```
 
@@ -531,9 +609,9 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 | **Spring 2026** | Causal Inference<br>High Performance Machine Learning<br>Machine Learning<br>Statistical Inference and Modelling |
 | **Fall 2025** | Applied Deep Learning<br>LLM-based Generative AI Systems<br>Exploratory Data Analysis and Visualization<br>Probability and Statistics |
 
-- 🧑‍🏫 Teaching Assistant for Artificial Intelligence for Public Policy
-- 🔬 Research Assistant at Columbia Irving Medical Center and Columbia GSAS
-- 🏛️ Data Science Institute Student Council: Communications & Professional Resources
+- 🧑‍🏫 Teaching Assistant for Natural Language Processing (COMS 4705, Computer Science) and Artificial Intelligence for Public Policy (SIPA)
+- 🔬 Research Assistant at Columbia Lamont-Doherty Earth Observatory, the Irving Medical Center, and Columbia GSAS
+- 🗳️ Data Science Institute Student Council, voting member: Communications & Professional Resources, and Social
 
 ### Vellore Institute of Technology | B.Tech Computer Science - Data Science
 **May 2023 | Vellore, IN | CGPA: 9.51/10**

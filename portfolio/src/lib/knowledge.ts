@@ -16,6 +16,7 @@ export type ChunkKind =
   | "research"
   | "education"
   | "teaching"
+  | "now"
   | "volunteering"
   | "project"
   | "writing";
@@ -60,6 +61,24 @@ export async function buildKnowledge(): Promise<Chunk[]> {
     text: clean(copyMap["about.bio"].replace(/\*\*/g, "").replace(/\n+/g, " ")),
     href: "/about",
   });
+
+  // The /now page: what this season actually looks like. Asked what she is
+  // working on now, the bot used to answer from the resume, which is a year of
+  // history rather than this month, and could not know a course she started
+  // teaching in September.
+  const now = ["now.working", "now.learning", "now.tinkering", "now.offclock"]
+    .map((id) => richToText(copyMap[id] ?? "", 900))
+    .filter(Boolean)
+    .join(" ");
+  if (now) {
+    chunks.push({
+      id: "now",
+      title: "What Rishika is doing right now",
+      kind: "now",
+      text: clean(`From her /now page, kept current by her: ${now}`),
+      href: "/now",
+    });
+  }
 
   chunks.push({
     id: "skills",

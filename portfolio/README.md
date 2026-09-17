@@ -155,7 +155,8 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   twinkling sparkles, and a synced card-hover tint. The active nav tab tints to match the
   page it leads to.
 - **Home:** flower-framed portrait, animated cursive name, quick links.
-- **About:** expandable education/teaching/work/research/certification/volunteering cards, a sticky jump bar
+- **About:** expandable education/teaching/work/research/certification cards, plus
+  certifications and volunteering as side-scrolling shelves, a sticky jump bar
   linking straight to each section (and `#research` style deep links), and the skills
   network graph.
 - **Work:** semantic search box + ELI5/expert toggle + featured blooms, then every project
@@ -193,7 +194,13 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   One role names its projects outright instead of ranking them by area, because product
   work is filed under whatever it is built with: those projects carry a generic Machine
   Learning tag like dozens of experiments, so ranking by area handed every slot to the
-  flagship AI work. (`src/lib/resumePicks.ts`) A recruiter can also have the résumé
+  flagship AI work. (`src/lib/resumePicks.ts`) The résumé itself is on the page, in a
+  window that scrolls inside it, rather than a link to a PDF: as written before a role is
+  picked, and arranged for the role once one is. Arranged, not rewritten: the entries and
+  lines that role calls for rise to the top, in her words. The one section that changes
+  content is Projects, which takes the projects that role's cards lead with, keeping a
+  project's résumé lines when it has them and otherwise using the project's own card text.
+  (`src/lib/resumeArrange.ts`) A recruiter can also have the résumé
   emailed to them: the PDF attached, led by the lines their role or pasted posting calls
   for, sent from `resume@rishika-m.com` through Resend with replies going to her, and a
   note of each request sent to her. A hidden field, a minimum time on the form and daily
@@ -223,6 +230,13 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 - **Contact:** ways to reach me + a message form.
 - **SEO:** sitemap, robots, and an auto-generated Open Graph preview image so links unfurl
   nicely. (`src/app/sitemap.ts`, `robots.ts`, `opengraph-image.tsx`)
+- **Kept safe:** the private rooms take the key and then a six-digit code emailed to her,
+  which opens a signed, `__Host-` prefixed session cookie for a day, so a leaked key alone
+  opens nothing (on her own machine the key is enough). The chatbot, both searches, the
+  guestbook and the poem password carry daily limits per visitor and across the site, since
+  every model call is money and Netlify credits, and a free site goes dark when they run
+  out. Every response carries frame, referrer and permissions headers, and scheduled jobs
+  authenticate with a separate token. (`src/lib/adminAuth.ts`, `rateLimit.ts`)
 - **Responsive** with a mobile menu, and **no em dashes anywhere** (a personal style rule).
 
 ---
