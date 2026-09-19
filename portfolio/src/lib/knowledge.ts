@@ -66,7 +66,8 @@ export async function buildKnowledge(): Promise<Chunk[]> {
   // working on now, the bot used to answer from the resume, which is a year of
   // history rather than this month, and could not know a course she started
   // teaching in September.
-  const now = ["now.working", "now.learning", "now.tinkering", "now.offclock"]
+  // the intro is where she says she is looking for work, and from when
+  const now = ["now.intro", "now.working", "now.learning", "now.tinkering", "now.offclock"]
     .map((id) => richToText(copyMap[id] ?? "", 900))
     .filter(Boolean)
     .join(" ");

@@ -30,7 +30,9 @@ export default async function NowPage() {
   return (
     <PageShell vibe="honey">
       <PageTitle><RichText html={copyToHtml(copy["now.title"])} /></PageTitle>
-      <p
+      {/* a div, not a <p>: the ink editor saves paragraphs, and a <p> inside a <p>
+          is split apart by the browser, which dropped the link styling below */}
+      <div
         className="rich-passage mt-3 max-w-2xl font-body text-lg text-ink-soft [&_a]:font-semibold [&_a]:text-[#c77dba] [&_a]:underline"
         dangerouslySetInnerHTML={{ __html: copyToHtml(copy["now.intro"]) }}
       />
