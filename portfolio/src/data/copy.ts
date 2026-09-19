@@ -111,7 +111,7 @@ export const copyDefaults: Record<string, CopyBlock> = {
   "home.recruiter": {
     page: "home",
     label: "the button pointing recruiters at the short version",
-    text: "👀 check this out if you're hiring →",
+    text: "👀 open to full-time roles from Jan 2027 →",
   },
   "recruiter.title": {
     page: "recruiter",
@@ -125,8 +125,8 @@ export const copyDefaults: Record<string, CopyBlock> = {
   },
   "recruiter.intro": {
     page: "recruiter",
-    label: "line under the question",
-    text: "Pick one and this page shows only the work that is evidence for it: selected projects, research, and skills. No animations, one scroll.",
+    label: "line under the title, before a role is picked (says when she is available)",
+    text: "Graduating December 2026, open to full-time roles from January 2027. Pick one, and this page shows only the work that is evidence for it: selected projects, research, and skills.",
   },
   "recruiter.summary.data-scientist": {
     page: "recruiter",
