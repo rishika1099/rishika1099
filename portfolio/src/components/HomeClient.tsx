@@ -17,6 +17,7 @@ export default function HomeClient({
   name2,
   greeting,
   intro,
+  nowLine,
   recruiterLine,
   tabBlurbs,
   tabIcons,
@@ -28,6 +29,7 @@ export default function HomeClient({
   greeting: React.ReactNode;
   intro: React.ReactNode;
   /** the line pointing someone hiring at /recruiter */
+  nowLine?: React.ReactNode;
   recruiterLine?: React.ReactNode;
   /** the four landing-card blurbs, keyed about/work/blog/contact */
   tabBlurbs: Record<string, React.ReactNode>;
@@ -186,7 +188,7 @@ export default function HomeClient({
             href="/now"
             className="inline-flex items-center justify-center gap-1.5 rounded-full bg-white/70 px-5 py-2 font-body text-sm font-semibold text-ink-soft shadow-sm backdrop-blur transition hover:bg-white hover:text-ink"
           >
-            🧭 check what i&apos;m working on now →
+            {nowLine ?? <>🧭 check what i&apos;m working on now →</>}
           </Link>
           {recruiterLine && (
             <Link

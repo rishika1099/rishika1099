@@ -27,6 +27,8 @@ function Editor({ keyVal }: { keyVal: string }) {
       "home.tab.work.icon",
       "home.tab.blog.icon",
       "home.tab.contact.icon",
+      "home.now",
+      "home.recruiter",
     ],
     "/",
   );
@@ -52,6 +54,8 @@ function Editor({ keyVal }: { keyVal: string }) {
           blog: preview("home.tab.blog"),
           contact: preview("home.tab.contact"),
         }}
+        nowLine={preview("home.now")}
+        recruiterLine={preview("home.recruiter")}
         tabIcons={{
           about: preview("home.tab.about.icon"),
           work: preview("home.tab.work.icon"),
@@ -111,6 +115,15 @@ function Editor({ keyVal }: { keyVal: string }) {
       />
 
       <div className="mx-auto mt-10 max-w-xl rounded-3xl p-5 soft-card">
+        <p className="font-body text-sm font-bold text-ink">the two buttons under the intro</p>
+        <p className="mb-3 font-body text-[11px] text-ink-soft/60">
+          the first goes to /now, the second to /recruiter (the links are fixed):
+        </p>
+        <div className="mb-3">{box("home.now", "font-body text-sm font-semibold text-ink-soft")}</div>
+        <div>{box("home.recruiter", "font-body text-sm font-semibold text-ink-soft")}</div>
+      </div>
+
+      <div className="mx-auto mt-6 max-w-xl rounded-3xl p-5 soft-card">
         <p className="font-body text-sm font-bold text-ink">the four landing cards</p>
         <p className="mb-3 font-body text-[11px] text-ink-soft/60">
           each card&apos;s emoji + little blurb (the card links are fixed):
