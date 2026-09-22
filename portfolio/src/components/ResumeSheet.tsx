@@ -29,8 +29,11 @@ function TexSection({ section }: { section: ResumeSection }) {
           {section.entries.map((e, i) => (
             <div key={i} className="entry">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                {/* a one-line entry (Leadership) bolds only its role, as the PDF does */}
                 <h3
-                  className="font-body text-[15px] font-bold text-ink"
+                  className={`font-body text-[15px] text-ink [&_a]:underline [&_a]:decoration-blush/60 ${
+                    e.left.includes("<strong>") ? "font-normal [&_strong]:font-bold" : "font-bold"
+                  }`}
                   dangerouslySetInnerHTML={{ __html: e.left }}
                 />
                 <span
