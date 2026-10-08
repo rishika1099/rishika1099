@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { m, AnimatePresence } from "framer-motion";
-import { Carousel, cardStep } from "@/components/Carousel";
+import { Carousel } from "@/components/Carousel";
 import ProjectCard, {
   CardActions,
   CardBody,
@@ -38,7 +38,6 @@ export default function WorkGallery({
   // which patch's tab is open. "" means "not chosen yet", which resolves to the
   // first patch below, so the page always opens on something.
   const [patch, setPatch] = useState<string>("");
-  const [filter, setFilter] = useState<Category | "All">("All");
   const [domain, setDomain] = useState<Domain | "All">("All");
   const [query, setQuery] = useState("");
   const [hits, setHits] = useState<SearchHit[]>([]);
@@ -64,6 +63,8 @@ export default function WorkGallery({
   async function findSimilar(name: string) {
     returnTo.current = window.scrollY;
     setQuery("");
+    setHits([]);
+    setStatus("idle");
     setSimilarTo(name);
     setSimilarLoading(true);
     setSimilarHits([]);
@@ -84,12 +85,16 @@ export default function WorkGallery({
   useEffect(() => {
     const name = new URLSearchParams(window.location.search).get("similar");
     if (!name) return;
-    findSimilar(name);
-    setTimeout(
+    // once the page has settled, not in the middle of its first render
+    const start = setTimeout(() => findSimilar(name), 0);
+    const scroll = setTimeout(
       () => document.getElementById("similar-results")?.scrollIntoView({ behavior: "smooth", block: "start" }),
       200,
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      clearTimeout(start);
+      clearTimeout(scroll);
+    };
   }, []);
 
   // The galaxy's popover can also trigger "find similar" from below the grid.
@@ -105,7 +110,6 @@ export default function WorkGallery({
     };
     window.addEventListener("find-similar", onFind);
     return () => window.removeEventListener("find-similar", onFind);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch the rewritten blurbs once per level (cached after first fetch).
@@ -114,7 +118,6 @@ export default function WorkGallery({
   // it arrives the original blurb shows, which is the same text, just shorter.
   useEffect(() => {
     if (rewrites[level]) return;
-    if (level !== "default") setExplaining(true);
     fetch(`/api/explain?level=${level}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d: { blurbs?: Record<string, string> }) =>
@@ -127,15 +130,29 @@ export default function WorkGallery({
   const blurbFor = (p: { name: string; blurb: string }) =>
     rewrites[level]?.[p.name] ?? p.blurb;
 
-  useEffect(() => {
-    const q = query.trim();
-    if (q.length < 2) {
+  // Typing sets the state the search box shows at once (searching, or nothing
+  // to search for); the effect below only does the waiting and the fetching.
+  function typeQuery(value: string) {
+    setQuery(value);
+    if (value.trim().length < 2) {
       setHits([]);
       setStatus("idle");
-      return;
+    } else {
+      setStatus("loading");
+      setSimilarTo(null);
     }
-    setStatus("loading");
-    setSimilarTo(null);
+  }
+
+  // The level buttons say "rewriting" straight away when that level has not
+  // been fetched yet.
+  function chooseLevel(lv: "default" | "eli5" | "expert") {
+    setLevel(lv);
+    if (lv !== "default" && !rewrites[lv]) setExplaining(true);
+  }
+
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 2) return;
     const ctrl = new AbortController();
     const timer = setTimeout(async () => {
       try {
@@ -209,7 +226,7 @@ export default function WorkGallery({
           <input
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => typeQuery(e.target.value)}
             placeholder="search by meaning… 'detect fraud', 'chatbot', 'image generation'"
             aria-label="search projects by meaning"
             className="w-full rounded-full border border-white/70 bg-white/80 py-3 pl-11 pr-4 font-body text-base text-ink outline-none transition placeholder:text-ink-soft/60 focus:border-blush focus:ring-2 focus:ring-blush/40"
@@ -334,7 +351,7 @@ export default function WorkGallery({
           <button
             key={lv}
             type="button"
-            onClick={() => setLevel(lv)}
+            onClick={() => chooseLevel(lv)}
             className={`rounded-full px-4 py-1.5 font-body text-sm font-semibold transition ${
               level === lv ? "bg-ink text-cream" : "bg-white/70 text-ink-soft hover:bg-white"
             }`}

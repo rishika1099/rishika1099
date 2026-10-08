@@ -13,7 +13,6 @@ import PdfThumb from "@/components/PdfThumb";
 import TagPicker from "@/components/TagPicker";
 import { EditableText, adminApi } from "@/components/editing";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
-import { richToText } from "@/lib/richHtml";
 import { isResearchEntry, stampSection } from "@/lib/aboutSections";
 import type { Attachment, Entry } from "@/data/about";
 import {

@@ -38,10 +38,23 @@ export async function readBlogOverrides(): Promise<BlogOverrideMap> {
 export async function saveBlogOverride(key: string, o: BlogOverride): Promise<void> {
   const map = await readBlogOverrides();
   const next: BlogOverride = { ...(map[key] ?? {}) };
-  if (o.title !== undefined) (o.title.trim() ? (next.title = o.title.trim()) : delete next.title);
-  if (o.excerpt !== undefined) (o.excerpt.trim() ? (next.excerpt = o.excerpt.trim()) : delete next.excerpt);
-  if (o.tech !== undefined) (o.tech.length ? (next.tech = o.tech) : delete next.tech);
-  if (o.domains !== undefined) (o.domains.length ? (next.domains = o.domains) : delete next.domains);
+  // an empty value clears the override, so the original shows again
+  if (o.title !== undefined) {
+    if (o.title.trim()) next.title = o.title.trim();
+    else delete next.title;
+  }
+  if (o.excerpt !== undefined) {
+    if (o.excerpt.trim()) next.excerpt = o.excerpt.trim();
+    else delete next.excerpt;
+  }
+  if (o.tech !== undefined) {
+    if (o.tech.length) next.tech = o.tech;
+    else delete next.tech;
+  }
+  if (o.domains !== undefined) {
+    if (o.domains.length) next.domains = o.domains;
+    else delete next.domains;
+  }
   if (Object.keys(next).length === 0) delete map[key];
   else map[key] = next;
   if (blobsEnabled()) {

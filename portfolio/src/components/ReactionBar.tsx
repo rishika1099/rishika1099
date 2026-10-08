@@ -34,11 +34,19 @@ export default function ReactionBar({ id, dark = false }: { id: string; dark?: b
   const [mine, setMine] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    setMine(readMine());
+    let live = true;
     fetch(`/api/react?id=${encodeURIComponent(id)}`)
-      .then((r) => r.json())
-      .then(setCounts)
-      .catch(() => setCounts({ heart: 0, sparkle: 0 }));
+      .then((r) => r.json() as Promise<Counts>)
+      .catch((): Counts => ({ heart: 0, sparkle: 0 }))
+      .then((c) => {
+        if (!live) return;
+        setCounts(c);
+        // which ones this reader already tapped, remembered in their browser
+        setMine(readMine());
+      });
+    return () => {
+      live = false;
+    };
   }, [id]);
 
   function toggle(kind: Kind) {

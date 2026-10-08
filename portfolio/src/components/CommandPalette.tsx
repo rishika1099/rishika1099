@@ -58,12 +58,19 @@ export default function CommandPalette() {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
+        // starts clean each time it opens; the reset is harmless on the way shut
+        setQuery("");
+        setActive(0);
         setOpen((o) => !o);
       } else if (e.key === "Escape") {
         setOpen(false);
       }
     };
-    const onOpen = () => setOpen(true);
+    const onOpen = () => {
+      setQuery("");
+      setActive(0);
+      setOpen(true);
+    };
     window.addEventListener("keydown", onKey);
     window.addEventListener("open-command-palette", onOpen);
     return () => {
@@ -73,16 +80,8 @@ export default function CommandPalette() {
   }, []);
 
   useEffect(() => {
-    if (open) {
-      setQuery("");
-      setActive(0);
-      setTimeout(() => inputRef.current?.focus(), 20);
-    }
+    if (open) setTimeout(() => inputRef.current?.focus(), 20);
   }, [open]);
-
-  useEffect(() => {
-    setActive(0);
-  }, [query]);
 
   function go(item: Item) {
     setOpen(false);
@@ -126,7 +125,11 @@ export default function CommandPalette() {
               <input
                 ref={inputRef}
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  // a new search starts at its first result
+                  setActive(0);
+                }}
                 onKeyDown={onListKey}
                 placeholder="jump to a page or project…"
                 aria-label="command palette"

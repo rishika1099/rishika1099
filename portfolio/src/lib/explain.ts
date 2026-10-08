@@ -279,8 +279,6 @@ export async function explainProjects(level: Level): Promise<Record<string, stri
   // original blurbs until then.
   if (!reposAreComplete()) return {};
 
-  const openai = new OpenAI();
-
   // The material the expansion is allowed to draw on. Without it the model has
   // only the blurb it is being asked to lengthen, and padding a sentence with
   // nothing to add is exactly the gibberish this is meant to avoid.

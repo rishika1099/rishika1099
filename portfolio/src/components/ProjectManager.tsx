@@ -6,7 +6,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import FileDrop from "@/components/FileDrop";
 import { adminApi } from "@/components/editing";
 import TagPicker from "@/components/TagPicker";
 import InkEditor from "@/components/InkEditor";
@@ -16,7 +15,6 @@ import {
   domainColor,
   type Domain,
 } from "@/data/projects";
-import { webImage } from "@/lib/webImage";
 
 interface AdminProject {
   slug: string;
@@ -67,26 +65,6 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
     });
     refresh();
     router.refresh();
-  }
-
-  async function uploadImage(picked: File): Promise<{ id: string; name: string } | null> {
-    try {
-      const file = await webImage(picked);
-      const dataBase64 = await new Promise<string>((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
-        r.onerror = reject;
-        r.readAsDataURL(file);
-      });
-      const meta = await api<{ id: string; name: string; kind: string }>("/api/admin/attachments", {
-        method: "POST",
-        body: JSON.stringify({ name: file.name, mime: file.type, dataBase64 }),
-      });
-      // a pdf is a fine attachment elsewhere, but not a picture of the project
-      return meta && meta.kind === "image" ? { id: meta.id, name: meta.name } : null;
-    } catch {
-      return null;
-    }
   }
 
   async function saveForm() {

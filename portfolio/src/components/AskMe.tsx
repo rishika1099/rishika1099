@@ -178,7 +178,10 @@ export default function AskMe() {
       setBusy(false);
     }
   }
-  askRef.current = ask;
+  // kept current after each render, for the listener above that was set up once
+  useEffect(() => {
+    askRef.current = ask;
+  });
 
   return (
     <>

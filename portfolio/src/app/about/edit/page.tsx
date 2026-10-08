@@ -12,7 +12,6 @@ import PdfThumb from "@/components/PdfThumb";
 import SkillGraph from "@/components/SkillGraph";
 import InkEditor from "@/components/InkEditor";
 import { copyToHtml, detailsToHtml } from "@/lib/copyRender";
-import { richToText } from "@/lib/richHtml";
 import { isResearchEntry, stampSection } from "@/lib/aboutSections";
 import { AdminGate, EditableText, SaveBar, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
