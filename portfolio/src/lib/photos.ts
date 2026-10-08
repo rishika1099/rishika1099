@@ -142,9 +142,19 @@ export async function getPhotoData(): Promise<{ groups: PhotoGroup[]; silhouette
 
 // ---- write operations for the secret /edit room ----
 
+// Captions and frames are each one list, changed by reading it, altering one
+// entry and writing it back. Read a moment stale, that write puts back the old
+// list with one change, and the edit made just before it is gone: two photos
+// uploaded back to back left the first with no caption. So every read that is
+// about to be written back asks for the latest copy, not the nearest one.
+async function editStore() {
+  const { getStore } = await import("@netlify/blobs");
+  return getStore({ name: "photos", consistency: "strong" });
+}
+
 async function readCaptionsAny(): Promise<Record<string, string>> {
   if (blobsEnabled()) {
-    const s = await store("photos");
+    const s = await editStore();
     const raw = await s.get(CAPTIONS_KEY, { type: "text" });
     try {
       return raw ? (JSON.parse(raw) as Record<string, string>) : {};
@@ -157,7 +167,7 @@ async function readCaptionsAny(): Promise<Record<string, string>> {
 
 async function writeCaptionsAny(captions: Record<string, string>): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("photos");
+    const s = await editStore();
     await s.setJSON(CAPTIONS_KEY, captions);
   } else {
     fs.mkdirSync(PHOTOS_DIR, { recursive: true });
@@ -167,7 +177,7 @@ async function writeCaptionsAny(captions: Record<string, string>): Promise<void>
 
 export async function writePhoto(file: string, buf: Buffer): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("photos");
+    const s = await editStore();
     await s.set(file, new Blob([new Uint8Array(buf)]));
   } else {
     fs.mkdirSync(PHOTOS_DIR, { recursive: true });
@@ -181,10 +191,10 @@ export async function setCaption(file: string, caption: string): Promise<void> {
   await writeCaptionsAny(captions);
 }
 
-async function readFramesAny(): Promise<Record<string, PhotoFrame>> {
+async function readFramesAny(fresh = false): Promise<Record<string, PhotoFrame>> {
   try {
     if (blobsEnabled()) {
-      const s = await store("photos");
+      const s = fresh ? await editStore() : await store("photos");
       const raw = await s.get(FRAMES_KEY, { type: "text" });
       return raw ? (JSON.parse(raw) as Record<string, PhotoFrame>) : {};
     }
@@ -197,7 +207,7 @@ async function readFramesAny(): Promise<Record<string, PhotoFrame>> {
 
 async function writeFramesAny(frames: Record<string, PhotoFrame>): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("photos");
+    const s = await editStore();
     await s.setJSON(FRAMES_KEY, frames);
   } else {
     fs.mkdirSync(PHOTOS_DIR, { recursive: true });
@@ -207,7 +217,7 @@ async function writeFramesAny(frames: Record<string, PhotoFrame>): Promise<void>
 
 /** null clears the frame (back to a centered crop) */
 export async function setFrame(file: string, frame: PhotoFrame | null): Promise<void> {
-  const frames = await readFramesAny();
+  const frames = await readFramesAny(true);
   if (frame) {
     frames[file] = {
       x: Math.max(0, Math.min(100, frame.x)),
@@ -222,7 +232,7 @@ export async function setFrame(file: string, frame: PhotoFrame | null): Promise<
 
 export async function removePhoto(file: string): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("photos");
+    const s = await editStore();
     await s.delete(file);
   } else {
     const f = path.join(PHOTOS_DIR, file);
@@ -233,7 +243,7 @@ export async function removePhoto(file: string): Promise<void> {
     delete captions[file];
     await writeCaptionsAny(captions);
   }
-  const frames = await readFramesAny();
+  const frames = await readFramesAny(true);
   if (file in frames) {
     delete frames[file];
     await writeFramesAny(frames);
