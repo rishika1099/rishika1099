@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from "react";
 import FileDrop from "@/components/FileDrop";
 import { adminApi } from "@/components/editing";
+import { webImage } from "@/lib/webImage";
 
 interface SavedArt {
   id: string;
@@ -68,10 +69,11 @@ export default function PoemArtManager({
     }
   }
 
-  async function upload(file: File) {
+  async function upload(picked: File) {
     setBusy("upload");
     setMsg("");
     try {
+      const file = await webImage(picked);
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch(base, { method: "POST", headers: { "x-admin-key": keyVal }, body: fd });
@@ -154,7 +156,7 @@ export default function PoemArtManager({
           <input
             ref={fileRef}
             type="file"
-            accept=".png,.jpg,.jpeg,.webp"
+            accept=".png,.jpg,.jpeg,.webp,.heic,.heif"
             className="hidden"
             onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
           />

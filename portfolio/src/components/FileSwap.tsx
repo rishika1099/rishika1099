@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { adminApi } from "@/components/editing";
+import { webImage } from "@/lib/webImage";
 
 export function useFileSwap(keyVal: string) {
   const api = adminApi(keyVal);
@@ -22,9 +23,10 @@ export function useFileSwap(keyVal: string) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function upload(kind: "resume" | "portrait", file: File) {
-    setMsg(`uploading ${file.name}…`);
+  async function upload(kind: "resume" | "portrait", picked: File) {
+    setMsg(`uploading ${picked.name}…`);
     try {
+      const file = await webImage(picked);
       const b64 = await new Promise<string>((resolve, reject) => {
         const r = new FileReader();
         r.onload = () => resolve((r.result as string).split(",")[1] ?? "");

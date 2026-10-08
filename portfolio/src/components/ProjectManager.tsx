@@ -16,6 +16,7 @@ import {
   domainColor,
   type Domain,
 } from "@/data/projects";
+import { webImage } from "@/lib/webImage";
 
 interface AdminProject {
   slug: string;
@@ -68,8 +69,9 @@ export default function ProjectManager({ keyVal }: { keyVal: string }) {
     router.refresh();
   }
 
-  async function uploadImage(file: File): Promise<{ id: string; name: string } | null> {
+  async function uploadImage(picked: File): Promise<{ id: string; name: string } | null> {
     try {
+      const file = await webImage(picked);
       const dataBase64 = await new Promise<string>((resolve, reject) => {
         const r = new FileReader();
         r.onload = () => resolve((r.result as string).split(",")[1] ?? "");

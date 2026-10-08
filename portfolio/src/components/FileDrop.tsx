@@ -16,7 +16,11 @@ function accepts(input: HTMLInputElement, file: File): boolean {
   return spec.split(",").some((raw) => {
     const rule = raw.trim().toLowerCase();
     if (!rule) return false;
-    if (rule.endsWith("/*")) return file.type.toLowerCase().startsWith(rule.slice(0, -1));
+    if (rule.endsWith("/*")) {
+      // an iPhone photo can arrive with no type at all; its name still says what it is
+      if (rule === "image/*" && /\.(heic|heif)$/i.test(file.name)) return true;
+      return file.type.toLowerCase().startsWith(rule.slice(0, -1));
+    }
     if (rule.startsWith(".")) return file.name.toLowerCase().endsWith(rule);
     return file.type.toLowerCase() === rule;
   });

@@ -20,6 +20,7 @@ import ContactManager from "@/components/ContactManager";
 import GuestbookManager from "@/components/GuestbookManager";
 import PoemArtManager from "@/components/PoemArtManager";
 import PoemOrderList from "@/components/PoemOrderList";
+import { webImage } from "@/lib/webImage";
 
 interface Poem {
   slug: string;
@@ -205,10 +206,11 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function upload(file: File) {
+  async function upload(picked: File) {
     setBusy(true);
-    setMsg(`uploading ${file.name}…`);
+    setMsg(`uploading ${picked.name}…`);
     try {
+      const file = await webImage(picked);
       const b64 = await new Promise<string>((resolve, reject) => {
         const r = new FileReader();
         r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
@@ -255,7 +257,7 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
           {busy ? "working…" : "⇪ upload a photo"}
           <input
             type="file"
-            accept=".jpg,.jpeg,.png,.webp"
+            accept=".jpg,.jpeg,.png,.webp,.heic,.heif"
             className="hidden"
             disabled={busy}
             onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}

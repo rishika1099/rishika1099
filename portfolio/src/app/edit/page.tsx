@@ -94,7 +94,7 @@ function Editor({ keyVal }: { keyVal: string }) {
                 🖼️ replace photo
                 <input
                   type="file"
-                  accept=".jpg,.jpeg,.png,.webp"
+                  accept=".jpg,.jpeg,.png,.webp,.heic,.heif"
                   className="hidden"
                   onChange={(e) => e.target.files?.[0] && files.upload("portrait", e.target.files[0])}
                 />

@@ -22,6 +22,7 @@ import {
   domainColor,
   type Domain,
 } from "@/data/projects";
+import { webImage } from "@/lib/webImage";
 
 
 const BLANK: Entry = { icon: "✨", when: "", title: "", place: "", note: "" };
@@ -181,7 +182,7 @@ function EntryEditor({
               {entry.logo ? "🏷 change the logo" : "🏷 add a logo"}
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,.heic,.heif"
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
@@ -227,7 +228,7 @@ function EntryEditor({
               📎 attach a file
               <input
                 type="file"
-                accept="image/*,.pdf"
+                accept="image/*,.heic,.heif,.pdf"
                 className="hidden"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
@@ -283,8 +284,9 @@ export default function AboutEntriesManager({
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
 
-  async function uploadAttachment(file: File): Promise<Attachment | null> {
+  async function uploadAttachment(picked: File): Promise<Attachment | null> {
     try {
+      const file = await webImage(picked);
       const dataBase64 = await fileToBase64(file);
       return await api<Attachment>("/api/admin/attachments", {
         method: "POST",
