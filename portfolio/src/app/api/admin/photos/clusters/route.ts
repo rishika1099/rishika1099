@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     if (
       !Number.isInteger(k) ||
       (k as number) < 2 ||
-      (k as number) > 12 ||
+      (k as number) > 30 ||
       typeof silhouette !== "number" ||
       !assignments ||
       typeof assignments !== "object" ||
