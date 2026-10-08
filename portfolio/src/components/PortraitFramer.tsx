@@ -27,10 +27,15 @@ export default function PortraitFramer({
   onClose: () => void;
 }) {
   const [f, setF] = useState<Frame>(frame ?? { x: 50, y: 50, zoom: 1 });
+  // Pointer moves arrive faster than renders. Reading the framing from here,
+  // not from the last render, keeps a quick drag from dropping the moves in
+  // between.
+  const latest = useRef(f);
   const drag = useRef<{ px: number; py: number } | null>(null);
   const SIZE = 176;
 
   const set = (next: Frame) => {
+    latest.current = next;
     setF(next);
     onChange?.(next);
   };
@@ -54,10 +59,11 @@ export default function PortraitFramer({
             const dy = e.clientY - drag.current.py;
             drag.current = { px: e.clientX, py: e.clientY };
             // a zoomed photo moves further under the same drag, so the pull is scaled to match the hand
+            const now = latest.current;
             set({
-              ...f,
-              x: Math.max(0, Math.min(100, f.x - ((dx / SIZE) * 100) / f.zoom)),
-              y: Math.max(0, Math.min(100, f.y - ((dy / SIZE) * 100) / f.zoom)),
+              ...now,
+              x: Math.max(0, Math.min(100, now.x - ((dx / SIZE) * 100) / now.zoom)),
+              y: Math.max(0, Math.min(100, now.y - ((dy / SIZE) * 100) / now.zoom)),
             });
           }}
           onPointerUp={() => (drag.current = null)}
@@ -81,7 +87,7 @@ export default function PortraitFramer({
               max={3}
               step={0.05}
               value={f.zoom}
-              onChange={(e) => set({ ...f, zoom: Number(e.target.value) })}
+              onChange={(e) => set({ ...latest.current, zoom: Number(e.target.value) })}
               className="mt-1 w-full accent-[#c77dba]"
             />
           </label>

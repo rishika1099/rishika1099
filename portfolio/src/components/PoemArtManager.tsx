@@ -81,7 +81,7 @@ export default function PoemArtManager({
       setBust(Date.now());
       await load();
     } catch {
-      setMsg("upload failed (png/jpg/webp)");
+      setMsg("upload failed (png, jpg, webp or heic)");
     } finally {
       setBusy("");
       if (fileRef.current) fileRef.current.value = "";

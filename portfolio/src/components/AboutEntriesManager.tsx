@@ -69,7 +69,7 @@ function EntryEditor({
     if (meta) {
       onChange({ ...entry, attachments: [...attachments, meta] });
       setAttMsg("");
-    } else setAttMsg("upload failed (images or pdf, under 8MB)");
+    } else setAttMsg("upload failed (an image, or a pdf under 4MB)");
   }
   async function addLogo(file: File) {
     setAttMsg(`uploading ${file.name}…`);
@@ -78,7 +78,7 @@ function EntryEditor({
     if (meta && meta.kind === "image") {
       onChange({ ...entry, logo: meta });
       setAttMsg("");
-    } else setAttMsg("logo upload failed (an image, under 8MB)");
+    } else setAttMsg("logo upload failed (it needs to be an image)");
   }
   return (
     <div className="rounded-3xl p-5 soft-card">

@@ -76,7 +76,7 @@ function EntryEditor({
       onChange({ ...entry, attachments: [...attachments, meta] });
       setAttMsg("");
     } else {
-      setAttMsg("upload failed (images or pdf, under 8MB)");
+      setAttMsg("upload failed (an image, or a pdf under 4MB)");
     }
   }
 
@@ -86,7 +86,7 @@ function EntryEditor({
     if (meta && meta.kind === "image") {
       onChange({ ...entry, logo: meta });
       setAttMsg("");
-    } else setAttMsg("logo upload failed (an image, under 8MB)");
+    } else setAttMsg("logo upload failed (it needs to be an image)");
   }
 
   function removeFile(id: string) {

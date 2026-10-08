@@ -63,8 +63,9 @@ export async function POST(request: Request) {
     }
     await writeFileKind(kind, buf, mime);
     if (kind === "portrait") {
-      // a new photo was framed for a different picture; start it centred
-      await setPortraitFrame(null);
+      // a new photo was framed for a different picture; start it centred.
+      // The photo is saved by now, so a hiccup here is not a failed upload.
+      await setPortraitFrame(null).catch(() => {});
       await purgeTag("portrait");
     }
     return NextResponse.json({ ok: true });
@@ -100,7 +101,7 @@ export async function DELETE(request: Request) {
     }
     await deleteFileKind(kind);
     if (kind === "portrait") {
-      await setPortraitFrame(null);
+      await setPortraitFrame(null).catch(() => {});
       await purgeTag("portrait");
     }
     return NextResponse.json({ ok: true });

@@ -149,7 +149,7 @@ function Gallery({ keyVal }: { keyVal: string }) {
       );
       refresh();
     } catch {
-      setMsg("upload failed (jpg/png/webp, under 8MB)");
+      setMsg("upload failed (jpg, png, webp or heic)");
     } finally {
       setBusy(false);
     }

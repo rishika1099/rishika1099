@@ -224,7 +224,7 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
       setMsg(d.caption ? `uploaded ✓ captioned: "${d.caption}" (clusters refresh on next npm run media)` : "uploaded ✓");
       refresh();
     } catch {
-      setMsg("upload failed (jpg/png/webp, under 8MB)");
+      setMsg("upload failed (jpg, png, webp or heic)");
     } finally {
       setBusy(false);
     }

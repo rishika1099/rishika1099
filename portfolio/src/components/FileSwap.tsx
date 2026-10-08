@@ -61,7 +61,7 @@ export function useFileSwap(keyVal: string) {
       refresh();
       if (kind === "portrait") await showNewPortrait();
     } catch {
-      setMsg(`${kind} upload failed (pdf for resume; jpg/png/webp for photo)`);
+      setMsg(`${kind} upload failed (a pdf under 4MB for resume; jpg, png, webp or heic for photo)`);
     }
   }
 
