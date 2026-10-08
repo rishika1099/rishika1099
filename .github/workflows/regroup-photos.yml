@@ -21,6 +21,10 @@ name: Regroup the photo gallery
 on:
   schedule:
     - cron: "17 * * * *" # hourly, off the hour, when GitHub's queue is shorter
+  # "regroup now" in the atelier: the site sends this event, which its token
+  # may do with the right to commit files and nothing more
+  repository_dispatch:
+    types: [regroup-photos]
   workflow_dispatch:
     inputs:
       force:

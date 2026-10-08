@@ -127,24 +127,25 @@ export async function pushFileToGitHub(
 }
 
 /**
- * Start one of the repo's workflows now, as "Run workflow" on GitHub does.
+ * Start one of the repo's workflows now.
  *
- * Needs a token allowed to run Actions (a fine-grained token's "Actions: read
- * and write"), which is more than committing a file needs. A token without it
- * is reported as such, not as a failure of the thing that asked.
+ * By a repository event, not by "Run workflow": running a workflow directly
+ * needs a token allowed to run Actions, while sending the repository an event
+ * needs only the right to write contents, which the token kept here for
+ * committing the résumé already has. The workflow lists the event it answers
+ * to under `repository_dispatch`. So this works with no change to the token.
  */
-export async function runWorkflow(file: string): Promise<PushResult> {
+export async function runWorkflow(event: string): Promise<PushResult> {
   const t = token();
   if (!t) return { status: "skipped", reason: "no GitHub token configured" };
   try {
-    const res = await gh(`/repos/${REPO}/actions/workflows/${encodeURIComponent(file)}/dispatches`, {
+    const res = await gh(`/repos/${REPO}/dispatches`, {
       method: "POST",
-      // no "force": the job still decides for itself whether the photos changed
-      body: JSON.stringify({ ref: BRANCH }),
+      body: JSON.stringify({ event_type: event }),
     });
     if (res.status === 204) return { status: "pushed" };
     if (res.status === 401 || res.status === 403) {
-      return { status: "failed", reason: `${t.from} may not run workflows (${res.status})` };
+      return { status: "failed", reason: `${t.from} may not send the repository an event (${res.status})` };
     }
     return { status: "failed", reason: `GitHub answered ${res.status}` };
   } catch {

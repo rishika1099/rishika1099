@@ -10,6 +10,6 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   if (!adminConfigured()) return NextResponse.json({ error: "unconfigured" }, { status: 503 });
   if (!isAdmin(request)) return NextResponse.json({ error: "nope" }, { status: 401 });
-  const result = await runWorkflow("regroup-photos.yml");
+  const result = await runWorkflow("regroup-photos");
   return NextResponse.json({ started: result.status === "pushed", ...result });
 }
