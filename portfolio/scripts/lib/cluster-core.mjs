@@ -113,5 +113,57 @@ export async function clusterImages(dir, files, log = console.log) {
   const fallback = results.filter((r) => smallest(r) >= 2).sort((a, b) => b.sil - a.sil);
   const chosen = (whole.length ? whole : fallback.length ? fallback.slice(0, 1) : near).sort((a, b) => b.k - a.k)[0];
   log(`✓ chose k = ${chosen.k} (silhouette ${chosen.sil.toFixed(3)}; top ${topSil.toFixed(3)})`);
-  return { k: chosen.k, silhouette: Number(chosen.sil.toFixed(3)), scores, assign: chosen.assign };
+
+  const refined = splitLarge(X, chosen.assign, chosen.k, log);
+  const sil = silhouette(X, refined.assign, refined.k);
+  if (refined.k !== chosen.k) log(`✓ ${refined.k} groups after splitting the large ones (silhouette ${sil.toFixed(3)})`);
+  return { k: refined.k, silhouette: Number(sil.toFixed(3)), scores, assign: refined.assign };
+}
+
+/**
+ * Break up any group too big to be a theme.
+ *
+ * Scored over the whole gallery, the best grouping is often a coarse one: a
+ * city photographer's gallery comes back as "cityscapes" and everything else,
+ * because the difference between a skyline and a mountain swamps the
+ * difference between a skyline by day and one at night. Half the gallery under
+ * one heading is not a theme a visitor can use.
+ *
+ * So a group holding more than a fifth of the photos (and more than eight) is
+ * grouped again by itself, where those finer differences are the only ones
+ * left to find. The pieces must each hold at least three photos, and a group
+ * that does not come apart cleanly is left whole.
+ */
+function splitLarge(X, assign, k, log) {
+  const out = [...assign];
+  let groups = k;
+  const limit = Math.max(8, Math.ceil(X.length / 5));
+  const tried = new Set();
+  for (let pass = 0; pass < 12; pass++) {
+    const sizes = Array.from({ length: groups }, (_, c) => out.filter((a) => a === c).length);
+    const big = sizes.map((n, c) => ({ n, c })).filter((g) => g.n > limit && !tried.has(g.c)).sort((a, b) => b.n - a.n)[0];
+    if (!big) break;
+    const idx = out.map((a, i) => (a === big.c ? i : -1)).filter((i) => i >= 0);
+    const sub = idx.map((i) => X[i]);
+    let best = null;
+    for (let kk = 2; kk <= Math.min(4, Math.floor(sub.length / 3)); kk++) {
+      const { assign: a } = kmeans(sub, kk);
+      const smallest = Math.min(...Array.from({ length: kk }, (_, c) => a.filter((x) => x === c).length));
+      if (smallest < 3) continue;
+      const sil = silhouette(sub, a, kk);
+      // more pieces when they are nearly as clean as fewer
+      if (!best || sil > best.sil - 0.02) best = { kk, sil, a };
+    }
+    if (!best || best.sil <= 0) {
+      tried.add(big.c);
+      continue;
+    }
+    // the first piece keeps the group's number; the others take new ones
+    idx.forEach((i, j) => {
+      if (best.a[j] > 0) out[i] = groups + best.a[j] - 1;
+    });
+    log(`  split a group of ${big.n} into ${best.kk} (silhouette within it ${best.sil.toFixed(3)})`);
+    groups += best.kk - 1;
+  }
+  return { assign: out, k: groups };
 }
