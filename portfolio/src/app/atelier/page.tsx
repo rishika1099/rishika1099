@@ -22,6 +22,7 @@ import GuestbookManager from "@/components/GuestbookManager";
 import PoemArtManager from "@/components/PoemArtManager";
 import PoemOrderList from "@/components/PoemOrderList";
 import RegroupButton from "@/components/RegroupButton";
+import PhotoGroupNames from "@/components/PhotoGroupNames";
 import { webImage } from "@/lib/webImage";
 
 interface Poem {
@@ -282,6 +283,7 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
         </label>
       </FileDrop>{" "}
       <RegroupButton keyVal={keyVal} className={btnSoft} />
+      <PhotoGroupNames keyVal={keyVal} />
       {msg && <p className="mt-3 font-body text-sm text-ink-soft">{msg}</p>}
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {photos.map((p) => (

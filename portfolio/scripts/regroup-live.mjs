@@ -95,9 +95,27 @@ const { clusterImages } = await import("./lib/cluster-core.mjs");
 const { k, silhouette, scores, assign } = await clusterImages(dir, files);
 
 const assignments = Object.fromEntries(files.map((f, i) => [f, assign[i]]));
+
+// A group is named from what its photos look like, so a few of them travel
+// with the grouping, shrunk to thumbnails: enough to see the subject, small
+// enough that nine groups of them fit in one request.
+const { default: sharp } = await import("sharp");
+const samples = {};
+for (let c = 0; c < k; c++) {
+  const mine = files.filter((_, i) => assign[i] === c);
+  // spread across the group, not its first few, which are often one outing
+  const step = Math.max(1, Math.floor(mine.length / 5));
+  const picked = mine.filter((_, i) => i % step === 0).slice(0, 5);
+  samples[c] = [];
+  for (const f of picked) {
+    const jpeg = await sharp(path.join(dir, f)).rotate().resize(384, 384, { fit: "inside" }).jpeg({ quality: 70 }).toBuffer();
+    samples[c].push(jpeg.toString("base64"));
+  }
+}
+
 const saved = await api("/api/admin/photos/clusters", {
   method: "POST",
-  body: JSON.stringify({ k, silhouette, scores, assignments, method: "clip-image" }),
+  body: JSON.stringify({ k, silhouette, scores, assignments, samples, method: "clip-image" }),
 });
 for (const [c, label] of Object.entries(saved.labels ?? {})) {
   const n = assign.filter((a) => a === Number(c)).length;

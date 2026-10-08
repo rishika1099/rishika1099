@@ -38,7 +38,7 @@ for (let c = 0; c < bestK; c++) {
       model: process.env.OPENAI_TEXT_MODEL || "gpt-4o-mini",
       temperature: 0.4,
       messages: [
-        { role: "system", content: "Give a short lowercase theme title (1 to 3 words) for this group of photo captions. Just the title, no quotes, no period." },
+        { role: "system", content: "These photo captions belong to one group of look-alike photos. Name what the photos share, as a heading for a photo gallery: one to three lowercase words, concrete and specific (the subject, the place or the light, like: skylines by day, sunsets over water, mountain air). Not a mood: never serene, tranquil, brilliance, embrace, beauty, moments, or anything beginning nature's. Just the name, no quotes, no period." },
         { role: "user", content: caps.join("\n") },
       ],
     });

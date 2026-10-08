@@ -12,6 +12,7 @@ import { AdminGate, adminApi } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 import { webImage } from "@/lib/webImage";
 import RegroupButton from "@/components/RegroupButton";
+import PhotoGroupNames from "@/components/PhotoGroupNames";
 
 interface Photo {
   src: string;
@@ -205,6 +206,7 @@ function Gallery({ keyVal }: { keyVal: string }) {
         keyVal={keyVal}
         className="rounded-full bg-white/75 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft shadow-sm transition hover:bg-white"
       />
+      <PhotoGroupNames keyVal={keyVal} />
       {msg && <p className="mt-3 font-body text-sm text-ink-soft">{msg}</p>}
       <div className="mt-5 columns-2 gap-4 sm:columns-3 [&>figure]:mb-4">
         {photos === null && <p className="font-body text-sm text-ink-soft">opening the album… ✦</p>}

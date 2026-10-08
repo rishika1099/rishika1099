@@ -155,6 +155,7 @@ function splitLarge(X, assign, k, log) {
       if (!best || sil > best.sil - 0.02) best = { kk, sil, a };
     }
     if (!best || best.sil <= 0) {
+      log(`  a group of ${big.n} did not come apart cleanly${best ? ` (silhouette ${best.sil.toFixed(3)})` : " (every split left a piece under 3 photos)"}; left whole`);
       tried.add(big.c);
       continue;
     }

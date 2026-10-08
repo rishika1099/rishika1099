@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
 import { readClusters } from "@/lib/photos";
-import { saveRegrouped, type Regrouped } from "@/lib/photoGroups";
+import { listGroups, renameGroups, saveRegrouped, type Regrouped } from "@/lib/photoGroups";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -22,7 +22,24 @@ export async function GET(request: Request) {
     files: c ? Object.keys(c.assignments) : [],
     labels: c?.labels ?? {},
     k: c?.k ?? 0,
+    groups: await listGroups(),
   });
+}
+
+// Rename groups by hand, from the atelier.
+export async function PATCH(request: Request) {
+  const denied = guard(request);
+  if (denied) return denied;
+  try {
+    const { names } = (await request.json()) as { names?: Record<string, string> };
+    if (!names || typeof names !== "object") {
+      return NextResponse.json({ error: "names required" }, { status: 400 });
+    }
+    await renameGroups(names);
+    return NextResponse.json({ ok: true, groups: await listGroups() });
+  } catch {
+    return NextResponse.json({ error: "bad-request" }, { status: 400 });
+  }
 }
 
 // A fresh grouping from the regroup job. The site names the groups and saves it.
