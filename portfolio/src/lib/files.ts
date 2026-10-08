@@ -4,11 +4,18 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { blobsEnabled, store } from "@/lib/blobs";
+import { blobsEnabled } from "@/lib/blobs";
 
 export type FileKind = "resume" | "portrait";
 
 const LOCAL_DIR = path.join(process.cwd(), "src/content/files");
+
+// Read-your-writes: a replaced file is the new one on the very next request,
+// not the old one for the minute an eventually consistent read can lag.
+async function filesStore() {
+  const { getStore } = await import("@netlify/blobs");
+  return getStore({ name: "files", consistency: "strong" });
+}
 const META_SUFFIX = ".meta.json";
 
 export interface StoredFile {
@@ -19,7 +26,7 @@ export interface StoredFile {
 export async function readFileKind(kind: FileKind): Promise<StoredFile | null> {
   try {
     if (blobsEnabled()) {
-      const s = await store("files");
+      const s = await filesStore();
       const meta = (await s.get(`${kind}${META_SUFFIX}`, { type: "json" })) as { mime?: string } | null;
       const ab = await s.get(kind, { type: "arrayBuffer" });
       if (!ab) return null;
@@ -39,7 +46,7 @@ export async function readFileKind(kind: FileKind): Promise<StoredFile | null> {
 
 export async function writeFileKind(kind: FileKind, buf: Buffer, mime: string): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("files");
+    const s = await filesStore();
     await s.set(kind, new Blob([new Uint8Array(buf)]));
     await s.setJSON(`${kind}${META_SUFFIX}`, { mime });
   } else {
@@ -51,7 +58,7 @@ export async function writeFileKind(kind: FileKind, buf: Buffer, mime: string): 
 
 export async function deleteFileKind(kind: FileKind): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("files");
+    const s = await filesStore();
     await s.delete(kind);
     await s.delete(`${kind}${META_SUFFIX}`);
   } else {

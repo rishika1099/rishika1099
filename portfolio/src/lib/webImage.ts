@@ -18,9 +18,9 @@ export function isHeic(file: File): boolean {
 // than this, so a larger one is scaled down to it.
 const LONGEST_SIDE = 3000;
 
-async function fitted(jpeg: Blob): Promise<Blob> {
+async function fitted(jpeg: Blob, side = LONGEST_SIDE): Promise<Blob> {
   const bitmap = await createImageBitmap(jpeg);
-  const scale = LONGEST_SIDE / Math.max(bitmap.width, bitmap.height);
+  const scale = side / Math.max(bitmap.width, bitmap.height);
   if (scale >= 1) {
     bitmap.close();
     return jpeg;
@@ -39,5 +39,20 @@ export async function webImage(file: File): Promise<File> {
   const { heicTo } = await import("heic-to");
   const blob = await fitted(await heicTo({ blob: file, type: "image/jpeg", quality: 0.9 }));
   const name = file.name.replace(/\.(heic|heif)$/i, "") + ".jpg";
+  return new File([blob], name, { type: "image/jpeg", lastModified: file.lastModified });
+}
+
+/**
+ * A picture no larger than `side` on its longest edge, as a JPEG. For the
+ * portrait, which is shown in a circle a few hundred pixels across and loads
+ * first on the home page: a photo straight off a phone is twenty times the
+ * bytes that circle can use.
+ */
+export async function smallImage(picked: File, side: number): Promise<File> {
+  const file = await webImage(picked);
+  if (!file.type.startsWith("image/")) return file;
+  const blob = await fitted(file, side);
+  if (blob === file) return file;
+  const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
   return new File([blob], name, { type: "image/jpeg", lastModified: file.lastModified });
 }

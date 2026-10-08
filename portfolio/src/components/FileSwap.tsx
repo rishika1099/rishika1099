@@ -5,7 +5,19 @@
 
 import { useEffect, useState } from "react";
 import { adminApi } from "@/components/editing";
-import { webImage } from "@/lib/webImage";
+import { smallImage, webImage } from "@/lib/webImage";
+
+// The browser keeps its own copy of the portrait for a minute. Fetching it with
+// "reload" replaces that copy, so the page that comes back shows the new photo
+// and not the one just replaced.
+async function showNewPortrait() {
+  try {
+    await fetch("/portrait", { cache: "reload" });
+  } catch {
+    // the reload below still happens; at worst the photo catches up in a minute
+  }
+  window.location.reload();
+}
 
 export function useFileSwap(keyVal: string) {
   const api = adminApi(keyVal);
@@ -26,7 +38,8 @@ export function useFileSwap(keyVal: string) {
   async function upload(kind: "resume" | "portrait", picked: File) {
     setMsg(`uploading ${picked.name}…`);
     try {
-      const file = await webImage(picked);
+      // the portrait is drawn in a small circle, so it travels at a size that fits one
+      const file = kind === "portrait" ? await smallImage(picked, 1024) : await webImage(picked);
       const b64 = await new Promise<string>((resolve, reject) => {
         const r = new FileReader();
         r.onload = () => resolve((r.result as string).split(",")[1] ?? "");
@@ -39,8 +52,7 @@ export function useFileSwap(keyVal: string) {
       });
       setMsg(`${kind} replaced ✓ live now`);
       refresh();
-      // the portrait <img> caches; nudge it to refetch
-      if (kind === "portrait") window.location.reload();
+      if (kind === "portrait") await showNewPortrait();
     } catch {
       setMsg(`${kind} upload failed (pdf for resume; jpg/png/webp for photo)`);
     }
@@ -50,7 +62,7 @@ export function useFileSwap(keyVal: string) {
     await api("/api/admin/files", { method: "DELETE", body: JSON.stringify({ kind }) });
     setMsg(`${kind} back to the original ✓`);
     refresh();
-    if (kind === "portrait") window.location.reload();
+    if (kind === "portrait") await showNewPortrait();
   }
 
   return { has, msg, upload, reset };

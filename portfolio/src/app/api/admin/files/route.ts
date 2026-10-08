@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
 import { deleteFileKind, readFileKind, writeFileKind, type FileKind } from "@/lib/files";
+import { purgeTag } from "@/lib/cdnPurge";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -49,6 +50,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "file missing or too large" }, { status: 400 });
     }
     await writeFileKind(kind, buf, mime);
+    if (kind === "portrait") await purgeTag("portrait");
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
@@ -64,6 +66,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "kind required" }, { status: 400 });
     }
     await deleteFileKind(kind);
+    if (kind === "portrait") await purgeTag("portrait");
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
