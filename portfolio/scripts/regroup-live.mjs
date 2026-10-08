@@ -29,8 +29,24 @@ if (!TOKEN) {
   process.exit(1);
 }
 
+// A connection that drops is tried again. Fifty downloads in a row from a
+// runner will lose one now and then, and the first full run on GitHub died on
+// exactly that, a single reset among fifty photos.
+async function fetchRetry(url, init = {}, tries = 5) {
+  for (let n = 1; ; n++) {
+    try {
+      const res = await fetch(url, { ...init, signal: AbortSignal.timeout(60000) });
+      // the site being briefly busy is worth waiting out; a refusal is not
+      if (res.status < 500 || n >= tries) return res;
+    } catch (err) {
+      if (n >= tries) throw err;
+    }
+    await new Promise((r) => setTimeout(r, 1500 * n));
+  }
+}
+
 async function api(route, init = {}) {
-  const res = await fetch(`${SITE}${route}`, {
+  const res = await fetchRetry(`${SITE}${route}`, {
     ...init,
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json", ...(init.headers ?? {}) },
   });
@@ -68,7 +84,7 @@ if (files.length < 4) process.exit(0);
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), "photos-"));
 for (const f of files) {
-  const res = await fetch(`${SITE}${srcOf.get(f)}`);
+  const res = await fetchRetry(`${SITE}${srcOf.get(f)}`);
   if (!res.ok) throw new Error(`could not download ${f}: HTTP ${res.status}`);
   fs.writeFileSync(path.join(dir, f), Buffer.from(await res.arrayBuffer()));
 }
