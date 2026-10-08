@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { OPEN_RESUME_EMAIL } from "@/components/EmailResumeLink";
+import { metric } from "@/lib/metric";
 
 export interface ResumeEmailCopy {
   placeholder: string;
@@ -93,7 +94,10 @@ export default function ResumeByEmail({
               elapsed: Date.now() - openedAt.current,
             }),
           });
-          if (res.ok) return setState("sent");
+          if (res.ok) {
+            metric("conversion: resume emailed");
+            return setState("sent");
+          }
           const d = (await res.json().catch(() => ({}))) as { error?: string };
           setState(d.error === "email" ? "email" : d.error === "limit" ? "limit" : "error");
         } catch {

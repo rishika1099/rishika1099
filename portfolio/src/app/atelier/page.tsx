@@ -5,6 +5,7 @@
 // through key-gated admin APIs into Netlify Blobs (or local files in dev).
 
 import { Suspense, useEffect, useState } from "react";
+import Link from "next/link";
 import FileDrop from "@/components/FileDrop";
 import { useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
@@ -82,6 +83,21 @@ const CLUSTERS = [
   ["contact", "💌 contact", "#f7b7c9"],
 ] as const;
 type ClusterId = (typeof CLUSTERS)[number][0];
+
+// the editors that live on the pages themselves
+const IN_PLACE = [
+  ["/edit", "home"],
+  ["/about/edit", "about"],
+  ["/about/edit/resume", "résumé (LaTeX)"],
+  ["/work/edit", "work"],
+  ["/now/edit", "now"],
+  ["/recruiter/edit", "recruiter"],
+  ["/blog/edit", "blog"],
+  ["/blog/technical/under-the-hood/edit", "the tour"],
+  ["/blog/photography/edit", "photos, with framing"],
+  ["/blog/poems/edit", "poems"],
+  ["/contact/edit", "contact"],
+] as const;
 const CLUSTER_IDS = CLUSTERS.map((c) => c[0]) as ClusterId[];
 
 function useAdminApi(key: string) {
@@ -531,6 +547,18 @@ function EditRoom() {
               </button>
             </div>
           </div>
+
+          {/* Each page also has an editor of its own, where the words are changed
+              on the page as visitors see it. They were only reachable by typing
+              the address, so here they are. */}
+          <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-body text-xs text-ink-soft">
+            <span className="font-semibold uppercase tracking-wide text-ink-soft/70">edit a page in place</span>
+            {IN_PLACE.map(([href, label]) => (
+              <Link key={href} href={href} className="underline decoration-blush decoration-2 underline-offset-4 hover:text-ink">
+                {label}
+              </Link>
+            ))}
+          </p>
 
           {tab === "titles" && <CopyTab keyVal={key} kind="title" scopeLabel="titles & headings" />}
           {tab === "passages" && <CopyTab keyVal={key} kind="passage" scopeLabel="passages" />}

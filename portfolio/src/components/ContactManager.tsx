@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { EditableText, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
 import PortraitFramer from "@/components/PortraitFramer";
+import IconSwap from "@/components/IconSwap";
 import type { ContactLink } from "@/lib/contactLinks";
 
 const btn =
@@ -112,6 +113,10 @@ export default function ContactManager({ keyVal }: { keyVal: string }) {
             🎯 frame it
           </button>
         </div>
+      </div>
+      <div className="mt-4">
+        <p className="mb-2 font-body text-xs font-semibold text-ink-soft">the little icon in the browser tab</p>
+        <IconSwap keyVal={keyVal} />
       </div>
       {framing && (
         <div className="mt-3 max-w-md">

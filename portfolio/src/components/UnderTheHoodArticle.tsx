@@ -327,6 +327,8 @@ export default function UnderTheHoodArticle({
           <Concept>{slot("tour.match.concept")}</Concept>
           {slot("tour.match.honest")}
           {slot("tour.match.angle")}
+          {slot("tour.match.resume")}
+          {slot("tour.match.email")}
         </Section>
 
         <Section id="engineering" emoji="🛠️" title="The engineering around it">
@@ -339,6 +341,8 @@ export default function UnderTheHoodArticle({
             <li>{slot("tour.eng.b6")}</li>
             <li>{slot("tour.eng.b7")}</li>
             <li>{slot("tour.eng.b8")}</li>
+            <li>{slot("tour.eng.b9")}</li>
+            <li>{slot("tour.eng.b10")}</li>
           </ul>
         </Section>
 

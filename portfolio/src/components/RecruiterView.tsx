@@ -9,6 +9,7 @@ import type { Tailored } from "@/lib/tailor";
 import type { Angles } from "@/lib/angle";
 import { FilledNotes } from "@/components/EntryCard";
 import ResumeByEmail, { type ResumeEmailCopy } from "@/components/ResumeByEmail";
+import { metric } from "@/lib/metric";
 
 /**
  * The role's page, with a job description able to re-aim it.
@@ -98,6 +99,7 @@ export default function RecruiterView({
         const d = (await res.json()) as { tailored?: Tailored };
         setMatch(d.tailored ?? null);
         setState("idle");
+        if (d.tailored) metric("recruiter: posting matched");
       } catch (err) {
         if ((err as Error).name !== "AbortError") setState("error");
       }

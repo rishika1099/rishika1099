@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { METRIC_EVENT } from "@/lib/metric";
 
 // Fire-and-forget analytics events: outbound / conversion clicks, form submits,
 // on-site search usage, and Core Web Vitals (LCP / CLS / INP / TTFB / FCP).
@@ -22,6 +23,9 @@ function send(name: string, value?: number) {
 function classify(href: string): string | null {
   if (!href) return null;
   if (href.startsWith("/resume") || /resume.*\.pdf/i.test(href)) return "download: resume";
+  // which role a recruiter asked to see the site as: the page view alone only says /recruiter
+  const role = /^\/recruiter\?role=([a-z0-9-]+)/i.exec(href);
+  if (role) return `recruiter: role ${role[1]}`;
   if (href.startsWith("mailto:")) return "click: email";
   // a project's results dashboard (a static HTML report) vs its source
   if (/\.github\.io|dashboard/i.test(href)) return "click: results dashboard";
@@ -68,12 +72,18 @@ export default function Metrics() {
       }
     };
     const onInstalled = () => send("install: pwa");
+    // things a page reports itself: an emailed résumé, a matched posting
+    const onMetric = (e: Event) => {
+      const name = (e as CustomEvent<string>).detail;
+      if (typeof name === "string" && name) send(name.slice(0, 80));
+    };
     document.addEventListener("click", onClick, { capture: true });
     document.addEventListener("submit", onSubmit, { capture: true });
     window.addEventListener("open-command-palette", onPalette);
     window.addEventListener("beforeprint", onPrint);
     document.addEventListener("copy", onCopy);
     window.addEventListener("appinstalled", onInstalled);
+    window.addEventListener(METRIC_EVENT, onMetric);
     try {
       if (window.matchMedia("(display-mode: standalone)").matches) send("visit: installed app");
     } catch {
@@ -141,6 +151,7 @@ export default function Metrics() {
       window.removeEventListener("beforeprint", onPrint);
       document.removeEventListener("copy", onCopy);
       window.removeEventListener("appinstalled", onInstalled);
+      window.removeEventListener(METRIC_EVENT, onMetric);
       document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("pagehide", report);
       obs.forEach((o) => o.disconnect());

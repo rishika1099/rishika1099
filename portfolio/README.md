@@ -226,6 +226,13 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   win at render time, so they go live instantly with no rebuild; the pages that read them
   render per request so an edit can never get stuck behind a cached build.
   (`src/lib/siteCopy.ts`, `aboutData.ts`, `projectOverrides.ts`)
+- **Pictures put right in the browser:** every uploader takes an iPhone HEIC and converts it
+  to JPEG before it is sent (Safari decodes it itself; other browsers fetch a decoder only
+  when one turns up), and a photo too heavy for one request is scaled down first. The
+  portrait and the tab icon are replaced from `/edit`, and the portrait's framing (drag to
+  recenter, slide to zoom) is saved beside the photo rather than cropped into it, the same
+  as the gallery's. A replaced portrait purges its CDN copy by tag, so it shows at once.
+  (`src/lib/webImage.ts`, `frame.ts`, `siteIcon.ts`, `cdnPurge.ts`)
 - **Whimsy:** a butterfly cursor companion (desktop, respects reduced-motion).
 - **Contact:** ways to reach me + a message form.
 - **SEO:** sitemap, robots, and an auto-generated Open Graph preview image so links unfurl

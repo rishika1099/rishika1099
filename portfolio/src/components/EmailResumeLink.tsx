@@ -8,6 +8,8 @@
  * someone looking for the PDF actually looks: it opens the form and brings it
  * into view.
  */
+import { metric } from "@/lib/metric";
+
 export const OPEN_RESUME_EMAIL = "resume-email:open";
 
 export default function EmailResumeLink({ label, className = "" }: { label: string; className?: string }) {
@@ -15,6 +17,7 @@ export default function EmailResumeLink({ label, className = "" }: { label: stri
     <button
       type="button"
       onClick={() => {
+        metric("click: send to inbox");
         window.dispatchEvent(new Event(OPEN_RESUME_EMAIL));
         document.getElementById("email-resume")?.scrollIntoView({ behavior: "smooth", block: "center" });
       }}
