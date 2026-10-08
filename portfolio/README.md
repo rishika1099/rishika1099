@@ -28,12 +28,13 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
 - **Image clustering for the gallery.** Photos are embedded with **CLIP image embeddings**
   and grouped with **k-means**, with the number of clusters chosen by **silhouette score**
   (tolerance-biased toward finer groups). Each cluster gets an auto-generated theme label.
-  Re-runs whenever a new photo is added. *Eval:* the gallery shows the silhouette score and
-  cluster count. A photo uploaded through the site is
-  grouped without anyone running anything: an hourly GitHub Action asks the site whether its
-  photos have changed, and only then downloads them, regroups all of them from scratch and
-  hands the result back. A group that is mostly the same photos keeps its name, so one upload
-  cannot rename the gallery. (`scripts/cluster-photos.mjs`, `scripts/regroup-live.mjs`,
+  *Eval:* the gallery shows the silhouette score and cluster count. A photo uploaded through
+  the site is grouped without anyone running anything: an hourly GitHub Action asks the site
+  whether its photos have changed, and only then downloads them, regroups all of them from
+  scratch and hands the result back. A group that is mostly the same photos keeps its name,
+  so one upload cannot rename the gallery, and a grouping that would leave one photo alone
+  in a group is passed over. "Regroup now" in the atelier starts the job early by sending the
+  repository an event, which needs only the right to commit files. (`scripts/cluster-photos.mjs`, `scripts/regroup-live.mjs`,
   `src/lib/photos.ts`, `photoGroups.ts`, `.github/workflows/regroup-photos.yml`)
 - **Semantic "search my projects".** A search box on the Work tab embeds your phrase and
   every project with OpenAI embeddings and ranks by **cosine similarity**, so search works
@@ -299,11 +300,16 @@ OpenAI API (text, image, vision, embeddings, `gpt-4o-mini`) · CLIP image embedd
 npm run dev        # local dev server
 npm run media      # generate poem art + moods + captions, then cluster photos (OPENAI_API_KEY)
 npm run cluster    # re-cluster photos only (CLIP embeddings + k-means)
-npm run sync       # publish poems/photos/art/captions/clusters/moods to Netlify Blobs
-npm run publish    # media + sync in one go
+npm run sync       # mirror the local poems/photos/art folders into Netlify Blobs (see the warning below)
+npm run publish    # media + sync in one go (same warning)
 npm run eval:chat  # evaluate the chatbot against a labeled question set (dev server running)
 npm run build      # production build
 ```
+
+**Careful with `sync` and `publish`.** They make the live site match the local folders, and
+delete anything on the site that is not in them. Photos are now uploaded through the site, so
+the site has photos this machine does not, and a sync would delete them. The site is the
+source of truth for photos, captions and groups; add photos from the atelier.
 
 Environment variables live in `.env.local` (never committed). See `.env.example`.
 
