@@ -7,7 +7,7 @@ import path from "node:path";
 import { blobsEnabled } from "@/lib/blobs";
 import { cleanFrame, type Frame } from "@/lib/frame";
 
-export type FileKind = "resume" | "portrait";
+export type FileKind = "resume" | "portrait" | "icon" | "icon-apple";
 
 const LOCAL_DIR = path.join(process.cwd(), "src/content/files");
 

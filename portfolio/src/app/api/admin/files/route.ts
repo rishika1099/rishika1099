@@ -10,6 +10,7 @@ import {
 } from "@/lib/files";
 import { cleanFrame } from "@/lib/frame";
 import { purgeTag } from "@/lib/cdnPurge";
+import { ICON_TAG } from "@/lib/siteIcon";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -20,7 +21,12 @@ const LIMITS: Record<FileKind, { mimes: Record<string, string>; max: number }> =
     mimes: { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp" },
     max: 8 * 1024 * 1024,
   },
+  // the tab icon, and its white-ground twin for an iPhone's home screen
+  icon: { mimes: { png: "image/png" }, max: 1024 * 1024 },
+  "icon-apple": { mimes: { png: "image/png" }, max: 1024 * 1024 },
 };
+
+const isKind = (k: unknown): k is FileKind => typeof k === "string" && Object.hasOwn(LIMITS, k);
 
 function guard(request: Request): NextResponse | null {
   if (!adminConfigured()) return NextResponse.json({ error: "unconfigured" }, { status: 503 });
@@ -31,12 +37,13 @@ function guard(request: Request): NextResponse | null {
 export async function GET(request: Request) {
   const denied = guard(request);
   if (denied) return denied;
-  const [resume, portrait, frame] = await Promise.all([
+  const [resume, portrait, icon, frame] = await Promise.all([
     readFileKind("resume"),
     readFileKind("portrait"),
+    readFileKind("icon"),
     getPortraitFrame(),
   ]);
-  return NextResponse.json({ resume: !!resume, portrait: !!portrait, frame });
+  return NextResponse.json({ resume: !!resume, portrait: !!portrait, icon: !!icon, frame });
 }
 
 export async function POST(request: Request) {
@@ -44,9 +51,9 @@ export async function POST(request: Request) {
   if (denied) return denied;
   try {
     const body = (await request.json()) as { kind?: string; ext?: string; dataBase64?: string };
-    const kind = body.kind as FileKind;
-    if (kind !== "resume" && kind !== "portrait") {
-      return NextResponse.json({ error: "kind must be resume or portrait" }, { status: 400 });
+    const kind = body.kind;
+    if (!isKind(kind)) {
+      return NextResponse.json({ error: "unknown kind of file" }, { status: 400 });
     }
     const spec = LIMITS[kind];
     const ext = (body.ext ?? "").toLowerCase().replace(/^\./, "");
@@ -68,6 +75,7 @@ export async function POST(request: Request) {
       await setPortraitFrame(null).catch(() => {});
       await purgeTag("portrait");
     }
+    if (kind === "icon" || kind === "icon-apple") await purgeTag(ICON_TAG);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
@@ -95,11 +103,16 @@ export async function DELETE(request: Request) {
   const denied = guard(request);
   if (denied) return denied;
   try {
-    const { kind } = (await request.json()) as { kind?: FileKind };
-    if (kind !== "resume" && kind !== "portrait") {
+    const { kind } = (await request.json()) as { kind?: unknown };
+    if (!isKind(kind)) {
       return NextResponse.json({ error: "kind required" }, { status: 400 });
     }
     await deleteFileKind(kind);
+    if (kind === "icon") {
+      // the two are one icon in two dresses; they go back together
+      await deleteFileKind("icon-apple");
+      await purgeTag(ICON_TAG);
+    }
     if (kind === "portrait") {
       await setPortraitFrame(null).catch(() => {});
       await purgeTag("portrait");

@@ -13,9 +13,11 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#fff8f0",
     theme_color: "#f7b7c9",
     icons: [
-      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
-      { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      // one address for every size: it serves the icon uploaded from /edit, or
+      // the otter the site shipped with
+      { src: "/site-icon", sizes: "192x192", type: "image/png" },
+      { src: "/site-icon", sizes: "512x512", type: "image/png" },
+      { src: "/site-icon", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

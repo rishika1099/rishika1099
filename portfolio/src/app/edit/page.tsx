@@ -12,6 +12,7 @@ import { usePassageEditor } from "@/components/usePassageEditor";
 import { useState } from "react";
 import { useFileSwap } from "@/components/FileSwap";
 import PortraitFramer from "@/components/PortraitFramer";
+import IconSwap from "@/components/IconSwap";
 import type { Frame } from "@/lib/frame";
 
 function Editor({ keyVal }: { keyVal: string }) {
@@ -146,6 +147,14 @@ function Editor({ keyVal }: { keyVal: string }) {
       />
 
       <div className="mx-auto mt-10 max-w-xl rounded-3xl p-5 soft-card">
+        <p className="font-body text-sm font-bold text-ink">the little icon in the browser tab</p>
+        <p className="mb-3 font-body text-[11px] text-ink-soft/60">
+          any picture works; it is fitted into a square, whole, with nothing cut off:
+        </p>
+        <IconSwap keyVal={keyVal} />
+      </div>
+
+      <div className="mx-auto mt-5 max-w-xl rounded-3xl p-5 soft-card">
         <p className="font-body text-sm font-bold text-ink">the two buttons under the intro</p>
         <p className="mb-3 font-body text-[11px] text-ink-soft/60">
           the first goes to /now, the second to /recruiter (the links are fixed):

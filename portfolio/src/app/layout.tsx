@@ -93,6 +93,14 @@ export const metadata: Metadata = {
     "portfolio",
   ],
   authors: [{ name: "Rishika Mamidibathula" }],
+  // served by routes, not files, so the icon can be replaced from /edit
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/site-icon", type: "image/png" },
+    ],
+    apple: "/site-icon/apple",
+  },
   alternates: {
     // "./" is per route: each page is canonical to itself, not to the homepage
     canonical: "./",
