@@ -11,6 +11,7 @@ import PageShell from "@/components/PageShell";
 import { AdminGate, adminApi } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
 import { webImage } from "@/lib/webImage";
+import RegroupButton from "@/components/RegroupButton";
 
 interface Photo {
   src: string;
@@ -144,7 +145,7 @@ function Gallery({ keyVal }: { keyVal: string }) {
       });
       setMsg(
         d.caption
-          ? `uploaded ✓ captioned: "${d.caption}" (it joins a theme on the next npm run media)`
+          ? `uploaded ✓ captioned: "${d.caption}" (it joins a theme within the hour, or press regroup now)`
           : "uploaded ✓",
       );
       refresh();
@@ -199,7 +200,11 @@ function Gallery({ keyVal }: { keyVal: string }) {
             onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
           />
         </label>
-      </FileDrop>
+      </FileDrop>{" "}
+      <RegroupButton
+        keyVal={keyVal}
+        className="rounded-full bg-white/75 px-4 py-1.5 font-body text-sm font-semibold text-ink-soft shadow-sm transition hover:bg-white"
+      />
       {msg && <p className="mt-3 font-body text-sm text-ink-soft">{msg}</p>}
       <div className="mt-5 columns-2 gap-4 sm:columns-3 [&>figure]:mb-4">
         {photos === null && <p className="font-body text-sm text-ink-soft">opening the album… ✦</p>}

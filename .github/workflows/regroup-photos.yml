@@ -1,0 +1,86 @@
+name: Regroup the photo gallery
+
+# The photography page groups its photos by what they look like. A photo
+# uploaded through the site has no group until the grouping has seen it, and
+# the grouping (CLIP, then k-means) is far too heavy for the site to run on
+# itself, so it runs here.
+#
+# Every hour this asks the site two small questions: which photos it has, and
+# which photos the current groups were made from. Most hours those match and
+# the job ends there, in seconds, with nothing installed. When they differ it
+# downloads the photos, groups all of them together from scratch, and hands the
+# result back; the site names the groups, keeping the name of any group that is
+# mostly the same photos as before.
+#
+# "Regroup now" in the atelier starts this early. "Run workflow" on this page
+# does the same.
+#
+# Needs one repository secret, the same one the weekly backup uses:
+#   ADMIN_API_TOKEN   the owner-only token the site accepts from scheduled jobs
+
+on:
+  schedule:
+    - cron: "17 * * * *" # hourly, off the hour, when GitHub's queue is shorter
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Regroup even if no photo was added or removed"
+        type: boolean
+        default: false
+
+# two runs at once would each overwrite the other's groups
+concurrency:
+  group: regroup-photos
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  regroup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ADMIN_API_TOKEN: ${{ secrets.ADMIN_API_TOKEN }}
+    steps:
+      - name: Check the secret is set
+        run: |
+          if [ -z "$ADMIN_API_TOKEN" ]; then
+            echo "Nothing was regrouped. The repository secret ADMIN_API_TOKEN is not set."
+            echo "Set it once, from a checkout of this repo:  gh secret set ADMIN_API_TOKEN"
+            echo "It must match the one set in Netlify."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: portfolio/package-lock.json
+
+      - name: Is there anything to do?
+        id: check
+        run: node portfolio/scripts/regroup-live.mjs check
+
+      # everything below is skipped on an ordinary hour
+      - name: Install
+        if: steps.check.outputs.changed == 'true' || inputs.force == true
+        working-directory: portfolio
+        run: npm ci
+
+      # the image model is a few hundred megabytes; keep it between runs
+      - name: Keep the model
+        if: steps.check.outputs.changed == 'true' || inputs.force == true
+        uses: actions/cache@v4
+        with:
+          path: portfolio/node_modules/@huggingface/transformers/.cache
+          key: clip-vit-base-patch32
+
+      - name: Regroup
+        if: steps.check.outputs.changed == 'true' || inputs.force == true
+        working-directory: portfolio
+        env:
+          FORCE: ${{ inputs.force == true && '1' || '' }}
+        run: node scripts/regroup-live.mjs run

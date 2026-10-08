@@ -125,3 +125,29 @@ export async function pushFileToGitHub(
     return { status: "failed", reason: e instanceof Error ? e.message : "push failed" };
   }
 }
+
+/**
+ * Start one of the repo's workflows now, as "Run workflow" on GitHub does.
+ *
+ * Needs a token allowed to run Actions (a fine-grained token's "Actions: read
+ * and write"), which is more than committing a file needs. A token without it
+ * is reported as such, not as a failure of the thing that asked.
+ */
+export async function runWorkflow(file: string): Promise<PushResult> {
+  const t = token();
+  if (!t) return { status: "skipped", reason: "no GitHub token configured" };
+  try {
+    const res = await gh(`/repos/${REPO}/actions/workflows/${encodeURIComponent(file)}/dispatches`, {
+      method: "POST",
+      // no "force": the job still decides for itself whether the photos changed
+      body: JSON.stringify({ ref: BRANCH }),
+    });
+    if (res.status === 204) return { status: "pushed" };
+    if (res.status === 401 || res.status === 403) {
+      return { status: "failed", reason: `${t.from} may not run workflows (${res.status})` };
+    }
+    return { status: "failed", reason: `GitHub answered ${res.status}` };
+  } catch {
+    return { status: "failed", reason: "GitHub could not be reached" };
+  }
+}

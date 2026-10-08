@@ -29,7 +29,12 @@ Latest results live in [`docs/EVALUATIONS.md`](docs/EVALUATIONS.md).
   and grouped with **k-means**, with the number of clusters chosen by **silhouette score**
   (tolerance-biased toward finer groups). Each cluster gets an auto-generated theme label.
   Re-runs whenever a new photo is added. *Eval:* the gallery shows the silhouette score and
-  cluster count. (`scripts/cluster-photos.mjs`, `src/lib/photos.ts`)
+  cluster count. A photo uploaded through the site is
+  grouped without anyone running anything: an hourly GitHub Action asks the site whether its
+  photos have changed, and only then downloads them, regroups all of them from scratch and
+  hands the result back. A group that is mostly the same photos keeps its name, so one upload
+  cannot rename the gallery. (`scripts/cluster-photos.mjs`, `scripts/regroup-live.mjs`,
+  `src/lib/photos.ts`, `photoGroups.ts`, `.github/workflows/regroup-photos.yml`)
 - **Semantic "search my projects".** A search box on the Work tab embeds your phrase and
   every project with OpenAI embeddings and ranks by **cosine similarity**, so search works
   by meaning, not keywords. Weak matches are thresholded out, and the raw cosine is rescaled

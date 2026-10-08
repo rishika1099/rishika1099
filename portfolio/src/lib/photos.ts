@@ -89,7 +89,7 @@ export async function listPhotos(): Promise<Photo[]> {
   }));
 }
 
-async function readClusters(): Promise<Clusters | null> {
+export async function readClusters(): Promise<Clusters | null> {
   let raw: string | null = null;
   if (blobsEnabled()) {
     const s = await store("photos");
@@ -103,6 +103,16 @@ async function readClusters(): Promise<Clusters | null> {
   } catch {
     return null;
   }
+}
+
+export async function writeClusters(c: Clusters): Promise<void> {
+  const raw = JSON.stringify(c, null, 2) + "\n";
+  if (blobsEnabled()) {
+    await (await store("photos")).set(CLUSTERS_KEY, raw);
+    return;
+  }
+  fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+  fs.writeFileSync(CLUSTERS_FILE, raw);
 }
 
 /**

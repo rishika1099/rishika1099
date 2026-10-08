@@ -21,6 +21,7 @@ import ContactManager from "@/components/ContactManager";
 import GuestbookManager from "@/components/GuestbookManager";
 import PoemArtManager from "@/components/PoemArtManager";
 import PoemOrderList from "@/components/PoemOrderList";
+import RegroupButton from "@/components/RegroupButton";
 import { webImage } from "@/lib/webImage";
 
 interface Poem {
@@ -237,7 +238,7 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
         method: "POST",
         body: JSON.stringify({ name: file.name, dataBase64: b64 }),
       });
-      setMsg(d.caption ? `uploaded ✓ captioned: "${d.caption}" (clusters refresh on next npm run media)` : "uploaded ✓");
+      setMsg(d.caption ? `uploaded ✓ captioned: "${d.caption}" (it joins a group within the hour, or press regroup now)` : "uploaded ✓");
       refresh();
     } catch {
       setMsg("upload failed (jpg, png, webp or heic)");
@@ -279,7 +280,8 @@ function PhotosTab({ keyVal }: { keyVal: string }) {
             onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
           />
         </label>
-      </FileDrop>
+      </FileDrop>{" "}
+      <RegroupButton keyVal={keyVal} className={btnSoft} />
       {msg && <p className="mt-3 font-body text-sm text-ink-soft">{msg}</p>}
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {photos.map((p) => (
