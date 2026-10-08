@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { blobsEnabled } from "@/lib/blobs";
+import { cleanFrame, type Frame } from "@/lib/frame";
 
 export type FileKind = "resume" | "portrait";
 
@@ -66,4 +67,33 @@ export async function deleteFileKind(kind: FileKind): Promise<void> {
       if (fs.existsSync(f)) fs.unlinkSync(f);
     }
   }
+}
+
+// How the portrait sits in its circle. Kept beside the photo, not inside it, so
+// the framing can change without the photo being uploaded again.
+const FRAME_KEY = "portrait.frame.json";
+
+export async function getPortraitFrame(): Promise<Frame | null> {
+  try {
+    if (blobsEnabled()) return cleanFrame(await (await filesStore()).get(FRAME_KEY, { type: "json" }));
+    const f = path.join(LOCAL_DIR, FRAME_KEY);
+    return fs.existsSync(f) ? cleanFrame(JSON.parse(fs.readFileSync(f, "utf8"))) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** null clears it (back to a centred crop) */
+export async function setPortraitFrame(frame: Frame | null): Promise<void> {
+  if (blobsEnabled()) {
+    const s = await filesStore();
+    if (frame) await s.setJSON(FRAME_KEY, frame);
+    else await s.delete(FRAME_KEY);
+    return;
+  }
+  const f = path.join(LOCAL_DIR, FRAME_KEY);
+  if (frame) {
+    fs.mkdirSync(LOCAL_DIR, { recursive: true });
+    fs.writeFileSync(f, JSON.stringify(frame));
+  } else if (fs.existsSync(f)) fs.unlinkSync(f);
 }

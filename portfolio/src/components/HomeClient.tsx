@@ -4,6 +4,7 @@ import Link from "next/link";
 import { m } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import FlowerPortrait from "@/components/FlowerPortrait";
+import type { Frame } from "@/lib/frame";
 
 const tabs = [
   { href: "/about", title: "About", key: "about" },
@@ -23,6 +24,7 @@ export default function HomeClient({
   tabIcons,
   resumeSlot,
   portraitOverlay,
+  portraitFrame,
 }: {
   name1: React.ReactNode;
   name2: React.ReactNode;
@@ -39,6 +41,8 @@ export default function HomeClient({
   resumeSlot?: React.ReactNode;
   /** edit mode floats a replace-photo control over the portrait */
   portraitOverlay?: React.ReactNode;
+  /** how the portrait sits in its circle; none means centred */
+  portraitFrame?: Frame | null;
 }) {
   return (
     <PageShell vibe="dawn" className="flex min-h-[86vh] flex-col justify-center">
@@ -56,7 +60,7 @@ export default function HomeClient({
 
         <div className="flex shrink-0 flex-col items-center gap-7">
           <div className="relative">
-            <FlowerPortrait />
+            <FlowerPortrait frame={portraitFrame} />
             {portraitOverlay}
           </div>
           <div className="flex flex-col items-center gap-2.5">

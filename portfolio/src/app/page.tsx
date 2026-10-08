@@ -1,14 +1,16 @@
 import HomeClient from "@/components/HomeClient";
 import { getCopy } from "@/lib/siteCopy";
 import { copyToHtml } from "@/lib/copyRender";
+import { getPortraitFrame } from "@/lib/files";
 
 // passages are editable in the atelier (/edit), so render fresh
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const copy = await getCopy();
+  const [copy, portraitFrame] = await Promise.all([getCopy(), getPortraitFrame()]);
   return (
     <HomeClient
+      portraitFrame={portraitFrame}
       name1={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.name1"]) }} />}
       name2={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.name2"]) }} />}
       greeting={<span dangerouslySetInnerHTML={{ __html: copyToHtml(copy["home.greeting"]) }} />}

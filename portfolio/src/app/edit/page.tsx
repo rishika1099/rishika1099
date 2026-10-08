@@ -9,7 +9,10 @@ import HomeClient from "@/components/HomeClient";
 import FileDrop from "@/components/FileDrop";
 import { AdminGate } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
+import { useState } from "react";
 import { useFileSwap } from "@/components/FileSwap";
+import PortraitFramer from "@/components/PortraitFramer";
+import type { Frame } from "@/lib/frame";
 
 function Editor({ keyVal }: { keyVal: string }) {
   const { ready, box, bar, preview, texts, setText } = usePassageEditor(
@@ -33,6 +36,9 @@ function Editor({ keyVal }: { keyVal: string }) {
     "/",
   );
   const files = useFileSwap(keyVal);
+  // while the framing panel is open, the real portrait follows it
+  const [framing, setFraming] = useState(false);
+  const [draft, setDraft] = useState<Frame | null>(null);
   if (!ready)
     return <p className="mt-8 text-center font-body text-sm text-ink-soft">unlocking the page… ✦</p>;
   return (
@@ -44,6 +50,7 @@ function Editor({ keyVal }: { keyVal: string }) {
         </p>
       )}
       <HomeClient
+        portraitFrame={framing ? draft : files.frame}
         name1={preview("home.name1")}
         name2={preview("home.name2")}
         greeting={box("home.greeting", "font-serif text-lg italic text-ink-soft sm:text-xl")}
@@ -109,6 +116,30 @@ function Editor({ keyVal }: { keyVal: string }) {
               >
                 ↺
               </button>
+            )}
+            <button
+              type="button"
+              title="choose what the circle shows"
+              onClick={() => {
+                setDraft(files.frame);
+                setFraming((v) => !v);
+              }}
+              className="rounded-full bg-white/90 px-2 py-1 font-body text-xs text-ink-soft shadow transition hover:bg-white"
+            >
+              🎯
+            </button>
+            {framing && (
+              <div className="absolute left-1/2 top-full z-30 mt-2 w-[22rem] max-w-[92vw] -translate-x-1/2">
+                <PortraitFramer
+                  frame={files.frame}
+                  onChange={setDraft}
+                  onClose={() => setFraming(false)}
+                  onSave={async (f) => {
+                    await files.saveFrame(f);
+                    setFraming(false);
+                  }}
+                />
+              </div>
             )}
           </div>
         }

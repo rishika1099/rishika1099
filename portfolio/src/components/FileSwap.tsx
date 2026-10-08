@@ -6,6 +6,7 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "@/components/editing";
 import { smallImage, webImage } from "@/lib/webImage";
+import type { Frame } from "@/lib/frame";
 
 // The browser keeps its own copy of the portrait for a minute. Fetching it with
 // "reload" replaces that copy, so the page that comes back shows the new photo
@@ -26,9 +27,15 @@ export function useFileSwap(keyVal: string) {
     portrait: false,
   });
   const [msg, setMsg] = useState("");
+  const [frame, setFrame] = useState<Frame | null>(null);
 
   const refresh = () =>
-    api<{ resume: boolean; portrait: boolean }>("/api/admin/files").then(setHas).catch(() => {});
+    api<{ resume: boolean; portrait: boolean; frame?: Frame | null }>("/api/admin/files")
+      .then((d) => {
+        setHas({ resume: d.resume, portrait: d.portrait });
+        setFrame(d.frame ?? null);
+      })
+      .catch(() => {});
 
   useEffect(() => {
     refresh();
@@ -65,5 +72,16 @@ export function useFileSwap(keyVal: string) {
     if (kind === "portrait") await showNewPortrait();
   }
 
-  return { has, msg, upload, reset };
+  /** how the portrait sits in its circle; null centres it */
+  async function saveFrame(next: Frame | null) {
+    try {
+      await api("/api/admin/files", { method: "PATCH", body: JSON.stringify({ frame: next }) });
+      setFrame(next);
+      setMsg(next ? "framing saved ✓ live now" : "portrait centred ✓");
+    } catch {
+      setMsg("framing did not save, try again?");
+    }
+  }
+
+  return { has, msg, frame, upload, reset, saveFrame };
 }

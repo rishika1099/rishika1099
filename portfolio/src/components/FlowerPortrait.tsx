@@ -1,6 +1,7 @@
 "use client";
 
 import { m } from "framer-motion";
+import { frameStyle, type Frame } from "@/lib/frame";
 
 const flowers = ["🌸", "🌻", "🌷", "🌼", "🌹", "🌺", "🪻", "🪷"];
 const R = 52; // ring radius (% from center), so blooms hug the frame rim
@@ -16,7 +17,7 @@ const blooms = flowers.map((e, i) => {
   };
 });
 
-export default function FlowerPortrait() {
+export default function FlowerPortrait({ frame }: { frame?: Frame | null }) {
   return (
     <m.div
       initial={{ scale: 0.85 }}
@@ -26,17 +27,26 @@ export default function FlowerPortrait() {
     >
       {/* soft pastel glow behind the photo */}
       <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-blush/60 to-lavender/60 blur-lg" />
-      <m.img
-        src="/portrait"
-        alt="Rishika"
-        width={256}
-        height={256}
-        fetchPriority="high"
-        decoding="async"
+      {/* The circle floats and clips; the photo inside it carries the framing.
+          Two elements, because the float and the zoom are both transforms and
+          one element can only hold one. */}
+      <m.div
         animate={{ y: [0, -6, 0] }}
         transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-        className="relative h-full w-full rounded-full border-4 border-white object-cover shadow-lg"
-      />
+        className="relative h-full w-full overflow-hidden rounded-full border-4 border-white bg-white shadow-lg"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/portrait"
+          alt="Rishika"
+          width={256}
+          height={256}
+          fetchPriority="high"
+          decoding="async"
+          className="h-full w-full object-cover"
+          style={frameStyle(frame)}
+        />
+      </m.div>
       {blooms.map((f, i) => (
         <m.span
           key={i}

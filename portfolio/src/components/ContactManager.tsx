@@ -8,6 +8,7 @@ import FileDrop from "@/components/FileDrop";
 import { useRouter } from "next/navigation";
 import { EditableText, adminApi } from "@/components/editing";
 import { useFileSwap } from "@/components/FileSwap";
+import PortraitFramer from "@/components/PortraitFramer";
 import type { ContactLink } from "@/lib/contactLinks";
 
 const btn =
@@ -19,6 +20,7 @@ export default function ContactManager({ keyVal }: { keyVal: string }) {
   const api = adminApi(keyVal);
   const router = useRouter();
   const files = useFileSwap(keyVal);
+  const [framing, setFraming] = useState(false);
   const [links, setLinks] = useState<ContactLink[] | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -106,8 +108,23 @@ export default function ContactManager({ keyVal }: { keyVal: string }) {
               ↺
             </button>
           )}
+          <button className={btnSoft} onClick={() => setFraming((v) => !v)} title="choose what the circle shows">
+            🎯 frame it
+          </button>
         </div>
       </div>
+      {framing && (
+        <div className="mt-3 max-w-md">
+          <PortraitFramer
+            frame={files.frame}
+            onClose={() => setFraming(false)}
+            onSave={async (f) => {
+              await files.saveFrame(f);
+              setFraming(false);
+            }}
+          />
+        </div>
+      )}
 
       <div className="sticky top-20 z-30 -mx-1 mt-4 flex flex-wrap items-center gap-2 rounded-2xl bg-white/80 px-3 py-2 shadow-sm backdrop-blur">
         <button className={btnDark} onClick={save} disabled={saving}>
