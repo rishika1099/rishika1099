@@ -23,6 +23,7 @@ const LIMITS: Record<FileKind, { mimes: Record<string, string>; max: number }> =
   },
   // the tab icon, and its white-ground twin for an iPhone's home screen
   icon: { mimes: { png: "image/png" }, max: 1024 * 1024 },
+  "icon-small": { mimes: { png: "image/png" }, max: 256 * 1024 },
   "icon-apple": { mimes: { png: "image/png" }, max: 1024 * 1024 },
 };
 
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
       await setPortraitFrame(null).catch(() => {});
       await purgeTag("portrait");
     }
-    if (kind === "icon" || kind === "icon-apple") await purgeTag(ICON_TAG);
+    if (kind === "icon" || kind === "icon-small" || kind === "icon-apple") await purgeTag(ICON_TAG);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
@@ -109,7 +110,8 @@ export async function DELETE(request: Request) {
     }
     await deleteFileKind(kind);
     if (kind === "icon") {
-      // the two are one icon in two dresses; they go back together
+      // the three are one icon at three sizes; they go back together
+      await deleteFileKind("icon-small");
       await deleteFileKind("icon-apple");
       await purgeTag(ICON_TAG);
     }

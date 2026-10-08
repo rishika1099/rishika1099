@@ -3,8 +3,8 @@
 // Change the little picture in the browser tab, from /edit.
 //
 // Whatever is picked is fitted, whole, into a square: a transparent one for the
-// tab, and one on a white ground for an iPhone's home screen, which paints
-// transparency black. Nothing is cropped, so a wide drawing keeps its edges.
+// tab (large and small), and one on a white ground for an iPhone's home
+// screen, which paints transparency black. Nothing is cropped, so a wide drawing keeps its edges.
 
 import { useEffect, useState } from "react";
 import FileDrop from "@/components/FileDrop";
@@ -50,12 +50,16 @@ export default function IconSwap({ keyVal }: { keyVal: string }) {
     setMsg("making the icon…");
     try {
       const file = await webImage(picked);
-      const [tab, apple] = await Promise.all([
+      // large for a home screen, small for the tab every visitor loads, and a
+      // white-ground one for iPhones
+      const [large, tab, apple] = await Promise.all([
         square(file, 512, null, 0),
+        square(file, 96, null, 0),
         square(file, 180, "#ffffff", 0.08),
       ]);
       for (const [kind, dataBase64] of [
-        ["icon", tab],
+        ["icon", large],
+        ["icon-small", tab],
         ["icon-apple", apple],
       ] as const) {
         await api("/api/admin/files", {
@@ -63,7 +67,7 @@ export default function IconSwap({ keyVal }: { keyVal: string }) {
           body: JSON.stringify({ kind, ext: "png", dataBase64 }),
         });
       }
-      setPreview(`data:image/png;base64,${tab}`);
+      setPreview(`data:image/png;base64,${large}`);
       setOwn(true);
       setMsg("icon replaced ✓ browsers hold on to tab icons, so it can take a refresh to show");
     } catch {

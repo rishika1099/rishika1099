@@ -95,10 +95,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Rishika Mamidibathula" }],
   // served by routes, not files, so the icon can be replaced from /edit
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/site-icon", type: "image/png" },
-    ],
+    icon: [{ url: "/favicon.ico", sizes: "any" }],
     apple: "/site-icon/apple",
   },
   alternates: {
