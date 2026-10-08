@@ -105,7 +105,13 @@ export async function clusterImages(dir, files, log = console.log) {
   const topSil = Math.max(...results.map((r) => r.sil));
   // prefer finer (more) clusters when they're nearly as good as the best score
   const TOL = 0.025;
-  const chosen = results.filter((r) => r.sil >= topSil - TOL).sort((a, b) => b.k - a.k)[0];
+  // A group of one is not a group: it reads on the page as a photo that was
+  // left over. A grouping with one is passed over whenever another is close.
+  const smallest = (r) => Math.min(...Array.from({ length: r.k }, (_, c) => r.assign.filter((x) => x === c).length));
+  const near = results.filter((r) => r.sil >= topSil - TOL);
+  const whole = near.filter((r) => smallest(r) >= 2);
+  const fallback = results.filter((r) => smallest(r) >= 2).sort((a, b) => b.sil - a.sil);
+  const chosen = (whole.length ? whole : fallback.length ? fallback.slice(0, 1) : near).sort((a, b) => b.k - a.k)[0];
   log(`✓ chose k = ${chosen.k} (silhouette ${chosen.sil.toFixed(3)}; top ${topSil.toFixed(3)})`);
   return { k: chosen.k, silhouette: Number(chosen.sil.toFixed(3)), scores, assign: chosen.assign };
 }
