@@ -192,11 +192,24 @@ export const teaching: Entry[] = [
 // defaults, so they appear on deploy without a write to the live data.
 export const volunteering: Entry[] = [
   {
+    icon: "🏛️",
+    when: "Sep 2026 to present",
+    title: "Department Representative",
+    place: "Engineering Graduate Student Council (EGSC), Columbia University",
+    logo: { id: "716d81a570084532a089", name: "egsc.png", kind: "image" },
+    note: "Elected by fellow M.S. Data Science students to represent the program on Columbia Engineering's graduate student council. The link between the council and the program: carrying student concerns and ideas to its general body, and the department's voice to the school's administration.",
+    details: [
+      "Acts as a liaison between EGSC and the M.S. in Data Science program.",
+      "Brings student concerns and ideas to the council's weekly general body meeting.",
+      "Represents the department to Columbia Engineering's administration, and helps organize EGSC events.",
+    ],
+  },
+  {
     icon: "🗳️",
     when: "Sep 2025 to present",
     title: "Student Council Voting Member",
     place: "Data Science Institute, Columbia University",
-    logo: { id: "2e443c9a61524e7ea361", name: "columbia.jpg", kind: "image" },
+    logo: { id: "3fbabe4df6704618b2b2", name: "dsi-student-council.png", kind: "image" },
     note: "A voting member of the DSI student council, in its Communications & Professional Resources and Social departments. Connects students with internships, research openings, networking events and career resources.",
     details: [
       "Promoting council initiatives across the DSI community.",
