@@ -51,8 +51,15 @@ body {
   from { transform: translateY(16px); }
   to { transform: none; }
 }
+/* "backwards", never "both" or "forwards". An animation that keeps holding its
+   last frame is still in effect for ever, and while an animation of transform
+   is in effect the browser treats the element as transformed: every
+   position: fixed thing inside it is pinned to this column, not the window.
+   That is what stopped the skills map going fullscreen and left an open poem
+   unable to scroll. The last frame is the page's natural state anyway, so
+   there is nothing to hold. */
 .page-rise {
-  animation: page-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: page-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .page-rise { animation: none; }

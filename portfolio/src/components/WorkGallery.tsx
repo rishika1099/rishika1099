@@ -19,6 +19,9 @@ import {
   type Project,
 } from "@/data/projects";
 
+// the key the filtered view keeps its shelf-or-grid choice under
+const FILTERED = "__filtered__";
+
 export default function WorkGallery({
   projects,
   categories,
@@ -568,32 +571,47 @@ export default function WorkGallery({
           );
         })}
 
-      {/* filtered results stay one flat grid: the set is already narrow */}
+      {/* A domain's projects sit on the same shelf an area's do: one row to
+          move along, with the grid a click away. They used to be a flat grid,
+          which put a fourth card alone on a second row and slid the cards
+          under the "showing" bar as the page scrolled. */}
       {filtering && (
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
-          {grid.map((p) => (
-            <m.article
-              layout
-              key={p.name}
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.92 }}
-              transition={{ duration: 0.25 }}
-              whileHover={{ y: -5 }}
-              className="flex flex-col rounded-3xl p-5 soft-card"
-            >
-              <span className="text-3xl">{p.emoji}</span>
-              <h3 className="mt-1.5 font-body text-base font-bold text-ink">{p.name}</h3>
-              <CardBody p={p} blurb={blurbFor(p)} />
-              <CardActions name={p.name} onSimilar={() => findSimilar(p.name)} />
-            </m.article>
-          ))}
-        </AnimatePresence>
-        {grid.length === 0 && (
-          <p className="font-body text-ink-soft">nothing growing in this patch yet ✦</p>
-        )}
-      </div>
+        <section className="mt-6">
+          {grid.length > 1 && (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setOpenCats((o) => ({ ...o, [FILTERED]: !o[FILTERED] }))}
+                className="rounded-full bg-white/70 px-3.5 py-1 font-body text-sm font-semibold text-ink-soft transition hover:bg-white hover:text-ink"
+              >
+                {openCats[FILTERED] ? "back to a shelf" : `show all ${grid.length} as a grid →`}
+              </button>
+            </div>
+          )}
+          {grid.length === 0 ? (
+            <p className="mt-4 font-body text-ink-soft">nothing growing in this patch yet ✦</p>
+          ) : openCats[FILTERED] ? (
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {grid.map((p) => (
+                <ProjectCard key={p.name} p={p} blurb={blurbFor(p)} onSimilar={() => findSimilar(p.name)} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-4">
+              <Carousel label="project">
+                {grid.map((p) => (
+                  <ProjectCard
+                    key={p.name}
+                    p={p}
+                    blurb={blurbFor(p)}
+                    onSimilar={() => findSimilar(p.name)}
+                    className="w-[19rem] shrink-0 snap-start"
+                  />
+                ))}
+              </Carousel>
+            </div>
+          )}
+        </section>
       )}
       </div>
       </>
