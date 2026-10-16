@@ -61,6 +61,12 @@ export async function buildPrompt(title: string, body: string): Promise<string> 
 
 async function tryRender(model: string, prompt: string): Promise<Buffer> {
   const params: Record<string, unknown> = { model, prompt, size: "1024x1024", n: 1 };
+  // The host ends a request at about 26 seconds, and gpt-image-1 at its default
+  // quality takes longer, so on the live site every picture was cut off before
+  // it arrived, in the atelier's "regenerate" as much as for a new poem.
+  // "medium" draws in about 17 seconds; for a soft charcoal sketch the
+  // difference is hard to see.
+  if (model.startsWith("gpt-image")) params.quality = process.env.OPENAI_IMAGE_QUALITY || "medium";
   if (model.startsWith("dall-e")) params.response_format = "b64_json";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const res = await openai().images.generate(params as any);
