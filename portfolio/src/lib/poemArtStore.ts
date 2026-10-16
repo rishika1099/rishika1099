@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { blobsEnabled, store } from "@/lib/blobs";
+import { blobsEnabled } from "@/lib/blobs";
 import { generateArt } from "@/lib/poemArt";
 
 // Poem art, with variants beyond the single active image:
@@ -12,6 +12,16 @@ import { generateArt } from "@/lib/poemArt";
 // dev, exactly like the original single-image cache.
 
 const ART_DIR = path.join(process.cwd(), "public/poem-art");
+
+// Every read here is the latest copy, not the nearest one. These are the
+// editor's reads: right after "regenerate" it asks for the new draft, and an
+// eventually consistent read could still hand back the draft before it, which
+// looked exactly like the model drawing the same picture twice. The poem room
+// itself reads through poemArt.ts and keeps its fast, cached reads.
+async function artStore() {
+  const { getStore } = await import("@netlify/blobs");
+  return getStore({ name: "poem-art", consistency: "strong" });
+}
 const INDEX_KEY = "~index";
 const INDEX_FILE = path.join(ART_DIR, "_art-index.json");
 
@@ -37,7 +47,7 @@ function fileFor(slug: string, v: Variant): string {
 export async function readArt(slug: string, v: Variant): Promise<Buffer | null> {
   safeSlug(slug);
   if (blobsEnabled()) {
-    const s = await store("poem-art");
+    const s = await artStore();
     const buf = await s.get(keyFor(slug, v), { type: "arrayBuffer" });
     return buf ? Buffer.from(buf) : null;
   }
@@ -47,7 +57,7 @@ export async function readArt(slug: string, v: Variant): Promise<Buffer | null> 
 
 async function writeArt(slug: string, v: Variant, png: Buffer): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("poem-art");
+    const s = await artStore();
     const ab = png.buffer.slice(png.byteOffset, png.byteOffset + png.byteLength) as ArrayBuffer;
     await s.set(keyFor(slug, v), ab);
   } else {
@@ -58,7 +68,7 @@ async function writeArt(slug: string, v: Variant, png: Buffer): Promise<void> {
 
 async function deleteArt(slug: string, v: Variant): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("poem-art");
+    const s = await artStore();
     await s.delete(keyFor(slug, v));
   } else {
     const f = fileFor(slug, v);
@@ -70,7 +80,7 @@ async function readIndex(): Promise<ArtIndex> {
   try {
     let raw: string | null = null;
     if (blobsEnabled()) {
-      const s = await store("poem-art");
+      const s = await artStore();
       raw = (await s.get(INDEX_KEY, { type: "text" })) ?? null;
     } else if (fs.existsSync(INDEX_FILE)) {
       raw = fs.readFileSync(INDEX_FILE, "utf8");
@@ -83,7 +93,7 @@ async function readIndex(): Promise<ArtIndex> {
 
 async function writeIndex(idx: ArtIndex): Promise<void> {
   if (blobsEnabled()) {
-    const s = await store("poem-art");
+    const s = await artStore();
     await s.setJSON(INDEX_KEY, idx);
   } else {
     fs.mkdirSync(ART_DIR, { recursive: true });
