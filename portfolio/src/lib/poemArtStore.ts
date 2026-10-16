@@ -102,6 +102,17 @@ export async function regenerateDraft(slug: string): Promise<void> {
   await writeArt(slug, "draft", png);
 }
 
+/** Whether a poem has live art yet. */
+export async function hasActiveArt(slug: string): Promise<boolean> {
+  return !!(await readArt(safeSlug(slug), "active"));
+}
+
+/** Make art for a poem that has none, and put it straight live. */
+export async function generateFirstArt(slug: string): Promise<void> {
+  const png = await generateArt(safeSlug(slug));
+  await writeArt(slug, "active", png);
+}
+
 /** Upload: stash an uploaded PNG as the draft (previewed before going live). */
 export async function uploadDraft(slug: string, png: Buffer): Promise<void> {
   await writeArt(safeSlug(slug), "draft", png);

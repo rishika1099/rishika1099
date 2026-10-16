@@ -28,6 +28,37 @@ export interface PoemOrder {
 }
 
 /**
+ * Tag one poem's mood. The moods are one list read and written back whole, so
+ * the read asks for the latest copy: a stale one would put back the list as it
+ * was a moment ago and drop a mood saved just before.
+ */
+export async function setMood(slug: string, mood: string, confidence: number | null): Promise<void> {
+  if (blobsEnabled()) {
+    const { getStore } = await import("@netlify/blobs");
+    const s = getStore({ name: "poems", consistency: "strong" });
+    const raw = (await s.get(MOODS_KEY, { type: "text" })) ?? null;
+    let map: MoodMap = {};
+    try {
+      map = raw ? (JSON.parse(raw) as MoodMap) : {};
+    } catch {
+      map = {};
+    }
+    map[slug] = { mood, confidence };
+    await s.set(MOODS_KEY, JSON.stringify(map, null, 2));
+    return;
+  }
+  const f = path.join(POEMS_DIR, "moods.json");
+  let map: MoodMap = {};
+  try {
+    map = fs.existsSync(f) ? (JSON.parse(fs.readFileSync(f, "utf8")) as MoodMap) : {};
+  } catch {
+    map = {};
+  }
+  map[slug] = { mood, confidence };
+  fs.writeFileSync(f, JSON.stringify(map, null, 2) + "\n");
+}
+
+/**
  * Poems live as `.md` files in this local folder (gitignored, off the public
  * repo). On the deployed site they're read from the private "poems" Blobs store,
  * which `npm run sync` populates from this same folder.
@@ -51,7 +82,7 @@ function fromRaw(slug: string, raw: string): Poem {
   };
 }
 
-async function readMoods(): Promise<MoodMap> {
+export async function readMoods(): Promise<MoodMap> {
   let raw: string | null = null;
   if (blobsEnabled()) {
     const s = await store("poems");
