@@ -43,23 +43,31 @@ export async function tagMood(slug: string): Promise<void> {
 }
 
 /** Give a poem whatever it is missing. Each part is tried on its own. */
-export async function fillPoem(slug: string): Promise<{ mood: boolean; art: boolean }> {
-  const done = { mood: false, art: false };
+export async function fillPoem(
+  slug: string,
+): Promise<{ mood: boolean; art: boolean; errors: string[] }> {
+  const done = { mood: false, art: false, errors: [] as string[] };
+  const why = (part: string, e: unknown) => {
+    const msg = `${part}: ${e instanceof Error ? e.message : String(e)}`;
+    done.errors.push(msg);
+    // the background run has no one to answer to, so the function log is where this goes
+    console.error(`[poem ${slug}] ${msg}`);
+  };
   try {
     if (!(await readMoods())[slug]) {
       await tagMood(slug);
       done.mood = true;
     }
-  } catch {
-    // the art below is still worth trying
+  } catch (e) {
+    why("mood", e); // the art below is still worth trying
   }
   try {
     if (!(await hasActiveArt(slug))) {
       await generateFirstArt(slug);
       done.art = true;
     }
-  } catch {
-    // left for the art manager's "regenerate"
+  } catch (e) {
+    why("art", e); // left for the art manager's "regenerate"
   }
   return done;
 }

@@ -35,11 +35,11 @@ export async function POST(request: Request) {
       /** give an existing poem whatever it is missing, without saving it again */
       fill?: string;
     };
+    // waits for it and says what happened, for when the background run did not
     if (typeof body.fill === "string") {
       const slug = body.fill.trim();
       if (!/^[a-z0-9-]+$/.test(slug)) return NextResponse.json({ error: "bad slug" }, { status: 400 });
-      after(() => fillPoem(slug).then(() => undefined));
-      return NextResponse.json({ ok: true, filling: slug });
+      return NextResponse.json({ ok: true, slug, ...(await fillPoem(slug)) });
     }
     // drag-and-drop ordering + pins from the editors
     if (body.reorder) {
