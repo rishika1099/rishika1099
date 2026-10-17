@@ -23,6 +23,9 @@ async function artStore() {
   return getStore({ name: "poem-art", consistency: "strong" });
 }
 const INDEX_KEY = "~index";
+// her direction for each poem's picture ("no trees"), by slug
+const NOTES_KEY = "~notes";
+const NOTES_FILE = path.join(process.cwd(), "public/poem-art/_art-notes.json");
 const INDEX_FILE = path.join(ART_DIR, "_art-index.json");
 
 export type SavedArt = { id: string; ts: number };
@@ -101,6 +104,37 @@ async function writeIndex(idx: ArtIndex): Promise<void> {
   }
 }
 
+async function readNotes(): Promise<Record<string, string>> {
+  try {
+    if (blobsEnabled()) {
+      const raw = await (await artStore()).get(NOTES_KEY, { type: "text" });
+      return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+    }
+    return fs.existsSync(NOTES_FILE) ? (JSON.parse(fs.readFileSync(NOTES_FILE, "utf8")) as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
+
+/** What she has asked of this poem's picture, if anything. */
+export async function getArtNote(slug: string): Promise<string> {
+  return (await readNotes())[safeSlug(slug)] ?? "";
+}
+
+/** Keep (or, empty, forget) her direction for this poem's picture. */
+export async function setArtNote(slug: string, note: string): Promise<void> {
+  const notes = await readNotes();
+  const clean = note.replace(/\s+/g, " ").trim().slice(0, 300);
+  if (clean) notes[safeSlug(slug)] = clean;
+  else delete notes[safeSlug(slug)];
+  if (blobsEnabled()) {
+    await (await artStore()).setJSON(NOTES_KEY, notes);
+  } else {
+    fs.mkdirSync(ART_DIR, { recursive: true });
+    fs.writeFileSync(NOTES_FILE, JSON.stringify(notes, null, 2));
+  }
+}
+
 export async function listSaved(slug: string): Promise<SavedArt[]> {
   const idx = await readIndex();
   return (idx[safeSlug(slug)] ?? []).slice().sort((a, b) => b.ts - a.ts);
@@ -108,7 +142,7 @@ export async function listSaved(slug: string): Promise<SavedArt[]> {
 
 /** Regenerate: render fresh art and stash it as the draft (not live yet). */
 export async function regenerateDraft(slug: string): Promise<void> {
-  const png = await generateArt(safeSlug(slug));
+  const png = await generateArt(safeSlug(slug), await getArtNote(slug));
   await writeArt(slug, "draft", png);
 }
 
@@ -119,7 +153,7 @@ export async function hasActiveArt(slug: string): Promise<boolean> {
 
 /** Make art for a poem that has none, and put it straight live. */
 export async function generateFirstArt(slug: string): Promise<void> {
-  const png = await generateArt(safeSlug(slug));
+  const png = await generateArt(safeSlug(slug), await getArtNote(slug));
   await writeArt(slug, "active", png);
 }
 
@@ -169,10 +203,11 @@ export async function removeSaved(slug: string, id: string): Promise<void> {
 }
 
 export async function artStatus(slug: string) {
-  const [active, draft, saved] = await Promise.all([
+  const [active, draft, saved, note] = await Promise.all([
     readArt(slug, "active"),
     readArt(slug, "draft"),
     listSaved(slug),
+    getArtNote(slug),
   ]);
-  return { hasActive: !!active, hasDraft: !!draft, saved };
+  return { hasActive: !!active, hasDraft: !!draft, saved, note };
 }

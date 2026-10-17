@@ -16,6 +16,8 @@ interface Status {
   hasActive: boolean;
   hasDraft: boolean;
   saved: SavedArt[];
+  /** her direction for this poem's picture */
+  note?: string;
 }
 
 export default function PoemArtManager({
@@ -33,6 +35,7 @@ export default function PoemArtManager({
   const [busy, setBusy] = useState("");
   const [msg, setMsg] = useState("");
   const [bust, setBust] = useState(() => Date.now());
+  const [note, setNote] = useState("");
 
   const base = `/api/admin/poem-art/${slug}`;
   const imgSrc = (variant: string, id = "") =>
@@ -40,7 +43,10 @@ export default function PoemArtManager({
 
   const load = () =>
     api<Status>(base)
-      .then(setStatus)
+      .then((s) => {
+        setStatus(s);
+        setNote(s.note ?? "");
+      })
       .catch(() => setMsg("couldn't load the artwork"));
 
   useEffect(() => {
@@ -137,8 +143,23 @@ export default function PoemArtManager({
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        <button className={btnPrimary} disabled={!!busy} onClick={() => act("regenerate", {}, "generating")}>
+      {/* Her say in what the picture shows. Kept with this poem only, so every
+          regenerate for it follows the same direction until she changes it. */}
+      <label className={`mt-4 block font-body text-xs ${sub}`}>
+        tell the artist something about this poem&apos;s picture (only this poem; regenerate follows it)
+        <input
+          value={note}
+          maxLength={300}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="e.g. no trees · a closed door and a candle · more light, less sad"
+          className={`mt-1 w-full rounded-xl px-3 py-2 font-body text-sm outline-none focus:ring-2 focus:ring-blush/50 ${
+            dark ? "bg-white/10 text-cream placeholder:text-cream/40" : "bg-white/80 text-ink placeholder:text-ink-soft/50"
+          }`}
+        />
+      </label>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button className={btnPrimary} disabled={!!busy} onClick={() => act("regenerate", { note }, "generating")}>
           ✨ regenerate
         </button>
         <button

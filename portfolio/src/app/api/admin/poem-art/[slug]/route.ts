@@ -7,6 +7,7 @@ import {
   regenerateDraft,
   removeSaved,
   restoreSaved,
+  setArtNote,
   saveCurrent,
   uploadDraft,
 } from "@/lib/poemArtStore";
@@ -50,10 +51,15 @@ export async function POST(request: Request, ctx: { params: Promise<{ slug: stri
       return NextResponse.json({ ok: true });
     }
 
-    const body = (await request.json()) as { action?: string; id?: string };
+    const body = (await request.json()) as { action?: string; id?: string; note?: string };
     switch (body.action) {
       case "regenerate":
+        // whatever she typed for this poem is kept, so the next one follows it too
+        if (typeof body.note === "string") await setArtNote(slug, body.note);
         await regenerateDraft(slug);
+        return NextResponse.json({ ok: true });
+      case "note":
+        await setArtNote(slug, typeof body.note === "string" ? body.note : "");
         return NextResponse.json({ ok: true });
       case "accept": {
         const ok = await acceptDraft(slug);

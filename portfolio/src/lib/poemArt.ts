@@ -47,13 +47,18 @@ function safeSlug(slug: string): string {
   return slug;
 }
 
-export async function buildPrompt(title: string, body: string): Promise<string> {
+export async function buildPrompt(title: string, body: string, direction = ""): Promise<string> {
+  // Her own word on this poem's picture, which outranks the interpreter's
+  // taste: "no trees", "a closed door and a candle". It is about this poem only.
+  const note = direction.trim()
+    ? `\n\nThe poet's direction for this picture, which you must follow (it overrides your own choice of scene where they differ): ${direction.trim()}`
+    : "";
   const res = await openai().chat.completions.create({
     model: process.env.OPENAI_TEXT_MODEL || "gpt-4o-mini",
     temperature: 0.9,
     messages: [
       { role: "system", content: INTERPRETER },
-      { role: "user", content: `Title: ${title}\n\n${body}` },
+      { role: "user", content: `Title: ${title}\n\n${body}${note}` },
     ],
   });
   return res.choices[0].message.content?.trim() ?? "";
@@ -92,11 +97,11 @@ export async function renderImage(prompt: string): Promise<Buffer> {
 }
 
 /** Freshly render a poem's art (no cache read/write); used by the art manager. */
-export async function generateArt(slugRaw: string): Promise<Buffer> {
+export async function generateArt(slugRaw: string, direction = ""): Promise<Buffer> {
   const slug = safeSlug(slugRaw);
   const poem = await getPoem(slug);
   if (!poem) throw new Error("Poem not found");
-  const prompt = await buildPrompt(poem.title || slug, poem.content.trim());
+  const prompt = await buildPrompt(poem.title || slug, poem.content.trim(), direction);
   return renderImage(prompt);
 }
 
