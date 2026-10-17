@@ -42,39 +42,67 @@ export async function tagMood(slug: string): Promise<void> {
   await setMood(slug, mood, confidence);
 }
 
-// Written in the voice of the one-liners she wrote herself for her recent poems.
+// A caption, not a quotation. The card already leads to the poem; what it
+// needs under the title is what the poem is about, in a breath. Written in the
+// voice of the captions she wrote herself for her recent poems.
 const ONE_LINER = [
-  "You write the one-line teaser shown under a poem's title on its card in a poetry gallery.",
-  "Distill what the poem is about in one lowercase line of 8 to 16 words, in the poem's own imagery, the way these do:",
+  "You write the caption shown under a poem's title on its card in a poetry gallery.",
+  "Capture the essence of the whole poem: what it is about and what it feels like, in one lowercase line of 8 to 16 words.",
+  "Never quote the poem, never reuse one of its lines or a phrase of more than three of its words, and never summarize just its opening.",
+  "It should read like these:",
   "\"a thought that sank too deep, and the fear of being consumed again.\"",
   "\"the ghost of who I used to be, and a quiet wish to become me again.\"",
   "\"two strangers, aligned stars, and falling before you were ever mine.\"",
   "Keep the pronoun I where the poem is in the first person. Do not repeat the title. No quotes, no em dashes or en dashes, end with a period.",
 ].join(" ");
 
-/** A one-line teaser for the poem's card, when it has none. */
-export async function writeOneLiner(slug: string): Promise<void> {
+const words = (t: string) => t.toLowerCase().match(/[a-z']+/g) ?? [];
+
+/** Whether `line` lifts a run of four or more words straight out of `body`. */
+export function quotes(line: string, body: string): boolean {
+  const l = words(line);
+  const text = ` ${words(body).join(" ")} `;
+  for (let i = 0; i + 4 <= l.length; i++) {
+    if (text.includes(` ${l.slice(i, i + 4).join(" ")} `)) return true;
+  }
+  return false;
+}
+
+/**
+ * A caption for the poem's card. Only when it has none, unless `replace` is
+ * set: that is for redoing ones that quote the poem instead of capturing it.
+ */
+export async function writeOneLiner(slug: string, replace = false): Promise<string | null> {
   const poem = await getPoem(slug, true);
-  if (!poem || poem.excerpt.trim() || !process.env.OPENAI_API_KEY) return;
-  const body = poem.rich ? richToText(poem.content) : poem.content;
-  const res = await new OpenAI().chat.completions.create({
-    model: process.env.OPENAI_TEXT_MODEL || "gpt-4o-mini",
-    temperature: 0.6,
-    max_tokens: 60,
-    messages: [
-      { role: "system", content: ONE_LINER },
-      { role: "user", content: `Title: ${poem.title}\n\n${body.trim()}` },
-    ],
-  });
-  let line = (res.choices[0]?.message?.content ?? "").trim().replace(/^["'\u201c]+|["'\u201d]+$/g, "");
-  // her rule, kept in code: the model is asked, and sometimes forgets
-  line = line.replace(/\s*[\u2014\u2013]\s*/g, ", ").replace(/\s+/g, " ").slice(0, 160);
-  if (!line) return;
-  if (!/[.!?]$/.test(line)) line += ".";
+  if (!poem || (poem.excerpt.trim() && !replace) || !process.env.OPENAI_API_KEY) return null;
+  const body = (poem.rich ? richToText(poem.content) : poem.content).trim();
+  const ask = async (extra: string) => {
+    const res = await new OpenAI().chat.completions.create({
+      model: process.env.OPENAI_TEXT_MODEL || "gpt-4o-mini",
+      temperature: 0.6,
+      max_tokens: 60,
+      messages: [
+        { role: "system", content: ONE_LINER },
+        { role: "user", content: `Title: ${poem.title}\n\n${body}${extra}` },
+      ],
+    });
+    let line = (res.choices[0]?.message?.content ?? "").trim().replace(/^["'\u201c]+|["'\u201d]+$/g, "");
+    // her rule, kept in code: the model is asked, and sometimes forgets
+    line = line.replace(/\s*[\u2014\u2013]\s*/g, ", ").replace(/\s+/g, " ").slice(0, 160);
+    if (line && !/[.!?]$/.test(line)) line += ".";
+    return line;
+  };
+  // checked, not trusted: a line that lifts the poem's words is asked for again
+  let line = await ask("");
+  for (let n = 0; n < 2 && line && quotes(line, body); n++) {
+    line = await ask(`\n\n(Your caption "${line}" reuses the poem's own words. Say what it is about in different words.)`);
+  }
+  if (!line || quotes(line, body)) return null;
   // read again just before writing, so an edit made meanwhile is not undone
   const latest = await getPoem(slug, true);
-  if (!latest || latest.excerpt.trim()) return;
+  if (!latest || (latest.excerpt.trim() && !replace)) return null;
   await savePoem({ ...latest, excerpt: line });
+  return line;
 }
 
 /** Give a poem whatever it is missing. Each part is tried on its own. */
@@ -91,8 +119,7 @@ export async function fillPoem(
   try {
     const poem = await getPoem(slug, true);
     if (poem && !poem.excerpt.trim()) {
-      await writeOneLiner(slug);
-      done.line = true;
+      done.line = !!(await writeOneLiner(slug));
     }
   } catch (e) {
     why("one-liner", e);

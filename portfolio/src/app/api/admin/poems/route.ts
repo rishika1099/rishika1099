@@ -2,7 +2,7 @@ import { NextResponse, after } from "next/server";
 import { adminConfigured, isAdmin } from "@/lib/adminAuth";
 import { deletePoem, listPoems, savePoem, savePoemOrder, slugify, type PoemOrder } from "@/lib/poems-store";
 import { sanitizeRichHtml } from "@/lib/richHtml";
-import { fillPoem } from "@/lib/poemExtras";
+import { fillPoem, writeOneLiner } from "@/lib/poemExtras";
 
 export const runtime = "nodejs";
 // a new poem's art is drawn after the save answers, and drawing takes a while
@@ -34,7 +34,14 @@ export async function POST(request: Request) {
       reorder?: PoemOrder;
       /** give an existing poem whatever it is missing, without saving it again */
       fill?: string;
+      /** rewrite a poem's card caption even though it has one */
+      recaption?: string;
     };
+    if (typeof body.recaption === "string") {
+      const slug = body.recaption.trim();
+      if (!/^[a-z0-9-]+$/.test(slug)) return NextResponse.json({ error: "bad slug" }, { status: 400 });
+      return NextResponse.json({ ok: true, slug, caption: await writeOneLiner(slug, true) });
+    }
     // waits for it and says what happened, for when the background run did not
     if (typeof body.fill === "string") {
       const slug = body.fill.trim();
