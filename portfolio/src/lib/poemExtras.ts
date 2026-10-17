@@ -68,6 +68,15 @@ export function quotes(line: string, body: string): boolean {
   return false;
 }
 
+// small words a caption may share with a title without echoing it
+const SMALL = new Set("the a an of to in on and my me i is that too it for with be was".split(" "));
+
+/** Whether `line` repeats a meaningful word of the poem's title. */
+export function echoesTitle(line: string, title: string): boolean {
+  const said = new Set(words(line));
+  return words(title).some((w) => !SMALL.has(w) && said.has(w));
+}
+
 /**
  * A caption for the poem's card. Only when it has none, unless `replace` is
  * set: that is for redoing ones that quote the poem instead of capturing it.
@@ -92,12 +101,20 @@ export async function writeOneLiner(slug: string, replace = false): Promise<stri
     if (line && !/[.!?]$/.test(line)) line += ".";
     return line;
   };
-  // checked, not trusted: a line that lifts the poem's words is asked for again
+  // Checked, not trusted. A caption that lifts the poem's words, or says the
+  // title again right under the title, is asked for again: "the ghost of who I
+  // used to be" under The Ghost of Me tells the reader nothing new.
+  const fault = (l: string) =>
+    quotes(l, body)
+      ? "reuses the poem's own words"
+      : echoesTitle(l, poem.title)
+        ? "repeats the title, which sits right above it"
+        : null;
   let line = await ask("");
-  for (let n = 0; n < 2 && line && quotes(line, body); n++) {
-    line = await ask(`\n\n(Your caption "${line}" reuses the poem's own words. Say what it is about in different words.)`);
+  for (let n = 0; n < 3 && line && fault(line); n++) {
+    line = await ask(`\n\n(Your caption "${line}" ${fault(line)}. Say what the poem is about in different words.)`);
   }
-  if (!line || quotes(line, body)) return null;
+  if (!line || fault(line)) return null;
   // read again just before writing, so an edit made meanwhile is not undone
   const latest = await getPoem(slug, true);
   if (!latest || (latest.excerpt.trim() && !replace)) return null;
