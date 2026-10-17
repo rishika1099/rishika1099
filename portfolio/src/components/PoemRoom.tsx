@@ -9,6 +9,16 @@ import { moodColor } from "@/lib/moods";
 import ReactionBar from "@/components/ReactionBar";
 import AmbientSound from "@/components/AmbientSound";
 
+// The poems are hers and shared to be read, not lifted. Nothing in the room can
+// be selected, copied, dragged out, or saved from the right-click menu. A
+// screenshot cannot be stopped from a web page, so this is a speed bump for
+// casual copying, not a lock.
+const guard = {
+  onCopy: (e: React.ClipboardEvent) => e.preventDefault(),
+  onCut: (e: React.ClipboardEvent) => e.preventDefault(),
+  onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
+};
+
 function CardArt({ poem }: { poem: Poem }) {
   const [broken, setBroken] = useState(false);
   if (!broken) {
@@ -19,7 +29,8 @@ function CardArt({ poem }: { poem: Poem }) {
         fill
         unoptimized
         sizes="(max-width: 640px) 50vw, 300px"
-        className="object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
+        className="pointer-events-none select-none object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
+        draggable={false}
         onError={() => setBroken(true)}
       />
     );
@@ -94,7 +105,7 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
         </div>
       )}
 
-      <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-3">
+      <div {...guard} className="mt-6 grid select-none grid-cols-2 gap-5 sm:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {shown.map((poem, i) => (
             <m.button
@@ -155,7 +166,8 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
               exit={{ opacity: 0, y: 24, scale: 0.97 }}
               transition={{ type: "spring", stiffness: 200, damping: 24 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative my-auto w-full max-w-2xl rounded-[2rem] border border-white/10 bg-[#1c1c24]/98 p-7 shadow-2xl sm:p-10"
+              {...guard}
+              className="relative my-auto w-full max-w-2xl select-none rounded-[2rem] border border-white/10 bg-[#1c1c24]/98 p-7 shadow-2xl sm:p-10"
             >
               <button
                 type="button"
