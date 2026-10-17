@@ -124,6 +124,11 @@ export default function PoemRoom({ poems }: { poems: Poem[] }) {
                 <h2 className="font-display text-base font-semibold leading-snug text-cream sm:text-lg">
                   {poem.title}
                 </h2>
+                {poem.excerpt && (
+                  <p className="mt-1 line-clamp-2 font-body text-xs italic leading-snug text-lavender/80 sm:text-sm">
+                    {poem.excerpt}
+                  </p>
+                )}
                 {poem.mood && (
                   <div className="mt-2">
                     <MoodChip mood={poem.mood} />

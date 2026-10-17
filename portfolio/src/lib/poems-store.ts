@@ -173,9 +173,16 @@ export async function listPoems(): Promise<Poem[]> {
   });
 }
 
-export async function getPoem(slug: string): Promise<Poem | null> {
+/**
+ * One poem. `fresh` reads the latest copy rather than the nearest cached one:
+ * anything that reads a poem in order to save it again needs that, or a read a
+ * moment stale would write back the words from before her last edit.
+ */
+export async function getPoem(slug: string, fresh = false): Promise<Poem | null> {
   if (blobsEnabled()) {
-    const s = await store("poems");
+    const s = fresh
+      ? (await import("@netlify/blobs")).getStore({ name: "poems", consistency: "strong" })
+      : await store("poems");
     const raw = await s.get(slug, { type: "text" });
     return raw ? fromRaw(slug, raw) : null;
   }
