@@ -37,6 +37,7 @@ jobs:
 
       - name: Commit if it changed
         run: |
+          mkdir -p images/snake
           cp dist/snake-light.svg dist/snake-dark.svg images/snake/
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
