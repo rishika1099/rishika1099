@@ -1,0 +1,52 @@
+name: Draw the contribution snake
+
+# The snake on the profile README eats its way across the contribution graph.
+# Once a day this redraws it from the latest graph, in the README's own pastels
+# rather than GitHub green, with a darker twin for visitors using dark mode.
+#
+# The pictures are committed to main, in images/snake/, rather than kept on a
+# branch of their own, so the repository stays a single branch. A day with no
+# new contributions draws the same picture, and then nothing is committed.
+
+on:
+  schedule:
+    - cron: "40 6 * * *" # daily, 06:40 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: snake
+  cancel-in-progress: false
+
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      # dots: no contributions, then light to heavy; the snake is a deeper mauve
+      - uses: Platane/snk/svg-only@v3
+        with:
+          github_user_name: rishika1099
+          outputs: |
+            dist/snake-light.svg?color_snake=#8e5c86&color_dots=#f3eef1,#ead7e3,#d9bed1,#c39ab8,#a8789f
+            dist/snake-dark.svg?palette=github-dark&color_snake=#f2c4dc&color_dots=#1e1b24,#4a3550,#6e4f75,#9c76a3,#d9bed1
+
+      - name: Commit if it changed
+        run: |
+          cp dist/snake-light.svg dist/snake-dark.svg images/snake/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add images/snake
+          if git diff --cached --quiet; then
+            echo "The snake is the same as yesterday's; nothing to commit."
+            exit 0
+          fi
+          # [skip ci] and [skip netlify]: a new picture for the README is no
+          # reason to rebuild the website
+          git commit -m "Redraw the contribution snake [skip ci] [skip netlify]"
+          git pull --rebase --autostash
+          git push

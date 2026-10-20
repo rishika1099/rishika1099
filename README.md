@@ -653,6 +653,18 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 
 ---
 
+## 🐍 A Year of Contributions, Eaten Daily
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./images/snake/snake-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="./images/snake/snake-light.svg" />
+    <img alt="a snake eating its way across my GitHub contribution graph" src="./images/snake/snake-light.svg" />
+  </picture>
+</p>
+
+---
+
 ## 🌐 Connect with Me!
 
 <p align="center">
