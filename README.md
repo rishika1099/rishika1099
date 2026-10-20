@@ -663,6 +663,24 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
   </picture>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api?username=rishika1099&show_icons=true&include_all_commits=true&count_private=true&hide_rank=true&hide=stars,contribs&disable_animations=true&bg_color=1b1720&title_color=f2c4dc&icon_color=d9bed1&text_color=e8dce5&border_color=4a3550" />
+    <img height="165" alt="GitHub stats" src="https://github-readme-stats.vercel.app/api?username=rishika1099&show_icons=true&include_all_commits=true&count_private=true&hide_rank=true&hide=stars,contribs&disable_animations=true&bg_color=fdf6f9&title_color=8e5c86&icon_color=c39ab8&text_color=5b4a57&border_color=ead7e3" />
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=rishika1099&layout=compact&langs_count=6&hide=jupyter%20notebook,html,css,tex,scss&disable_animations=true&bg_color=1b1720&title_color=f2c4dc&icon_color=d9bed1&text_color=e8dce5&border_color=4a3550" />
+    <img height="165" alt="most used languages" src="https://github-readme-stats.vercel.app/api/top-langs/?username=rishika1099&layout=compact&langs_count=6&hide=jupyter%20notebook,html,css,tex,scss&disable_animations=true&bg_color=fdf6f9&title_color=8e5c86&icon_color=c39ab8&text_color=5b4a57&border_color=ead7e3" />
+  </picture>
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://streak-stats.demolab.com?user=rishika1099&disable_animations=true&background=1b1720&border=4a3550&ring=d9bed1&fire=f2c4dc&currStreakNum=f2c4dc&sideNums=e8dce5&currStreakLabel=f2c4dc&sideLabels=e8dce5&dates=9c76a3&stroke=4a3550" />
+    <img height="165" alt="contribution streak" src="https://streak-stats.demolab.com?user=rishika1099&disable_animations=true&background=fdf6f9&border=ead7e3&ring=c39ab8&fire=8e5c86&currStreakNum=8e5c86&sideNums=5b4a57&currStreakLabel=8e5c86&sideLabels=5b4a57&dates=a8789f&stroke=ead7e3" />
+  </picture>
+</p>
+
 ---
 
 ## 🌐 Connect with Me!
