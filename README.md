@@ -657,7 +657,11 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 ## 🐍 A Year of Contributions, Eaten Daily
 
 <p align="center">
-  <img alt="a snake eating its way across my GitHub contribution graph" src="./images/snake/snake.svg" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rishika1099/rishika1099/main/images/snake/snake-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/rishika1099/rishika1099/main/images/snake/snake.svg" />
+    <img alt="a snake eating its way across my GitHub contribution graph" src="https://raw.githubusercontent.com/rishika1099/rishika1099/main/images/snake/snake.svg" />
+  </picture>
 </p>
 
 <p align="center">
