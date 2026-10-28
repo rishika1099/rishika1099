@@ -35,7 +35,7 @@ jobs:
         with:
           github_user_name: rishika1099
           outputs: |
-            dist/snake.svg
+            dist/snake.svg?palette=github
 
       - name: Commit if it changed
         run: |
