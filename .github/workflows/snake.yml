@@ -34,9 +34,12 @@ jobs:
       - uses: Platane/snk/svg-only@v3
         with:
           github_user_name: rishika1099
+          # pink, to match the stats cards: dots go from no contributions to many,
+          # the snake is the rose pink. The dark copy starts from near-black, so
+          # an empty day sinks into a dark page instead of glowing on it.
           outputs: |
-            dist/snake.svg?palette=github-light
-            dist/snake-dark.svg?palette=github-dark
+            dist/snake.svg?palette=github-light&color_snake=#d1588f&color_dots=#f8eef3,#f6d3e3,#eba6c6,#d9709f,#a83d72
+            dist/snake-dark.svg?palette=github-dark&color_snake=#f593c1&color_dots=#1f1a22,#4a2238,#7a3a5f,#b5577f,#f593c1
 
       - name: Commit if it changed
         run: |
