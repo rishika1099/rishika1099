@@ -482,6 +482,7 @@ Serving infrastructure, inference efficiency, and the measurement harnesses that
 | [Safety-Eval-Harness](https://github.com/rishika1099/Safety-Eval-Harness) | Defensive safety evaluation measuring refusal robustness across harm categories and framings, over-refusal on benign lookalikes, and consistency | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) ![Generative AI](https://img.shields.io/badge/Generative_AI-8E24AA?style=flat-square) |
 | [Local-LLM-Energy-Cost-Frontier](https://github.com/rishika1099/Local-LLM-Energy-Cost-Frontier) | The accuracy-vs-cost Pareto frontier for local LLM inference on Apple silicon, energy included | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) |
 | [LLM-Over-Refusal-Rate](https://github.com/rishika1099/LLM-Over-Refusal-Rate) | A false-positive rate for LLM safety behaviour: does the model refuse legitimate, sensitive-adjacent requests? | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) |
+| [Secure-Context-To-LLM](https://github.com/rishika1099/Secure-Context-To-LLM) | Secure context sharing with LLMs, privacy evaluation and Streamlit application | Python | ![LLM Systems](https://img.shields.io/badge/LLM_Systems-283593?style=flat-square) |
 
 ---
 
