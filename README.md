@@ -459,6 +459,8 @@ achievements = {
 | [Tokenizer-Cost-Across-Languages](https://github.com/rishika1099/Tokenizer-Cost-Across-Languages) | A little experiment on GitHub | JavaScript | ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) |
 | [NYC-Rental-Building-Record-Check](https://github.com/rishika1099/NYC-Rental-Building-Record-Check) | Look up an NYC building's official housing record before signing a lease: violations, complaints, bedbugs and evictions from NYC Open Data, compared per apartment with similar buildings, summarized in plain English. | TypeScript | ![NLP](https://img.shields.io/badge/NLP-039BE5?style=flat-square) |
 | [Tool-Calling-Agent](https://github.com/rishika1099/Tool-Calling-Agent) | IEOR 4570 Project 1: a tool-calling agent deployed to Cloud Run | Python | ![Agentic AI](https://img.shields.io/badge/Agentic_AI-5E35B1?style=flat-square) |
+| [Layer-Lab](https://github.com/rishika1099/Layer-Lab) | Layer Lab: an agent that picks what to wear from your own closet, using the hourly forecast and real warmth math (IEOR 4570 Project 1) | Python, Agentic Ai | ![Agentic AI](https://img.shields.io/badge/Agentic_AI-5E35B1?style=flat-square) |
+| [Ghost-Trials-Autopsy](https://github.com/rishika1099/Ghost-Trials-Autopsy) | Deep research agent that investigates clinical trials that stopped early | Python | ![Healthcare](https://img.shields.io/badge/Healthcare-E91E63?style=flat-square) ![Agentic AI](https://img.shields.io/badge/Agentic_AI-5E35B1?style=flat-square) |
 
 ---
 
