@@ -21,8 +21,10 @@ async function readMap(blobKey: string, localFile: string): Promise<CopyMap> {
   try {
     let raw: string | null = null;
     if (blobsEnabled()) {
+      // strong: saves and "make default" are read-modify-write, so a stale
+      // read here would quietly write an old value back over a fresh edit
       const s = await store("copy");
-      raw = (await s.get(blobKey, { type: "text" })) ?? null;
+      raw = (await s.get(blobKey, { type: "text", consistency: "strong" })) ?? null;
     } else if (fs.existsSync(localFile)) {
       raw = fs.readFileSync(localFile, "utf8");
     }
