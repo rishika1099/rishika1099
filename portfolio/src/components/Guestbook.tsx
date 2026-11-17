@@ -3,7 +3,9 @@
 // A little guestbook: sign a note, see everyone else's, each tagged with an
 // LLM-classified mood. Aggregate, no login. Honeypot for basic spam defense.
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+
+import layout from "./ContactLayout.module.css";
 
 interface Entry {
   id: string;
@@ -31,7 +33,7 @@ const GB_DEFAULTS = {
   "contact.guestbook.empty": "no notes yet, be the first to pin one up ✦",
 } as const;
 
-export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
+export default function Guestbook({ copy, contactForm, companion }: { copy?: Record<string, string>; contactForm: ReactNode; companion: ReactNode }) {
   const t = (k: keyof typeof GB_DEFAULTS) => copy?.[k]?.trim() || GB_DEFAULTS[k];
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [name, setName] = useState("");
@@ -79,7 +81,9 @@ export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
   }
 
   return (
-    <section className="mt-12 w-full max-w-xl text-left">
+    <div className={layout.forms}>
+      {contactForm}
+      <section className="text-left">
       <h2 className="font-display text-xl font-bold text-ink">{t("contact.guestbook.title")}</h2>
       <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-lavender/40 px-3 py-1 font-body text-xs font-semibold text-ink">
         {t("contact.guestbook.public")}
@@ -122,8 +126,10 @@ export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
         </div>
       </form>
 
-      {/* the wall: notes pinned up like sticky notes, tinted by their mood */}
-      <div className="mt-6">
+      </section>
+      {companion}
+      <section className="text-left" aria-labelledby="guestbook-wall-title">
+        <h2 id="guestbook-wall-title" className="mb-5 font-display text-xl font-bold text-ink">Little notes from visitors 🌸</h2>
         {entries === null && <p className="font-body text-sm text-ink-soft">opening the book… ✦</p>}
         {entries?.length === 0 && (
           <p className="rounded-2xl border-2 border-dashed border-ink/15 p-6 text-center font-body text-sm text-ink-soft">
@@ -166,7 +172,7 @@ export default function Guestbook({ copy }: { copy?: Record<string, string> }) {
             })}
           </div>
         )}
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

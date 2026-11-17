@@ -3,3 +3,5 @@
 
 .petPair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:28px;}.petPair .dog{display:flex;flex-direction:column;align-items:stretch;padding:24px;}.petPair .dogPhoto{order:-1;height:190px;margin-bottom:20px;}.petPair .dogPhoto img{height:180px;}.petPair .dogCaption{flex:1;}.petPair .dog:nth-child(2) .dogPhoto{transform:rotate(3deg);}
 @media(max-width:600px){.petPair{grid-template-columns:1fr;}}
+
+.randomVisitor{display:flex;flex-direction:column;align-items:stretch;text-align:left;}.randomVisitor .eyebrow{align-self:start;}.randomVisitor .dogPhoto{order:-1;position:relative;aspect-ratio:16/10;height:auto;margin:0 0 18px;transform:rotate(-1.5deg);overflow:hidden;}.randomVisitor .dogPhoto img{position:absolute;inset:5px;width:calc(100% - 10px);height:calc(100% - 10px);object-fit:cover;object-position:center;}.randomVisitor .dogFooter{margin-top:16px;}
