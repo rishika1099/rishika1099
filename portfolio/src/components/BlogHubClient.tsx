@@ -4,9 +4,7 @@ import Link from "next/link";
 import { m } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
-import DogVisitor from "@/components/DogVisitor";
 import BlogDoorCard from "@/components/BlogDoorCard";
-import playground from "@/components/BlogPlayground.module.css";
 
 const doors = [
   { href: "/blog/technical", key: "technical", title: "Technical Blogs" },
@@ -72,7 +70,6 @@ export default function BlogHubClient({
           </span>
         </Link>
       </m.div>
-      <div className={playground.dogStrip}><DogVisitor /></div>
     </PageShell>
   );
 }

@@ -1,8 +1,6 @@
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
-import PoemSky from "@/components/PoemSky";
-import styles from "@/components/PoemSky.module.css";
 import PoemsClient from "@/components/PoemsClient";
 import RichText from "@/components/RichText";
 import { getCopy } from "@/lib/siteCopy";
@@ -26,10 +24,7 @@ export default async function PoemsPage() {
         </Link>
       </div>
 
-      <div className={styles.layout}>
-        <div className={styles.reading}><PoemsClient /><p className={styles.roomNote}>Take your time.<br />The words will wait.</p></div>
-        <PoemSky />
-      </div>
+      <PoemsClient />
     </PageShell>
   );
 }
