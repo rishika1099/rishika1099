@@ -85,3 +85,6 @@ portfolio/src/content/attachments/
 tests/node_modules/
 tests/test-results/
 tests/playwright-report/
+
+# Visitor garden, local data only
+portfolio/src/content/garden/
