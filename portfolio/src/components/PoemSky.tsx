@@ -7,7 +7,7 @@ import styles from "./PoemSky.module.css";
 export default function PoemSky({ children }: { children?: ReactNode }) {
   const [now, setNow] = useState<Date | null>(null);
   const [city, setCity] = useState(cities[0]);
-  const [interactive, setInteractive] = useState(false);
+  const [interactive, setInteractive] = useState(true);
   useEffect(() => {
     const tick = () => setNow(new Date());
     tick();

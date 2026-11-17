@@ -4,6 +4,8 @@ import { m } from "framer-motion";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import ContactForm from "@/components/ContactForm";
+import DogVisitor from "@/components/DogVisitor";
+import playground from "@/components/BlogPlayground.module.css";
 import Guestbook from "@/components/Guestbook";
 
 import type { ContactLink } from "@/lib/contactLinks";
@@ -66,6 +68,8 @@ export default function ContactClient({
           dangerouslySetInnerHTML={{ __html: copy["contact.neighbor"] }}
         />
       )}
+
+      <div className={`w-full max-w-3xl text-left ${playground.petPair}`}><DogVisitor /><DogVisitor animal="cat" /></div>
 
       <Guestbook copy={copy} />
     </PageShell>

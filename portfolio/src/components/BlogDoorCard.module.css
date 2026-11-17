@@ -21,3 +21,5 @@
 @media(prefers-reduced-motion:reduce){.boat{animation:none;}}
 
 .photography .scene{position:absolute;inset:0;height:100%;}.photography .copy{flex:0;margin-top:auto;padding-top:38px;color:#fff4e8;background:linear-gradient(0deg,#30364ddd,#39435ba6 65%,transparent);}.photography .number{opacity:.85;}.photography .blurb{opacity:1;}
+
+.technical .copy,.poems .copy{background:transparent;}
