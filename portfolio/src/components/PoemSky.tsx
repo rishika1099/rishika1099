@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { cities, skyAt, starLines, gardenLight } from "@/lib/nightSky";
 import MoonImage from "./MoonImage";
 import styles from "./PoemSky.module.css";
 
-export default function PoemSky() {
+export default function PoemSky({ children }: { children?: ReactNode }) {
   const [now, setNow] = useState<Date | null>(null);
   const [city, setCity] = useState(cities[0]);
   const [interactive, setInteractive] = useState(false);
@@ -27,6 +27,7 @@ export default function PoemSky() {
       <span className={styles.eyebrow}>a companion for your thoughts</span>
       <h2 id="moon-tile-title">Under the <em>same moon.</em></h2>
       {now ? <MoonImage date={now} /> : <p className={styles.note}>Finding the moon…</p>}
+      {children}
     </section>
     <section className={styles.skyTile} aria-labelledby="poem-sky-title">
       <div className={styles.skyHeading}><div><span className={styles.eyebrow}>a window into the universe</span><h2 id="poem-sky-title">A little <em>stargazing.</em></h2></div><span aria-hidden="true">✧</span></div>

@@ -19,3 +19,5 @@
 .boat{animation:harbor-crossing 24s ease-in-out infinite alternate;}.photography .scene{background:#d9a99c;}.photography .copy{background:linear-gradient(0deg,#f6e4d7,#e8c9c4);}
 @keyframes harbor-crossing{to{transform:translateX(180px);}}
 @media(prefers-reduced-motion:reduce){.boat{animation:none;}}
+
+.photography .scene{position:absolute;inset:0;height:100%;}.photography .copy{flex:0;margin-top:auto;padding-top:38px;color:#fff4e8;background:linear-gradient(0deg,#30364ddd,#39435ba6 65%,transparent);}.photography .number{opacity:.85;}.photography .blurb{opacity:1;}

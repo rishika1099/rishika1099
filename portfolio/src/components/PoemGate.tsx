@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { m } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
+import styles from "./PoemSky.module.css";
 
-export default function PoemGate({ onUnlocked }: { onUnlocked: () => void }) {
+export default function PoemGate({ onUnlocked, embedded = false }: { onUnlocked: () => void; embedded?: boolean }) {
+  const reducedMotion = useReducedMotion();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,27 +37,27 @@ export default function PoemGate({ onUnlocked }: { onUnlocked: () => void }) {
   }
 
   return (
-    <div className="mx-auto mt-10 max-w-md text-center">
+    <div className={embedded ? styles.gate : "mx-auto mt-10 max-w-md text-center"}>
       <m.div
         key={shake}
-        animate={shake ? { x: [0, -10, 10, -8, 8, 0] } : {}}
+        animate={shake && !reducedMotion ? { x: [0, -10, 10, -8, 8, 0] } : {}}
         transition={{ duration: 0.45 }}
-        className="rounded-[2rem] p-7 soft-card sm:p-9"
+        className={embedded ? undefined : "rounded-[2rem] p-7 soft-card sm:p-9"}
       >
-        <m.div
-          animate={{ y: [0, -8, 0] }}
+        {!embedded && <m.div
+          animate={reducedMotion ? {} : { y: [0, -8, 0] }}
           transition={{ repeat: Infinity, duration: 3 }}
           className="text-6xl"
         >
           🚪
-        </m.div>
+        </m.div>}
         <h2
-          style={{ fontFamily: "var(--font-halimun)" }}
-          className="mt-3 text-2xl text-ink"
+          style={embedded ? undefined : { fontFamily: "var(--font-halimun)" }}
+          className={embedded ? styles.gateHeading : "mt-3 text-2xl text-ink"}
         >
           this little room is locked
         </h2>
-        <p className="mt-1 font-body text-base text-ink-soft">
+        <p className={embedded ? styles.gateHint : "mt-1 font-body text-base text-ink-soft"}>
           whisper the secret word to come in ✦
         </p>
 
@@ -65,7 +67,9 @@ export default function PoemGate({ onUnlocked }: { onUnlocked: () => void }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="secret word…"
-            autoFocus
+            aria-label="Secret word"
+            aria-invalid={!!error}
+            aria-describedby={error ? "poem-gate-error" : undefined}
             className="rounded-full border border-lavender bg-white/80 px-5 py-3 text-center font-body text-ink outline-none focus:border-blush focus:ring-2 focus:ring-blush/50"
           />
           <button
@@ -78,7 +82,7 @@ export default function PoemGate({ onUnlocked }: { onUnlocked: () => void }) {
         </form>
 
         {error && (
-          <p className="mt-3 font-body text-sm text-[#c0506b]">{error}</p>
+          <p id="poem-gate-error" role="alert" className={embedded ? styles.gateError : "mt-3 font-body text-sm text-[#c0506b]"}>{error}</p>
         )}
       </m.div>
     </div>
