@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
+import VisitorGarden from "@/components/VisitorGarden";
 import PhotoGallery from "@/components/PhotoGallery";
 import { getPhotoData } from "@/lib/photos";
 import { getCopy } from "@/lib/siteCopy";
@@ -32,6 +33,7 @@ export default async function Photography() {
       )}
 
       <PhotoGallery groups={groups} />
+      <VisitorGarden />
 
       <p className="mt-14 text-center font-body text-xs text-ink-soft">
         <span className="mr-1.5">©</span>
