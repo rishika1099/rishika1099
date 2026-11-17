@@ -6,4 +6,4 @@
 
 .gate form{max-width:280px;margin-left:auto;margin-right:auto;gap:9px;}.gate input,.gate button{padding:9px 18px;font-size:13px;}
 
-.map:has(iframe){height:420px;}.map iframe{height:420px;}
+.map,.map iframe{height:280px;}
