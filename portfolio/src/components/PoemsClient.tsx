@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Poem } from "@/lib/poems-store";
 import PoemGate from "@/components/PoemGate";
+import PoemSky from "@/components/PoemSky";
 import PoemRoom from "@/components/PoemRoom";
 
 // Gate state lives in memory only, so a refresh always starts locked. The
@@ -29,7 +30,7 @@ export default function PoemsClient() {
   }
 
   if (poems === null) {
-    return <PoemGate onUnlocked={loadPoems} />;
+    return <PoemSky><PoemGate onUnlocked={loadPoems} embedded /></PoemSky>;
   }
 
   const conf = poems

@@ -135,14 +135,14 @@ const buildings = [
 ];
 function SkylineScene() {
   const id = useId().replace(/:/g, "");
-  return <svg viewBox="0 0 320 250" className={styles.art} aria-hidden="true">
+  return <svg viewBox="0 -55 320 410" preserveAspectRatio="xMidYMid slice" className={styles.art} aria-hidden="true">
     <defs>
       <linearGradient id={`${id}-sky`} x2="0" y2="1"><stop stopColor="#8b789d"/><stop offset=".55" stopColor="#e7a995"/><stop offset="1" stopColor="#f7d6a6"/></linearGradient>
       <linearGradient id={`${id}-river`} x2="0" y2="1"><stop stopColor="#a28fa8"/><stop offset="1" stopColor="#5f6e88"/></linearGradient>
       <radialGradient id={`${id}-glow`}><stop stopColor="#ffdfad" stopOpacity=".7"/><stop offset="1" stopColor="#ffdfad" stopOpacity="0"/></radialGradient>
       <linearGradient id={`${id}-tower`} x2="1" y2="0"><stop stopColor="#655b7b"/><stop offset="1" stopColor="#8d7187"/></linearGradient>
     </defs>
-    <rect width="320" height="250" fill={`url(#${id}-sky)`}/>
+    <rect y="-55" width="320" height="410" fill={`url(#${id}-sky)`}/>
     <circle cx="224" cy="94" r="70" fill={`url(#${id}-glow)`}/><circle cx="224" cy="94" r="28" fill="#ffdcab"/>
     <g className={styles.cloud} fill="none" stroke="#f3d0c1" strokeLinecap="round" opacity=".55"><path d="M-15 49H67M10 54H45M160 33H241M200 38H269" strokeWidth="3"/><path d="M30 77H92M265 67H333" strokeWidth="2"/></g>
     <g className={styles.distantCity} fill="#a58a9c" opacity=".7"><path d="M0 189V117H18V131H35V99H49V118H71V88H87V112H104V101H122V129H139V106H154V122H174V81H189V100H208V128H232V110H253V93H269V117H292V104H320V192Z"/></g>
@@ -156,7 +156,7 @@ function SkylineScene() {
         {Array.from({length:Math.floor((building.h-10)/12)},(_,row)=>[0,1].map(col=><rect className={styles.window} key={`${row}-${col}`} x={building.x+5+col*10} y={200-building.h+row*12} width="3" height="5" rx=".4" fill={(i+row+col)%3===0?"#ffe1a0":"#c3979d"} style={{transitionDelay:`${(i+row+col)%5*65}ms`,animationDelay:`${(i+row+col)%7*-1.1}s`}}/>))}
       </g>)}
     </g>
-    <rect y="193" width="320" height="57" fill={`url(#${id}-river)`}/>
+    <rect y="193" width="320" height="162" fill={`url(#${id}-river)`}/>
     <g className={styles.reflection} fill="none" strokeLinecap="round"><path d="M197 200H246M207 205H238M213 211H253M204 220H240M217 232H247" stroke="#f1c395" strokeWidth="2.4" opacity=".6"/><path d="M9 208H39M68 221H102M141 203H171M263 218H305M102 241H137M282 241H320" stroke="#d6bbc1" strokeWidth="1.3" opacity=".6"/></g>
     <g fill="none" stroke="#514d6b">
       <path d="M-10 220Q48 212 108 219T330 213" strokeWidth="4"/>
