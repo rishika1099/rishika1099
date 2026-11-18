@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 const BOT_RE = /bot|crawl|spider|preview|headless|lighthouse|monitor/i;
 
 export async function GET() {
-  return NextResponse.json({ entries: await listGuestbook() });
+  return NextResponse.json({ entries: await listGuestbook() }, { headers: { "Cache-Control": "no-store" } });
 }
 
 export async function POST(request: Request) {

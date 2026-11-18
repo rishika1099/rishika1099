@@ -44,7 +44,7 @@ The authenticated edit rooms and atelier loaded these entries. A local API save 
 - Poems: compact equal-height desktop tiles with Stellarium only; no quiet-sky toggle. Default tagline: The sky outside is part of the poetry inside.
 - Animals: dogs and cats only, minimum 640x480 originals, no animation, bounded downloads, blur heuristic, responsive delivery. The heuristic rejects low-detail images but cannot guarantee photographic quality. Both current providers are species-specific and do not supply pandas or otters. Wikimedia Commons offers both with file-specific attribution; Some Random API documents pandas but does not guarantee resolution.
 - Contact: first form row stays equal-width; visitor and public wall use one and three grid tracks. Notes wrap as individual cards with no enclosing panel. Phones stack the sections.
-- Flower guestbook replacement remains a proposal only. Existing photography planting was not replaced.
+- Flower guestbook implemented after approval: 24 flowers per bed, mood-colored petals, accessible note dialog, plain list mode, and pagination. Photography now links to the Contact guestbook garden. Old standalone planting data remains preserved.
 
 ## Checks
 
@@ -60,3 +60,9 @@ The authenticated edit rooms and atelier loaded these entries. A local API save 
 - Local guestbook is empty. A temporary browser-only eight-entry fixture checks wrapping without adding public notes.
 
 External sources: https://dog.ceo/dog-api/, https://cataas.com/, https://docs.some-random-api.com/endpoints/Animals, https://commons.wikimedia.org/wiki/Category:Ailuropoda_melanoleuca, https://commons.wikimedia.org/wiki/Category:Lutrinae.
+
+## Flower guestbook follow-up
+
+23 additional editable keys cover the garden controls, headings, feedback, mood labels and photography invitation. Hidden entries are filtered server-side; the public API is no-store, with refresh on focus and every minute. Existing moderation remains in the atelier.
+
+Verified with temporary local fixtures: 25 visible entries paginate across two beds; one hidden entry is excluded; flower click and Enter open the matching note; Escape closes it and restores trigger focus; list mode renders the message. All fixtures were removed and the exact original local data restored. All 28 routes fit a 390px viewport after load. TypeScript, changed-file ESLint and the production build passed. Screenshots contain sample notes, not published entries.

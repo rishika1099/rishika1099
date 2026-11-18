@@ -489,6 +489,121 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
     "page": "poems",
     "label": "sky city: Sydney",
     "text": "Sydney"
+  },
+  "contact.garden.title": {
+    "page": "contact",
+    "label": "guest garden title",
+    "text": "A garden of little hellos."
+  },
+  "contact.garden.intro": {
+    "page": "contact",
+    "label": "guest garden intro",
+    "text": "Every flower is someone who stopped by. Pick a bloom to read their note, or wander through the list."
+  },
+  "contact.garden.count": {
+    "page": "contact",
+    "label": "guest garden count",
+    "text": "{count} notes in bloom"
+  },
+  "contact.garden.view": {
+    "page": "contact",
+    "label": "guest garden view",
+    "text": "Guestbook view"
+  },
+  "contact.garden.garden": {
+    "page": "contact",
+    "label": "guest garden garden",
+    "text": "Flower garden"
+  },
+  "contact.garden.list": {
+    "page": "contact",
+    "label": "guest garden list",
+    "text": "Read the notes"
+  },
+  "contact.garden.empty": {
+    "page": "contact",
+    "label": "guest garden empty",
+    "text": "The first bloom could be yours. Leave a note above to plant it."
+  },
+  "contact.garden.open": {
+    "page": "contact",
+    "label": "guest garden open",
+    "text": "Read the note from {name}"
+  },
+  "contact.garden.close": {
+    "page": "contact",
+    "label": "guest garden close",
+    "text": "Close note"
+  },
+  "contact.garden.beds": {
+    "page": "contact",
+    "label": "guest garden beds",
+    "text": "Garden beds"
+  },
+  "contact.garden.previous": {
+    "page": "contact",
+    "label": "guest garden previous",
+    "text": "Previous bed"
+  },
+  "contact.garden.next": {
+    "page": "contact",
+    "label": "guest garden next",
+    "text": "Next bed"
+  },
+  "contact.garden.page": {
+    "page": "contact",
+    "label": "guest garden page",
+    "text": "Bed {page} of {total}"
+  },
+  "contact.garden.error": {
+    "page": "contact",
+    "label": "guest garden error",
+    "text": "The garden is resting. We will try again shortly."
+  },
+  "contact.garden.mood.sweet": {
+    "page": "contact",
+    "label": "flower mood sweet",
+    "text": "sweet"
+  },
+  "contact.garden.mood.excited": {
+    "page": "contact",
+    "label": "flower mood excited",
+    "text": "excited"
+  },
+  "contact.garden.mood.curious": {
+    "page": "contact",
+    "label": "flower mood curious",
+    "text": "curious"
+  },
+  "contact.garden.mood.funny": {
+    "page": "contact",
+    "label": "flower mood funny",
+    "text": "funny"
+  },
+  "contact.garden.mood.kind": {
+    "page": "contact",
+    "label": "flower mood kind",
+    "text": "kind"
+  },
+  "contact.garden.mood.proud": {
+    "page": "contact",
+    "label": "flower mood proud",
+    "text": "proud"
+  },
+  "photography.guestGarden.title": {
+    "page": "photography",
+    "label": "guest garden title",
+    "text": "Leave a little hello in bloom."
+  },
+  "photography.guestGarden.note": {
+    "page": "photography",
+    "label": "guest garden note",
+    "text": "The visitor garden now grows from guestbook notes. Your words can leave a flower there."
+  },
+  "photography.guestGarden.link": {
+    "page": "photography",
+    "label": "guest garden link",
+    "text": "Visit the guestbook garden ↗"
   }
 };
 

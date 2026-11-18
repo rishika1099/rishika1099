@@ -6,24 +6,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { useFeatureCopy } from "./FeatureCopy";
+import GuestbookGarden, { type GuestEntry } from "./GuestbookGarden";
 import layout from "./ContactLayout.module.css";
-
-interface Entry {
-  id: string;
-  name: string;
-  message: string;
-  mood?: string;
-  at: string;
-}
-
-const MOOD: Record<string, { emoji: string; tint: string }> = {
-  sweet: { emoji: "💗", tint: "#f7b7c9" },
-  excited: { emoji: "⚡", tint: "#f6d99b" },
-  curious: { emoji: "🤔", tint: "#bfe0f0" },
-  funny: { emoji: "😄", tint: "#cdeac0" },
-  kind: { emoji: "🌸", tint: "#e6d7f5" },
-  proud: { emoji: "🌟", tint: "#ffc6a8" },
-};
 
 const GB_DEFAULTS = {
   "contact.guestbook.title": "📖 sign the guestbook",
@@ -37,7 +21,8 @@ const GB_DEFAULTS = {
 export default function Guestbook({ copy, contactForm, companion }: { copy?: Record<string, string>; contactForm: ReactNode; companion: ReactNode }) {
   const text = useFeatureCopy();
   const t = (k: keyof typeof GB_DEFAULTS) => copy?.[k]?.trim() || GB_DEFAULTS[k];
-  const [entries, setEntries] = useState<Entry[] | null>(null);
+  const [entries, setEntries] = useState<GuestEntry[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
@@ -47,10 +32,24 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
   // never from this public wall
 
   useEffect(() => {
-    fetch("/api/guestbook")
-      .then((r) => r.json())
-      .then((d) => setEntries(d.entries ?? []))
-      .catch(() => setEntries([]));
+    const controller = new AbortController();
+    let pending = false;
+    async function refresh() {
+      if (pending || document.hidden) return;
+      pending = true;
+      try {
+        const response = await fetch("/api/guestbook", { cache: "no-store", signal: controller.signal });
+        if (!response.ok) throw new Error();
+        const data = await response.json();
+        if (!controller.signal.aborted) { setEntries(data.entries ?? []); setLoadError(false); }
+      } catch {
+        if (!controller.signal.aborted) setLoadError(true);
+      } finally { pending = false; }
+    }
+    void refresh();
+    const timer = setInterval(refresh, 60000);
+    window.addEventListener("focus", refresh);
+    return () => { controller.abort(); clearInterval(timer); window.removeEventListener("focus", refresh); };
   }, []);
 
   async function submit(e: React.FormEvent) {
@@ -130,50 +129,12 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
 
       </section>
       {companion}
-      <section className={layout.wall} aria-labelledby="guestbook-wall-title">
-        <h2 id="guestbook-wall-title" className="mb-5 font-display text-xl font-bold text-ink">{text("contact.guestbook.wall")}</h2>
-        {entries === null && <p className="font-body text-sm text-ink-soft">{text("contact.guestbook.loading")}</p>}
-        {entries?.length === 0 && (
-          <p className="rounded-2xl border-2 border-dashed border-ink/15 p-6 text-center font-body text-sm text-ink-soft">
-            {t("contact.guestbook.empty")}
-          </p>
-        )}
-        {!!entries?.length && (
-          <div className={layout.notes}>
-            {entries.map((e, i) => {
-              const m = e.mood ? MOOD[e.mood] : null;
-              const tilt = i % 2 ? "rotate-[1.2deg]" : "-rotate-[1.2deg]";
-              return (
-                <div
-                  key={e.id}
-                  className={`${layout.note} min-w-0 break-words rounded-2xl p-4 shadow-sm ring-1 ring-white/60 transition-transform hover:rotate-0 ${tilt}`}
-                  style={{ backgroundColor: m ? `${m.tint}5c` : "rgba(255,255,255,0.6)" }}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl leading-none" aria-hidden>
-                      {m?.emoji ?? "✦"}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <p className="truncate font-body text-sm font-bold text-ink">
-                          {e.name || text("contact.guestbook.anonymous")}
-                        </p>
-                        {m && (
-                          <span className="shrink-0 font-body text-[11px] font-semibold text-ink-soft">
-                            {e.mood}
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 whitespace-pre-line font-body text-sm text-ink">
-                        {e.message}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+      <section id="guestbook-garden" className={layout.wall} aria-labelledby="guestbook-wall-title">
+        <h2 id="guestbook-wall-title" className="font-serif text-3xl text-ink">{text("contact.garden.title")}</h2>
+        <p className="mt-2 max-w-xl font-body text-sm text-ink-soft">{text("contact.garden.intro")}</p>
+        {loadError && <p role="status" className="mt-4 font-body text-sm text-ink-soft">{text("contact.garden.error")}</p>}
+        {entries === null && !loadError && <p className="mt-4 font-body text-sm text-ink-soft">{text("contact.guestbook.loading")}</p>}
+        {entries !== null && <GuestbookGarden entries={entries} />}
       </section>
     </div>
   );

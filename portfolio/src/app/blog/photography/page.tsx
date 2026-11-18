@@ -2,7 +2,6 @@ import { FeatureCopy } from "@/components/FeatureCopy";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
-import VisitorGarden from "@/components/VisitorGarden";
 import PhotoGallery from "@/components/PhotoGallery";
 import { getPhotoData } from "@/lib/photos";
 import { getCopy } from "@/lib/siteCopy";
@@ -35,7 +34,11 @@ export default async function Photography() {
       )}
 
       <PhotoGallery groups={groups} />
-      <VisitorGarden />
+      <aside className="mt-12 rounded-3xl bg-white/30 p-6">
+        <h2 className="font-serif text-2xl text-ink"><RichText html={copyToHtml(copy["photography.guestGarden.title"])} /></h2>
+        <p className="mt-2 font-body text-sm text-ink-soft"><RichText html={copyToHtml(copy["photography.guestGarden.note"])} /></p>
+        <Link href="/contact#guestbook-garden" className="mt-4 inline-block rounded-full border border-ink/20 px-4 py-2 font-body text-sm text-ink focus-visible:outline-2"><RichText html={copyToHtml(copy["photography.guestGarden.link"])} /></Link>
+      </aside>
 
       <p className="mt-14 text-center font-body text-xs text-ink-soft">
         <span className="mr-1.5">©</span>
