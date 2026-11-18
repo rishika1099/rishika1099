@@ -20,7 +20,7 @@ const blooms: Record<string, { color: string; petals: number }> = {
   kind: { color: "#b49acb", petals: 8 },
   proud: { color: "#dc9c7d", petals: 6 },
 };
-const BED_SIZE = 24;
+const BED_SIZE = 12;
 
 function Flower({ entry }: { entry: GuestEntry }) {
   const bloom = blooms[entry.mood ?? ""] ?? blooms.kind;
@@ -32,12 +32,15 @@ function Flower({ entry }: { entry: GuestEntry }) {
     <path d="M45 100Q19 104 18 79Q39 79 45 100M44 84Q69 88 74 62Q52 62 44 84" fill="#86a58a" />
     <path d="M45 100L23 84M44 84L68 67" fill="none" stroke="#d1dfb0" strokeWidth=".8" />
     <g className={styles.head} style={{ transformOrigin: `45px ${top}px` }}>
-      {Array.from({ length: bloom.petals }, (_, i) => <g key={i} transform={`rotate(${i * 360 / bloom.petals} 45 ${top})`}>
-        <ellipse cx="45" cy={top - 12} rx={bloom.petals > 8 ? 5 : 7} ry="14" fill={bloom.color} stroke="#fff6e4" strokeWidth=".7" />
-        <path d={`M45 ${top - 20}V${top - 6}`} stroke="#fff5e8" opacity=".4" strokeWidth=".8" />
-      </g>)}
-      <circle cx="45" cy={top} r="7" fill="#f5d57e" stroke="#f8e9b4" strokeWidth="1.3" />
-      {[[-2,-2],[2,-1],[0,3]].map(([x,y],i)=><circle key={i} cx={45+x} cy={top+y} r=".8" fill="#a57c4e" />)}
+      {[{count:12, radius:17, rx:9, ry:14, turn:0}, {count:10, radius:11, rx:7, ry:11, turn:15}, {count:8, radius:6, rx:5, ry:8, turn:30}].map((layer, layerIndex) =>
+        <g key={layerIndex}>
+          {Array.from({ length: layer.count }, (_, i) => <ellipse key={i} cx="45" cy={top - layer.radius} rx={layer.rx} ry={layer.ry}
+            transform={`rotate(${i * 360 / layer.count + layer.turn} 45 ${top})`}
+            fill={bloom.color} stroke={layerIndex === 2 ? "#fff2e4" : "#fff4e8b3"} strokeWidth={layerIndex === 0 ? 1 : 1.3}
+            style={{ filter: layerIndex === 1 ? "brightness(1.12)" : layerIndex === 2 ? "brightness(1.2)" : undefined }} />)}
+        </g>)}
+      <circle cx="45" cy={top} r="4" fill="#f5d57e" stroke="#f8e9b4" strokeWidth="1" />
+      {[[-1,-1],[1,-1],[0,2]].map(([x,y],i)=><circle key={i} cx={45+x} cy={top+y} r=".6" fill="#a57c4e" />)}
     </g>
   </svg>;
 }
@@ -58,7 +61,6 @@ function NoteDialog({ entry, onClose }: { entry: GuestEntry; onClose: () => void
 
 export default function GuestbookGarden({ entries }: { entries: GuestEntry[] }) {
   const t = useFeatureCopy();
-  const [view, setView] = useState<"garden" | "list">("garden");
   const [page, setPage] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const pages = Math.max(1, Math.ceil(entries.length / BED_SIZE));
@@ -68,11 +70,9 @@ export default function GuestbookGarden({ entries }: { entries: GuestEntry[] }) 
   return <div className={styles.garden}>
     <div className={styles.toolbar}>
       <p>{t("contact.garden.count", { count: entries.length })}</p>
-      <div className={styles.views} role="group" aria-label={t("contact.garden.view")}>
-        {(["garden", "list"] as const).map(mode => <button key={mode} type="button" aria-pressed={view === mode} onClick={() => setView(mode)}>{t(`contact.garden.${mode}`)}</button>)}
-      </div>
+
     </div>
-    {!entries.length ? <p className={styles.empty}>{t("contact.garden.empty")}</p> : view === "garden" ?
+    {!entries.length ? <p className={styles.empty}>{t("contact.garden.empty")}</p> :
       <ul className={styles.bed} aria-label={t("contact.garden.garden")}>
         {visible.map(entry => <li key={entry.id}>
           <button className={styles.bloom} type="button" aria-haspopup="dialog" aria-label={t("contact.garden.open", { name: entry.name || t("contact.guestbook.anonymous") })} onClick={() => setSelectedId(entry.id)}>
@@ -80,8 +80,6 @@ export default function GuestbookGarden({ entries }: { entries: GuestEntry[] }) 
             <span>{entry.name || t("contact.guestbook.anonymous")}</span>
           </button>
         </li>)}
-      </ul> : <ul className={styles.list}>
-        {visible.map(entry => <li key={entry.id}><h3>{entry.name || t("contact.guestbook.anonymous")}</h3><p>{entry.message}</p></li>)}
       </ul>}
     {pages > 1 && <nav className={styles.pagination} aria-label={t("contact.garden.beds")}>
       <button type="button" disabled={current === 0} onClick={() => setPage(current - 1)}>{t("contact.garden.previous")}</button>

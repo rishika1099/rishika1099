@@ -44,7 +44,7 @@ The authenticated edit rooms and atelier loaded these entries. A local API save 
 - Poems: compact equal-height desktop tiles with Stellarium only; no quiet-sky toggle. Default tagline: The sky outside is part of the poetry inside.
 - Animals: dogs and cats only, minimum 640x480 originals, no animation, bounded downloads, blur heuristic, responsive delivery. The heuristic rejects low-detail images but cannot guarantee photographic quality. Both current providers are species-specific and do not supply pandas or otters. Wikimedia Commons offers both with file-specific attribution; Some Random API documents pandas but does not guarantee resolution.
 - Contact: first form row stays equal-width; visitor and public wall use one and three grid tracks. Notes wrap as individual cards with no enclosing panel. Phones stack the sections.
-- Flower guestbook implemented after approval: 24 flowers per bed, mood-colored petals, accessible note dialog, plain list mode, and pagination. Photography now links to the Contact guestbook garden. Old standalone planting data remains preserved.
+- Flower guestbook implemented after approval: 12 flowers per bed, mood-colored layered petals, accessible note dialog, and pagination. Photography now links to the Contact guestbook garden. Old standalone planting data remains preserved.
 
 ## Checks
 
@@ -63,6 +63,10 @@ External sources: https://dog.ceo/dog-api/, https://cataas.com/, https://docs.so
 
 ## Flower guestbook follow-up
 
-23 additional editable keys cover the garden controls, headings, feedback, mood labels and photography invitation. Hidden entries are filtered server-side; the public API is no-store, with refresh on focus and every minute. Existing moderation remains in the atelier.
+21 additional editable keys cover the garden controls, headings, feedback, mood labels and photography invitation. Hidden entries are filtered server-side; the public API is no-store, with refresh on focus and every minute. Existing moderation remains in the atelier.
 
 Verified with temporary local fixtures: 25 visible entries paginate across two beds; one hidden entry is excluded; flower click and Enter open the matching note; Escape closes it and restores trigger focus; list mode renders the message. All fixtures were removed and the exact original local data restored. All 28 routes fit a 390px viewport after load. TypeScript, changed-file ESLint and the production build passed. Screenshots contain sample notes, not published entries.
+
+## Flowers-only refinement
+
+Animal and garden panels now share equal desktop columns and row height (verified at 596 x 556 pixels each). Flower heads have three petal layers. Removed the alternate list view and its editable labels; notes remain accessible through labeled native buttons and dialogs. All 28 routes passed the phone overflow check at 390px. Temporary preview notes were restored after checking.

@@ -498,27 +498,17 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "contact.garden.intro": {
     "page": "contact",
     "label": "guest garden intro",
-    "text": "Every flower is someone who stopped by. Pick a bloom to read their note, or wander through the list."
+    "text": "Every flower is someone who stopped by. Pick a bloom to read their note."
   },
   "contact.garden.count": {
     "page": "contact",
     "label": "guest garden count",
     "text": "{count} notes in bloom"
   },
-  "contact.garden.view": {
-    "page": "contact",
-    "label": "guest garden view",
-    "text": "Guestbook view"
-  },
   "contact.garden.garden": {
     "page": "contact",
     "label": "guest garden garden",
     "text": "Flower garden"
-  },
-  "contact.garden.list": {
-    "page": "contact",
-    "label": "guest garden list",
-    "text": "Read the notes"
   },
   "contact.garden.empty": {
     "page": "contact",
