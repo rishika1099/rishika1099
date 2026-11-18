@@ -27,7 +27,8 @@ export async function GET(
   const contentType = TYPES[ext] ?? "application/octet-stream";
   const headers = {
     "Content-Type": contentType,
-    "Cache-Control": "public, max-age=31536000, immutable",
+    "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+    "Netlify-CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
   };
 
   if (blobsEnabled()) {

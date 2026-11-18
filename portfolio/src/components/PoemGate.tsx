@@ -1,10 +1,12 @@
 "use client";
 
+import { useFeatureCopy } from "./FeatureCopy";
 import { useState } from "react";
 import { m, useReducedMotion } from "framer-motion";
 import styles from "./PoemSky.module.css";
 
 export default function PoemGate({ onUnlocked, embedded = false }: { onUnlocked: () => void; embedded?: boolean }) {
+  const t = useFeatureCopy();
   const reducedMotion = useReducedMotion();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,11 +27,11 @@ export default function PoemGate({ onUnlocked, embedded = false }: { onUnlocked:
       if (res.ok && data.ok) {
         onUnlocked();
       } else {
-        setError(data.error || "Hmm, try again ✦");
+        setError(t("poems.gate.error"));
         setShake((s) => s + 1);
       }
     } catch {
-      setError("Something went sideways. Try again?");
+      setError(t("poems.gate.network"));
       setShake((s) => s + 1);
     } finally {
       setLoading(false);
@@ -55,10 +57,10 @@ export default function PoemGate({ onUnlocked, embedded = false }: { onUnlocked:
           style={embedded ? undefined : { fontFamily: "var(--font-halimun)" }}
           className={embedded ? styles.gateHeading : "mt-3 text-2xl text-ink"}
         >
-          this little room is locked
+          {t("poems.gate.title")}
         </h2>
         <p className={embedded ? styles.gateHint : "mt-1 font-body text-base text-ink-soft"}>
-          whisper the secret word to come in ✦
+          {t("poems.gate.hint")}
         </p>
 
         <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
@@ -66,8 +68,8 @@ export default function PoemGate({ onUnlocked, embedded = false }: { onUnlocked:
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="secret word…"
-            aria-label="Secret word"
+            placeholder={t("poems.gate.placeholder")}
+            aria-label={t("poems.gate.label")}
             aria-invalid={!!error}
             aria-describedby={error ? "poem-gate-error" : undefined}
             className="rounded-full border border-lavender bg-white/80 px-5 py-3 text-center font-body text-ink outline-none focus:border-blush focus:ring-2 focus:ring-blush/50"
@@ -77,7 +79,7 @@ export default function PoemGate({ onUnlocked, embedded = false }: { onUnlocked:
             disabled={loading || !password}
             className="rounded-full bg-blush px-6 py-3 font-display font-semibold text-ink transition hover:scale-105 disabled:opacity-50"
           >
-            {loading ? "knocking…" : "knock ✦"}
+            {loading ? t("poems.gate.busy") : t("poems.gate.button")}
           </button>
         </form>
 

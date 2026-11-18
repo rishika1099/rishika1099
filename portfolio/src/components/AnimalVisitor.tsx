@@ -1,9 +1,12 @@
 "use client";
+import Image from "next/image";
+import { useFeatureCopy } from "./FeatureCopy";
 import { useEffect, useState } from "react";
 import styles from "./BlogPlayground.module.css";
 
-type Visitor = { animal: string; image: string; caption: string; source: string; sourceUrl: string };
+type Visitor = { animal: string; width: number; height: number; image: string; caption: string; source: string; sourceUrl: string };
 export default function AnimalVisitor() {
+  const t = useFeatureCopy();
   const [visitor, setVisitor] = useState<Visitor | null>(null);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
@@ -14,14 +17,14 @@ export default function AnimalVisitor() {
       if (!response.ok) throw new Error();
       const data: Visitor = await response.json();
       if (!controller.signal.aborted) { setVisitor(data); setBusy(false); }
-    }).catch(() => { if (!controller.signal.aborted) { setBusy(false); setError("Our little visitor is taking a nap. Try again."); } });
+    }).catch(() => { if (!controller.signal.aborted) { setBusy(false); setError("contact.animal.error"); } });
     return () => controller.abort();
   }, [visit]);
   return <section className={`${styles.dog} ${styles.randomVisitor}`} aria-labelledby="animal-visitor-title">
-    <span className={styles.eyebrow}>a little visitor</span>
-    <h2 id="animal-visitor-title">Someone says <em>{visitor?.caption ?? "hello."}</em></h2>
-    <div className={styles.dogPhoto}>{visitor ? <img src={visitor.image} width="600" height="400" alt={`A ${visitor.animal} stopping by to say hello`} onError={() => { setVisitor(null); setError("This photo wandered off. Meet someone else?"); }} /> : <span aria-hidden="true">🐾</span>}</div>
-    <p className={styles.dogCaption} role="status">{error || (busy ? "Finding a friendly face…" : `Today's visitor: a ${visitor?.animal}. Happy you're here.`)}</p>
-    <div className={styles.dogFooter}><button type="button" disabled={busy} onClick={() => { setBusy(true); setError(""); setVisit(value => value + 1); }}>{busy ? "On the way…" : "Who’s next? ↻"}</button>{visitor && <a href={visitor.sourceUrl} target="_blank" rel="noreferrer">Photos: {visitor.source} ↗</a>}</div>
+    <span className={styles.eyebrow}>{t("contact.animal.eyebrow")}</span>
+    <h2 id="animal-visitor-title">{t("contact.animal.title")} <em>{t(`contact.animal.${visitor?.animal ?? "hello"}`)}</em></h2>
+    <div className={styles.dogPhoto}>{visitor ? <Image src={visitor.image} width={visitor.width} height={visitor.height} sizes="(max-width: 767px) calc(100vw - 80px), 280px" loading="lazy" decoding="async" alt={t("contact.animal.alt", { animal: visitor.animal })} onError={() => { setVisitor(null); setError("contact.animal.missing"); }} /> : <span aria-hidden="true">🐾</span>}</div>
+    <p className={styles.dogCaption} role="status">{(error && t(error)) || (busy ? t("contact.animal.loading") : t("contact.animal.caption", { animal: visitor?.animal ?? "" }))}</p>
+    <div className={styles.dogFooter}><button type="button" disabled={busy} onClick={() => { setBusy(true); setError(""); setVisit(value => value + 1); }}>{busy ? t("contact.animal.busy") : t("contact.animal.next")}</button>{visitor && <a href={visitor.sourceUrl} target="_blank" rel="noreferrer">{t("contact.animal.credit", { source: visitor.source })}</a>}</div>
   </section>;
 }

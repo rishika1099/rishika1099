@@ -1,3 +1,4 @@
+import { FeatureCopy } from "@/components/FeatureCopy";
 import ContactClient from "@/components/ContactClient";
 import { getCopy } from "@/lib/siteCopy";
 import { copyToHtml } from "@/lib/copyRender";
@@ -10,11 +11,13 @@ export const dynamic = "force-dynamic";
 export default async function Contact() {
   const [copy, links] = await Promise.all([getCopy(), getContactLinks()]);
   return (
+    <FeatureCopy copy={copy}>
     <ContactClient
       title={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["contact.title"]) }} />}
       intro={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["contact.intro"]) }} />}
       links={links}
       copy={copy}
     />
+    </FeatureCopy>
   );
 }

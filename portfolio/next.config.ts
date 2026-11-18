@@ -28,8 +28,19 @@ const nextConfig: NextConfig = {
   // no "X-Powered-By: Next.js", which only helps someone matching the site to
   // a published vulnerability
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.dog.ceo" },
+      { protocol: "https", hostname: "cataas.com" },
+    ],
+    minimumCacheTTL: 86400,
+    formats: ["image/webp"],
+  },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      { source: "/photos/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }] },
+    ];
   },
 };
 

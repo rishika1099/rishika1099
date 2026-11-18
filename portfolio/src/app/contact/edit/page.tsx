@@ -4,6 +4,7 @@
 // (full width this time) and each contact card is editable where it stands,
 // with add/remove for the cards themselves.
 
+import FeatureCopyEditor from "@/components/FeatureCopyEditor";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { m } from "framer-motion";
@@ -269,7 +270,7 @@ function Editor({ keyVal }: { keyVal: string }) {
 export default function ContactEdit() {
   return (
     <PageShell vibe="rose" className="flex flex-col items-center text-center">
-      <AdminGate>{(key) => <Editor keyVal={key} />}</AdminGate>
+      <AdminGate>{(key) => <><Editor keyVal={key} /><FeatureCopyEditor page="contact" keyVal={key} /></>}</AdminGate>
     </PageShell>
   );
 }

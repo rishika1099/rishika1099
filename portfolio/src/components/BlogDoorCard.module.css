@@ -23,3 +23,12 @@
 .photography .scene{position:absolute;inset:0;height:100%;}.photography .copy{flex:0;margin-top:auto;padding-top:38px;color:#fff4e8;background:linear-gradient(0deg,#30364ddd,#39435ba6 65%,transparent);}.photography .number{opacity:.85;}.photography .blurb{opacity:1;}
 
 .technical .copy,.poems .copy{background:transparent;}
+
+.technical{background:linear-gradient(155deg,#397a9c,#315a7d);color:#f0f7fa;}
+.ripple{transform-box:fill-box;transform-origin:center;animation:pond-ripple 10s ease-out infinite;}
+.caustic{animation:pond-light 12s ease-in-out infinite alternate;}
+@keyframes pond-ripple{0%{transform:scale(.6);opacity:0;}20%{opacity:.6;}100%{transform:scale(2.2);opacity:0;}}
+@keyframes pond-light{to{transform:translate(12px,7px);opacity:.3;}}
+@media(prefers-reduced-motion:reduce){.ripple,.caustic{animation:none;}}
+
+.technical{background:#397a9c;}.technical .copy{background:linear-gradient(#397a9c,#315a7d);}

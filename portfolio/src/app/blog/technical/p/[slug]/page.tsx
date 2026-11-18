@@ -1,3 +1,4 @@
+import { preparePostImages } from "@/lib/postImages";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
@@ -34,7 +35,7 @@ export default async function RichPostPage({
         <div
           className="prose-soft mt-6 font-body text-ink"
           // sanitized at save time; only the key-holder can write it
-          dangerouslySetInnerHTML={{ __html: post.html }}
+          dangerouslySetInnerHTML={{ __html: preparePostImages(post.html) }}
         />
       </article>
     </PageShell>

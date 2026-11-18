@@ -1,5 +1,6 @@
 "use client";
 
+import { useFeatureCopy } from "./FeatureCopy";
 import Link from "next/link";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import styles from "./BlogDoorCard.module.css";
@@ -67,9 +68,21 @@ const animateFish: AnimateScene = (nodes, state) => {
 };
 
 function PondScene() {
+  const id = useId().replace(/:/g, "");
   const ref = useSceneMotion(animateFish);
-  return <svg ref={ref} viewBox="0 0 320 250" className={styles.art} aria-hidden="true">
-    <g fill="none" stroke="#f5fff6" opacity=".4"><ellipse cx="160" cy="125" rx="134" ry="93"/><ellipse cx="160" cy="125" rx="107" ry="72"/><path d="M0 145Q100 90 180 135T330 110"/></g>
+  return <svg ref={ref} preserveAspectRatio="none" viewBox="0 0 320 250" className={styles.art} aria-hidden="true">
+    <defs>
+      <radialGradient id={`${id}-depth`} cx="65%" cy="65%" r="80%"><stop stopColor="#153c61"/><stop offset=".55" stopColor="#376f94"/><stop offset="1" stopColor="#95c5d8"/></radialGradient>
+      <linearGradient id={`${id}-pad`} x2=".8" y2="1"><stop stopColor="#a3c7a7"/><stop offset=".5" stopColor="#558f88"/><stop offset="1" stopColor="#34696d"/></linearGradient>
+      <linearGradient id={`${id}-petal`} x2="0" y2="1"><stop stopColor="#fff6ee"/><stop offset=".55" stopColor="#efbfd4"/><stop offset="1" stopColor="#ba7198"/></linearGradient>
+      <linearGradient id={`${id}-fade`} x2="0" y2="1"><stop offset="0" stopColor="#397a9c" stopOpacity="0"/><stop offset="1" stopColor="#397a9c"/></linearGradient>
+    </defs>
+    <rect width="320" height="250" fill={`url(#${id}-depth)`}/>
+    <g fill="#b4e2ec" opacity=".09"><path d="M30 0L170 250H205L88 0Z"/><path d="M96 0L252 250H278L135 0Z"/></g>
+    <g fill="none" stroke="#c9f0fa" strokeWidth=".7" opacity=".25">
+      {[0,1,2].map(i => <ellipse key={i} className={styles.ripple} cx={65+i*95} cy={65+i*49} rx="32" ry="13" style={{animationDelay:`${i*-3}s`}}/>)}
+      <path className={styles.caustic} d="M-10 115Q65 71 136 112T330 85M-20 185Q75 137 167 179T340 153"/>
+    </g>
     <g>
       {[0,1,2].map(index => { const {x,y,angle} = fishPosition(index,0); return <g key={index} data-mover transform={`translate(${x} ${y}) rotate(${angle}) scale(.85)`}><g className={styles.fish} style={{animationDelay:`${index * -.8}s`}}>
         <ellipse cx="-2" cy="7" rx="30" ry="10" fill="#3c776e" opacity=".12"/>
@@ -80,8 +93,18 @@ function PondScene() {
         <circle cx="24" cy="-4" r="1.3" fill="#3c5549"/><circle cx="24" cy="4" r="1.3" fill="#3c5549"/>
       </g></g>; })}
     </g>
-    <g fill="#7ca58a" stroke="#608e74" strokeWidth=".6"><path d="M48 56L70 41A29 22 0 1 0 73 49Z"/><path d="M78 28L94 17A23 17 0 1 0 98 24Z"/><path d="M268 194L289 180A29 22 0 1 0 293 189Z"/></g>
-    <g transform="translate(267 188)" fill="#f7dce5">{[0,60,120,180,240,300].map(angle => <ellipse key={angle} cx="0" cy="-7" rx="4" ry="9" transform={`rotate(${angle})`}/>)}<circle r="3" fill="#e8c580"/></g>
+    {[{x:48,y:52,r:1},{x:83,y:27,r:.72},{x:269,y:194,r:1.05}].map((pad,i)=><g key={i} transform={`translate(${pad.x} ${pad.y}) scale(${pad.r})`}>
+      <ellipse cx="4" cy="9" rx="32" ry="23" fill="#092e4b" opacity=".3"/>
+      <path d="M0 0L22 -15C8 -29 -23 -25 -30 -6C-40 20 -5 31 20 16C30 10 33 1 29 -7Z" fill={`url(#${id}-pad)`} stroke="#b0d5ba" strokeWidth=".7"/>
+      <g fill="none" stroke="#d2e5bd" strokeWidth=".5" opacity=".55"><path d="M0 0L-24 -13M0 0L-31 2M0 0L-20 18M0 0L1 23M0 0L21 13M0 0L5 -22"/><path d="M-13 -7L-13 -17M-17 1L-25 9M-10 9L-22 8M2 12L12 17"/></g>
+      {i===2 && <g transform="translate(-6 -5)">
+        <ellipse cy="7" rx="19" ry="7" fill="#173e56" opacity=".3"/>
+        {[0,45,90,135,180,225,270,315].map(angle=><path key={angle} d="M0 3Q-11 -7 0 -19Q11 -7 0 3" fill={`url(#${id}-petal)`} stroke="#fff2f1" strokeWidth=".4" transform={`rotate(${angle}) scale(1 .75)`}/>)}
+        {[0,60,120,180,240,300].map(angle=><path key={angle} d="M0 2Q-5 -4 0 -11Q5 -4 0 2" fill="#fff0e6" transform={`rotate(${angle})`}/>)}
+        <circle r="3.5" fill="#e6bd68"/><circle r="1.5" fill="#fff0ac"/>
+      </g>}
+    </g>)}
+    <rect y="210" width="320" height="40" fill={`url(#${id}-fade)`}/>
   </svg>;
 }
 
@@ -106,6 +129,7 @@ const animatePlanets: AnimateScene = (nodes, state) => {
 };
 
 function SolarScene() {
+  const t = useFeatureCopy();
   const ref = useSceneMotion(animatePlanets);
   const id = useId().replace(/:/g, "");
   return <svg ref={ref} viewBox="0 0 320 250" className={styles.art} aria-hidden="true">
@@ -125,7 +149,7 @@ function SolarScene() {
       {index===4 && <path d="M-7 -4Q0 -2 7 -3M-8 1Q0 3 8 2M-6 5Q0 6 6 5" fill="none" stroke="#ab8066" strokeWidth="1.3" opacity=".55"/>}
       {index===5 && <path d="M-13 8Q-5 12 13 -3" fill="none" stroke="#e4cfab" strokeWidth="2"/>}
     </g>; })}
-    <text x="160" y="237" fill="#c8b5d7" fontSize="8" textAnchor="middle" letterSpacing="2">A SMALL UNIVERSE OF WORDS</text>
+    <text x="160" y="237" fill="#c8b5d7" fontSize="8" textAnchor="middle" letterSpacing="2">{t("blog.art.solar")}</text>
   </svg>;
 }
 
@@ -170,6 +194,7 @@ function SkylineScene() {
 }
 
 export default function BlogDoorCard({ scene, href, title, blurb, locked }: { scene: Scene; href: string; title: string; blurb: ReactNode; locked?: boolean }) {
+  const t = useFeatureCopy();
   return <Link href={href} className={`${styles.card} ${styles[scene]}`} onPointerMove={event => {
     if (event.pointerType === "touch" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const rect = event.currentTarget.getBoundingClientRect();
@@ -183,6 +208,6 @@ export default function BlogDoorCard({ scene, href, title, blurb, locked }: { sc
     event.currentTarget.style.setProperty("--drift-y", `${((event.clientY - rect.top)/rect.height-.5)*18}px`);
   }} onPointerLeave={event => { event.currentTarget.style.setProperty("--drift-x", "0px"); event.currentTarget.style.setProperty("--drift-y", "0px"); }}>
     <span className={styles.scene}>{scene === "technical" ? <PondScene /> : scene === "poems" ? <SolarScene /> : <SkylineScene />}</span>
-    <span className={styles.copy}><span className={styles.number}>{scene === "technical" ? "01 / curiosity" : scene === "poems" ? "02 / feeling" : "03 / noticing"}</span><span className={styles.title}>{title}{locked && <span className={styles.lock} aria-label="password protected">🔒</span>}<span className={styles.arrow} aria-hidden="true">↗</span></span><span className={styles.blurb}>{blurb}</span></span>
+    <span className={styles.copy}><span className={styles.number}>{t(`blog.art.${scene}.label`)}</span><span className={styles.title}>{t(`blog.art.${scene}.title`) || title}{locked && <span className={styles.lock} aria-label={t("blog.art.locked")}>🔒</span>}<span className={styles.arrow} aria-hidden="true">↗</span></span><span className={styles.blurb}>{blurb}</span></span>
   </Link>;
 }

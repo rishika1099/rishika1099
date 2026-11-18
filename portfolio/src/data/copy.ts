@@ -9,7 +9,491 @@ export interface CopyBlock {
   hint?: string;
 }
 
+export const featureCopyDefaults: Record<string, CopyBlock> = {
+  "poems.tagline": {
+    "page": "poems",
+    "label": "tagline",
+    "text": "The sky outside is part of the poetry inside."
+  },
+  "poems.sky.label": {
+    "page": "poems",
+    "label": "sky label",
+    "text": "A little moonlight and stargazing"
+  },
+  "poems.moon.eyebrow": {
+    "page": "poems",
+    "label": "moon eyebrow",
+    "text": "a companion for your thoughts"
+  },
+  "poems.moon.title": {
+    "page": "poems",
+    "label": "moon title",
+    "text": "Under the same moon."
+  },
+  "poems.moon.loading": {
+    "page": "poems",
+    "label": "moon loading",
+    "text": "Finding the moon…"
+  },
+  "poems.sky.eyebrow": {
+    "page": "poems",
+    "label": "sky eyebrow",
+    "text": "a window into the universe"
+  },
+  "poems.sky.title": {
+    "page": "poems",
+    "label": "sky title",
+    "text": "A little stargazing."
+  },
+  "poems.sky.location": {
+    "page": "poems",
+    "label": "sky location",
+    "text": "Looking up from"
+  },
+  "poems.sky.loading": {
+    "page": "poems",
+    "label": "sky loading",
+    "text": "Finding the stars…"
+  },
+  "poems.sky.frame": {
+    "page": "poems",
+    "label": "sky frame",
+    "text": "Interactive Stellarium planetarium over {city}"
+  },
+  "poems.sky.note": {
+    "page": "poems",
+    "label": "sky note",
+    "text": "A simulated sky. Explore constellations, atmosphere, and time using the controls."
+  },
+  "poems.sky.help": {
+    "page": "poems",
+    "label": "sky help",
+    "text": "Drag to look around, scroll to zoom."
+  },
+  "poems.sky.open": {
+    "page": "poems",
+    "label": "sky open",
+    "text": "Open full sky ↗"
+  },
+  "poems.sky.credit": {
+    "page": "poems",
+    "label": "sky credit",
+    "text": "Stellarium Web"
+  },
+  "poems.moon.alt": {
+    "page": "poems",
+    "label": "moon alt",
+    "text": "NASA rendering of the Moon for the displayed hour"
+  },
+  "poems.moon.phase": {
+    "page": "poems",
+    "label": "moon phase",
+    "text": "Currently: {phase}."
+  },
+  "poems.moon.making": {
+    "page": "poems",
+    "label": "moon making",
+    "text": "Also currently: making things."
+  },
+  "poems.moon.lit": {
+    "page": "poems",
+    "label": "moon lit",
+    "text": "{percent}% illuminated"
+  },
+  "poems.moon.approximate": {
+    "page": "poems",
+    "label": "moon approximate",
+    "text": "About {percent}% illuminated"
+  },
+  "poems.moon.credit": {
+    "page": "poems",
+    "label": "moon credit",
+    "text": "NASA / Goddard lunar rendering ↗"
+  },
+  "poems.moon.unavailable": {
+    "page": "poems",
+    "label": "moon unavailable",
+    "text": "Approximate phase; NASA imagery unavailable."
+  },
+  "poems.moon.fetching": {
+    "page": "poems",
+    "label": "moon fetching",
+    "text": "Loading NASA moon imagery…"
+  },
+  "poems.gate.title": {
+    "page": "poems",
+    "label": "gate title",
+    "text": "this little room is locked"
+  },
+  "poems.gate.hint": {
+    "page": "poems",
+    "label": "gate hint",
+    "text": "whisper the secret word to come in ✦"
+  },
+  "poems.gate.placeholder": {
+    "page": "poems",
+    "label": "gate placeholder",
+    "text": "secret word…"
+  },
+  "poems.gate.label": {
+    "page": "poems",
+    "label": "gate label",
+    "text": "Secret word"
+  },
+  "poems.gate.button": {
+    "page": "poems",
+    "label": "gate button",
+    "text": "knock ✦"
+  },
+  "poems.gate.busy": {
+    "page": "poems",
+    "label": "gate busy",
+    "text": "knocking…"
+  },
+  "poems.gate.error": {
+    "page": "poems",
+    "label": "gate error",
+    "text": "Hmm, try again ✦"
+  },
+  "poems.gate.network": {
+    "page": "poems",
+    "label": "gate network",
+    "text": "Something went sideways. Try again?"
+  },
+  "contact.animal.eyebrow": {
+    "page": "contact",
+    "label": "eyebrow",
+    "text": "a little visitor"
+  },
+  "contact.animal.title": {
+    "page": "contact",
+    "label": "title",
+    "text": "Someone says"
+  },
+  "contact.animal.dog": {
+    "page": "contact",
+    "label": "dog",
+    "text": "woof."
+  },
+  "contact.animal.cat": {
+    "page": "contact",
+    "label": "cat",
+    "text": "meow."
+  },
+  "contact.animal.hello": {
+    "page": "contact",
+    "label": "hello",
+    "text": "hello."
+  },
+  "contact.animal.alt": {
+    "page": "contact",
+    "label": "alt",
+    "text": "A {animal} stopping by to say hello"
+  },
+  "contact.animal.error": {
+    "page": "contact",
+    "label": "error",
+    "text": "Our little visitor is taking a nap. Try again."
+  },
+  "contact.animal.missing": {
+    "page": "contact",
+    "label": "missing",
+    "text": "This photo wandered off. Meet someone else?"
+  },
+  "contact.animal.loading": {
+    "page": "contact",
+    "label": "loading",
+    "text": "Finding a friendly face…"
+  },
+  "contact.animal.caption": {
+    "page": "contact",
+    "label": "caption",
+    "text": "Today's visitor: a {animal}. Happy you're here."
+  },
+  "contact.animal.busy": {
+    "page": "contact",
+    "label": "busy",
+    "text": "On the way…"
+  },
+  "contact.animal.next": {
+    "page": "contact",
+    "label": "next",
+    "text": "Who’s next? ↻"
+  },
+  "contact.animal.credit": {
+    "page": "contact",
+    "label": "credit",
+    "text": "Photos: {source} ↗"
+  },
+  "contact.guestbook.wall": {
+    "page": "contact",
+    "label": "wall",
+    "text": "Little notes from visitors 🌸"
+  },
+  "contact.guestbook.loading": {
+    "page": "contact",
+    "label": "loading",
+    "text": "opening the book… ✦"
+  },
+  "contact.guestbook.sign": {
+    "page": "contact",
+    "label": "sign",
+    "text": "sign"
+  },
+  "contact.guestbook.busy": {
+    "page": "contact",
+    "label": "busy",
+    "text": "signing…"
+  },
+  "contact.guestbook.thanks": {
+    "page": "contact",
+    "label": "thanks",
+    "text": "thanks for signing 🌸"
+  },
+  "contact.guestbook.limit": {
+    "page": "contact",
+    "label": "limit",
+    "text": "the guestbook has had a lot of notes from here today, come back tomorrow? 🌸"
+  },
+  "contact.guestbook.error": {
+    "page": "contact",
+    "label": "error",
+    "text": "hmm, that didn't go through, try again?"
+  },
+  "contact.guestbook.network": {
+    "page": "contact",
+    "label": "network",
+    "text": "something wobbled, try again?"
+  },
+  "contact.guestbook.anonymous": {
+    "page": "contact",
+    "label": "anonymous",
+    "text": "someone"
+  },
+  "photography.garden.intro": {
+    "page": "photography",
+    "label": "intro",
+    "text": "A little patch of internet, grown together."
+  },
+  "photography.garden.error": {
+    "page": "photography",
+    "label": "error",
+    "text": "The garden couldn't load. Refresh to try again."
+  },
+  "photography.garden.success": {
+    "page": "photography",
+    "label": "success",
+    "text": "A little flower from you. The garden is happier already."
+  },
+  "photography.garden.failed": {
+    "page": "photography",
+    "label": "failed",
+    "text": "Couldn't plant. Please try again."
+  },
+  "photography.garden.eyebrow": {
+    "page": "photography",
+    "label": "eyebrow",
+    "text": "a little guestbook, in bloom"
+  },
+  "photography.garden.badge": {
+    "page": "photography",
+    "label": "badge",
+    "text": "grown by visitors"
+  },
+  "photography.garden.title": {
+    "page": "photography",
+    "label": "title",
+    "text": "Leave a little life behind."
+  },
+  "photography.garden.caption": {
+    "page": "photography",
+    "label": "caption",
+    "text": "You wandered through my photographs. Plant a flower to say you were here."
+  },
+  "photography.garden.count": {
+    "page": "photography",
+    "label": "count",
+    "text": "{count} little hellos growing here"
+  },
+  "photography.garden.empty": {
+    "page": "photography",
+    "label": "empty",
+    "text": "The first flower could be yours"
+  },
+  "photography.garden.loading": {
+    "page": "photography",
+    "label": "loading",
+    "text": "Opening the garden…"
+  },
+  "photography.garden.planted": {
+    "page": "photography",
+    "label": "planted",
+    "text": "A visitor planted {flower}"
+  },
+  "photography.garden.choose": {
+    "page": "photography",
+    "label": "choose",
+    "text": "Choose a flower"
+  },
+  "photography.garden.busy": {
+    "page": "photography",
+    "label": "busy",
+    "text": "Taking root…"
+  },
+  "photography.garden.button": {
+    "page": "photography",
+    "label": "button",
+    "text": "Plant a little flower"
+  },
+  "photography.garden.note": {
+    "page": "photography",
+    "label": "note",
+    "text": "These flowers belong to everyone who stopped by."
+  },
+  "photography.garden.limit": {
+    "page": "photography",
+    "label": "limit",
+    "text": "The garden shows the latest 80 flowers."
+  },
+  "photography.garden.pink": {
+    "page": "photography",
+    "label": "pink",
+    "text": "pink cosmos"
+  },
+  "photography.garden.lavender": {
+    "page": "photography",
+    "label": "lavender",
+    "text": "lavender daisy"
+  },
+  "photography.garden.gold": {
+    "page": "photography",
+    "label": "gold",
+    "text": "golden buttercup"
+  },
+  "blog.art.technical.title": {
+    "page": "blog",
+    "label": "technical title",
+    "text": "Technical Blogs"
+  },
+  "blog.art.poems.title": {
+    "page": "blog",
+    "label": "poems title",
+    "text": "Poems"
+  },
+  "blog.art.photography.title": {
+    "page": "blog",
+    "label": "photography title",
+    "text": "Photography"
+  },
+  "blog.art.technical.label": {
+    "page": "blog",
+    "label": "technical label",
+    "text": "01 / curiosity"
+  },
+  "blog.art.poems.label": {
+    "page": "blog",
+    "label": "poems label",
+    "text": "02 / feeling"
+  },
+  "blog.art.photography.label": {
+    "page": "blog",
+    "label": "photography label",
+    "text": "03 / noticing"
+  },
+  "blog.art.solar": {
+    "page": "blog",
+    "label": "solar",
+    "text": "A SMALL UNIVERSE OF WORDS"
+  },
+  "blog.art.locked": {
+    "page": "blog",
+    "label": "locked",
+    "text": "password protected"
+  },
+  "photography.photo.open": {
+    "page": "photography",
+    "label": "open",
+    "text": "Open photo: {caption}"
+  },
+  "photography.photo.close": {
+    "page": "photography",
+    "label": "close",
+    "text": "Close photo"
+  },
+  "photography.photo.untitled": {
+    "page": "photography",
+    "label": "untitled",
+    "text": "untitled ✦"
+  },
+  "poems.phase.new_moon": {
+    "page": "poems",
+    "label": "moon phase: new moon",
+    "text": "new moon"
+  },
+  "poems.phase.waxing_crescent": {
+    "page": "poems",
+    "label": "moon phase: waxing crescent",
+    "text": "waxing crescent"
+  },
+  "poems.phase.first_quarter": {
+    "page": "poems",
+    "label": "moon phase: first quarter",
+    "text": "first quarter"
+  },
+  "poems.phase.waxing_gibbous": {
+    "page": "poems",
+    "label": "moon phase: waxing gibbous",
+    "text": "waxing gibbous"
+  },
+  "poems.phase.full_moon": {
+    "page": "poems",
+    "label": "moon phase: full moon",
+    "text": "full moon"
+  },
+  "poems.phase.waning_gibbous": {
+    "page": "poems",
+    "label": "moon phase: waning gibbous",
+    "text": "waning gibbous"
+  },
+  "poems.phase.last_quarter": {
+    "page": "poems",
+    "label": "moon phase: last quarter",
+    "text": "last quarter"
+  },
+  "poems.phase.waning_crescent": {
+    "page": "poems",
+    "label": "moon phase: waning crescent",
+    "text": "waning crescent"
+  },
+  "poems.city.New_York": {
+    "page": "poems",
+    "label": "sky city: New York",
+    "text": "New York"
+  },
+  "poems.city.London": {
+    "page": "poems",
+    "label": "sky city: London",
+    "text": "London"
+  },
+  "poems.city.Hyderabad": {
+    "page": "poems",
+    "label": "sky city: Hyderabad",
+    "text": "Hyderabad"
+  },
+  "poems.city.Tokyo": {
+    "page": "poems",
+    "label": "sky city: Tokyo",
+    "text": "Tokyo"
+  },
+  "poems.city.Sydney": {
+    "page": "poems",
+    "label": "sky city: Sydney",
+    "text": "Sydney"
+  }
+};
+
 export const copyDefaults: Record<string, CopyBlock> = {
+  ...featureCopyDefaults,
   "home.greeting": {
     page: "home",
     label: "greeting line",

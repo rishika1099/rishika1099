@@ -1,3 +1,4 @@
+import { FeatureCopy } from "@/components/FeatureCopy";
 import BlogHubClient from "@/components/BlogHubClient";
 import { getCopy } from "@/lib/siteCopy";
 import { copyToHtml } from "@/lib/copyRender";
@@ -9,6 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function BlogHub() {
   const copy = await getCopy();
   return (
+    <FeatureCopy copy={copy}>
     <BlogHubClient
       title={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["blog.title"]) }} />}
       intro={<span className="rich-passage" dangerouslySetInnerHTML={{ __html: copyToHtml(copy["blog.intro"]) }} />}
@@ -19,5 +21,6 @@ export default async function BlogHub() {
         ]),
       )}
     />
+    </FeatureCopy>
   );
 }

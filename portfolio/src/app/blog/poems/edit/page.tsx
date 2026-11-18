@@ -3,6 +3,7 @@
 // The poem desk: write and edit poems Medium-style in the ink editor, in the
 // same twilight the poem room lives in. Art + mood generate on first view.
 
+import FeatureCopyEditor from "@/components/FeatureCopyEditor";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import PageShell from "@/components/PageShell";
@@ -179,7 +180,7 @@ export default function PoemsEdit() {
           → the locked room itself
         </Link>
       </div>
-      <AdminGate>{(key) => <Desk keyVal={key} />}</AdminGate>
+      <AdminGate>{(key) => <><Desk keyVal={key} /><FeatureCopyEditor page="poems" keyVal={key} /></>}</AdminGate>
     </PageShell>
   );
 }

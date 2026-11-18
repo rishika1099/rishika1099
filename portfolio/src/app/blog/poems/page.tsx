@@ -1,3 +1,4 @@
+import { FeatureCopy } from "@/components/FeatureCopy";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
@@ -13,6 +14,7 @@ export const dynamic = "force-dynamic";
 export default async function PoemsPage() {
   const copy = await getCopy();
   return (
+    <FeatureCopy copy={copy}>
     <PageShell vibe="twilight">
       <PageTitle className="text-cream"><RichText html={copyToHtml(copy["poems.title"])} /></PageTitle>
       <div className="mt-3">
@@ -24,7 +26,9 @@ export default async function PoemsPage() {
         </Link>
       </div>
 
+      <p className="mt-5 max-w-2xl font-serif text-xl italic text-lavender"><RichText html={copyToHtml(copy["poems.tagline"])} /></p>
       <PoemsClient />
     </PageShell>
+    </FeatureCopy>
   );
 }

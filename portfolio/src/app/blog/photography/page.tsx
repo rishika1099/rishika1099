@@ -1,3 +1,4 @@
+import { FeatureCopy } from "@/components/FeatureCopy";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
@@ -15,6 +16,7 @@ export default async function Photography() {
   const [{ groups, silhouette }, copy] = await Promise.all([getPhotoData(), getCopy()]);
   const grouped = silhouette !== null && groups.length > 1;
   return (
+    <FeatureCopy copy={copy}>
     <PageShell vibe="sunset">
       <PageTitle className="text-ink"><RichText html={copyToHtml(copy["photography.title"])} /></PageTitle>
       <div className="mt-3">
@@ -42,5 +44,6 @@ export default async function Photography() {
         Please don&apos;t reproduce or repost them without permission. ✦
       </p>
     </PageShell>
+    </FeatureCopy>
   );
 }

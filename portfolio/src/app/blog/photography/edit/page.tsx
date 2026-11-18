@@ -4,6 +4,7 @@
 // itself is manageable, upload straight from your device (auto-captioned) or
 // remove a photo, all in the page's own sunset light.
 
+import FeatureCopyEditor from "@/components/FeatureCopyEditor";
 import Link from "next/link";
 import FileDrop from "@/components/FileDrop";
 import { useEffect, useRef, useState } from "react";
@@ -271,5 +272,5 @@ function Editor({ keyVal }: { keyVal: string }) {
 }
 
 export default function PhotographyEdit() {
-  return <AdminGate vibe="sunset">{(key) => <Editor keyVal={key} />}</AdminGate>;
+  return <AdminGate vibe="sunset">{(key) => <><Editor keyVal={key} /><FeatureCopyEditor page="photography" keyVal={key} /></>}</AdminGate>;
 }

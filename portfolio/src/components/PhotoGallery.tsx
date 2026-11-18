@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import GalleryLightbox from "./GalleryLightbox";
+import { useFeatureCopy } from "./FeatureCopy";
 import Image from "next/image";
 import { m } from "framer-motion";
 import type { PhotoFrame, PhotoGroup } from "@/lib/photos";
@@ -30,6 +33,8 @@ function Frame({
   i: number;
   frame?: PhotoFrame;
 }) {
+  const [open, setOpen] = useState(false);
+  const t = useFeatureCopy();
   const rotate = rotations[i % rotations.length];
   const fx = frame?.x ?? 50;
   const fy = frame?.y ?? 50;
@@ -43,23 +48,25 @@ function Frame({
       whileHover={{ rotate: 0, scale: 1.04, y: -6 }}
       className="w-52 rounded-sm bg-white p-3 pb-10 shadow-lg"
     >
-      <div className="relative h-48 w-full overflow-hidden rounded-sm">
+      <button type="button" onClick={() => setOpen(true)} aria-label={t("photography.photo.open", { caption: caption || t("photography.photo.untitled") })} className="relative block h-48 w-full overflow-hidden rounded-sm focus-visible:outline-2 focus-visible:outline-ink">
         <Image
           src={src!}
           alt={caption || "a photo"}
           fill
-          unoptimized
+          loading="lazy"
+          decoding="async"
           className="object-cover"
-          sizes="208px"
+          sizes="184px"
           style={{
             objectPosition: `${fx}% ${fy}%`,
             transform: zoom !== 1 ? `scale(${zoom})` : undefined,
             transformOrigin: `${fx}% ${fy}%`,
           }}
         />
-      </div>
+      </button>
+      {open && <GalleryLightbox src={src!} caption={caption || t("photography.photo.untitled")} onClose={() => setOpen(false)} />}
       <figcaption className="mt-3 text-center font-hand text-xl text-ink-soft">
-        {caption || "untitled ✦"}
+        {caption || t("photography.photo.untitled")}
       </figcaption>
     </m.figure>
   );

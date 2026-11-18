@@ -4,6 +4,7 @@
 // their current blurbs), and the three door blurbs are edited in one tidy
 // labeled section below, the same way the home landing cards work.
 
+import FeatureCopyEditor from "@/components/FeatureCopyEditor";
 import BlogHubClient from "@/components/BlogHubClient";
 import { AdminGate } from "@/components/editing";
 import { usePassageEditor } from "@/components/usePassageEditor";
@@ -43,5 +44,5 @@ function Editor({ keyVal }: { keyVal: string }) {
 }
 
 export default function BlogEdit() {
-  return <AdminGate vibe="peach">{(key) => <Editor keyVal={key} />}</AdminGate>;
+  return <AdminGate vibe="peach">{(key) => <><Editor keyVal={key} /><FeatureCopyEditor page="blog" keyVal={key} /></>}</AdminGate>;
 }

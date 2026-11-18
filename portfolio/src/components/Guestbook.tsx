@@ -5,6 +5,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+import { useFeatureCopy } from "./FeatureCopy";
 import layout from "./ContactLayout.module.css";
 
 interface Entry {
@@ -34,6 +35,7 @@ const GB_DEFAULTS = {
 } as const;
 
 export default function Guestbook({ copy, contactForm, companion }: { copy?: Record<string, string>; contactForm: ReactNode; companion: ReactNode }) {
+  const text = useFeatureCopy();
   const t = (k: keyof typeof GB_DEFAULTS) => copy?.[k]?.trim() || GB_DEFAULTS[k];
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [name, setName] = useState("");
@@ -64,17 +66,17 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
       });
       const d = await r.json();
       if (r.status === 429) {
-        setMsg("the guestbook has had a lot of notes from here today, come back tomorrow? 🌸");
+        setMsg(text("contact.guestbook.limit"));
       } else if (d.entry) {
         setEntries((cur) => [d.entry, ...(cur ?? [])]);
         setName("");
         setMessage("");
-        setMsg("thanks for signing 🌸");
+        setMsg(text("contact.guestbook.thanks"));
       } else {
-        setMsg("hmm, that didn't go through, try again?");
+        setMsg(text("contact.guestbook.error"));
       }
     } catch {
-      setMsg("something wobbled, try again?");
+      setMsg(text("contact.guestbook.network"));
     } finally {
       setBusy(false);
     }
@@ -120,7 +122,7 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
             disabled={busy}
             className="rounded-full bg-ink px-5 py-2 font-body text-sm font-semibold text-cream transition hover:opacity-90 disabled:opacity-50"
           >
-            {busy ? "signing…" : "sign"}
+            {busy ? text("contact.guestbook.busy") : text("contact.guestbook.sign")}
           </button>
           {msg && <span className="font-body text-xs text-ink-soft">{msg}</span>}
         </div>
@@ -128,23 +130,23 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
 
       </section>
       {companion}
-      <section className="text-left" aria-labelledby="guestbook-wall-title">
-        <h2 id="guestbook-wall-title" className="mb-5 font-display text-xl font-bold text-ink">Little notes from visitors 🌸</h2>
-        {entries === null && <p className="font-body text-sm text-ink-soft">opening the book… ✦</p>}
+      <section className={layout.wall} aria-labelledby="guestbook-wall-title">
+        <h2 id="guestbook-wall-title" className="mb-5 font-display text-xl font-bold text-ink">{text("contact.guestbook.wall")}</h2>
+        {entries === null && <p className="font-body text-sm text-ink-soft">{text("contact.guestbook.loading")}</p>}
         {entries?.length === 0 && (
           <p className="rounded-2xl border-2 border-dashed border-ink/15 p-6 text-center font-body text-sm text-ink-soft">
             {t("contact.guestbook.empty")}
           </p>
         )}
         {!!entries?.length && (
-          <div className="gap-3 [column-fill:balance] sm:columns-2">
+          <div className={layout.notes}>
             {entries.map((e, i) => {
               const m = e.mood ? MOOD[e.mood] : null;
               const tilt = i % 2 ? "rotate-[1.2deg]" : "-rotate-[1.2deg]";
               return (
                 <div
                   key={e.id}
-                  className={`mb-3 block w-full break-inside-avoid rounded-2xl p-4 shadow-sm ring-1 ring-white/60 transition-transform hover:rotate-0 ${tilt}`}
+                  className={`${layout.note} min-w-0 break-words rounded-2xl p-4 shadow-sm ring-1 ring-white/60 transition-transform hover:rotate-0 ${tilt}`}
                   style={{ backgroundColor: m ? `${m.tint}5c` : "rgba(255,255,255,0.6)" }}
                 >
                   <div className="flex items-start gap-3">
@@ -154,7 +156,7 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline justify-between gap-2">
                         <p className="truncate font-body text-sm font-bold text-ink">
-                          {e.name || "someone"}
+                          {e.name || text("contact.guestbook.anonymous")}
                         </p>
                         {m && (
                           <span className="shrink-0 font-body text-[11px] font-semibold text-ink-soft">

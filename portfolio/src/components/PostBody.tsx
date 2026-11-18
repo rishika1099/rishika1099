@@ -4,6 +4,7 @@
 // (from ## / ### headings) and a copy button on every code block.
 
 import { useMemo, useRef, useState, type ReactNode } from "react";
+import PostImage from "./PostImage";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -80,6 +81,7 @@ export default function PostBody({ content }: { content: string }) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
+          img: ({ src, alt, title }) => <PostImage src={typeof src === "string" ? src : undefined} alt={alt} title={title} />,
           h2: ({ children }) => <h2 id={slug(textOf(children))}>{children}</h2>,
           h3: ({ children }) => <h3 id={slug(textOf(children))}>{children}</h3>,
           pre: (props) => <CopyPre {...props} />,
