@@ -498,7 +498,7 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "contact.garden.intro": {
     "page": "contact",
     "label": "guest garden intro",
-    "text": "Little flowers, little hellos. Tap a butterfly to read a note."
+    "text": "Every flower holds a hello. Pick one to read a note."
   },
   "contact.garden.count": {
     "page": "contact",
@@ -513,7 +513,7 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "contact.garden.empty": {
     "page": "contact",
     "label": "guest garden empty",
-    "text": "The first butterfly could carry your hello. Leave a note above."
+    "text": "The first flower could hold your hello. Leave a note above."
   },
   "contact.garden.open": {
     "page": "contact",
@@ -588,7 +588,7 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "photography.guestGarden.note": {
     "page": "photography",
     "label": "guest garden note",
-    "text": "The visitor garden is full of little hellos. Leave a note and a butterfly will carry it."
+    "text": "The visitor garden grows from guestbook notes. Leave a little hello and plant a flower."
   },
   "photography.guestGarden.link": {
     "page": "photography",
@@ -624,6 +624,31 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
     "page": "contact",
     "label": "Garden flower: tulip",
     "text": "Tulip"
+  },
+  "contact.form.placeholder.name": {
+    "page": "contact",
+    "label": "Message form name",
+    "text": "your name"
+  },
+  "contact.form.placeholder.email": {
+    "page": "contact",
+    "label": "Message form email",
+    "text": "your email"
+  },
+  "contact.form.followup": {
+    "page": "contact",
+    "label": "Message form followup",
+    "text": "I’ll get back to you soon."
+  },
+  "contact.form.sending": {
+    "page": "contact",
+    "label": "Message form sending",
+    "text": "sending…"
+  },
+  "contact.form.error": {
+    "page": "contact",
+    "label": "Message form error",
+    "text": "hmm, that didn’t go through. try again, or email me directly?"
   }
 };
 

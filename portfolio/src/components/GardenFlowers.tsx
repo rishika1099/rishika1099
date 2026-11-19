@@ -49,14 +49,3 @@ export function GardenScene() {
     <g fill="#86a65f"><path d="M75 178Q65 150 65 143Q82 160 80 179M365 179Q378 153 387 148Q382 168 374 180"/></g>
   </svg>;
 }
-
-export function Butterfly({ mood }: { mood: GardenMood }) {
-  const color = gardenMoods[mood].color;
-  return <svg viewBox="0 0 44 38" aria-hidden="true" className={styles.butterfly}>
-    <g className={styles.wings}>
-      <path d="M22 21C12 1 0 4 5 17Q7 23 17 24Q1 22 9 33Q18 38 22 24Q28 37 36 31Q42 22 28 24Q43 20 39 10Q33 -3 22 21" fill={color} stroke="#fff5df" strokeWidth="1.2"/>
-      <path d="M18 19Q7 7 9 17M27 18Q36 7 35 17M17 28L13 29M28 28L32 29" fill="none" stroke="#fff2da" strokeWidth="2.1" strokeLinecap="round"/>
-    </g>
-    <path d="M22 17V28M22 17L18 12M22 17L26 12" stroke="#65533f" strokeWidth="1.8" strokeLinecap="round"/>
-  </svg>;
-}

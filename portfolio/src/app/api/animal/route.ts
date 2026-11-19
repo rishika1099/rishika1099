@@ -6,12 +6,14 @@ const providers = [
   { animal: "cat", endpoint: "https://cataas.com/cat?json=true", field: "url", host: "cataas.com", source: "CATAAS", sourceUrl: "https://cataas.com/", caption: "meow." },
 ];
 export const runtime = "nodejs";
-export async function GET() {
-  const start = randomInt(providers.length);
+export async function GET(request: Request) {
+  const animal = new URL(request.url).searchParams.get("animal");
+  const choices = animal === "cat" || animal === "dog" ? providers.filter(provider => provider.animal === animal) : providers;
+  const start = randomInt(choices.length);
   // Try another provider if the first visitor's photo service is unavailable.
   const deadline = AbortSignal.timeout(14000);
   for (let attempt = 0; attempt < 4; attempt++) {
-    const provider = providers[(start + attempt) % providers.length];
+    const provider = choices[(start + attempt) % choices.length];
     try {
       const response = await fetch(provider.endpoint, { cache: "no-store", signal: AbortSignal.any([deadline, AbortSignal.timeout(4000)]) });
       if (!response.ok) continue;

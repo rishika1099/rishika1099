@@ -18,7 +18,7 @@ const GB_DEFAULTS = {
   "contact.guestbook.empty": "no notes yet, be the first to pin one up ✦",
 } as const;
 
-export default function Guestbook({ copy, contactForm, companion }: { copy?: Record<string, string>; contactForm: ReactNode; companion: ReactNode }) {
+export default function Guestbook({ copy, contactForm }: { copy?: Record<string, string>; contactForm: ReactNode }) {
   const text = useFeatureCopy();
   const t = (k: keyof typeof GB_DEFAULTS) => copy?.[k]?.trim() || GB_DEFAULTS[k];
   const [entries, setEntries] = useState<GuestEntry[] | null>(null);
@@ -84,7 +84,7 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
   return (
     <div className={layout.forms}>
       {contactForm}
-      <section className="text-left">
+      <section className={layout.guestCard}>
       <h2 className="font-display text-xl font-bold text-ink">{t("contact.guestbook.title")}</h2>
       <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-lavender/40 px-3 py-1 font-body text-xs font-semibold text-ink">
         {t("contact.guestbook.public")}
@@ -96,6 +96,7 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder={t("contact.guestbook.placeholder.name")}
+          aria-label={t("contact.guestbook.placeholder.name")}
           maxLength={40}
           className="w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-2 font-body text-sm text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
         />
@@ -103,6 +104,7 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder={t("contact.guestbook.placeholder.note")}
+          aria-label={t("contact.guestbook.placeholder.note")}
           maxLength={500}
           className="min-h-20 w-full rounded-2xl border border-white/70 bg-white/80 px-4 py-2 font-body text-sm text-ink outline-none placeholder:text-ink-soft/50 focus:border-blush focus:ring-2 focus:ring-blush/30"
         />
@@ -127,14 +129,13 @@ export default function Guestbook({ copy, contactForm, companion }: { copy?: Rec
         </div>
       </form>
 
-      </section>
-      {companion}
       <section id="guestbook-garden" className={layout.wall} aria-labelledby="guestbook-wall-title">
-        <h2 id="guestbook-wall-title" className="font-serif text-3xl text-ink">{text("contact.garden.title")}</h2>
+        <h2 id="guestbook-wall-title" className="font-serif text-2xl text-ink">{text("contact.garden.title")}</h2>
         <p className="mt-2 max-w-xl font-body text-sm text-ink-soft">{text("contact.garden.intro")}</p>
         {loadError && <p role="status" className="mt-4 font-body text-sm text-ink-soft">{text("contact.garden.error")}</p>}
         {entries === null && !loadError && <p className="mt-4 font-body text-sm text-ink-soft">{text("contact.guestbook.loading")}</p>}
         {entries !== null && <GuestbookGarden entries={entries} />}
+      </section>
       </section>
     </div>
   );

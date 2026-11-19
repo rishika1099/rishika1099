@@ -80,3 +80,13 @@ Animal and garden panels now share equal desktop columns and row height (verifie
 - Verified nine visible local fixture entries plus one hidden entry, keyboard opening, Escape closing, and both pagination directions. Restored local data after verification.
 - All 28 public and editor route checks had scroll width 390px at a 390px viewport.
 - Butterfly wing motion stops for reduced motion preferences. No alternative message cards.
+
+## Combined contact cards, November 19
+
+- Combined the private message form with a compact cat portrait in its heading. The existing photo endpoint now accepts an allowlisted cat or dog filter; the message companion requests cats.
+- Combined the public signing form and garden in one card. Both cards share a desktop row and stack on phones.
+- Replaced butterfly note controls with illustrated flowers, six per garden page, with one species per classifier mood. Removed the butterfly renderer.
+- Added editable private form name/email placeholders, sending/error messages and follow-up copy. Revised the garden and photography invitation copy. The feature copy registry exposes these in contact/photography edit rooms and atelier.
+- Local fixture verification: seven visible notes, one hidden note, keyboard opening, Escape closing and pagination in both directions. Restored original local data.
+- Checked 28 routes at 390px: all had a 390px document width. Desktop and phone screenshots saved.
+- TypeScript and changed-file ESLint passed.

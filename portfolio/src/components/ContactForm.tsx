@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { m } from "framer-motion";
+import AnimalVisitor from "./AnimalVisitor";
+import { useFeatureCopy } from "./FeatureCopy";
+import layout from "./ContactLayout.module.css";
 
 const encode = (data: Record<string, string>) =>
   Object.keys(data)
@@ -20,6 +23,7 @@ const FORM_DEFAULTS = {
 } as const;
 
 export default function ContactForm({ copy }: { copy?: Record<string, string> }) {
+  const text = useFeatureCopy();
   const t = (k: keyof typeof FORM_DEFAULTS) => copy?.[k]?.trim() || FORM_DEFAULTS[k];
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -44,12 +48,12 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
       <m.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="mt-10 w-full max-w-xl rounded-3xl p-7 text-center soft-card"
+        className={layout.messageCard}
       >
         <div className="text-4xl">💌</div>
         <p className="mt-2 font-body text-lg font-semibold text-ink">{t("contact.form.sent")}</p>
         <p className="mt-1 font-body text-sm text-ink-soft">
-          I&apos;ll get back to you soon.
+          {text("contact.form.followup")}
         </p>
       </m.div>
     );
@@ -62,7 +66,7 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
       transition={{ delay: 0.2 }}
       onSubmit={submit}
       name="contact"
-      className="mt-10 w-full max-w-xl rounded-3xl p-6 text-left soft-card"
+      className={layout.messageCard}
     >
       <input type="hidden" name="form-name" value="contact" />
       <p className="hidden">
@@ -71,14 +75,17 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
         </label>
       </p>
 
-      <h2 className="text-center font-body text-xl font-bold text-ink">{t("contact.form.title")}</h2>
-      <p className="mt-1 text-center font-body text-sm text-ink-soft">{t("contact.form.private")}</p>
+      <AnimalVisitor compact animal="cat">
+      <h2 className="font-body text-xl font-bold text-ink">{t("contact.form.title")}</h2>
+      <p className="mt-1 font-body text-sm text-ink-soft">{t("contact.form.private")}</p>
+      </AnimalVisitor>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <input
           name="name"
           required
-          placeholder="your name"
+          placeholder={text("contact.form.placeholder.name")}
+          aria-label={text("contact.form.placeholder.name")}
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           className={inputClass}
@@ -87,7 +94,8 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
           name="email"
           type="email"
           required
-          placeholder="your email"
+          placeholder={text("contact.form.placeholder.email")}
+          aria-label={text("contact.form.placeholder.email")}
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           className={inputClass}
@@ -99,6 +107,7 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
         required
         rows={4}
         placeholder={t("contact.form.placeholder.message")}
+        aria-label={t("contact.form.placeholder.message")}
         value={form.message}
         onChange={(e) => setForm({ ...form, message: e.target.value })}
         className={`${inputClass} mt-3 w-full resize-none leading-relaxed`}
@@ -110,11 +119,11 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
           disabled={status === "sending"}
           className="rounded-full bg-blush px-7 py-3 font-body font-semibold text-ink transition hover:scale-105 disabled:opacity-50"
         >
-          {status === "sending" ? "sending…" : t("contact.form.send")}
+          {status === "sending" ? text("contact.form.sending") : t("contact.form.send")}
         </button>
         {status === "error" && (
           <p className="mt-2 font-body text-sm text-[#c0506b]">
-            hmm, that didn&apos;t go through. try again, or email me directly?
+            {text("contact.form.error")}
           </p>
         )}
       </div>

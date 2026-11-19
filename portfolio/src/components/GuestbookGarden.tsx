@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useFeatureCopy } from "./FeatureCopy";
-import { Butterfly, FlowerSprig, GardenScene, gardenMoods, moodFor } from "./GardenFlowers";
+import { FlowerSprig, GardenScene, gardenMoods, moodFor } from "./GardenFlowers";
 import styles from "./GuestbookGarden.module.css";
 
 export interface GuestEntry {
@@ -13,7 +13,7 @@ export interface GuestEntry {
   at: string;
 }
 
-const BED_SIZE = 8;
+const BED_SIZE = 6;
 
 function NoteDialog({ entry, onClose }: { entry: GuestEntry; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -43,12 +43,12 @@ export default function GuestbookGarden({ entries }: { entries: GuestEntry[] }) 
 
     </div>
     <div className={styles.scene}>
-      <GardenScene />
+      {!entries.length && <GardenScene />}
       {!entries.length ? <p className={styles.empty}>{t("contact.garden.empty")}</p> :
         <ul className={styles.bed} aria-label={t("contact.garden.garden")}>
-          {visible.map((entry, index) => <li key={entry.id} style={{ left: `${10 + index % 4 * 26}%`, top: `${index < 4 ? 8 : 43}%` }}>
+          {visible.map((entry, index) => <li key={entry.id}>
             <button className={styles.bloom} type="button" aria-haspopup="dialog" aria-label={t("contact.garden.open", { name: entry.name || t("contact.guestbook.anonymous") })} onClick={() => setSelectedId(entry.id)}>
-              <Butterfly mood={moodFor(entry.mood)} />
+              <svg className={styles.noteFlower} viewBox="-35 -120 70 125" aria-hidden="true"><FlowerSprig mood={moodFor(entry.mood)} scale={index % 3 === 1 ? 1 : .85} lean={index % 2 ? 4 : -4} /></svg>
               <span>{entry.name || t("contact.guestbook.anonymous")}</span>
             </button>
           </li>)}
