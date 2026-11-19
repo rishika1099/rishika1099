@@ -90,3 +90,11 @@ Animal and garden panels now share equal desktop columns and row height (verifie
 - Local fixture verification: seven visible notes, one hidden note, keyboard opening, Escape closing and pagination in both directions. Restored original local data.
 - Checked 28 routes at 390px: all had a 390px document width. Desktop and phone screenshots saved.
 - TypeScript and changed-file ESLint passed.
+
+## Wider butterfly garden and fuller pond, November 19
+
+- Restored separate message/signing forms above the animal and garden cards. The lower desktop row now uses one column for the cat and three for the garden. Phones stack the cards.
+- Redesigned butterfly wings with curved silhouettes, fine veins, pale spots, antennae and subtle motion. Retained keyboard access, native message dialogs and reduced-motion support.
+- Pond now contains six koi, six pads and five flowers. Bounded swim paths and varied fish sizes keep the added fish inside the scene.
+- Updated editable garden and photography invitation copy; retained the editable private form status text and accessible field names.
+- Local eight-note fixture verified keyboard opening and Escape dismissal. Original local data restored. All 28 routes fit a 390px viewport. Desktop and phone screenshots captured for garden and pond.

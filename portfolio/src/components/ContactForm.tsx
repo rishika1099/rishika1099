@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { m } from "framer-motion";
-import AnimalVisitor from "./AnimalVisitor";
 import { useFeatureCopy } from "./FeatureCopy";
-import layout from "./ContactLayout.module.css";
 
 const encode = (data: Record<string, string>) =>
   Object.keys(data)
@@ -48,7 +46,7 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
       <m.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={layout.messageCard}
+        className="mt-10 w-full max-w-xl rounded-3xl p-6 text-left soft-card"
       >
         <div className="text-4xl">💌</div>
         <p className="mt-2 font-body text-lg font-semibold text-ink">{t("contact.form.sent")}</p>
@@ -66,7 +64,7 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
       transition={{ delay: 0.2 }}
       onSubmit={submit}
       name="contact"
-      className={layout.messageCard}
+      className="mt-10 w-full max-w-xl rounded-3xl p-6 text-left soft-card"
     >
       <input type="hidden" name="form-name" value="contact" />
       <p className="hidden">
@@ -75,10 +73,8 @@ export default function ContactForm({ copy }: { copy?: Record<string, string> })
         </label>
       </p>
 
-      <AnimalVisitor compact animal="cat">
       <h2 className="font-body text-xl font-bold text-ink">{t("contact.form.title")}</h2>
       <p className="mt-1 font-body text-sm text-ink-soft">{t("contact.form.private")}</p>
-      </AnimalVisitor>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <input

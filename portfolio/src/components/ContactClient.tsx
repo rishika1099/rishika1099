@@ -5,6 +5,7 @@ import PageShell from "@/components/PageShell";
 import PageTitle from "@/components/PageTitle";
 import styles from "./ContactLayout.module.css";
 import ContactForm from "@/components/ContactForm";
+import AnimalVisitor from "@/components/AnimalVisitor";
 import Guestbook from "@/components/Guestbook";
 
 import type { ContactLink } from "@/lib/contactLinks";
@@ -56,7 +57,7 @@ export default function ContactClient({
         ))}
       </div>
 
-      <Guestbook copy={copy} contactForm={<ContactForm copy={copy} />} />
+      <Guestbook copy={copy} contactForm={<ContactForm copy={copy} />} companion={<AnimalVisitor animal="cat" />} />
 
       {copy?.["contact.neighbor"]?.trim() && (
         <m.p

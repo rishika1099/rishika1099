@@ -498,7 +498,7 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "contact.garden.intro": {
     "page": "contact",
     "label": "guest garden intro",
-    "text": "Every flower holds a hello. Pick one to read a note."
+    "text": "A little garden of hellos. Tap a butterfly to read a note."
   },
   "contact.garden.count": {
     "page": "contact",
@@ -513,7 +513,7 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "contact.garden.empty": {
     "page": "contact",
     "label": "guest garden empty",
-    "text": "The first flower could hold your hello. Leave a note above."
+    "text": "The first butterfly could carry your hello. Leave a note above."
   },
   "contact.garden.open": {
     "page": "contact",
@@ -588,7 +588,7 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "photography.guestGarden.note": {
     "page": "photography",
     "label": "guest garden note",
-    "text": "The visitor garden grows from guestbook notes. Leave a little hello and plant a flower."
+    "text": "The visitor garden is full of little hellos. Leave a note and a butterfly will carry it."
   },
   "photography.guestGarden.link": {
     "page": "photography",

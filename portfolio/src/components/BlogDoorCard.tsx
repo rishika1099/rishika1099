@@ -7,7 +7,7 @@ import styles from "./BlogDoorCard.module.css";
 
 type Scene = "technical" | "poems" | "photography";
 const round = (value: number) => Math.round(value * 1000) / 1000;
-const fishColors = ["#fff7e8", "#f0b77d", "#faf0da"];
+const fishColors = ["#fff7e8", "#f0b77d", "#faf0da", "#eed7ad", "#fff5ec", "#eab16f"];
 
 type MotionState = { time: number; follow: number; x: number; y: number };
 type AnimateScene = (nodes: Element[], state: MotionState) => void;
@@ -51,9 +51,9 @@ function useSceneMotion(animate: AnimateScene) {
 }
 
 function fishPosition(index: number, time: number) {
-  const angle = time * (.19 + index * .035) + index * 2.1;
-  const rx = 74 + index * 12;
-  const ry = 42 + index * 12;
+  const angle = time * (.19 + index * .035) + index * 2.399;
+  const rx = 62 + (index % 3) * 22;
+  const ry = 36 + (index % 3) * 17;
   return { x: round(160 + Math.cos(angle) * rx), y: round(125 + Math.sin(angle) * ry),
     angle: round(Math.atan2(Math.cos(angle) * ry, -Math.sin(angle) * rx) * 180 / Math.PI) };
 }
@@ -63,7 +63,7 @@ const animateFish: AnimateScene = (nodes, state) => {
     const gather = state.follow * .6;
     const x = point.x * (1 - gather) + state.x * gather;
     const y = point.y * (1 - gather) + state.y * gather;
-    node.setAttribute("transform", `translate(${x} ${y}) rotate(${point.angle}) scale(.85)`);
+    node.setAttribute("transform", `translate(${x} ${y}) rotate(${point.angle}) scale(${index % 2 ? .65 : .8})`);
   });
 };
 
@@ -84,7 +84,7 @@ function PondScene() {
       <path className={styles.caustic} d="M-10 115Q65 71 136 112T330 85M-20 185Q75 137 167 179T340 153"/>
     </g>
     <g>
-      {[0,1,2].map(index => { const {x,y,angle} = fishPosition(index,0); return <g key={index} data-mover transform={`translate(${x} ${y}) rotate(${angle}) scale(.85)`}><g className={styles.fish} style={{animationDelay:`${index * -.8}s`}}>
+      {[0,1,2,3,4,5].map(index => { const {x,y,angle} = fishPosition(index,0); return <g key={index} data-mover transform={`translate(${x} ${y}) rotate(${angle}) scale(${index % 2 ? .65 : .8})`}><g className={styles.fish} style={{animationDelay:`${index * -.8}s`}}>
         <ellipse cx="-2" cy="7" rx="30" ry="10" fill="#3c776e" opacity=".12"/>
         <path className={styles.tail} d="M-20 0Q-35 -21 -43 -13Q-32 0 -43 13Q-34 20 -20 0" fill={fishColors[index]}/>
         <path d="M-4 -8Q-8 -26 -20 -19L-14 -3M-4 8Q-8 26 -20 19L-14 3" fill={fishColors[index]} opacity=".75"/>
@@ -93,11 +93,11 @@ function PondScene() {
         <circle cx="24" cy="-4" r="1.3" fill="#3c5549"/><circle cx="24" cy="4" r="1.3" fill="#3c5549"/>
       </g></g>; })}
     </g>
-    {[{x:48,y:52,r:1},{x:83,y:27,r:.72},{x:269,y:194,r:1.05}].map((pad,i)=><g key={i} transform={`translate(${pad.x} ${pad.y}) scale(${pad.r})`}>
+    {[{x:48,y:52,r:1},{x:83,y:27,r:.72},{x:269,y:194,r:1.05},{x:275,y:52,r:.68},{x:44,y:188,r:.75},{x:226,y:215,r:.6}].map((pad,i)=><g key={i} transform={`translate(${pad.x} ${pad.y}) scale(${pad.r})`}>
       <ellipse cx="4" cy="9" rx="32" ry="23" fill="#092e4b" opacity=".3"/>
       <path d="M0 0L22 -15C8 -29 -23 -25 -30 -6C-40 20 -5 31 20 16C30 10 33 1 29 -7Z" fill={`url(#${id}-pad)`} stroke="#b0d5ba" strokeWidth=".7"/>
       <g fill="none" stroke="#d2e5bd" strokeWidth=".5" opacity=".55"><path d="M0 0L-24 -13M0 0L-31 2M0 0L-20 18M0 0L1 23M0 0L21 13M0 0L5 -22"/><path d="M-13 -7L-13 -17M-17 1L-25 9M-10 9L-22 8M2 12L12 17"/></g>
-      {i===2 && <g transform="translate(-6 -5)">
+      {i!==1 && <g transform="translate(-6 -5)">
         <ellipse cy="7" rx="19" ry="7" fill="#173e56" opacity=".3"/>
         {[0,45,90,135,180,225,270,315].map(angle=><path key={angle} d="M0 3Q-11 -7 0 -19Q11 -7 0 3" fill={`url(#${id}-petal)`} stroke="#fff2f1" strokeWidth=".4" transform={`rotate(${angle}) scale(1 .75)`}/>)}
         {[0,60,120,180,240,300].map(angle=><path key={angle} d="M0 2Q-5 -4 0 -11Q5 -4 0 2" fill="#fff0e6" transform={`rotate(${angle})`}/>)}

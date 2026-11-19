@@ -49,3 +49,20 @@ export function GardenScene() {
     <g fill="#86a65f"><path d="M75 178Q65 150 65 143Q82 160 80 179M365 179Q378 153 387 148Q382 168 374 180"/></g>
   </svg>;
 }
+
+export function Butterfly({ mood }: { mood: GardenMood }) {
+  const color = gardenMoods[mood].color;
+  return <svg viewBox="0 0 64 56" aria-hidden="true" className={styles.butterfly}>
+    {[false, true].map(mirror => <g key={String(mirror)} transform={mirror ? "translate(64 0) scale(-1 1)" : undefined}>
+      <g className={styles.wings}>
+        <path d="M31 29C25 12 11 2 6 9C1 16 7 30 23 33C9 28 5 39 12 46C20 53 29 43 31 34Z" fill={color} stroke="#66536c" strokeWidth="1.2" strokeLinejoin="round"/>
+        <path d="M29 28C22 16 13 10 10 12C8 17 13 26 26 29M28 35C19 32 13 35 14 40C17 45 25 40 28 35" fill="#fff3e8" opacity=".4"/>
+        <path d="M30 30L11 12M30 30L8 22M29 32L14 27M29 35L14 40M29 35L21 45" fill="none" stroke="#66536c" strokeWidth=".7" opacity=".6"/>
+        {[[7,14],[8,20],[11,26],[12,37],[15,44],[21,45]].map(([cx,cy],i)=><circle key={i} cx={cx} cy={cy} r="1.2" fill="#fff8e9"/>)}
+      </g>
+    </g>)}
+    <path d="M31 25Q29 20 26 19M33 25Q35 20 38 19" fill="none" stroke="#514052" strokeWidth="1" strokeLinecap="round"/>
+    <ellipse cx="32" cy="32" rx="1.8" ry="10" fill="#514052"/>
+    <circle cx="32" cy="23" r="2" fill="#514052"/>
+  </svg>;
+}
