@@ -57,7 +57,7 @@ export default function ContactClient({
         ))}
       </div>
 
-      <Guestbook copy={copy} contactForm={<ContactForm copy={copy} />} companion={<AnimalVisitor animal="cat" />} />
+      <Guestbook copy={copy} contactForm={<ContactForm copy={copy} />} companion={<AnimalVisitor />} />
 
       {copy?.["contact.neighbor"]?.trim() && (
         <m.p
