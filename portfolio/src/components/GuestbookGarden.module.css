@@ -1,7 +1,7 @@
 .garden{display:flex;flex-direction:column;flex:1;min-width:0;color:var(--color-ink,#514d64);}
 .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:8px 0;font-size:12px;}
 .pagination button,.close{padding:8px 14px;border-radius:24px;font-size:12px;cursor:pointer;}
-.scene{position:relative;height:180px;min-height:180px;margin-top:auto;}
+.scene{position:relative;height:clamp(200px,22vw,270px);min-height:200px;margin-top:auto;}
 .landscape{position:absolute;inset:0;width:100%;height:100%;}
 .bed{position:absolute;inset:0;list-style:none;padding:0;margin:0;}
 .bed li{position:absolute;transform:translateX(-50%);}
@@ -22,3 +22,4 @@
 .dialog::backdrop{background:#30273966;backdrop-filter:blur(4px);}.close{display:block;margin-left:auto;}.dialog .flower{margin:0 auto;height:110px;}.dialog h3{font-family:var(--font-serif),Georgia,serif;font-size:28px;overflow-wrap:anywhere;}.message{text-align:left;margin-top:18px;font-size:15px;}.mood,.dialog time{display:block;font-size:12px;opacity:.75;margin-top:12px;}
 .garden button:focus-visible,.dialog button:focus-visible{outline:2px solid #775a89;outline-offset:3px;}
 @media(prefers-reduced-motion:reduce){.wings{animation:none;}}
+@media(max-width:767px){.landscape{height:auto;aspect-ratio:550/185;top:auto;bottom:0;}}

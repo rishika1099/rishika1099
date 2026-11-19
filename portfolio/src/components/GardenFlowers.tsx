@@ -42,7 +42,7 @@ export function GardenScene() {
     ["curious",389,168,.94,7],["proud",430,171,.72,-8],["funny",474,169,.78,10],
     ["kind",518,173,.65,-2],
   ];
-  return <svg className={styles.landscape} viewBox="0 0 550 185" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+  return <svg className={styles.landscape} viewBox="0 0 550 185" preserveAspectRatio="none" aria-hidden="true">
     <path d="M5 180Q8 161 44 163Q100 147 145 165Q200 143 247 164Q308 146 355 164Q407 148 455 164Q509 151 545 180Z" fill="#8cab6e" opacity=".38"/>
     <g fill="#749757" opacity=".65"><path d="M17 176Q6 149 4 143Q25 153 25 175M530 177Q543 148 549 146Q546 167 538 179M240 178Q237 142 229 128Q250 145 248 179"/></g>
     {plants.map(([mood,x,y,scale,lean],i)=><FlowerSprig key={i} mood={mood} x={x} y={y} scale={scale} lean={lean}/>)}

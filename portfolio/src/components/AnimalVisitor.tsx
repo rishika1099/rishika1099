@@ -21,10 +21,11 @@ export default function AnimalVisitor({ animal }: { animal?: "cat" | "dog" }) {
     return () => controller.abort();
   }, [visit, animal]);
   return <section className={`${styles.dog} ${styles.randomVisitor}`} aria-labelledby="animal-visitor-title">
-    <span className={styles.eyebrow}>{t("contact.animal.eyebrow")}</span>
-    <h2 id="animal-visitor-title">{t("contact.animal.title")} <em>{t(`contact.animal.${visitor?.animal ?? "hello"}`)}</em></h2>
-    <div className={styles.dogPhoto}>{visitor ? <Image src={visitor.image} width={visitor.width} height={visitor.height} sizes="(max-width: 767px) calc(100vw - 80px), 280px" loading="lazy" decoding="async" alt={t("contact.animal.alt", { animal: visitor.animal })} onError={() => { setVisitor(null); setError("contact.animal.missing"); }} /> : <span aria-hidden="true">🐾</span>}</div>
-    <p className={styles.dogCaption} role="status">{(error && t(error)) || (busy ? t("contact.animal.loading") : t("contact.animal.caption", { animal: visitor?.animal ?? "" }))}</p>
-    <div className={styles.dogFooter}><button type="button" disabled={busy} onClick={() => { setBusy(true); setError(""); setVisit(value => value + 1); }}>{busy ? t("contact.animal.busy") : t("contact.animal.next")}</button>{visitor && <a href={visitor.sourceUrl} target="_blank" rel="noreferrer">{t("contact.animal.credit", { source: visitor.source })}</a>}</div>
+    <div className={styles.dogPhoto}>
+      {visitor ? <a href={visitor.sourceUrl} target="_blank" rel="noreferrer" aria-label={t("contact.animal.credit", { source: visitor.source })}><Image src={visitor.image} width={visitor.width} height={visitor.height} sizes="(max-width: 767px) calc(100vw - 72px), 280px" loading="lazy" decoding="async" alt={t("contact.animal.alt", { animal: visitor.animal })} onError={() => { setVisitor(null); setError("contact.animal.missing"); }} /></a> : <span aria-hidden="true">🐾</span>}
+      <button className={styles.refreshPhoto} type="button" disabled={busy} aria-label={busy ? t("contact.animal.busy") : t("contact.animal.next")} title={t("contact.animal.next")} onClick={() => { setBusy(true); setError(""); setVisit(value => value + 1); }}><span aria-hidden="true">↻</span></button>
+    </div>
+    <h2 id="animal-visitor-title">{t("contact.animal.title")} <em>{t("contact.animal.hello")}</em></h2>
+    {error && <p className={styles.photoError} role="status">{t(error)}</p>}
   </section>;
 }
