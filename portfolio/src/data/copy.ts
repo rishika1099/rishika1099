@@ -498,7 +498,7 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "contact.garden.intro": {
     "page": "contact",
     "label": "guest garden intro",
-    "text": "Every flower is someone who stopped by. Pick a bloom to read their note."
+    "text": "Little flowers, little hellos. Tap a butterfly to read a note."
   },
   "contact.garden.count": {
     "page": "contact",
@@ -513,7 +513,7 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "contact.garden.empty": {
     "page": "contact",
     "label": "guest garden empty",
-    "text": "The first bloom could be yours. Leave a note above to plant it."
+    "text": "The first butterfly could carry your hello. Leave a note above."
   },
   "contact.garden.open": {
     "page": "contact",
@@ -588,12 +588,42 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
   "photography.guestGarden.note": {
     "page": "photography",
     "label": "guest garden note",
-    "text": "The visitor garden now grows from guestbook notes. Your words can leave a flower there."
+    "text": "The visitor garden is full of little hellos. Leave a note and a butterfly will carry it."
   },
   "photography.guestGarden.link": {
     "page": "photography",
     "label": "guest garden link",
     "text": "Visit the guestbook garden ↗"
+  },
+  "contact.garden.flower.rose": {
+    "page": "contact",
+    "label": "Garden flower: rose",
+    "text": "Rose"
+  },
+  "contact.garden.flower.sunflower": {
+    "page": "contact",
+    "label": "Garden flower: sunflower",
+    "text": "Sunflower"
+  },
+  "contact.garden.flower.bluebell": {
+    "page": "contact",
+    "label": "Garden flower: bluebell",
+    "text": "Bluebell"
+  },
+  "contact.garden.flower.poppy": {
+    "page": "contact",
+    "label": "Garden flower: poppy",
+    "text": "Poppy"
+  },
+  "contact.garden.flower.cosmos": {
+    "page": "contact",
+    "label": "Garden flower: cosmos",
+    "text": "Cosmos"
+  },
+  "contact.garden.flower.tulip": {
+    "page": "contact",
+    "label": "Garden flower: tulip",
+    "text": "Tulip"
   }
 };
 

@@ -70,3 +70,13 @@ Verified with temporary local fixtures: 25 visible entries paginate across two b
 ## Flowers-only refinement
 
 Animal and garden panels now share equal desktop columns and row height (verified at 596 x 556 pixels each). Flower heads have three petal layers. Removed the alternate list view and its editable labels; notes remain accessible through labeled native buttons and dialogs. All 28 routes passed the phone overflow check at 390px. Temporary preview notes were restored after checking.
+
+## Compact butterfly garden refinement, November 19
+
+- Replaced the large flower tiles with an illustrated mixed border: rose (sweet), sunflower (excited), bluebell (curious), poppy (funny), cosmos (kind), tulip (proud).
+- Guest notes now open from small butterflies with 44px keyboard-accessible targets, eight per garden page. Native dialogs retain Escape, focus handling, name, message, mood, flower type and date.
+- Both desktop visitor panels are short rectangles. The animal photo sits next to its text. Cards stack on phones.
+- New flower names and revised instructions use the feature copy registry, available in the contact edit room and atelier.
+- Verified nine visible local fixture entries plus one hidden entry, keyboard opening, Escape closing, and both pagination directions. Restored local data after verification.
+- All 28 public and editor route checks had scroll width 390px at a 390px viewport.
+- Butterfly wing motion stops for reduced motion preferences. No alternative message cards.

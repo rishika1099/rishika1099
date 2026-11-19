@@ -1,19 +1,24 @@
 .garden{display:flex;flex-direction:column;flex:1;min-width:0;color:var(--color-ink,#514d64);}
-.toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:18px 0;font-size:12px;}
+.toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:8px 0;font-size:12px;}
 .pagination button,.close{padding:8px 14px;border-radius:24px;font-size:12px;cursor:pointer;}
-.bed{display:grid;align-content:center;flex:1;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;padding:20px 14px 12px;gap:4px 6px;border-radius:48% 42% 26px 26px / 28px 36px 26px 26px;background:radial-gradient(ellipse at 18% 75%,#bfd0a95c,transparent 60%),linear-gradient(180deg,#edf0d900,#c7d6b545 60%,#b7c8a56e);border-bottom:1px solid #a0b79566;}
-.bed li{min-width:0;}.bed li:nth-child(3n+2){padding-top:14px;}.bed li:nth-child(3n){padding-top:6px;}
-.bloom{display:flex;width:100%;min-height:150px;align-items:center;flex-direction:column;border-radius:18px;padding:3px;cursor:pointer;background:transparent;transition:background .2s;}
-.bloom:hover{background:#fff5;}.bloom span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;padding:2px 7px;border-radius:15px;background:#fff6;}
-.flower{width:100%;max-width:100px;height:130px;overflow:visible;}
-.head{animation:sway 5s ease-in-out infinite;animation-delay:var(--sway-delay,0s);}
-@keyframes sway{0%,100%{transform:rotate(-3deg);}50%{transform:rotate(3deg);}}
-.empty{padding:30px 22px;text-align:center;border-radius:60% 40% 24px 24px / 24px 24px 24px 24px;background:linear-gradient(transparent,#c7d6b54a);font-family:var(--font-serif),Georgia,serif;font-size:22px;}
-.pagination{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;margin-top:18px;font-size:12px;}
+.scene{position:relative;height:180px;min-height:180px;margin-top:auto;}
+.landscape{position:absolute;inset:0;width:100%;height:100%;}
+.bed{position:absolute;inset:0;list-style:none;padding:0;margin:0;}
+.bed li{position:absolute;transform:translateX(-50%);}
+.bloom{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;cursor:pointer;background:transparent;}
+.butterfly{width:34px;height:32px;overflow:visible;}
+.bloom:hover .butterfly,.bloom:focus-visible .butterfly{filter:drop-shadow(0 2px 3px #795c7355);}
+.bloom span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;padding:3px 7px;border-radius:8px;background:#fff8ed;opacity:0;pointer-events:none;z-index:2;}
+.bloom:hover span,.bloom:focus-visible span{opacity:1;}
+.flower{width:70px;height:105px;overflow:visible;}
+.wings{transform-origin:22px 21px;animation:flutter 3s ease-in-out infinite;}
+.bed li:nth-child(even) .wings{animation-delay:-1.5s;}
+@keyframes flutter{0%,100%{transform:scaleX(1);}50%{transform:scaleX(.72);}}
+.empty{position:relative;z-index:1;text-align:center;font-size:12px;max-width:270px;margin:0 auto;}
+.pagination{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;margin-top:6px;font-size:12px;}
 .pagination button,.close{border:1px solid #91738940;background:#fff6;}.pagination button:disabled{opacity:.4;cursor:default;}
 .message{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;}
 .dialog{position:fixed;inset:0;margin:auto;width:min(440px,calc(100vw - 32px));max-height:85dvh;overflow:auto;border:1px solid #fff;border-radius:28px;padding:24px;background:#fff7ed;color:#514d64;box-shadow:0 20px 90px #362b4544;text-align:center;}
 .dialog::backdrop{background:#30273966;backdrop-filter:blur(4px);}.close{display:block;margin-left:auto;}.dialog .flower{margin:0 auto;height:110px;}.dialog h3{font-family:var(--font-serif),Georgia,serif;font-size:28px;overflow-wrap:anywhere;}.message{text-align:left;margin-top:18px;font-size:15px;}.mood,.dialog time{display:block;font-size:12px;opacity:.75;margin-top:12px;}
 .garden button:focus-visible,.dialog button:focus-visible{outline:2px solid #775a89;outline-offset:3px;}
-@media(max-width:600px){.bed{grid-template-columns:repeat(3,minmax(0,1fr));padding:18px 5px 10px;gap:0;}.bloom{min-height:137px;}.flower{height:115px;}}
-@media(prefers-reduced-motion:reduce){.head{animation:none;}.bloom{transition:none;}}
+@media(prefers-reduced-motion:reduce){.wings{animation:none;}}

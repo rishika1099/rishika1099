@@ -7,3 +7,11 @@
 .randomVisitor{display:flex;flex-direction:column;align-items:stretch;text-align:left;}.randomVisitor .eyebrow{align-self:start;}.randomVisitor .dogPhoto{order:-1;position:relative;aspect-ratio:16/10;height:auto;margin:0 0 18px;transform:rotate(-1.5deg);overflow:hidden;}.randomVisitor .dogPhoto img{position:absolute;inset:5px;width:calc(100% - 10px);height:calc(100% - 10px);object-fit:cover;object-position:center;}.randomVisitor .dogFooter{margin-top:16px;}
 
 .randomVisitor{padding:20px;gap:14px;}.randomVisitor h2{font-size:27px;}.randomVisitor .dogPhoto{aspect-ratio:16/9;}.randomVisitor .dogCaption{font-size:18px;}.randomVisitor .dogFooter{gap:12px;flex-wrap:wrap;font-size:12px;}
+
+.randomVisitor{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:10px 16px;padding:18px;border-radius:14px;align-content:center;}
+.randomVisitor .dogPhoto{order:initial;grid-column:1;grid-row:1 / 5;height:210px;min-width:0;aspect-ratio:auto;margin:0;transform:none;align-self:center;}
+.randomVisitor h2{font-size:23px;}
+.randomVisitor .dogCaption{font-size:17px;}
+.randomVisitor .dogFooter{margin-top:0;gap:8px;}
+.randomVisitor .eyebrow{font-size:9px;letter-spacing:.12em;}
+@media(max-width:600px){.randomVisitor{gap:8px 12px;}.randomVisitor h2{font-size:21px;}.randomVisitor .dogPhoto{height:190px;}.randomVisitor .dogFooter{font-size:11px;}}

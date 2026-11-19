@@ -8,3 +8,5 @@
 .notes{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;}
 .note{flex:1 1 220px;max-width:100%;overflow-wrap:anywhere;}
 @media(max-width:767px){.forms{grid-template-columns:minmax(0,1fr);}.forms>form,.forms>section:nth-child(2),.forms>section:nth-child(3),.wall{grid-column:auto;}}
+
+.wall{padding:18px;border-radius:14px;}
