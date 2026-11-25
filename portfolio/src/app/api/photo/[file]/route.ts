@@ -14,6 +14,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ file
       "Cache-Control": "public, max-age=60",
       "Netlify-CDN-Cache-Control": "public, max-age=86400, stale-while-revalidate=604800, durable",
       "Netlify-Cache-Tag": photoTag(file),
+      "Netlify-Vary": "query=size",
     } });
   } catch { return new Response("Image unavailable", { status: 503 }); }
 }
