@@ -1,0 +1,7 @@
+.otter{display:block;width:100%;height:100%;overflow:visible;}
+.launcherOtter{display:flex;align-items:center;justify-content:center;width:42px;height:30px;position:relative;}
+.launcherOtter svg{position:absolute;bottom:-3px;width:58px;height:58px;}
+.headerOtter{display:block;width:52px;height:52px;flex-shrink:0;}
+.paw{transform-box:fill-box;transform-origin:40% 90%;animation:pebble-wave 1.3s ease-in-out 1;}
+@keyframes pebble-wave{0%,100%{transform:rotate(0)}30%{transform:rotate(18deg)}65%{transform:rotate(-12deg)}}
+@media(prefers-reduced-motion:reduce){.paw{animation:none;}}

@@ -10,6 +10,26 @@ export interface CopyBlock {
 }
 
 export const featureCopyDefaults: Record<string, CopyBlock> = {
+  "chat.name": {"page": "home", "label": "Pebble: name", "text": "Pebble"},
+  "chat.subtitle": {"page": "home", "label": "Pebble: subtitle", "text": "Rishika’s little guide"},
+  "chat.launcher": {"page": "home", "label": "Pebble: launcher", "text": "Ask Pebble"},
+  "chat.close": {"page": "home", "label": "Pebble: close", "text": "Close"},
+  "chat.openLabel": {"page": "home", "label": "Pebble: openLabel", "text": "Open chat with Pebble"},
+  "chat.closeLabel": {"page": "home", "label": "Pebble: closeLabel", "text": "Close chat with Pebble"},
+  "chat.greeting": {"page": "home", "label": "Pebble: greeting", "text": "Hi, I’m Pebble! Curious about Rishika’s projects, writing, or work?"},
+  "chat.placeholder": {"page": "home", "label": "Pebble: placeholder", "text": "Ask Pebble something…"},
+  "chat.inputLabel": {"page": "home", "label": "Pebble: inputLabel", "text": "Your question for Pebble"},
+  "chat.send": {"page": "home", "label": "Pebble: send", "text": "Send"},
+  "chat.thinking": {"page": "home", "label": "Pebble: thinking", "text": "Pebble is thinking…"},
+  "chat.unavailable": {"page": "home", "label": "Pebble: unavailable", "text": "My chat brain isn’t switched on for this deploy yet. ✦"},
+  "chat.limited": {"page": "home", "label": "Pebble: limited", "text": "I’ve answered a lot of questions today! Try again tomorrow, or say hello through the contact page ✦"},
+  "chat.error": {"page": "home", "label": "Pebble: error", "text": "Oops, something floated away. Try again in a moment? ✦"},
+  "chat.unknown": {"page": "home", "label": "Pebble: unknown", "text": "I’m not sure about that one. The Contact page is the best way to reach Rishika. ✦"},
+  "chat.starter.health": {"page": "home", "label": "Pebble: starter.health", "text": "What has Rishika worked on in healthcare?"},
+  "chat.starter.llm": {"page": "home", "label": "Pebble: starter.llm", "text": "Tell me about her LLM experience"},
+  "chat.starter.study": {"page": "home", "label": "Pebble: starter.study", "text": "Where did she study?"},
+  "chat.starter.skills": {"page": "home", "label": "Pebble: starter.skills", "text": "What are her strongest skills?"},
+
   "poems.tagline": {
     "page": "poems",
     "label": "tagline",

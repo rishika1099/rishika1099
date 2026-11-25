@@ -5,6 +5,7 @@
 // are editable, the Resume button becomes "Replace Resume", and the portrait
 // gets a little replace-photo control.
 
+import FeatureCopyEditor from "@/components/FeatureCopyEditor";
 import HomeClient from "@/components/HomeClient";
 import FileDrop from "@/components/FileDrop";
 import { AdminGate } from "@/components/editing";
@@ -195,5 +196,5 @@ function Editor({ keyVal }: { keyVal: string }) {
 }
 
 export default function HomeEdit() {
-  return <AdminGate vibe="dawn">{(key) => <Editor keyVal={key} />}</AdminGate>;
+  return <AdminGate vibe="dawn">{(key) => <><Editor keyVal={key} /><FeatureCopyEditor page="home" keyVal={key} /></>}</AdminGate>;
 }

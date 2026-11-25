@@ -15,7 +15,8 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import SiteFooter from "@/components/SiteFooter";
 import CursorCompanion from "@/components/CursorCompanion";
-import DeferredUI from "@/components/DeferredUI";
+import GuideUI from "@/components/GuideUI";
+import { Suspense } from "react";
 import MotionProvider from "@/components/MotionProvider";
 import VisitPing from "@/components/VisitPing";
 import Metrics from "@/components/Metrics";
@@ -167,7 +168,7 @@ export default function RootLayout({
           <main id="content" className="relative">{children}</main>
           <SiteFooter />
           <CursorCompanion />
-          <DeferredUI />
+          <Suspense fallback={null}><GuideUI /></Suspense>
         </MotionProvider>
         <VisitPing />
         <Metrics />
