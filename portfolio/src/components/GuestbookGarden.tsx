@@ -14,6 +14,7 @@ export interface GuestEntry {
 }
 
 const BED_SIZE = 8;
+const restingSpots = [[12, 29], [37, 10], [61, 30], [86, 15], [25, 53], [49, 48], [73, 57], [91, 43]];
 
 function NoteDialog({ entry, onClose }: { entry: GuestEntry; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -46,7 +47,7 @@ export default function GuestbookGarden({ entries }: { entries: GuestEntry[] }) 
       <GardenScene />
       {!entries.length ? <p className={styles.empty}>{t("contact.garden.empty")}</p> :
         <ul className={styles.bed} aria-label={t("contact.garden.garden")}>
-          {visible.map((entry, index) => <li key={entry.id} style={{ left: `${10 + index % 4 * 26}%`, top: `${index < 4 ? 8 : 43}%` }}>
+          {visible.map((entry, index) => <li key={entry.id} style={{ left: `${restingSpots[index][0]}%`, top: `${restingSpots[index][1]}%` }}>
             <button className={styles.bloom} type="button" aria-haspopup="dialog" aria-label={t("contact.garden.open", { name: entry.name || t("contact.guestbook.anonymous") })} onClick={() => setSelectedId(entry.id)}>
               <Butterfly mood={moodFor(entry.mood)} />
               <span>{entry.name || t("contact.guestbook.anonymous")}</span>

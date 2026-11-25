@@ -1,12 +1,12 @@
 .garden{display:flex;flex-direction:column;flex:1;min-width:0;color:var(--color-ink,#514d64);}
 .toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:8px 0;font-size:12px;}
 .pagination button,.close{padding:8px 14px;border-radius:24px;font-size:12px;cursor:pointer;}
-.scene{position:relative;height:clamp(200px,22vw,270px);min-height:200px;margin-top:auto;}
+.scene{position:relative;height:clamp(230px,25vw,310px);min-height:230px;margin-top:6px;overflow:hidden;border-radius:22px;background:radial-gradient(ellipse at 76% 10%,#fff8d880,transparent 45%),linear-gradient(180deg,#f9e9e300,#f8f1df66);}
 .landscape{position:absolute;inset:0;width:100%;height:100%;}
 .bed{position:absolute;inset:0;list-style:none;padding:0;margin:0;}
-.bed li{position:absolute;transform:translateX(-50%);}
+.bed li{position:absolute;transform:translateX(-50%);animation:drift 7s ease-in-out infinite;}.bed li:nth-child(2n){animation-delay:-2.4s;}.bed li:nth-child(3n){animation-delay:-4.5s;}
 .bloom{position:relative;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;cursor:pointer;background:transparent;}
-.butterfly{width:45px;height:42px;overflow:visible;transform:rotate(-12deg);}.bed li:nth-child(even) .butterfly{transform:rotate(14deg);}
+.butterfly{width:38px;height:36px;overflow:visible;transform:rotate(-12deg);}.bed li:nth-child(even) .butterfly{transform:rotate(14deg);}
 .bloom:hover .butterfly,.bloom:focus-visible .butterfly{filter:drop-shadow(0 2px 3px #795c7355);}
 .bloom span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;padding:3px 7px;border-radius:8px;background:#fff8ed;opacity:0;pointer-events:none;z-index:2;}
 .bloom:hover span,.bloom:focus-visible span{opacity:1;}
@@ -21,5 +21,8 @@
 .dialog{position:fixed;inset:0;margin:auto;width:min(440px,calc(100vw - 32px));max-height:85dvh;overflow:auto;border:1px solid #fff;border-radius:28px;padding:24px;background:#fff7ed;color:#514d64;box-shadow:0 20px 90px #362b4544;text-align:center;}
 .dialog::backdrop{background:#30273966;backdrop-filter:blur(4px);}.close{display:block;margin-left:auto;}.dialog .flower{margin:0 auto;height:110px;}.dialog h3{font-family:var(--font-serif),Georgia,serif;font-size:28px;overflow-wrap:anywhere;}.message{text-align:left;margin-top:18px;font-size:15px;}.mood,.dialog time{display:block;font-size:12px;opacity:.75;margin-top:12px;}
 .garden button:focus-visible,.dialog button:focus-visible{outline:2px solid #775a89;outline-offset:3px;}
-@media(prefers-reduced-motion:reduce){.wings{animation:none;}}
-@media(max-width:767px){.landscape{height:auto;aspect-ratio:550/185;top:auto;bottom:0;}}
+@keyframes drift{0%,100%{translate:0 0;}50%{translate:5px -6px;}}
+.sprig{transform-box:fill-box;transform-origin:50% 100%;animation:sway 6s ease-in-out infinite;}
+@keyframes sway{0%,100%{rotate:-1deg;}50%{rotate:1deg;}}
+@media(prefers-reduced-motion:reduce){.wings,.sprig,.bed li{animation:none;}}
+@media(max-width:767px){.scene{height:240px;min-height:240px;}.landscape{width:160%;max-width:none;left:-30%;}.butterfly{width:34px;height:32px;}}

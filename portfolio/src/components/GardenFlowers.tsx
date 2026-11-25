@@ -25,7 +25,7 @@ export function FlowerSprig({ mood, x = 0, y = 0, scale = 1, lean = 0 }: { mood:
     <path d="M-2 -28L-20 -40M-1 -44L17 -56" stroke="#aac381" strokeWidth=".7" fill="none" />
     <g>
       {mood === "excited" && <g transform="translate(0 -80)"><Petals count={13} color="#ebbb41" long /><Petals count={9} color="#f5cd5d" /><circle r="10" fill="#715035"/><circle r="7.5" fill="#845b38"/>{[[-3,-3],[3,-2],[0,2],[-4,3],[4,4]].map(([cx,cy],i)=><circle key={i} cx={cx} cy={cy} r=".8" fill="#b38b50"/>)}</g>}
-      {mood === "sweet" && <g transform="translate(0 -76)"><path d="M-11 11L-17 4L-15 -7L-6 -16L5 -16L15 -9L18 2L11 13L0 17Z" fill={color}/><path d="M-12 3Q-14 -10 1 -11Q15 -9 10 5Q2 15 -8 5Q-12 -4 0 -6Q9 -5 5 2Q-2 8 -4 0Q-2 -4 2 -1" fill="none" stroke="#a84f71" strokeWidth="1.5" strokeLinecap="round"/><path d="M-10 13Q-19 8 -21 1L-14 3M10 13Q19 8 21 1L15 3" fill="#578654"/></g>}
+      {mood === "sweet" && <g transform="translate(0 -76)"><path d="M-10 13Q-19 8-21 1L-14 3M10 13Q19 8 21 1L15 3" fill="#6e956c"/><Petals count={7} color="#e6a3b7"/><g transform="rotate(25) scale(.76)"><Petals count={6} color={color}/></g><g transform="rotate(-12) scale(.5)"><Petals count={5} color="#f0bdc8"/></g><path d="M-4 1Q-4-5 2-4Q8-1 2 4Q-3 7-4 1" fill="#bb6382"/><path d="M-2 0Q1-3 3 0" fill="none" stroke="#efb7c5" strokeWidth="1.2"/></g>}
       {mood === "proud" && <g transform="translate(0 -79)"><path d="M-17 -15L-6 -9L0 -22L8 -9L17 -16L14 7Q0 25 -14 7Z" fill="#925b90"/><path d="M-16 -13Q-3 -8 0 10Q2 -9 17 -15L13 8Q0 23 -13 8Z" fill={color}/><path d="M0 0Q-1 -13 0 -20Q13 -9 9 8Q2 16 0 0" fill="#ce91b4"/></g>}
       {mood === "kind" && <g transform="translate(0 -79)"><Petals count={6} color={color}/><circle r="4.5" fill="#efd37b"/><path d="M-2 -2L2 2M2 -2L-2 2" stroke="#b99a43" strokeWidth=".8"/></g>}
       {mood === "funny" && <g transform="translate(0 -78)"><path d="M0 0Q-28 3 -21 -14Q-17 -23 -4 -13Q3 -26 15 -19Q28 -14 16 -2Q28 10 12 15Q1 18 -3 7Q-20 19 -24 5Q-26 -7 0 0" fill={color}/><path d="M-4 -10Q2 0 -3 9M9 -10Q1 -3 10 8" stroke="#f8b678" strokeWidth="1" fill="none"/><circle r="5" fill="#4d5042"/>{Array.from({length:8},(_,i)=><path key={i} d="M0 -4V-8" stroke="#424c3d" transform={`rotate(${i*45})`}/>)}</g>}
@@ -35,18 +35,17 @@ export function FlowerSprig({ mood, x = 0, y = 0, scale = 1, lean = 0 }: { mood:
 }
 
 export function GardenScene() {
-  const plants: [GardenMood,number,number,number,number][] = [
-    ["kind",28,160,.65,-12],["sweet",62,170,.74,-7],["excited",103,166,1,-12],
-    ["curious",144,169,.88,-5],["proud",184,167,.95,3],["funny",223,174,.65,-8],
-    ["kind",269,169,.9,6],["excited",309,164,.86,10],["sweet",352,175,.62,7],
-    ["curious",389,168,.94,7],["proud",430,171,.72,-8],["funny",474,169,.78,10],
-    ["kind",518,173,.65,-2],
-  ];
-  return <svg className={styles.landscape} viewBox="0 0 550 185" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M5 180Q8 161 44 163Q100 147 145 165Q200 143 247 164Q308 146 355 164Q407 148 455 164Q509 151 545 180Z" fill="#8cab6e" opacity=".38"/>
-    <g fill="#749757" opacity=".65"><path d="M17 176Q6 149 4 143Q25 153 25 175M530 177Q543 148 549 146Q546 167 538 179M240 178Q237 142 229 128Q250 145 248 179"/></g>
-    {plants.map(([mood,x,y,scale,lean],i)=><FlowerSprig key={i} mood={mood} x={x} y={y} scale={scale} lean={lean}/>)}
-    <g fill="#86a65f"><path d="M75 178Q65 150 65 143Q82 160 80 179M365 179Q378 153 387 148Q382 168 374 180"/></g>
+  const moods = Object.keys(gardenMoods) as GardenMood[];
+  return <svg className={styles.landscape} viewBox="0 0 550 220" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <path d="M0 185Q80 157 170 181T350 178T550 181V220H0Z" fill="#dce3cc" />
+    <g opacity=".48">{Array.from({ length: 22 }, (_, i) => <FlowerSprig key={i} mood={moods[(i * 5 + 2) % 6]} x={12 + i * 25} y={199 + i % 3 * 5} scale={.48 + i % 4 * .07} lean={i % 2 ? 9 : -8} />)}</g>
+    <path d="M0 206Q75 184 153 200T310 199T460 199T550 204V220H0Z" fill="#b7cba3" />
+    <g>{Array.from({ length: 17 }, (_, i) => <g className={styles.sprig} key={i} style={{ animationDelay: `${i % 5 * -.8}s` }}><FlowerSprig mood={moods[(i * 5) % 6]} x={15 + i * 32} y={210 + i % 3 * 3} scale={.55 + [0, .15, .03, .24, .09][i % 5]} lean={[-9, 6, -4, 10, -3][i % 5]} /></g>)}</g>
+    <path d="M0 218Q55 205 108 215T228 214T356 215T475 213T550 218V220H0Z" fill="#91af85" />
+    {Array.from({ length: 33 }, (_, i) => <g key={i} transform={`translate(${8 + i * 17} ${212 + i % 3 * 2})`}>
+      <path d="M0 5Q-2 -7 -6 -11M0 5Q2 -9 7 -14" stroke="#75976e" strokeWidth="1" fill="none" />
+      {i % 3 !== 0 && <g transform={`translate(${i % 2 ? 6 : -5} -12)`}><g transform="scale(.28)"><Petals count={5} color={i % 2 ? "#fff4de" : "#e8c9d8"} /><circle r="2.4" fill="#d7ae60" /></g></g>}
+    </g>)}
   </svg>;
 }
 
