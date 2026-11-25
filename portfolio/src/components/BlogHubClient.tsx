@@ -73,7 +73,7 @@ export default function BlogHubClient({
             {t("blog.featured.link")}
           </span>
           </div>
-          <div className={styles.mascot} aria-hidden="true"><Image src="/illustrations/portfolio-bot.webp" alt="" width={640} height={640} sizes="(max-width: 600px) 160px, 300px" unoptimized loading="lazy" /></div>
+          <div className={styles.mascot} aria-hidden="true"><Image src="/illustrations/portfolio-bot.webp" alt="" width={640} height={640} sizes="(max-width: 600px) 100px, 180px" unoptimized loading="lazy" /></div>
         </Link>
       </m.div>
     </PageShell>

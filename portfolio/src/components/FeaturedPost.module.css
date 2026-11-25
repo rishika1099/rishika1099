@@ -1,6 +1,6 @@
-.card{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:24px;align-items:center;background:#fffdfd;}
-.copy{min-width:0;}.mascot{min-width:0;max-width:300px;justify-self:center;transform-origin:50% 90%;transition:transform .4s ease;}
+.card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,180px);gap:24px;align-items:center;background:#fffdfd;}
+.copy{min-width:0;}.mascot{min-width:0;width:100%;max-width:180px;justify-self:center;transform-origin:50% 90%;transition:transform .4s ease;}
 .mascot img{display:block;width:100%;height:auto;}
 .card:hover .mascot,.card:focus-visible .mascot{transform:translateY(-5px) rotate(3deg);}
-@media(max-width:600px){.card{grid-template-columns:1fr;gap:12px;}.mascot{grid-row:1;width:150px;justify-self:center;}}
+@media(max-width:600px){.card{grid-template-columns:1fr;gap:12px;}.mascot{grid-row:1;width:100px;justify-self:center;}}
 @media(prefers-reduced-motion:reduce){.mascot{transition:none;}.card:hover .mascot,.card:focus-visible .mascot{transform:none;}}
