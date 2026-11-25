@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readFileKind } from "@/lib/files";
+import { readDisplayFile } from "@/lib/files";
 
 export const runtime = "nodejs";
 
@@ -16,7 +16,7 @@ const AVATAR = "https://github.com/rishika1099.png";
 
 // Serve the uploaded portrait when present, else the GitHub avatar.
 export async function GET() {
-  const f = await readFileKind("portrait");
+  const f = await readDisplayFile("portrait");
   if (f) {
     return new NextResponse(new Uint8Array(f.buf), {
       headers: { "Content-Type": f.mime, ...HEADERS },

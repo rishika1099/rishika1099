@@ -10,7 +10,7 @@
 // tab icons longest of all, so a new one can take a refresh to show.
 
 import { NextResponse } from "next/server";
-import { readFileKind, type FileKind } from "@/lib/files";
+import { readDisplayFile, type FileKind } from "@/lib/files";
 
 export const ICON_TAG = "site-icon";
 
@@ -22,7 +22,7 @@ const HEADERS = {
 
 /** The uploaded icon if there is one, else the file that shipped with the site. */
 export async function serveIcon(kind: FileKind, fallback: string) {
-  const f = await readFileKind(kind);
+  const f = await readDisplayFile(kind);
   if (f) {
     return new NextResponse(new Uint8Array(f.buf), {
       headers: { "Content-Type": f.mime, ...HEADERS },

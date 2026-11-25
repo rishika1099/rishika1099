@@ -1,44 +1,19 @@
-import fs from "node:fs";
-import path from "node:path";
-import { blobsEnabled, store } from "@/lib/blobs";
-import { PHOTOS_DIR } from "@/lib/photos";
-
+import { readPhotoBytes, readThumbnail, photoTag } from "@/lib/photos";
 export const runtime = "nodejs";
-
-const TYPES: Record<string, string> = {
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  webp: "image/webp",
-  gif: "image/gif",
-  avif: "image/avif",
-};
-
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ file: string }> },
-) {
+const TYPES: Record<string, string> = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif", avif: "image/avif" };
+export async function GET(request: Request, { params }: { params: Promise<{ file: string }> }) {
   const { file } = await params;
-  // Only allow plain image filenames, no path traversal.
-  if (!/^[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif|avif)$/i.test(file)) {
-    return new Response("Bad request", { status: 400 });
-  }
-  const ext = file.split(".").pop()!.toLowerCase();
-  const contentType = TYPES[ext] ?? "application/octet-stream";
-  const headers = {
-    "Content-Type": contentType,
-    "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
-    "Netlify-CDN-Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
-  };
-
-  if (blobsEnabled()) {
-    const s = await store("photos");
-    const buf = await s.get(file, { type: "arrayBuffer" });
-    if (!buf) return new Response("Not found", { status: 404 });
-    return new Response(new Uint8Array(buf), { headers });
-  }
-
-  const local = path.join(PHOTOS_DIR, file);
-  if (!fs.existsSync(local)) return new Response("Not found", { status: 404 });
-  return new Response(new Uint8Array(fs.readFileSync(local)), { headers });
+  if (!/^[a-zA-Z0-9._-]+\.(jpe?g|png|webp|gif|avif)$/i.test(file)) return new Response("Bad request", { status: 400 });
+  const size = new URL(request.url).searchParams.get("size");
+  if (size && size !== "384" && size !== "768") return new Response("Bad size", { status: 400 });
+  try {
+    const bytes = size ? await readThumbnail(file, Number(size)) : await readPhotoBytes(file);
+    if (!bytes) return new Response("Not found", { status: 404 });
+    return new Response(new Uint8Array(bytes), { headers: {
+      "Content-Type": size ? "image/webp" : TYPES[file.split(".").pop()!.toLowerCase()],
+      "Cache-Control": "public, max-age=60",
+      "Netlify-CDN-Cache-Control": "public, max-age=86400, stale-while-revalidate=604800, durable",
+      "Netlify-Cache-Tag": photoTag(file),
+    } });
+  } catch { return new Response("Image unavailable", { status: 503 }); }
 }

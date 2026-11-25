@@ -649,6 +649,51 @@ export const featureCopyDefaults: Record<string, CopyBlock> = {
     "page": "contact",
     "label": "Message form error",
     "text": "hmm, that didn’t go through. try again, or email me directly?"
+  },
+  "blog.featured.label": {
+    "page": "blog",
+    "label": "Featured article label",
+    "text": "📌 featured"
+  },
+  "blog.featured.title": {
+    "page": "blog",
+    "label": "Featured article title",
+    "text": "The Data Science Hiding in My Portfolio ✨"
+  },
+  "blog.featured.description": {
+    "page": "blog",
+    "label": "Featured article description",
+    "text": "A tour of the ML and LLM pipelines behind this whole site, with the concepts explained, a live demo, and an eval for every claim."
+  },
+  "blog.featured.link": {
+    "page": "blog",
+    "label": "Featured article link",
+    "text": "read the tour →"
+  },
+  "blog.featured.tag.rag": {
+    "page": "blog",
+    "label": "Featured article tag.rag",
+    "text": "RAG"
+  },
+  "blog.featured.tag.embeddings": {
+    "page": "blog",
+    "label": "Featured article tag.embeddings",
+    "text": "Embeddings"
+  },
+  "blog.featured.tag.zeroShot": {
+    "page": "blog",
+    "label": "Featured article tag.zeroShot",
+    "text": "Zero-shot"
+  },
+  "blog.featured.tag.pca": {
+    "page": "blog",
+    "label": "Featured article tag.pca",
+    "text": "PCA"
+  },
+  "blog.featured.tag.clustering": {
+    "page": "blog",
+    "label": "Featured article tag.clustering",
+    "text": "Clustering"
   }
 };
 

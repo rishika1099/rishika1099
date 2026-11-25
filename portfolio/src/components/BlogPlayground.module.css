@@ -12,3 +12,5 @@
 .refreshPhoto{position:absolute;z-index:1;top:9px;right:9px;display:grid;place-items:center;width:40px;height:40px;border:1px solid #ffffffb3;border-radius:50%;background:#fff8eeeb;color:#65565b;box-shadow:0 2px 8px #40303222;font-size:27px;cursor:pointer;line-height:1;}
 .refreshPhoto:disabled{opacity:.55;cursor:wait;}.photoError{font-size:12px;}
 @media(max-width:767px){.randomVisitor .dogPhoto{flex:none;height:260px;min-height:260px;}}
+
+.photoPlaceholder{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#f6e5ea,#e8dff2,#f4eee0);color:#9f8aa5;}

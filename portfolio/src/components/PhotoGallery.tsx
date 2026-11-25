@@ -3,7 +3,6 @@
 import { useState } from "react";
 import GalleryLightbox from "./GalleryLightbox";
 import { useFeatureCopy } from "./FeatureCopy";
-import Image from "next/image";
 import { m } from "framer-motion";
 import type { PhotoFrame, PhotoGroup } from "@/lib/photos";
 
@@ -49,13 +48,17 @@ function Frame({
       className="w-52 rounded-sm bg-white p-3 pb-10 shadow-lg"
     >
       <button type="button" onClick={() => setOpen(true)} aria-label={t("photography.photo.open", { caption: caption || t("photography.photo.untitled") })} className="relative block h-48 w-full overflow-hidden rounded-sm focus-visible:outline-2 focus-visible:outline-ink">
-        <Image
-          src={src!}
+        {/* Stored thumbnails bypass the runtime image optimizer. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`/api/photo/${src!.split("/").pop()}?size=384`}
+          srcSet={`/api/photo/${src!.split("/").pop()}?size=384 384w, /api/photo/${src!.split("/").pop()}?size=768 768w`}
           alt={caption || "a photo"}
-          fill
+          width={184}
+          height={192}
           loading="lazy"
           decoding="async"
-          className="object-cover"
+          className="h-full w-full object-cover"
           sizes="184px"
           style={{
             objectPosition: `${fx}% ${fy}%`,

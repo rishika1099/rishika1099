@@ -88,3 +88,5 @@ tests/playwright-report/
 
 # Visitor garden, local data only
 portfolio/src/content/garden/
+# Generated display copies of private uploads
+portfolio/src/content/image-variants/

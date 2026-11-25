@@ -2,6 +2,7 @@
 // Blobs on deploy, a gitignored local folder in dev; when nothing is uploaded
 // the site falls back to the static/GitHub originals.
 
+import { readVariant, writeVariant, removeVariant, webVariant, displayKey } from "./imageVariants";
 import fs from "node:fs";
 import path from "node:path";
 import { blobsEnabled } from "@/lib/blobs";
@@ -45,7 +46,21 @@ export async function readFileKind(kind: FileKind): Promise<StoredFile | null> {
   }
 }
 
+const displaySize = (kind: FileKind) => kind === "portrait" ? 768 : kind === "icon-small" ? 32 : kind === "icon-apple" ? 180 : 192;
+export async function readDisplayFile(kind: FileKind): Promise<StoredFile | null> {
+  if (kind === "resume") return readFileKind(kind);
+  const mime = kind === "portrait" ? "image/webp" : "image/png";
+  const cached = await readVariant(displayKey(kind));
+  if (cached) return { buf: cached, mime };
+  const original = await readFileKind(kind);
+  if (!original) return null;
+  const buf = await webVariant(original.buf, displaySize(kind), kind !== "portrait");
+  await writeVariant(displayKey(kind), buf);
+  return { buf, mime };
+}
+
 export async function writeFileKind(kind: FileKind, buf: Buffer, mime: string): Promise<void> {
+  const display = kind !== "resume" ? await webVariant(buf, displaySize(kind), kind !== "portrait") : null;
   if (blobsEnabled()) {
     const s = await filesStore();
     await s.set(kind, new Blob([new Uint8Array(buf)]));
@@ -55,9 +70,11 @@ export async function writeFileKind(kind: FileKind, buf: Buffer, mime: string): 
     fs.writeFileSync(path.join(LOCAL_DIR, kind), buf);
     fs.writeFileSync(path.join(LOCAL_DIR, `${kind}${META_SUFFIX}`), JSON.stringify({ mime }));
   }
+  if (display) await writeVariant(displayKey(kind), display);
 }
 
 export async function deleteFileKind(kind: FileKind): Promise<void> {
+  if (kind !== "resume") await removeVariant(displayKey(kind));
   if (blobsEnabled()) {
     const s = await filesStore();
     await s.delete(kind);

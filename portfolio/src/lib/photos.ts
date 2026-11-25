@@ -1,3 +1,6 @@
+import { readVariant, writeVariant, removeVariant, webVariant, thumbnailKey } from "./imageVariants";
+import { purgeTag } from "./cdnPurge";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { blobsEnabled, store } from "@/lib/blobs";
@@ -175,7 +178,31 @@ async function writeCaptionsAny(captions: Record<string, string>): Promise<void>
   }
 }
 
+export const photoTag = (file: string) => `photo-${createHash("sha256").update(file).digest("hex").slice(0, 16)}`;
+
+export async function readPhotoBytes(file: string): Promise<Buffer | null> {
+  if (blobsEnabled()) {
+    const bytes = await (await editStore()).get(file, { type: "arrayBuffer" });
+    return bytes ? Buffer.from(bytes) : null;
+  }
+  const local = path.join(PHOTOS_DIR, file);
+  return fs.existsSync(local) ? fs.readFileSync(local) : null;
+}
+
+export async function readThumbnail(file: string, width: number): Promise<Buffer | null> {
+  const key = thumbnailKey(file, width);
+  const cached = await readVariant(key);
+  if (cached) return cached;
+  const original = await readPhotoBytes(file);
+  if (!original) return null;
+  const thumbnail = await webVariant(original, width, false, true);
+  // Existing photos are migrated lazily, once, without touching originals.
+  await writeVariant(key, thumbnail);
+  return thumbnail;
+}
+
 export async function writePhoto(file: string, buf: Buffer): Promise<void> {
+  const thumbnails = await Promise.all([384, 768].map(async width => ({ width, bytes: await webVariant(buf, width, false, true) })));
   if (blobsEnabled()) {
     const s = await editStore();
     await s.set(file, new Blob([new Uint8Array(buf)]));
@@ -183,6 +210,8 @@ export async function writePhoto(file: string, buf: Buffer): Promise<void> {
     fs.mkdirSync(PHOTOS_DIR, { recursive: true });
     fs.writeFileSync(path.join(PHOTOS_DIR, file), buf);
   }
+  await Promise.all(thumbnails.map(({ width, bytes }) => writeVariant(thumbnailKey(file, width), bytes)));
+  await purgeTag(photoTag(file));
 }
 
 export async function setCaption(file: string, caption: string): Promise<void> {
@@ -231,6 +260,7 @@ export async function setFrame(file: string, frame: PhotoFrame | null): Promise<
 }
 
 export async function removePhoto(file: string): Promise<void> {
+  await Promise.all([384, 768].map(width => removeVariant(thumbnailKey(file, width))));
   if (blobsEnabled()) {
     const s = await editStore();
     await s.delete(file);
@@ -238,6 +268,7 @@ export async function removePhoto(file: string): Promise<void> {
     const f = path.join(PHOTOS_DIR, file);
     if (fs.existsSync(f)) fs.unlinkSync(f);
   }
+  await purgeTag(photoTag(file));
   const captions = await readCaptionsAny();
   if (file in captions) {
     delete captions[file];

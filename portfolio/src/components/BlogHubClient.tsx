@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import { useFeatureCopy } from "./FeatureCopy";
+import styles from "./FeaturedPost.module.css";
 import Link from "next/link";
 import { m } from "framer-motion";
 import PageShell from "@/components/PageShell";
@@ -21,6 +24,7 @@ export default function BlogHubClient({
   intro: React.ReactNode;
   doorBlurbs: Record<string, React.ReactNode>;
 }) {
+  const t = useFeatureCopy();
   return (
     <PageShell vibe="peach">
       <PageTitle>{title}</PageTitle>
@@ -39,35 +43,37 @@ export default function BlogHubClient({
       >
         <Link
           href="/blog/technical/under-the-hood"
-          className="block overflow-hidden rounded-[2rem] border border-lavender/40 bg-gradient-to-br from-mint/30 via-lavender/25 to-blush/25 p-7 soft-card transition hover:-translate-y-1"
+          className={`${styles.card} overflow-hidden rounded-[2rem] border border-lavender/40 p-7 soft-card`}
         >
-          <p className="font-body text-sm italic text-ink-soft">📌 featured</p>
+          <div className={styles.copy}>
+          <p className="font-body text-sm italic text-ink-soft">{t("blog.featured.label")}</p>
           <h2 className="mt-1 font-display text-2xl font-semibold text-ink">
-            The Data Science Hiding in My Portfolio ✨
+            {t("blog.featured.title")}
           </h2>
           <p className="mt-2 max-w-2xl font-body text-base text-ink-soft">
-            A tour of the ML and LLM pipelines behind this whole site, with the concepts
-            explained, a live demo, and an eval for every claim.
+            {t("blog.featured.description")}
           </p>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {[
-              ["RAG", "bg-blush/50"],
-              ["Embeddings", "bg-lavender/50"],
-              ["Zero-shot", "bg-mint/60"],
-              ["PCA", "bg-dawn/60"],
-              ["Clustering", "bg-petal/50"],
-            ].map(([t, tint]) => (
+              ["rag", "bg-blush/50"],
+              ["embeddings", "bg-lavender/50"],
+              ["zeroShot", "bg-mint/60"],
+              ["pca", "bg-dawn/60"],
+              ["clustering", "bg-petal/50"],
+            ].map(([tag, tint]) => (
               <span
-                key={t}
+                key={tag}
                 className={`rounded-full ${tint} px-2.5 py-0.5 font-body text-[11px] font-semibold text-ink`}
               >
-                {t}
+                {t(`blog.featured.tag.${tag}`)}
               </span>
             ))}
           </div>
           <span className="mt-3 inline-block font-body text-sm font-semibold text-[#c77dba]">
-            read the tour →
+            {t("blog.featured.link")}
           </span>
+          </div>
+          <div className={styles.mascot} aria-hidden="true"><Image src="/illustrations/portfolio-bot.webp" alt="" width={640} height={640} sizes="(max-width: 600px) 160px, 300px" unoptimized loading="lazy" /></div>
         </Link>
       </m.div>
     </PageShell>
